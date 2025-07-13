@@ -28,7 +28,7 @@ def format_size(size: float) -> str:
 
 
 def parse_info(path: Path):
-    # ex: ./artifacts/sample_project-1.0.0-release_linux_x86_64.deb
+    # ex: ./artifacts/redy-1.0.0-release_linux_x86_64.deb
     build_type = "Unknown"
     os_name = "Unknown"
     arch_name = "Unknown"

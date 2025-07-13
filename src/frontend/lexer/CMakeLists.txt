@@ -1,26 +1,19 @@
-set(MODULE_NAME "core")
-set(MODULE_OBJECTS_NAME "core_objects")
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
+set(MODULE_NAME "lexer")
+set(MODULE_OBJECTS_NAME "lexer_objects")
 
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  check.cc
-  location.cc
-  base/file_manager.cc
-  base/file_util.cc
-  base/logger.cc
-  base/source_location.cc
-  base/source_range.cc
-  base/string_util.cc
-  cli/arg_parser.cc
-  diagnostics/signal_handler.cc
-  diagnostics/stack_trace_entry.cc
-  diagnostics/stack_trace.cc
-  diagnostics/system_info.cc
-  diagnostics/terminate_handler.cc
-  time/time_util.cc
+  lexer.cc 
 
-  redy/runtime_options.cc
+  base/char_stream.cc
+  keyword/keyword.cc
+  token/token.cc
+  token/token_stream.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

@@ -62,6 +62,7 @@ option(ENABLE_VERBOSE "enable detailed build information" TRUE)
 option(ENABLE_LTO "enable link time optimization" TRUE)
 option(ENABLE_NATIVE_ARCH "enable optimization for native architecture" TRUE)
 
+option(ENABLE_BUILD_INFO_DEFINITIONS "enable compile-time information definitions" TRUE)
 option(ENABLE_BUILD_REPORT "generate the report for optimization, build time, etc." TRUE)
 option(ENABLE_COVERAGE "enable coverage using -fprofile-instr-generate and llvm-cov. runs main app and test on post build if available." FALSE)
 option(ENABLE_OPTIMIZATION_REPORT "generate optimization report" FALSE)
@@ -225,6 +226,7 @@ enable run testing post build: ${ENABLE_RUN_TESTING_POST_BUILD}
 enable verbose: ${ENABLE_VERBOSE}
 enable lto: ${ENABLE_LTO}
 enable native arch: ${ENABLE_NATIVE_ARCH}
+enable build info denitions ${ENABLE_BUILD_INFO_DEFINITIONS}
 enable build report: ${ENABLE_BUILD_REPORT}
 enable profile: ${ENABLE_COVERAGE}
 enable optimization report: ${ENABLE_OPTIMIZATION_REPORT}
@@ -237,13 +239,16 @@ enable warnings as errors: ${ENABLE_WARNINGS_AS_ERRORS}
   print_all_build_flags()
 endif()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build)
+if(ENABLE_BUILD_INFO_DEFINITIONS)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build)
+endif()
 
 if(ENABLE_BUILD_PROGRAM)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app)
 endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/frontend)
 
 if(ENABLE_BUILD_TESTING)
   setup_gtest()

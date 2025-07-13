@@ -5,8 +5,14 @@ message(STATUS "Configuring ${BENCHMARK_NAME}...")
 set(SOURCES
   bench_main.cc
 
-  ${PROJECT_SOURCE_DIR}/core/base/file_util_bench.cc
-  ${PROJECT_SOURCE_DIR}/core/base/string_util_bench.cc
+  # ${PROJECT_SOURCE_DIR}/core/base/file_util_bench.cc
+  # ${PROJECT_SOURCE_DIR}/core/base/string_util_bench.cc
+
+  ${PROJECT_SOURCE_DIR}/frontend/lexer/lexer_bench.cc
+  ${PROJECT_SOURCE_DIR}/frontend/lexer/base/char_stream_bench.cc
+  ${PROJECT_SOURCE_DIR}/frontend/lexer/keyword/keyword_bench.cc
+  ${PROJECT_SOURCE_DIR}/frontend/lexer/token/token_stream_bench.cc
+  ${PROJECT_SOURCE_DIR}/frontend/lexer/token/token_bench.cc
 )
 
 add_executable(${BENCHMARK_NAME} ${SOURCES})
@@ -16,7 +22,7 @@ target_compile_options(${BENCHMARK_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
 target_compile_definitions(${BENCHMARK_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${BENCHMARK_NAME} PRIVATE core ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${BENCHMARK_NAME} PRIVATE core lexer ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${BENCHMARK_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

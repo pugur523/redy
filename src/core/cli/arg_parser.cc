@@ -23,6 +23,9 @@ enum class ArgType : uint8_t {
   kLoneDash = 3,
   kPositional = 4,
   kInvalid = 5,
+
+  kLongDashWithSingleCharacter = 6,
+  kShortDashWithMultipleLetters = 7,
 };
 
 ArgType classify_argument(const std::string& arg) {
@@ -33,10 +36,15 @@ ArgType classify_argument(const std::string& arg) {
     return ArgType::kLoneDash;
   }
   if (starts_with(arg, "--")) {
-    return arg.length() > 2 ? ArgType::kLong : ArgType::kInvalid;
+    // "--debug" 7 letters word including 2 dashes
+    // "--d" 3 letters word including 2 dashes which is invalid
+    return arg.length() > 3 ? ArgType::kLong
+                            : ArgType::kLongDashWithSingleCharacter;
   }
   if (starts_with(arg, "-")) {
-    return arg.length() > 1 ? ArgType::kShort : ArgType::kInvalid;
+    // "-a": 2 letters word including 1 dash
+    return arg.length() == 2 ? ArgType::kShort
+                             : ArgType::kShortDashWithMultipleLetters;
   }
   return ArgType::kPositional;
 }
@@ -103,6 +111,14 @@ ParseResult ArgumentParser::parse(int argc, char** argv) {
       case ArgType::kPositional: positional_args.push_back(arg); break;
       case ArgType::kInvalid:
         print_error("invalid option format: '" + arg + "'");
+        return ParseResult::kErrorInvalidFormat;
+      case ArgType::kShortDashWithMultipleLetters:
+        print_error("short dash with multiple letters argument is invalid: '" +
+                    arg + "'");
+        return ParseResult::kErrorInvalidFormat;
+      case ArgType::kLongDashWithSingleCharacter:
+        print_error("long dash with single character argument is invalid: '" +
+                    arg + "'");
         return ParseResult::kErrorInvalidFormat;
       case ArgType::kLong:
       case ArgType::kShort: {
@@ -213,14 +229,14 @@ ParseResult ArgumentParser::parse(int argc, char** argv) {
 }
 
 void ArgumentParser::print_warn(const std::string& message) const {
-  glog.warn<"{}{}{}\n">(kBold, message, kReset);
+  glog.warn<"{}\n">(message);
 }
 
 void ArgumentParser::print_error(const std::string& message) const {
   glog.error<
-      "{}{}{}\n"
-      "Use '-h' or '--help' to show the help "
-      "message\n">(kBold, message, kReset);
+      "{}\n"
+      "Use '-h' or '--help' "
+      "to show the help message\n">(message);
 }
 
 void ArgumentParser::print_help() const {

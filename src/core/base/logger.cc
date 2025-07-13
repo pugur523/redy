@@ -1,5 +1,6 @@
 #include "core/base/logger.h"
 
+#include "build/build_flag.h"
 #include "femtolog/logger.h"
 #include "femtolog/sinks/file_sink.h"
 #include "femtolog/sinks/stdout_sink.h"
@@ -25,6 +26,12 @@ void register_glog() {
   glog.register_sink<femtolog::StdoutSink<>>();
   glog.register_sink<femtolog::FileSink>();
   glog.start_worker();
+
+#if IS_DEBUG
+  glog.level("debug");
+#else
+  glog.level("release");
+#endif
 }
 
 }  // namespace core

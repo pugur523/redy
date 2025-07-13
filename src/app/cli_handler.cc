@@ -9,72 +9,73 @@
 #include "core/cli/arg_parser.h"
 #include "core/diagnostics/stack_trace.h"
 #include "core/location.h"
+#include "core/redy/build_type.h"
+#include "core/redy/runtime_options.h"
 
 namespace app {
 
 int handle_arguments(int argc, char** argv) {
   core::ArgumentParser parser(BUILD_NAME, BUILD_DESCRIPTION);
 
-  std::string input_file;
-  std::string output_file;
-  int count = 1;
-  std::vector<std::string> includes;
-  std::string mode;
-  bool verbose;
-  bool stacktrace;
+  auto options = core::RuntimeOptions::create();
 
-  parser.add_option(&input_file, "input", "input file path", true);
-  parser.add_option(&output_file, "output", "output file path", true,
-                    {"output.txt"});
-  parser.add_option(&count, "count", "number of iterations", true, {1});
-  parser.add_list(&includes, "include", "include directories list");
-  parser.add_flag(&verbose, "verbose", "verbose mode", false, {false});
-  parser.add_flag(&stacktrace, "stacktrace",
-                  "print stacktrace for some reasons", false, {false});
+  bool debug = false;
+  bool release = false;
+  bool rel_w_deb_info = false;
+  bool min_size_rel = false;
 
-  parser.add_alias("i", "input");
-  parser.add_alias("o", "output");
-  parser.add_alias("c", "count");
-  parser.add_alias("I", "include");
+  // Runtime overridable options
+  parser.add_option(&options->config_file, "config",
+                    "relative config file path to use", false,
+                    {options->config_file});
+  parser.add_alias("c", "config");
+
+  parser.add_flag(&options->verbose, "verbose",
+                  "use verbose mode for debugging or some other reasons", false,
+                  {options->verbose});
   parser.add_alias("V", "verbose");
-  parser.add_alias("s", "stacktrace");
 
-  parser.add_positional(&mode, "mode", "Processing mode", true);
+  // debug
+  parser.add_flag(&debug, "debug", "use debug config for building", false,
+                  {debug});
+  parser.add_alias("d", "debug");
 
-  if (parser.parse(argc, argv) != core::ParseResult::kSuccess) {
-    return 1;
+  // release
+  parser.add_flag(&release, "release", "use release config for building", false,
+                  {release});
+  parser.add_alias("r", "release");
+
+  // rel-w-deb-info
+  parser.add_flag(&rel_w_deb_info, "rel_w_deb_info",
+                  "use release-with-debug-info config for building", false,
+                  {rel_w_deb_info});
+  parser.add_alias("rd", "rel_w_deb_info");
+
+  // min-size-rel
+  parser.add_flag(&min_size_rel, "min_size_rel",
+                  "use minimum-size-release config for building", false,
+                  {min_size_rel});
+  parser.add_alias("mr", "min_size_rel");
+
+  auto result = parser.parse(argc, argv);
+  if (result != core::ParseResult::kSuccess) {
+    return static_cast<int>(result);
   }
 
-  if (verbose) {
-    std::string includes_str = "[";
-    for (std::size_t i = 0; i < includes.size(); i++) {
-      includes_str.append(includes[i]);
-
-      if (i < includes.size() - 1) {
-        includes_str.append(", ");
-      }
-    }
-    includes_str.append("]");
-
-    core::glog.info<R"(Parsed arguments:
-        input: {}    
-        output: {} 
-        count: {} 
-        mode: {} 
-        verbose: {} 
-        stacktrace: {}
-        includes: {}
-)">(input_file, output_file, count, mode, verbose, stacktrace, includes_str);
+  if (debug) {
+    options->build_type = core::BuildType::kDebug;
+  } else if (release) {
+    options->build_type = core::BuildType::kRelease;
+  } else if (rel_w_deb_info) {
+    options->build_type = core::BuildType::kReleaseWithDebugInfo;
+  } else if (min_size_rel) {
+    options->build_type = core::BuildType::kMinimumSizeRelease;
+  } else {
+    options->build_type = core::BuildType::kDebug;
   }
 
-  if (stacktrace) {
-    constexpr std::size_t kBufSize = 4096;
-
-    char location_buf[kBufSize];
-    FROM_HERE.to_string(location_buf, kBufSize);
-
-    std::string stacktrace = core::stack_trace_from_current_context();
-    core::glog.info<"{}\n{}">(location_buf, stacktrace);
+  if (options->verbose) {
+    core::glog.info<"Parsed arguments:\n  {}">(options->to_string(2));
   }
 
   return 0;
