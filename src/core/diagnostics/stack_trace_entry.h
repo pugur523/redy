@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_DIAGNOSTICS_STACK_TRACE_ENTRY_H_
 #define CORE_DIAGNOSTICS_STACK_TRACE_ENTRY_H_
 
@@ -13,13 +17,13 @@ static constexpr std::size_t kFunctionStrLength = 256;
 static constexpr std::size_t kFileStrLength = 512;
 struct CORE_EXPORT StackTraceEntry {
  public:
-  StackTraceEntry() noexcept {
+  StackTraceEntry() {
     address.fill('\0');
     function.fill('\0');
     file.fill('\0');
   }
 
-  void to_string(char* out_buf, size_t out_buf_size) const;
+  void to_string(char* out_buf, std::size_t out_buf_size) const;
 
   std::array<char, kAddressStrLength> address;
   std::array<char, kFunctionStrLength> function;

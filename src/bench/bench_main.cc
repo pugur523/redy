@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #include "benchmark/benchmark.h"
 #include "core/base/logger.h"
 #include "core/diagnostics/signal_handler.h"
@@ -10,6 +14,8 @@ int main(int argc, char** argv) {
   core::register_terminate_handler();
   core::register_stack_trace_handler();
   core::register_glog();
+
+  // core::glog.info<"test\n">();
 
   benchmark ::MaybeReenterWithoutASLR(argc, argv);
   char arg0_default[] = "benchmark";

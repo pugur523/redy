@@ -1,7 +1,12 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_BASE_FILE_MANAGER_H_
 #define CORE_BASE_FILE_MANAGER_H_
 
 #include <cstdint>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -12,6 +17,9 @@ namespace core {
 
 using FileId = uint32_t;
 
+inline constexpr const FileId kInvalidFileId =
+    std::numeric_limits<FileId>::max();
+
 class CORE_EXPORT FileManager {
  public:
   FileManager() = default;
@@ -21,8 +29,8 @@ class CORE_EXPORT FileManager {
   FileManager(const FileManager&) = delete;
   FileManager& operator=(const FileManager&) = delete;
 
-  FileManager(FileManager&&) noexcept = default;
-  FileManager& operator=(FileManager&&) noexcept = default;
+  FileManager(FileManager&&) = default;
+  FileManager& operator=(FileManager&&) = default;
 
   [[nodiscard]] FileId add_file(std::string&& source, std::string&& file_name);
   [[nodiscard]] FileId add_file(std::string&& file_name);

@@ -27,8 +27,8 @@ class LEXER_EXPORT CharStream {
   CharStream(const CharStream&) = delete;
   CharStream& operator=(const CharStream&) = delete;
 
-  CharStream(CharStream&&) noexcept = default;
-  CharStream& operator=(CharStream&&) noexcept = default;
+  CharStream(CharStream&&) = default;
+  CharStream& operator=(CharStream&&) = default;
 
   char peek() const;
   char peek_ahead(std::size_t n) const;

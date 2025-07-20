@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 set(TEST_NAME ${MAIN_EXECUTABLE_NAME_FROM_CONFIG}_test)
 
 message(STATUS "Configuring ${TEST_NAME}...")
@@ -11,11 +15,18 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/core/base/vec_test.cc
   ${PROJECT_SOURCE_DIR}/core/diagnostics/system_info_test.cc
 
+  ${PROJECT_SOURCE_DIR}/frontend/frontend_test.cc
+
   ${PROJECT_SOURCE_DIR}/frontend/lexer/lexer_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/lexer/base/char_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/lexer/keyword/keyword_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/lexer/token/token_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/lexer/token/token_test.cc
+
+  ${PROJECT_SOURCE_DIR}/frontend/ast/base/node_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/ast/parser/parser_test.cc
+
+  ${PROJECT_SOURCE_DIR}/frontend/diagnostic/base/diagnostic_engine_test.cc
 )
 
 add_executable(${TEST_NAME} ${SOURCES})
@@ -25,7 +36,7 @@ target_compile_options(${TEST_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
 target_compile_definitions(${TEST_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${TEST_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${TEST_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${TEST_NAME} PRIVATE core lexer ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${TEST_NAME} PRIVATE core diagnostic lexer ast ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${TEST_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

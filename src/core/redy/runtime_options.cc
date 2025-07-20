@@ -4,6 +4,8 @@
 
 #include "core/redy/runtime_options.h"
 
+#include <string>
+
 #include "core/redy/build_type.h"
 
 namespace core {

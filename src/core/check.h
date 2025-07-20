@@ -1,7 +1,12 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_CHECK_H_
 #define CORE_CHECK_H_
 
 #include <iostream>
+#include <sstream>
 
 #include "build/build_flag.h"
 #include "core/base/core_export.h"
@@ -64,7 +69,8 @@ class CORE_EXPORT CheckFailureStream {
   CheckFailureStream(const char* type,
                      const char* file,
                      int line,
-                     const char* condition);
+                     const char* condition,
+                     const char* message = "");
   ~CheckFailureStream();
   std::ostream& stream();
 
@@ -73,6 +79,7 @@ class CORE_EXPORT CheckFailureStream {
   const char* file_;
   int line_;
   const char* condition_;
+  const char* message_;
   bool has_output_ = false;
 };
 
@@ -83,15 +90,15 @@ std::ostream& log_check_failure(const char* type,
                                 const char* expression,
                                 const L& lhs,
                                 const R& rhs) {
-  auto& os = CheckFailureStream(type, file, line, expression).stream();
-
-  if constexpr (is_ostreamable_v<R> && is_ostreamable_v<L>) {
-    os << "  expected: " << rhs << "\n"
-       << "    actual: " << lhs << "\n";
-  } else {
-    os << "  [value output not available for operands]\n";
-  }
-
+  auto& os = CheckFailureStream(
+                 type, file, line, expression,
+                 (is_ostreamable_v<L> && is_ostreamable_v<R>)
+                     ? (std::ostringstream() << "   lhs: " << lhs << "\n"
+                                             << "   rhs: " << rhs)
+                           .str()
+                           .c_str()
+                     : "  [value output not available for operands]")
+                 .stream();
   return os;
 }
 

@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #include "core/check.h"
 
 #include <exception>
@@ -10,12 +14,18 @@ namespace core {
 CheckFailureStream::CheckFailureStream(const char* type,
                                        const char* file,
                                        int line,
-                                       const char* condition)
-    : type_(type), file_(file), line_(line), condition_(condition) {}
+                                       const char* condition,
+                                       const char* message)
+    : type_(type),
+      file_(file),
+      line_(line),
+      condition_(condition),
+      message_(message) {}
 
 std::ostream& CheckFailureStream::stream() {
   has_output_ = true;
-  glog.fatal<"{} failed: \"{}\" at {}:{}\n">(type_, condition_, file_, line_);
+  glog.fatal<"{} failed: \"{}\" at {}:{}\n{}\n">(type_, condition_, file_,
+                                                 line_, message_);
   return std::cerr;
 }
 

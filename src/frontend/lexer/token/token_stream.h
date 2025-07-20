@@ -5,29 +5,35 @@
 #ifndef FRONTEND_LEXER_TOKEN_TOKEN_STREAM_H_
 #define FRONTEND_LEXER_TOKEN_TOKEN_STREAM_H_
 
+#include <string>
 #include <vector>
 
 #include "core/check.h"
 #include "frontend/lexer/base/lexer_export.h"
 #include "frontend/lexer/token/token.h"
+#include "frontend/lexer/token/token_kind.h"
 
 namespace lexer {
 
 class LEXER_EXPORT TokenStream {
  public:
-  explicit TokenStream(std::vector<Token>&& tokens);
+  explicit TokenStream(std::vector<Token>&& tokens,
+                       const core::FileManager* file_manager);
 
   ~TokenStream() = default;
 
   TokenStream(const TokenStream&) = delete;
   TokenStream& operator=(const TokenStream&) = delete;
 
-  TokenStream(TokenStream&&) noexcept = default;
-  TokenStream& operator=(TokenStream&&) noexcept = default;
+  TokenStream(TokenStream&&) = default;
+  TokenStream& operator=(TokenStream&&) = default;
 
   inline const Token& peek(std::size_t offset = 0) const;
   inline const Token& advance();
+  inline const Token& previous() const;
   inline bool match(TokenKind expected_kind);
+
+  inline const core::FileManager* file_manager() const { return file_manager_; }
 
   inline constexpr void rewind(std::size_t pos) {
     DCHECK_LE(pos, tokens_.size()) << "rewind range is invalid";
@@ -38,6 +44,12 @@ class LEXER_EXPORT TokenStream {
     return current_token_->kind() == expected_kind;
   }
 
+  inline constexpr bool check(lexer::TokenKind expected_kind,
+                              std::size_t offset) const {
+    DCHECK_LT(pos_ + offset, size());
+    return peek(offset).kind() == expected_kind;
+  }
+
   inline constexpr bool eof() const {
     return current_token_->kind() == TokenKind::kEof;
   }
@@ -46,11 +58,14 @@ class LEXER_EXPORT TokenStream {
 
   inline constexpr std::size_t size() const { return tokens_.size(); }
 
+  std::string dump() const;
+
  private:
   std::vector<Token> tokens_;
-  std::size_t pos_ = 0;
+  const core::FileManager* file_manager_;
   const Token* current_token_ = nullptr;
   const Token* end_token_ = nullptr;
+  std::size_t pos_ = 0;
 };
 
 inline const Token& TokenStream::peek(std::size_t offset) const {
@@ -66,7 +81,13 @@ inline const Token& TokenStream::advance() {
   return *current_token_;
 }
 
+inline const Token& TokenStream::previous() const {
+  DCHECK_GT(pos_, 0) << "Previous token not found";
+  return tokens_[pos_ - 1];
+}
+
 inline bool TokenStream::match(TokenKind expected_kind) {
+  DCHECK_NE(current_token_, end_token_) << "Reached eof token unexpectedly";
   if (peek().kind() == expected_kind) [[likely]] {
     advance();
     return true;

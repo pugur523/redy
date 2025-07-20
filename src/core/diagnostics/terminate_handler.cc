@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #include "core/diagnostics/terminate_handler.h"
 
 #include <iostream>
@@ -9,7 +13,7 @@ namespace core {
 
 void terminate_handler() {
   core::glog.fatal<
-      "\nProgram terminated unexpectedly\n"
+      "Program terminated unexpectedly\n"
       "Stack trace (most recent call last):\n{}\n">(
       stack_trace_from_current_context());
   std::exit(EXIT_FAILURE);

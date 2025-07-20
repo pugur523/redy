@@ -66,24 +66,23 @@ constexpr std::array<KeywordEntry, 128> create_hash_table() {
       {"deprecated", TokenKind::kDeprecated},
       {"true", TokenKind::kTrue},
       {"false", TokenKind::kFalse},
+
+      // types
       {"i8", TokenKind::kType},
       {"i16", TokenKind::kType},
       {"i32", TokenKind::kType},
       {"i64", TokenKind::kType},
       {"i128", TokenKind::kType},
-      {"isize", TokenKind::kType},
       {"u8", TokenKind::kType},
       {"u16", TokenKind::kType},
       {"u32", TokenKind::kType},
       {"u64", TokenKind::kType},
       {"u128", TokenKind::kType},
-      {"usize", TokenKind::kType},
       {"f32", TokenKind::kType},
       {"f64", TokenKind::kType},
       {"void", TokenKind::kType},
       {"bool", TokenKind::kType},
       {"char", TokenKind::kType},
-      {"string", TokenKind::kType},
   };
 
   for (const auto& kw : keywords) {
@@ -96,13 +95,12 @@ constexpr std::array<KeywordEntry, 128> create_hash_table() {
 
 constexpr auto kPerfectHashTable = create_hash_table();
 
-inline bool optimized_equals(std::string_view word,
-                             const KeywordEntry& entry) noexcept {
+inline bool optimized_equals(std::string_view word, const KeywordEntry& entry) {
   return word.length() == entry.length &&
          std::memcmp(word.data(), entry.keyword, entry.length) == 0;
 }
 
-TokenKind optimized_lookup(std::string_view word) noexcept {
+TokenKind optimized_lookup(std::string_view word) {
   const std::size_t len = word.length();
   const char first = word[0];
 

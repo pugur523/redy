@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_CLI_ARGUMENT_TYPES_FLAG_H_
 #define CORE_CLI_ARGUMENT_TYPES_FLAG_H_
 
@@ -22,8 +26,7 @@ class Flag : public OptionBase {
       : storage_(storage),
         name_(name),
         description_(description),
-        required_(required),
-        has_default_(false) {
+        required_(required) {
     if (default_value.has_value()) {
       default_value_ = *default_value;
       has_default_ = true;
@@ -60,7 +63,7 @@ class Flag : public OptionBase {
   std::string name_;
   std::string description_;
   bool required_ : 1;
-  bool has_default_ : 1;
+  bool has_default_ : 1 = false;
   T default_value_;
 };
 

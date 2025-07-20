@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 function(setup_module module_name objects_name)
   set(multi_value_args INCLUDE_DIRS LINK_DIRS COMPILE_OPTIONS LINK_OPTIONS LINK_LIBS COMPILE_DEFINITIONS)
   cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})

@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_BASE_STRING_UTIL_H_
 #define CORE_BASE_STRING_UTIL_H_
 
@@ -117,17 +121,17 @@ struct is_ostreamable {
 template <typename T>
 inline constexpr bool is_ostreamable_v = is_ostreamable<T>::value;
 
-constexpr const char* kReset = "\033[0m";
-constexpr const char* kBold = "\033[1m";
-constexpr const char* kRed = "\033[31m";
-constexpr const char* kYellow = "\033[33m";
-constexpr const char* kGreen = "\033[32m";
-constexpr const char* kCyan = "\033[36m";
-constexpr const char* kMagenta = "\033[35m";
-constexpr const char* kGray = "\033[90m";
-constexpr const char* kBright_red = "\033[91m";
-constexpr const char* kBright_green = "\033[92m";
-constexpr const char* kBright_cyan = "\033[96m";
+inline constexpr const char* kReset = "\033[0m";
+inline constexpr const char* kBold = "\033[1m";
+inline constexpr const char* kRed = "\033[31m";
+inline constexpr const char* kYellow = "\033[33m";
+inline constexpr const char* kGreen = "\033[32m";
+inline constexpr const char* kCyan = "\033[36m";
+inline constexpr const char* kMagenta = "\033[35m";
+inline constexpr const char* kGray = "\033[90m";
+inline constexpr const char* kBrightRed = "\033[91m";
+inline constexpr const char* kBrightGreen = "\033[92m";
+inline constexpr const char* kBrightCyan = "\033[96m";
 
 }  // namespace core
 

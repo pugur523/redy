@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 set(BUILD_NAME ${MAIN_EXECUTABLE_NAME_FROM_CONFIG})
 set(BUILD_VERSION ${PROJECT_VERSION})
 set(BUILD_NUMBER 0)

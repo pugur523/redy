@@ -13,7 +13,7 @@ void token_construction(benchmark::State& state) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file("42");
   for (auto _ : state) {
-    Token tok(TokenKind::kLiteralNumber, &manager, id, 1, 1, 2);
+    Token tok(TokenKind::kLiteralNumeric, id, 1, 1, 2);
     benchmark::DoNotOptimize(tok);
   }
 }

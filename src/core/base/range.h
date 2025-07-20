@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_BASE_RANGE_H_
 #define CORE_BASE_RANGE_H_
 
@@ -73,8 +77,8 @@ class Range {
   inline constexpr Range(const Range&) = delete;
   inline constexpr Range& operator=(const Range&) = delete;
 
-  inline constexpr Range(Range&&) noexcept = default;
-  inline constexpr Range& operator=(Range&&) noexcept = default;
+  inline constexpr Range(Range&&) = default;
+  inline constexpr Range& operator=(Range&&) = default;
 
   inline constexpr const T& min(std::size_t index) const {
     DCHECK_LT(index, kDimNumber);

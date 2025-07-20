@@ -10,9 +10,11 @@
 namespace lexer {
 
 enum class TokenKind : uint8_t {
+  kUnknown = 0,
+
   // Keywords, see also frontend/lexer/keyword/keyword.cc
-  kIdentifier = 0,
-  kType = 1,
+  kIdentifier = 1,
+  kType = 2,
   kMut = 3,
   kFn = 4,
   kIf = 5,
@@ -34,11 +36,11 @@ enum class TokenKind : uint8_t {
   kDeprecated = 21,
 
   // Literals
-  kLiteralNumber = 22,
-  kLiteralString = 23,  // "string"
-  kLiteralChar = 24,    // 'c'
-  kTrue = 25,           // boolean true
-  kFalse = 26,          // boolean false
+  kLiteralNumeric = 22,  // 42
+  kLiteralString = 23,   // "string"
+  kLiteralChar = 24,     // 'c'
+  kTrue = 25,            // boolean true
+  kFalse = 26,           // boolean false
 
   // Operators
   kPlus = 27,        // +
@@ -49,8 +51,8 @@ enum class TokenKind : uint8_t {
   kStarStar = 32,    // ** (power)
   kPlusPlus = 33,    // ++ (increment)
   kMinusMinus = 34,  // -- (decrement)
-  kAssign = 35,      // =
-  kLet = 36,         // :=
+  kEqual = 35,       // =
+  kAssign = 36,      // :=
   kEqEq = 37,        // ==
   kNeq = 38,         // !=
   kLt = 39,          // <
@@ -101,11 +103,11 @@ enum class TokenKind : uint8_t {
   kQuestion = 78,    // ?
 
   kEof = 79,
-  kUnknown = 80,
 };
 
 inline constexpr const char* to_string(TokenKind kind) {
   switch (kind) {
+    case TokenKind::kUnknown: return "unknown";
     case TokenKind::kIdentifier: return "identifier";
     case TokenKind::kType: return "type";
     case TokenKind::kMut: return "mut";
@@ -125,10 +127,10 @@ inline constexpr const char* to_string(TokenKind kind) {
     case TokenKind::kExtern: return "extern";
     case TokenKind::kUnsafe: return "unsafe";
     case TokenKind::kFast: return "fast";
-    case TokenKind::kDefault: return "defualt";
+    case TokenKind::kDefault: return "default";
     case TokenKind::kDeprecated: return "deprecated";
 
-    case TokenKind::kLiteralNumber: return "literal number";
+    case TokenKind::kLiteralNumeric: return "literal numeric";
     case TokenKind::kLiteralString: return "literal string";
     case TokenKind::kLiteralChar: return "literal char";
     case TokenKind::kTrue: return "true";
@@ -142,8 +144,8 @@ inline constexpr const char* to_string(TokenKind kind) {
     case TokenKind::kStarStar: return "**";
     case TokenKind::kPlusPlus: return "++";
     case TokenKind::kMinusMinus: return "--";
-    case TokenKind::kAssign: return "=";
-    case TokenKind::kLet: return ":=";
+    case TokenKind::kEqual: return "=";
+    case TokenKind::kAssign: return ":=";
     case TokenKind::kEqEq: return "==";
     case TokenKind::kNeq: return "!=";
     case TokenKind::kLt: return "<";
@@ -191,7 +193,6 @@ inline constexpr const char* to_string(TokenKind kind) {
     case TokenKind::kQuestion: return "?";
 
     case TokenKind::kEof: return "eof";
-    case TokenKind::kUnknown: return "unknown";
   }
 }
 

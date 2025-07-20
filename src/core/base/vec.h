@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_BASE_VEC_H_
 #define CORE_BASE_VEC_H_
 
@@ -30,8 +34,8 @@ class Vec {
   inline constexpr Vec(const Vec&) = default;
   inline constexpr Vec& operator=(const Vec&) = default;
 
-  inline constexpr Vec(Vec&&) noexcept = default;
-  inline constexpr Vec& operator=(Vec&&) noexcept = default;
+  inline constexpr Vec(Vec&&) = default;
+  inline constexpr Vec& operator=(Vec&&) = default;
 
   static inline constexpr Vec from_array(const std::array<T, kDimNumber>& arr) {
     Vec v;

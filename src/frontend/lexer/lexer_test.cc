@@ -16,9 +16,10 @@ namespace {
 void verify_hello_world() {
   std::string source = R"(
         fn main() -> void {
-            x: int := 42;
-            print("hello world");
-            print("answer to the ultimate question of life, the universe, and everything is {} ofc.", x);
+            world_str := "world";
+            x: i32 = 42;
+            print("hello {}", world_str);
+            print("answer to the ultimate question of life, the universe, and everything is {}.", x);
             return;
         }
     )";
@@ -28,7 +29,6 @@ void verify_hello_world() {
 
   while (true) {
     Token token = lexer.next_token();
-    // std::cout << token.dump_detailed() << "\n";
 
     EXPECT_FALSE(std::string(to_string(token.kind())).empty());
 
@@ -38,10 +38,10 @@ void verify_hello_world() {
     EXPECT_NE(token.kind(), TokenKind::kUnknown);
 
     if (token.kind() == TokenKind::kEof) {
-      EXPECT_TRUE(token.lexeme().empty());
+      EXPECT_TRUE(token.lexeme(&manager).empty());
       break;
     } else {
-      EXPECT_FALSE(token.lexeme().empty());
+      EXPECT_FALSE(token.lexeme(&manager).empty());
     }
   }
 }
@@ -59,8 +59,8 @@ TEST(LexerTest, LexSimpleCode) {
   Token t4 = lexer.next_token();
   Token t5 = lexer.next_token();
   EXPECT_EQ(t1.kind(), TokenKind::kIdentifier);
-  EXPECT_EQ(t2.kind(), TokenKind::kLet);
-  EXPECT_EQ(t3.kind(), TokenKind::kLiteralNumber);
+  EXPECT_EQ(t2.kind(), TokenKind::kAssign);
+  EXPECT_EQ(t3.kind(), TokenKind::kLiteralNumeric);
   EXPECT_EQ(t4.kind(), TokenKind::kSemicolon);
   EXPECT_EQ(t5.kind(), TokenKind::kEof);
 }

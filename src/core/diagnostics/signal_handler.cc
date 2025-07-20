@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #include "core/diagnostics/signal_handler.h"
 
 #include <csignal>
@@ -54,7 +58,7 @@ void signal_handler(int signal_number) {
   TimeUtil time_util;
   std::time_t now = time_util.unix_time();
 
-  static thread_local uint32_t cached_tid = []() noexcept -> uint32_t {
+  static thread_local uint32_t cached_tid = []() -> uint32_t {
     const auto tid = std::this_thread::get_id();
     const auto hash_val = std::hash<std::thread::id>{}(tid);
 

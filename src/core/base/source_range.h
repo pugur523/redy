@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_BASE_SOURCE_RANGE_H_
 #define CORE_BASE_SOURCE_RANGE_H_
 
@@ -9,7 +13,7 @@ namespace core {
 
 class CORE_EXPORT SourceRange {
  public:
-  SourceRange(SourceLocation start, SourceLocation end);
+  SourceRange(const SourceLocation& start, const SourceLocation& end);
 
   SourceRange(std::size_t line,
               std::size_t column,
@@ -21,11 +25,11 @@ class CORE_EXPORT SourceRange {
   SourceRange(const SourceRange&) = delete;
   SourceRange& operator=(const SourceRange&) = delete;
 
-  SourceRange(SourceRange&&) noexcept = default;
-  SourceRange& operator=(SourceRange&&) noexcept = default;
+  SourceRange(SourceRange&&) = default;
+  SourceRange& operator=(SourceRange&&) = default;
 
-  inline constexpr const SourceLocation& start() { return start_; }
-  inline constexpr const SourceLocation& end() { return end_; }
+  inline constexpr const SourceLocation& start() const { return start_; }
+  inline constexpr const SourceLocation& end() const { return end_; }
   inline constexpr FileId file_id() { return start_.file_id(); }
 
  private:

@@ -22,10 +22,10 @@ void token_stream_advance(benchmark::State& state) {
 
   tokens.reserve(1001);
   for (int i = 0; i < 1000; ++i) {
-    tokens.emplace_back(TokenKind::kLiteralNumber, &manager, file_id, 1, i, 1);
+    tokens.emplace_back(TokenKind::kLiteralNumeric, file_id, 1, i, 1);
   }
-  tokens.emplace_back(TokenKind::kEof, &manager, file_id, 1, 1000, 0);
-  TokenStream stream(std::move(tokens));
+  tokens.emplace_back(TokenKind::kEof, file_id, 1, 1000, 0);
+  TokenStream stream(std::move(tokens), &manager);
 
   for (auto _ : state) {
     while (!stream.eof()) {
@@ -43,10 +43,10 @@ static void token_stream_peak(benchmark::State& state) {
   std::vector<Token> tokens;
   tokens.reserve(1001);
   for (int i = 0; i < 1000; ++i) {
-    tokens.emplace_back(TokenKind::kLiteralNumber, &manager, file_id, 1, i, 1);
+    tokens.emplace_back(TokenKind::kLiteralNumeric, file_id, 1, i, 1);
   }
-  tokens.emplace_back(TokenKind::kEof, &manager, file_id, 1, 1000, 0);
-  TokenStream stream(std::move(tokens));
+  tokens.emplace_back(TokenKind::kEof, file_id, 1, 1000, 0);
+  TokenStream stream(std::move(tokens), &manager);
 
   for (auto _ : state) {
     for (std::size_t i = 0; i < tokens.size(); ++i) {

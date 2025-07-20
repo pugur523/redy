@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_BASE_FILE_UTIL_H_
 #define CORE_BASE_FILE_UTIL_H_
 
@@ -43,13 +47,13 @@ CORE_EXPORT int remove_file(const char* path);
 CORE_EXPORT int remove_directory(const char* path);
 CORE_EXPORT int rename_file(const char* old_path, const char* new_path);
 CORE_EXPORT int write_file(const char* path, const std::string& content);
-
 CORE_EXPORT int write_binary_to_file(const void* binary_data,
                                      std::size_t binary_size,
                                      const std::string& output_path);
 
 [[nodiscard]] CORE_EXPORT std::string file_extension(const std::string& path);
-
+[[nodiscard]] CORE_EXPORT std::string file_name_without_extension(
+    const std::string& path);
 [[nodiscard]] CORE_EXPORT std::string sanitize_component(const char* part,
                                                          bool is_first);
 
@@ -152,8 +156,8 @@ class CORE_EXPORT File {
   File(const File&) = delete;
   File& operator=(const File&) = delete;
 
-  File(File&&) noexcept = default;
-  File& operator=(File&&) noexcept = default;
+  File(File&&) = default;
+  File& operator=(File&&) = default;
 
   inline constexpr const std::string& file_name() const { return file_name_; }
   inline constexpr const std::string& source() const { return source_; }

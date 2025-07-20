@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 set(CMAKE_C_STANDARD ${PROJECT_C_VERSION_FROM_CONFIG})
 set(CMAKE_CXX_STANDARD ${PROJECT_CXX_VERSION_FROM_CONFIG})
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)

@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_CLI_ARG_PARSER_H_
 #define CORE_CLI_ARG_PARSER_H_
 
@@ -44,8 +48,8 @@ class CORE_EXPORT ArgumentParser {
 
   ArgumentParser(const ArgumentParser&) = delete;
   ArgumentParser& operator=(const ArgumentParser&) = delete;
-  ArgumentParser(ArgumentParser&&) noexcept = default;
-  ArgumentParser& operator=(ArgumentParser&&) noexcept = default;
+  ArgumentParser(ArgumentParser&&) = default;
+  ArgumentParser& operator=(ArgumentParser&&) = default;
 
   // Flag / Option / List / Positional adders
 

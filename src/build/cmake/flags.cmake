@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 macro(setup_windows_flags)
   # Enable color
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
@@ -179,13 +183,13 @@ macro(setup_common_flags)
   endif()
 
   if(ENABLE_AVX2)
-    include(CheckCXXSourceRuns)
-
     if(CMAKE_CROSSCOMPILING)
       message(STATUS "Cross-compiling detected. Skipping runtime AVX2 check.")
 
-      set(HAS_AVX2 TRUE)
+      set(HAS_AVX2 TRUE CACHE BOOL "" FORCE)
     else()
+      include(CheckCXXSourceRuns)
+
       set(AVX2_TEST_CODE "
       #include <immintrin.h>
       int main() {

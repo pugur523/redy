@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 set(MAIN_EXECUTABLE_NAME ${MAIN_EXECUTABLE_NAME_FROM_CONFIG})
 
 message(STATUS "Configuring ${MAIN_EXECUTABLE_NAME}...")
@@ -41,7 +45,7 @@ target_compile_options(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS
 target_compile_definitions(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE core lexer ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE core diagnostic lexer ast ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${MAIN_EXECUTABLE_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

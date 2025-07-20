@@ -14,6 +14,9 @@
 
 namespace lexer {
 
+using FileManager = core::FileManager;
+using FileId = core::FileId;
+
 Lexer::Lexer(FileManager* file_manager, FileId file_id)
     : char_stream_(file_manager, file_id) {}
 
@@ -26,8 +29,7 @@ inline bool is_identifier_char(char c) {
 Token Lexer::next_token() {
   skip_whitespace_and_comments();
   if (char_stream_.eof()) {
-    return Token(TokenKind::kEof, char_stream_.file_manager(),
-                 char_stream_.file_id(), char_stream_.line(),
+    return Token(TokenKind::kEof, char_stream_.file_id(), char_stream_.line(),
                  char_stream_.column(), 0);
   }
 
@@ -43,7 +45,7 @@ Token Lexer::next_token() {
 
   // Number Literals
   if (std::isdigit(c)) {
-    return literal_number();
+    return literal_numeric();
   }
 
   // String Literals
@@ -56,7 +58,8 @@ Token Lexer::next_token() {
     return literal_char();
   }
 
-  char_stream_.advance();  // Consume the current character
+  // Consume the current character
+  char_stream_.advance();
 
   switch (c) {
     // Single character tokens
@@ -77,132 +80,137 @@ Token Lexer::next_token() {
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kPercentEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kPercent, start, line, col);
       }
-      return make_token(TokenKind::kPercent, start, line, col);
     case '&':  // & or && or &=
       if (char_stream_.peek() == '&') {
         char_stream_.advance();
         return make_token(TokenKind::kAndAnd, start, line, col);
-      }
-      if (char_stream_.peek() == '=') {
+      } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kAmpEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kAmp, start, line, col);
       }
-      return make_token(TokenKind::kAmp, start, line, col);
     case '|':  // | or || or |=
       if (char_stream_.peek() == '|') {
         char_stream_.advance();
         return make_token(TokenKind::kPipePipe, start, line, col);
-      }
-      if (char_stream_.peek() == '=') {
+      } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kPipeEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kPipe, start, line, col);
       }
-      return make_token(TokenKind::kPipe, start, line, col);
     case '^':  // ^ or ^=
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kCaretEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kCaret, start, line, col);
       }
-      return make_token(TokenKind::kCaret, start, line, col);
 
     // Multi-character token handling (longest match first)
     case '+':  // +, +=, ++
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kPlusEq, start, line, col);
-      }
-      if (char_stream_.peek() == '+') {
+      } else if (char_stream_.peek() == '+') {
         char_stream_.advance();
         return make_token(TokenKind::kPlusPlus, start, line, col);
+      } else {
+        return make_token(TokenKind::kPlus, start, line, col);
       }
-      return make_token(TokenKind::kPlus, start, line, col);
     case '-':  // -, ->, --, -=
       if (char_stream_.peek() == '>') {
         char_stream_.advance();
         return make_token(TokenKind::kArrow, start, line, col);
-      }
-      if (char_stream_.peek() == '-') {
+      } else if (char_stream_.peek() == '-') {
         char_stream_.advance();
         return make_token(TokenKind::kMinusMinus, start, line, col);
-      }
-      if (char_stream_.peek() == '=') {
+      } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kMinusEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kMinus, start, line, col);
       }
-      return make_token(TokenKind::kMinus, start, line, col);
     case '*':  // *, ** or *=
       if (char_stream_.peek() == '*') {
         char_stream_.advance();
         return make_token(TokenKind::kStarStar, start, line, col);
-      }
-      if (char_stream_.peek() == '=') {
+      } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kStarEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kStar, start, line, col);
       }
-      return make_token(TokenKind::kStar, start, line, col);
     case '/':  // /, /= (and comments handled in skip_whitespace_and_comments)
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kSlashEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kSlash, start, line, col);
       }
-      return make_token(TokenKind::kSlash, start, line, col);
     case '=':  // =, ==
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kEqEq, start, line, col);
+      } else {
+        return make_token(TokenKind::kEqual, start, line, col);
       }
-      return make_token(TokenKind::kAssign, start, line, col);
     case '!':  // !, !=
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kNeq, start, line, col);
+      } else {
+        return make_token(TokenKind::kBang, start, line, col);
       }
-      return make_token(TokenKind::kBang, start, line, col);
     case '<':  // <, <=, <<, <<=
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kLe, start, line, col);
-      }
-      if (char_stream_.peek() == '<') {
+      } else if (char_stream_.peek() == '<') {
         char_stream_.advance();
         if (char_stream_.peek() == '=') {  // <<=
           char_stream_.advance();
           return make_token(TokenKind::kLtLtEq, start, line, col);
         }
         return make_token(TokenKind::kLtLt, start, line, col);
+      } else {
+        return make_token(TokenKind::kLt, start, line, col);
       }
-      return make_token(TokenKind::kLt, start, line, col);
     case '>':  // >, >=, >>, >>=
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kGe, start, line, col);
-      }
-      if (char_stream_.peek() == '>') {
+      } else if (char_stream_.peek() == '>') {
         char_stream_.advance();
         if (char_stream_.peek() == '=') {  // >>=
           char_stream_.advance();
           return make_token(TokenKind::kGtGtEq, start, line, col);
         }
         return make_token(TokenKind::kGtGt, start, line, col);
+      } else {
+        return make_token(TokenKind::kGt, start, line, col);
       }
-      return make_token(TokenKind::kGt, start, line, col);
     case ':':  // :, ::, :=
       if (char_stream_.peek() == ':') {
         char_stream_.advance();
         return make_token(TokenKind::kColonColon, start, line, col);
-      }
-      if (char_stream_.peek() == '=') {
+      } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
-        return make_token(TokenKind::kLet, start, line, col);
+        return make_token(TokenKind::kAssign, start, line, col);
+      } else {
+        return make_token(TokenKind::kColon, start, line, col);
       }
-      return make_token(TokenKind::kColon, start, line, col);
     case '.':  // ., ..
       if (char_stream_.peek() == '.') {
         char_stream_.advance();
         return make_token(TokenKind::kDotDot, start, line, col);
+      } else {
+        return make_token(TokenKind::kDot, start, line, col);
       }
-      return make_token(TokenKind::kDot, start, line, col);
 
     default: return make_token(TokenKind::kUnknown, start, line, col);
   }
@@ -228,8 +236,8 @@ void Lexer::skip_whitespace_and_comments() {
 
     if (std::isspace(c)) {
       char_stream_.advance();
-    } else if (c == '/' &&
-               char_stream_.peek_ahead(1) == '/') {  // Line comments //
+    } else if (c == '/' && char_stream_.peek_ahead(1) == '/') {
+      // Line comments //
       while (!char_stream_.eof() && char_stream_.peek() != '\n') {
         char_stream_.advance();
       }
@@ -237,10 +245,10 @@ void Lexer::skip_whitespace_and_comments() {
       if (!char_stream_.eof() && char_stream_.peek() == '\n') {
         char_stream_.advance();
       }
-    } else if (c == '/' &&
-               char_stream_.peek_ahead(1) == '*') {  // Block comments /* ... */
-      char_stream_.advance();                        // Consume '/'
-      char_stream_.advance();                        // Consume '*'
+    } else if (c == '/' && char_stream_.peek_ahead(1) == '*') {
+      // Block comments /* ... */
+      char_stream_.advance();  // Consume '/'
+      char_stream_.advance();  // Consume '*'
       while (!char_stream_.eof()) {
         if (char_stream_.peek() == '*' && char_stream_.peek_ahead(1) == '/') {
           char_stream_.advance();  // Consume '*'
@@ -250,7 +258,8 @@ void Lexer::skip_whitespace_and_comments() {
         char_stream_.advance();
       }
     } else {
-      break;  // Not whitespace or a comment, stop skipping
+      // Not whitespace or a comment, stop skipping
+      break;
     }
   }
 }
@@ -270,30 +279,71 @@ Token Lexer::identifier_or_keyword() {
   return make_token(kind, start, line, col);
 }
 
-Token Lexer::literal_number() {
+Token Lexer::literal_numeric() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
 
-  // Consume digits for integer part
+  // --- Handle base-prefixed literals ---
+  if (char_stream_.peek() == '0') {
+    // consume '0'
+    char_stream_.advance();
+    if (char_stream_.peek() == 'x' || char_stream_.peek() == 'X') {
+      char_stream_.advance();
+      while (std::isxdigit(char_stream_.peek())) {
+        char_stream_.advance();
+      }
+      return make_token(TokenKind::kLiteralNumeric, start, line, col);
+    } else if (char_stream_.peek() == 'b' || char_stream_.peek() == 'B') {
+      char_stream_.advance();
+      while (char_stream_.peek() == '0' || char_stream_.peek() == '1') {
+        char_stream_.advance();
+      }
+      return make_token(TokenKind::kLiteralNumeric, start, line, col);
+    } else if (char_stream_.peek() == 'o' || char_stream_.peek() == 'O') {
+      char_stream_.advance();
+      while (char_stream_.peek() >= '0' && char_stream_.peek() <= '7') {
+        char_stream_.advance();
+      }
+      return make_token(TokenKind::kLiteralNumeric, start, line, col);
+    } else {
+      // Just a plain '0'
+    }
+  }
+
+  // --- Handle decimal/floating-point ---
   while (std::isdigit(char_stream_.peek())) {
     char_stream_.advance();
   }
 
-  // Handle floating-point numbers (e.g., 123.45)
-  // Assumes only one dot for now. More complex rules (e.g., 1e-5) would need
-  // more logic.
   if (char_stream_.peek() == '.' && std::isdigit(char_stream_.peek_ahead(1))) {
-    char_stream_.advance();  // Consume '.'
+    char_stream_.advance();  // consume '.'
     while (std::isdigit(char_stream_.peek())) {
-      char_stream_.advance();  // Consume digits after '.'
+      char_stream_.advance();
     }
   }
-  // TODO: Handle suffixes like f, d, L for floats/longs (e.g., 123.45f, 100L)
-  // TODO: Handle scientific notation (e.g., 1e-5, 1.23E+10)
-  // TODO: Handle hexadecimal (0x...), octal (0...), binary (0b...) literals
 
-  return make_token(TokenKind::kLiteralNumber, start, line, col);
+  // Scientific notation
+  if ((char_stream_.peek() == 'e' || char_stream_.peek() == 'E')) {
+    char_stream_.advance();
+    if (char_stream_.peek() == '+' || char_stream_.peek() == '-') {
+      char_stream_.advance();
+    }
+    while (std::isdigit(char_stream_.peek())) {
+      char_stream_.advance();
+    }
+  }
+
+  // Optional suffix
+  if (std::isalpha(char_stream_.peek())) {
+    char suffix = char_stream_.peek();
+    if (suffix == 'f' || suffix == 'd' || suffix == 'L') {
+      // Optionally handle suffix type in future
+      char_stream_.advance();
+    }
+  }
+
+  return make_token(TokenKind::kLiteralNumeric, start, line, col);
 }
 
 Token Lexer::literal_string() {
@@ -308,9 +358,11 @@ Token Lexer::literal_string() {
     // Handle escape sequences like \" or \\ (basic example, could be more
     // robust)
     if (char_stream_.peek() == '\\') {
-      char_stream_.advance();  // Consume '\'
+      // Consume '\'
+      char_stream_.advance();
       if (!char_stream_.eof()) {
-        char_stream_.advance();  // Consume escaped character
+        // Consume escaped character
+        char_stream_.advance();
       }
     } else {
       char_stream_.advance();
@@ -322,7 +374,8 @@ Token Lexer::literal_string() {
     return make_token(TokenKind::kUnknown, start, line, col);
   }
 
-  char_stream_.advance();  // Consume the closing '"'
+  // Consume the closing '"'
+  char_stream_.advance();
 
   return make_token(TokenKind::kLiteralString, start, line, col);
 }
@@ -332,15 +385,18 @@ Token Lexer::literal_char() {
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
 
-  char_stream_.advance();  // Consume the opening '\''
+  // Consume the opening '\''
+  char_stream_.advance();
 
   // Consume character(s) inside quotes
   if (!char_stream_.eof() && char_stream_.peek() != '\'') {
-    if (char_stream_.peek() ==
-        '\\') {  // Handle basic escape sequences like '\n', '\t', '\\', '\''
-      char_stream_.advance();  // Consume '\'
+    // Handle basic escape sequences like '\n', '\t', '\\', '\''
+    if (char_stream_.peek() == '\\') {
+      // Consume '\'
+      char_stream_.advance();
       if (!char_stream_.eof()) {
-        char_stream_.advance();  // Consume escaped character
+        // Consume escaped character
+        char_stream_.advance();
       }
     } else {
       char_stream_.advance();
@@ -352,7 +408,8 @@ Token Lexer::literal_char() {
     return make_token(TokenKind::kUnknown, start, line, col);
   }
 
-  char_stream_.advance();  // Consume the closing '\''
+  // Consume the closing '\''
+  char_stream_.advance();
 
   return make_token(TokenKind::kLiteralChar, start, line, col);
 }
@@ -362,8 +419,7 @@ Token Lexer::make_token(TokenKind kind,
                         std::size_t line,
                         std::size_t col) {
   const std::size_t end_pos = char_stream_.position();
-  return Token(kind, char_stream_.file_manager(), char_stream_.file_id(), line,
-               col, end_pos - start_pos);
+  return Token(kind, char_stream_.file_id(), line, col, end_pos - start_pos);
 }
 
 }  // namespace lexer

@@ -23,12 +23,10 @@ namespace lexer {
 class LEXER_EXPORT Token {
  public:
   Token(TokenKind kind,
-        const core::FileManager* file_manager,
-        core::SourceLocation&& location,
+        const core::SourceLocation& location,
         std::size_t length);
 
   Token(TokenKind kind,
-        const core::FileManager* file_manager,
         core::FileId file_id,
         std::size_t line,
         std::size_t column,
@@ -41,52 +39,56 @@ class LEXER_EXPORT Token {
   Token(const Token&) = delete;
   Token& operator=(const Token&) = delete;
 
-  Token(Token&&) noexcept = default;
-  Token& operator=(Token&&) noexcept = default;
+  Token(Token&&) = default;
+  Token& operator=(Token&&) = default;
 
+  inline const core::SourceLocation& location() const { return location_; }
+  inline std::size_t length() const { return length_; }
   inline TokenKind kind() const { return kind_; }
 
-  inline const std::string_view lexeme() const {
-    DCHECK(file_manager_);
+  inline const std::string_view lexeme(
+      const core::FileManager* file_manager) const {
+    DCHECK(file_manager);
     return std::string_view(
-        file_manager_->file(location_.file_id()).line(location_.line()).data() +
+        file_manager->file(location_.file_id()).line(location_.line()).data() +
             location_.column() - 1,
         length_);
   }
 
-  inline const core::SourceLocation& location() const { return location_; }
-
-  inline void dump(char* buf, std::size_t buf_size) const {
+  inline void dump(const core::FileManager* file_manager,
+                   char* buf,
+                   std::size_t buf_size) const {
     char* cursor = buf;
     core::write_format(cursor, buf + buf_size, "{} ({})", to_string(kind_),
-                       lexeme());
+                       lexeme(file_manager));
   }
 
-  inline void dump_detailed(char* buf, std::size_t buf_size) {
+  inline void dump_detailed(const core::FileManager* file_manager,
+                            char* buf,
+                            std::size_t buf_size) {
     char* cursor = buf;
     core::write_format(
         cursor, buf + buf_size,
         "token:\n  kind: {} ({})\n  lexeme: {}\n  position: {}:{}",
-        to_string(kind_), std::to_string(static_cast<int8_t>(kind_)), lexeme(),
-        location_.line(), location_.column());
+        to_string(kind_), std::to_string(static_cast<int8_t>(kind_)),
+        lexeme(file_manager), location_.line(), location_.column());
   }
 
-  inline std::string dump() {
+  inline std::string dump(const core::FileManager* file_manager) {
     char buf[512];
-    dump(buf, 512);
+    dump(file_manager, buf, 512);
     return std::string(buf);
   }
 
-  inline std::string dump_detailed() {
+  inline std::string dump_detailed(const core::FileManager* file_manager) {
     char buf[2048];
-    dump_detailed(buf, 2048);
+    dump_detailed(file_manager, buf, 2048);
     return std::string(buf);
   }
 
  private:
   core::SourceLocation location_;
   std::size_t length_ = 0;
-  const core::FileManager* file_manager_ = nullptr;
   TokenKind kind_ = TokenKind::kUnknown;
 };
 

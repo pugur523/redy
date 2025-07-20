@@ -17,10 +17,7 @@ namespace lexer {
 
 class LEXER_EXPORT Lexer {
  public:
-  using FileManager = core::FileManager;
-  using FileId = core::FileId;
-
-  explicit Lexer(FileManager* file_manager, FileId file_id);
+  explicit Lexer(core::FileManager* file_manager, core::FileId file_id);
 
   ~Lexer() = default;
 
@@ -32,7 +29,7 @@ class LEXER_EXPORT Lexer {
   void skip_whitespace_and_comments();
 
   Token identifier_or_keyword();
-  Token literal_number();
+  Token literal_numeric();
   Token literal_string();
   Token literal_char();
   Token make_token(TokenKind kind,

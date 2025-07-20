@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 set(BENCHMARK_NAME ${MAIN_EXECUTABLE_NAME_FROM_CONFIG}_bench)
 
 message(STATUS "Configuring ${BENCHMARK_NAME}...")
@@ -22,7 +26,7 @@ target_compile_options(${BENCHMARK_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
 target_compile_definitions(${BENCHMARK_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${BENCHMARK_NAME} PRIVATE core lexer ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${BENCHMARK_NAME} PRIVATE core diagnostic lexer ast ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${BENCHMARK_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

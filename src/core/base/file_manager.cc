@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #include "core/base/file_manager.h"
 
 #include <format>
@@ -24,7 +28,7 @@ FileId FileManager::add_file(std::string&& file_name) {
 FileId FileManager::add_virtual_file(std::string&& source) {
   static std::size_t virtual_file_count = 0;
   std::string virtual_name =
-      std::format("virtual_file_{}", virtual_file_count++);
+      std::format("virtual_file_{}.ry", virtual_file_count++);
 
   return add_file(std::move(source), std::move(virtual_name));
 }

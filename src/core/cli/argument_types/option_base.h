@@ -1,3 +1,7 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
 #ifndef CORE_CLI_ARGUMENT_TYPES_OPTION_BASE_H_
 #define CORE_CLI_ARGUMENT_TYPES_OPTION_BASE_H_
 
@@ -15,8 +19,8 @@ class CORE_EXPORT OptionBase {
   OptionBase(const OptionBase&) = delete;
   OptionBase& operator=(const OptionBase&) = delete;
 
-  OptionBase(OptionBase&&) noexcept = default;
-  OptionBase& operator=(OptionBase&&) noexcept = default;
+  OptionBase(OptionBase&&) = default;
+  OptionBase& operator=(OptionBase&&) = default;
 
   virtual bool parse(const std::string& value) = 0;
 

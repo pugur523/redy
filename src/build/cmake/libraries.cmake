@@ -1,3 +1,7 @@
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 macro(setup_gtest)
   set(GTEST_ROOT_DIR ${THIRD_PARTY_DIR}/gtest)
   set(GTEST_DIR ${GTEST_ROOT_DIR}/googletest)
@@ -155,6 +159,9 @@ macro(setup_femtolog)
   set(FEMTOLOG_ENABLE_AVX2 ${PROJECT_ENABLE_AVX2} CACHE BOOL "" FORCE)
 
   set(FEMTOLOG_ENABLE_WARNINGS_AS_ERRORS FALSE CACHE BOOL "" FORCE)
+
+  set(FEMTOLOG_BUILD_TESTING FALSE CACHE BOOL "" FORCE)
+  set(FEMTOLOG_BUILD_BENCHMARK FALSE CACHE BOOL "" FORCE)
 
   set(FEMTOLOG_USE_EXTERNAL_ZLIB TRUE CACHE BOOL "" FORCE)
   set(FEMTOLOG_USE_EXTERNAL_FMTLIB FALSE CACHE BOOL "" FORCE)
