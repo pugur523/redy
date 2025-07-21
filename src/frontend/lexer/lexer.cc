@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "frontend/diagnostic/data/diagnostic_id.h"
+#include "frontend/diagnostic/data/result.h"
 #include "frontend/lexer/keyword/keyword.h"
 #include "frontend/lexer/token/token.h"
 
@@ -26,11 +28,12 @@ inline bool is_identifier_char(char c) {
   return std::isalnum(c) || c == '_';
 }
 
-Token Lexer::next_token() {
+Lexer::Result<Token> Lexer::next_token() {
   skip_whitespace_and_comments();
   if (char_stream_.eof()) {
-    return Token(TokenKind::kEof, char_stream_.file_id(), char_stream_.line(),
-                 char_stream_.column(), 0);
+    return Result(diagnostic::make_ok(
+        Token(TokenKind::kEof, char_stream_.file_id(), char_stream_.line(),
+              char_stream_.column(), 0)));
   }
 
   char c = char_stream_.peek();
@@ -216,18 +219,34 @@ Token Lexer::next_token() {
   }
 }
 
-std::vector<Token> Lexer::lex_all() {
+Lexer::Results<Token> Lexer::lex_all(bool strict) {
   std::vector<Token> tokens;
   tokens.reserve(kPredictedTokensCount);
 
+  std::vector<LexError> errors;
+
   while (true) {
-    Token token = next_token();
-    tokens.emplace_back(std::move(token));
-    if (tokens.back().kind() == TokenKind::kEof) {
-      break;
+    Result<Token> result = next_token();
+    if (result.is_err()) {
+      errors.push_back(result.unwrap_err());
+      if (strict) {
+        break;
+      }
+    } else {
+      Token token = std::move(result).unwrap();
+      TokenKind kind = token.kind();
+      tokens.push_back(std::move(token));
+      if (kind == TokenKind::kEof) {
+        break;
+      }
     }
   }
-  return tokens;
+
+  if (!errors.empty()) {
+    return Results<Token>(diagnostic::make_err(std::move(errors)));
+  }
+
+  return Results<Token>(diagnostic::make_ok(std::move(tokens)));
 }
 
 void Lexer::skip_whitespace_and_comments() {
@@ -264,7 +283,7 @@ void Lexer::skip_whitespace_and_comments() {
   }
 }
 
-Token Lexer::identifier_or_keyword() {
+Lexer::Result<Token> Lexer::identifier_or_keyword() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -279,7 +298,7 @@ Token Lexer::identifier_or_keyword() {
   return make_token(kind, start, line, col);
 }
 
-Token Lexer::literal_numeric() {
+Lexer::Result<Token> Lexer::literal_numeric() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -346,7 +365,7 @@ Token Lexer::literal_numeric() {
   return make_token(TokenKind::kLiteralNumeric, start, line, col);
 }
 
-Token Lexer::literal_string() {
+Lexer::Result<Token> Lexer::literal_string() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -370,8 +389,9 @@ Token Lexer::literal_string() {
   }
 
   if (char_stream_.eof()) {
-    // Error: unclosed string literal
-    return make_token(TokenKind::kUnknown, start, line, col);
+    return Result<Token>(diagnostic::make_err(
+        LexError::make(diagnostic::DiagnosticId::kUnterminatedStringLiteral,
+                       start, line, col, "unclosed string literal")));
   }
 
   // Consume the closing '"'
@@ -380,7 +400,7 @@ Token Lexer::literal_string() {
   return make_token(TokenKind::kLiteralString, start, line, col);
 }
 
-Token Lexer::literal_char() {
+Lexer::Result<Token> Lexer::literal_char() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -404,8 +424,9 @@ Token Lexer::literal_char() {
   }
 
   if (char_stream_.eof() || char_stream_.peek() != '\'') {
-    // Error: unclosed character literal or empty char literal (e.g., '')
-    return make_token(TokenKind::kUnknown, start, line, col);
+    return Result<Token>(diagnostic::make_err(
+        LexError::make(diagnostic::DiagnosticId::kUnterminatedCharacterLiteral,
+                       start, line, col, "unclosed character literal")));
   }
 
   // Consume the closing '\''
@@ -414,12 +435,13 @@ Token Lexer::literal_char() {
   return make_token(TokenKind::kLiteralChar, start, line, col);
 }
 
-Token Lexer::make_token(TokenKind kind,
-                        std::size_t start_pos,
-                        std::size_t line,
-                        std::size_t col) {
+Lexer::Result<Token> Lexer::make_token(TokenKind kind,
+                                       std::size_t start_pos,
+                                       std::size_t line,
+                                       std::size_t col) {
   const std::size_t end_pos = char_stream_.position();
-  return Token(kind, char_stream_.file_id(), line, col, end_pos - start_pos);
+  return Result(diagnostic::make_ok(
+      Token(kind, char_stream_.file_id(), line, col, end_pos - start_pos)));
 }
 
 }  // namespace lexer

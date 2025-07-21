@@ -14,10 +14,10 @@
 
 TEST(FrontendTest, SimpleCodePipeline) {
   core::FileManager manager;
-  core::FileId id = manager.add_virtual_file("x := 42; y :i32 = 57;");
+  core::FileId id = manager.add_virtual_file("x := 42; y: i32 = 57;");
   lexer::Lexer lexer(&manager, id);
 
-  auto tokens = lexer.lex_all();
+  auto tokens = lexer.lex_all().unwrap();
   EXPECT_FALSE(tokens.empty());
   lexer::TokenStream stream(std::move(tokens), &manager);
   // DLOG(info, "{}", stream.dump());
@@ -41,15 +41,15 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
         fn main() -> void {
             world_str := "world";
             x: i32 = 42;
-            printf("hello {}\n", world_str);
-            printf("answer to the ultimate question of life, the universe,
+            print("hello {}\n", world_str);
+            print("answer to the ultimate question of life, the universe,
                     and everything is {}.\n", x); return;
         }
     )";
   core::FileId id = manager.add_virtual_file(std::move(source));
   lexer::Lexer lexer(&manager, id);
 
-  auto tokens = lexer.lex_all();
+  auto tokens = lexer.lex_all().unwrap();
   EXPECT_FALSE(tokens.empty());
   lexer::TokenStream stream(std::move(tokens), &manager);
   // DLOG(info, "{}", stream.dump());

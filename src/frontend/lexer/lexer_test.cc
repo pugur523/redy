@@ -28,7 +28,7 @@ void verify_hello_world() {
   Lexer lexer(&manager, id);
 
   while (true) {
-    Token token = lexer.next_token();
+    Token token = lexer.next_token().unwrap();
 
     EXPECT_FALSE(std::string(to_string(token.kind())).empty());
 
@@ -53,11 +53,11 @@ TEST(LexerTest, LexSimpleCode) {
   core::FileId id = manager.add_virtual_file("x := 42;");
   Lexer lexer(&manager, id);
 
-  Token t1 = lexer.next_token();
-  Token t2 = lexer.next_token();
-  Token t3 = lexer.next_token();
-  Token t4 = lexer.next_token();
-  Token t5 = lexer.next_token();
+  Token t1 = lexer.next_token().unwrap();
+  Token t2 = lexer.next_token().unwrap();
+  Token t3 = lexer.next_token().unwrap();
+  Token t4 = lexer.next_token().unwrap();
+  Token t5 = lexer.next_token().unwrap();
   EXPECT_EQ(t1.kind(), TokenKind::kIdentifier);
   EXPECT_EQ(t2.kind(), TokenKind::kAssign);
   EXPECT_EQ(t3.kind(), TokenKind::kLiteralNumeric);
