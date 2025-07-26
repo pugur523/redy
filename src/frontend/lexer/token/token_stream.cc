@@ -29,7 +29,7 @@ std::string TokenStream::dump() const {
     result.append("\n[token_stream.token]\n");
 
     result.append("kind = ");
-    result.append(to_string(token.kind()));
+    result.append(token_kind_to_string(token.kind()));
     result.append("\n");
 
     result.append("lexeme = ");

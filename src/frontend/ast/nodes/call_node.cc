@@ -13,8 +13,8 @@
 namespace ast {
 
 CallNode::CallNode(const lexer::Token& tok,
-                   ASTNode&& c,
-                   std::vector<ASTNode>&& args)
+                   AstNode&& c,
+                   std::vector<AstNode>&& args)
     : BaseNode(tok), callee(std::move(c)), arguments(std::move(args)) {}
 
 std::string CallNode::dump() const {

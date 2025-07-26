@@ -13,14 +13,20 @@
 #include "frontend/ast/base/ast_export.h"
 #include "frontend/ast/base/base_node.h"
 #include "frontend/ast/nodes/nodes.h"
-#include "frontend/ast/parser/result.h"
+#include "frontend/ast/parser/parse_error.h"
+#include "frontend/diagnostic/data/result.h"
 #include "frontend/lexer/token/token_stream.h"
 
 namespace ast {
 
 class AST_EXPORT Parser {
  public:
-  explicit Parser(lexer::TokenStream&& stream);
+  template <typename T>
+  using Result = diagnostic::Result<T, ParseError>;
+  template <typename T>
+  using Results = diagnostic::Result<T, std::vector<ParseError>>;
+
+  explicit Parser(lexer::TokenStream&& stream, bool strict = false);
 
   ~Parser() = default;
 
@@ -30,44 +36,39 @@ class AST_EXPORT Parser {
   Parser(Parser&&) = default;
   Parser& operator=(Parser&&) = default;
 
-  // Main parsing entry point - collects all errors
-  MultiResult<ASTNode> parse();
-
-  // Parse with early termination on first error
-  Result<ASTNode> parse_strict();
+  Results<AstNode> parse();
 
  private:
   // Grammar productions
-  MultiResult<ASTNode> parse_program();
-  MultiResult<ASTNode> parse_function();
+  Results<AstNode> parse_function();
 
-  MultiResult<ASTNode> parse_param_list();
-  MultiResult<ASTNode> parse_param();
+  Results<AstNode> parse_param_list();
+  Results<AstNode> parse_param();
 
-  MultiResult<ASTNode> parse_type();
+  Result<AstNode> parse_type();
 
-  MultiResult<ASTNode> parse_statement();
-  MultiResult<ASTNode> parse_variable_declaration_statement();
-  MultiResult<ASTNode> parse_assignment_statement();
-  MultiResult<ASTNode> parse_let_statement();
-  MultiResult<ASTNode> parse_return_statement();
-  MultiResult<ASTNode> parse_if_statement();
-  MultiResult<ASTNode> parse_while_statement();
-  MultiResult<ASTNode> parse_for_statement();
-  MultiResult<ASTNode> parse_block_statement();
-  MultiResult<ASTNode> parse_expression_statement();
+  Results<AstNode> parse_statement();
+  Results<AstNode> parse_variable_declaration_statement();
+  Results<AstNode> parse_assignment_statement();
+  Results<AstNode> parse_let_statement();
+  Results<AstNode> parse_return_statement();
+  Results<AstNode> parse_if_statement();
+  Results<AstNode> parse_while_statement();
+  Results<AstNode> parse_for_statement();
+  Results<AstNode> parse_block_statement();
+  Results<AstNode> parse_expression_statement();
 
   // Expression parsing (precedence climbing)
-  MultiResult<ASTNode> parse_expression();
-  MultiResult<ASTNode> parse_assignment();
-  MultiResult<ASTNode> parse_binary_expression(int min_precedence);
-  MultiResult<ASTNode> parse_unary_expression();
-  MultiResult<ASTNode> parse_primary_expression();
-  MultiResult<ASTNode> parse_function_call(ASTNode callee_node);
+  Results<AstNode> parse_expression();
+  Results<AstNode> parse_assignment();
+  Results<AstNode> parse_binary_expression(int min_precedence);
+  Results<AstNode> parse_unary_expression();
+  Results<AstNode> parse_primary_expression();
+  Results<AstNode> parse_function_call(AstNode callee_node);
 
   // Helper methods
-  MultiResult<const lexer::Token*> consume(lexer::TokenKind expected,
-                                           const std::string& error_message);
+  Result<const lexer::Token*> consume(lexer::TokenKind expected,
+                                      std::string&& error_message);
   inline bool match(lexer::TokenKind kind) { return stream_.match(kind); }
   inline bool check(lexer::TokenKind kind) const { return stream_.check(kind); }
   inline bool check(lexer::TokenKind kind, std::size_t offset) const {
@@ -84,7 +85,17 @@ class AST_EXPORT Parser {
 
   // Error handling
   void synchronize();
-  ParseError make_error(const std::string& message) const;
+
+  static bool is_sync_point(lexer::TokenKind kind);
+
+  static Result<AstNode> single_ok(AstNode&& node);
+  static Result<AstNode> single_err(ParseError&& error);
+
+  static Results<AstNode> ok(AstNode&& node);
+  static Results<AstNode> err(std::vector<ParseError>&& errors);
+
+  static void append_errs(std::vector<ParseError>* target,
+                          std::vector<ParseError>&& source);
 
   // Token kind to operator conversion
   static BinaryOpNode::Operator token_to_binary_op(lexer::TokenKind kind);
@@ -97,6 +108,7 @@ class AST_EXPORT Parser {
   static bool is_assignment_operator(lexer::TokenKind kind);
 
   lexer::TokenStream stream_;
+  bool strict_ : 1 = false;
 };
 
 }  // namespace ast

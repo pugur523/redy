@@ -14,9 +14,9 @@ namespace ast {
 // Represents a single parameter in a function definition
 struct AST_EXPORT ParameterNode : BaseNode {
   std::string name;
-  ASTNode type;  // Owned by this node (expected to be TypeNode)
+  AstNode type;  // Owned by this node (expected to be TypeNode)
 
-  ParameterNode(const lexer::Token& tok, std::string_view n, ASTNode&& t);
+  ParameterNode(const lexer::Token& tok, std::string_view n, AstNode&& t);
 
   std::string dump() const override;
 };

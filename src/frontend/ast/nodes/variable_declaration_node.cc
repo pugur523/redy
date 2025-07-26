@@ -14,8 +14,8 @@ namespace ast {
 VariableDeclarationNode::VariableDeclarationNode(const lexer::Token& tok,
                                                  std::string_view n,
                                                  bool is_mutable,
-                                                 std::optional<ASTNode>&& t,
-                                                 std::optional<ASTNode>&& init)
+                                                 std::optional<AstNode>&& t,
+                                                 std::optional<AstNode>&& init)
     : BaseNode(tok),
       name(n),
       is_mutable(is_mutable),

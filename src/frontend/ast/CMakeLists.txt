@@ -11,7 +11,6 @@ set(SOURCES
   ast.cc 
   base/base_node.cc
   parser/parser.cc
-  parser/result.cc
 
   nodes/assignment_node.cc
   nodes/binary_op_node.cc
@@ -41,7 +40,7 @@ setup_module(${MODULE_NAME} ${MODULE_OBJECTS_NAME}
   COMPILE_DEFINITIONS ${PROJECT_COMPILE_DEFINITIONS}
   LINK_OPTIONS ${PROJECT_LINK_OPTIONS}
   LINK_DIRS ${PROJECT_LINK_DIRECTORIES}
-  LINK_LIBS ${ZLIB_LIBRARIES} ${PROJECT_LINK_LIBRARIES}
+  LINK_LIBS lexer ${ZLIB_LIBRARIES} ${PROJECT_LINK_LIBRARIES}
 )
 
 if(ENABLE_VERBOSE)

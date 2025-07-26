@@ -12,9 +12,9 @@
 namespace ast {
 
 IfNode::IfNode(const lexer::Token& tok,
-               ASTNode&& cond,
-               ASTNode&& then_stmt,
-               std::optional<ASTNode>&& else_stmt)
+               AstNode&& cond,
+               AstNode&& then_stmt,
+               std::optional<AstNode>&& else_stmt)
     : BaseNode(tok),
       condition(std::move(cond)),
       then_branch(std::move(then_stmt)),

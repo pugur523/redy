@@ -13,15 +13,15 @@ namespace ast {
 
 struct AST_EXPORT FunctionNode : BaseNode {
   std::string name;
-  ASTNode parameters;   // Owned by this node (expected to be ParameterListNode)
-  ASTNode return_type;  // Owned by this node (expected to be TypeNode)
-  ASTNode body;         // Owned by this node (expected to be BlockNode)
+  AstNode parameters;   // Owned by this node (expected to be ParameterListNode)
+  AstNode return_type;  // Owned by this node (expected to be TypeNode)
+  AstNode body;         // Owned by this node (expected to be BlockNode)
 
   FunctionNode(const lexer::Token& tok,
                std::string_view n,
-               ASTNode&& params,    // Expects ParameterListNode
-               ASTNode&& ret_type,  // Expects TypeNode
-               ASTNode&& b);
+               AstNode&& params,    // Expects ParameterListNode
+               AstNode&& ret_type,  // Expects TypeNode
+               AstNode&& b);
 
   std::string dump() const override;
 };

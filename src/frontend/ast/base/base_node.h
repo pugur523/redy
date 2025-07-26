@@ -39,8 +39,8 @@ struct ParameterListNode;
 struct TypeNode;
 
 // AST node variant type
-// This allows a single ASTNode to hold any type of concrete node.
-using ASTNode = std::variant<std::unique_ptr<ProgramNode>,
+// This allows a single AstNode to hold any type of concrete node.
+using AstNode = std::variant<std::unique_ptr<ProgramNode>,
                              std::unique_ptr<IdentifierNode>,
                              std::unique_ptr<LiteralNode>,
                              std::unique_ptr<BinaryOpNode>,

@@ -14,191 +14,211 @@
 #include "core/location.h"
 #include "frontend/ast/base/base_node.h"
 #include "frontend/ast/nodes/node_util.h"
+#include "frontend/ast/parser/parse_error.h"
+#include "frontend/diagnostic/data/diagnostic_id.h"
+#include "frontend/diagnostic/data/result.h"
 #include "frontend/lexer/token/token_kind.h"
 #include "frontend/lexer/token/token_stream.h"
 
 namespace ast {
 
-Parser::Parser(lexer::TokenStream&& stream) : stream_(std::move(stream)) {}
-
-MultiResult<ASTNode> Parser::parse() {
-  return parse_program();
-}
-
-Result<ASTNode> Parser::parse_strict() {
-  MultiResult<ASTNode> result = parse_program();
-  if (result.has_errors()) {
-    return Result<ASTNode>(result.errors().front());
-  }
-  return ok(result.take_value());
-}
+Parser::Parser(lexer::TokenStream&& stream, bool strict)
+    : stream_(std::move(stream)), strict_(strict) {}
 
 // program ::= { function | statement } ;
-MultiResult<ASTNode> Parser::parse_program() {
-  std::vector<ASTNode> statements;
-  ParseErrors local_errors;
+Parser::Results<AstNode> Parser::parse() {
+  std::vector<AstNode> statements;
+  std::vector<ParseError> errors;
 
+  const auto& start_token = peek();
   while (!eof()) {
-    MultiResult<ASTNode> result =
+    Results<AstNode> result =
         check(lexer::TokenKind::kFn) ? parse_function() : parse_statement();
 
-    if (result.has_errors()) {
-      auto errors = result.take_errors();
-      local_errors.insert(local_errors.end(),
-                          std::make_move_iterator(errors.begin()),
-                          std::make_move_iterator(errors.end()));
+    if (result.is_err()) {
+      append_errs(&errors, std::move(result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      }
       synchronize();
-      continue;
+    } else {
+      statements.push_back(std::move(result).unwrap());
     }
-
-    statements.push_back(std::move(result).take_value());
   }
 
-  if (local_errors.empty()) {
-    return multi_ok(make_node<ProgramNode>(peek(), std::move(statements)));
+  if (errors.empty()) {
+    return ok(make_node<ProgramNode>(start_token, std::move(statements)));
   } else {
-    return multi_error<ASTNode>(std::move(local_errors));
+    return err(std::move(errors));
   }
 }
 
 // function ::= "fn" identifier "(" [ param_list ] ")" "->" type "{" { statement
 // } "}" ;
-MultiResult<ASTNode> Parser::parse_function() {
+Parser::Results<AstNode> Parser::parse_function() {
+  std::vector<ParseError> errors;
+
   auto fn_result = consume(lexer::TokenKind::kFn, "expected 'fn'");
-  if (fn_result.has_errors()) {
-    return multi_error<ASTNode>(std::move(fn_result.take_errors()));
+  if (fn_result.is_err()) {
+    return err({std::move(fn_result).unwrap_err()});
   }
-  const auto& fn_token = fn_result.value();
+  const auto& fn_token = fn_result.unwrap();
 
   auto name_result =
       consume(lexer::TokenKind::kIdentifier, "expected function name");
-  if (name_result.has_errors()) {
-    return MultiResult<ASTNode>(name_result.take_errors());
+  if (name_result.is_err()) {
+    return err({std::move(name_result).unwrap_err()});
   }
-  std::string_view name = name_result.value()->lexeme(stream_.file_manager());
+  std::string_view name = name_result.unwrap()->lexeme(stream_.file_manager());
 
   auto lparen_result =
       consume(lexer::TokenKind::kLParen, "expected '(' after function name");
-  if (lparen_result.has_errors()) {
-    return MultiResult<ASTNode>(lparen_result.take_errors());
+  if (lparen_result.is_err()) {
+    return err({std::move(lparen_result).unwrap_err()});
   }
 
   // Parse parameter list
-  ASTNode parameters_node;
+  AstNode parameters_node;
   if (!check(lexer::TokenKind::kRParen)) {
     auto param_list_result = parse_param_list();
-    if (param_list_result.has_errors()) {
-      return param_list_result;
+    if (param_list_result.is_err()) {
+      return err(std::move(param_list_result).unwrap_err());
     }
-    parameters_node = std::move(param_list_result).take_value();
+    parameters_node = std::move(param_list_result).unwrap();
   }
 
   auto rparen_result =
       consume(lexer::TokenKind::kRParen, "expected ')' after parameters");
-  if (rparen_result.has_errors()) {
-    return MultiResult<ASTNode>(rparen_result.take_errors());
+  if (rparen_result.is_err()) {
+    return err({std::move(rparen_result).unwrap_err()});
   }
 
   auto arrow_result =
       consume(lexer::TokenKind::kArrow, "expected '->' after parameters");
-  if (arrow_result.has_errors()) {
-    return MultiResult<ASTNode>(arrow_result.take_errors());
+  if (arrow_result.is_err()) {
+    return err({std::move(arrow_result).unwrap_err()});
   }
 
   auto return_type_result = parse_type();
-  if (return_type_result.has_errors()) {
-    return return_type_result;
+  if (return_type_result.is_err()) {
+    return err({std::move(return_type_result).unwrap_err()});
   }
-  ASTNode return_type_node = std::move(return_type_result).take_value();
+  AstNode return_type_node = std::move(return_type_result).unwrap();
 
   auto lbrace_result =
       consume(lexer::TokenKind::kLBrace, "expected '{' before function body");
-  if (lbrace_result.has_errors()) {
-    return MultiResult<ASTNode>(lbrace_result.take_errors());
+  if (lbrace_result.is_err()) {
+    return err({std::move(lbrace_result).unwrap_err()});
   }
 
   // Parse function body (a block of statements)
   const auto& body_token = peek();
-  std::vector<ASTNode> statements;
-  ParseErrors local_errors;
+  std::vector<AstNode> statements;
 
   while (!check(lexer::TokenKind::kRBrace) && !eof()) {
     auto stmt_result = parse_statement();
-    if (stmt_result.has_errors()) {
-      auto errors = stmt_result.take_errors();
-      local_errors.insert(local_errors.end(),
-                          std::make_move_iterator(errors.begin()),
-                          std::make_move_iterator(errors.end()));
-      synchronize();
-      continue;
+    if (stmt_result.is_err()) {
+      append_errs(&errors, std::move(stmt_result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      } else {
+        synchronize();
+        continue;
+      }
+    } else {
+      statements.push_back(std::move(stmt_result).unwrap());
     }
-    statements.push_back(std::move(stmt_result).take_value());
   }
 
   auto rbrace_result =
       consume(lexer::TokenKind::kRBrace, "expected '}' after function body");
-  if (rbrace_result.has_errors()) {
-    auto errors = rbrace_result.take_errors();
-    local_errors.insert(local_errors.end(),
-                        std::make_move_iterator(errors.begin()),
-                        std::make_move_iterator(errors.end()));
+  if (rbrace_result.is_err()) {
+    errors.push_back(std::move(rbrace_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  if (!local_errors.empty()) {
-    return multi_error<ASTNode>(std::move(local_errors));
+  if (errors.empty()) {
+    AstNode body_node = make_node<BlockNode>(body_token, std::move(statements));
+    return ok(make_node<FunctionNode>(
+        *fn_token, name, std::move(parameters_node),
+        std::move(return_type_node), std::move(body_node)));
+  } else {
+    return err(std::move(errors));
   }
-
-  ASTNode body_node = make_node<BlockNode>(body_token, std::move(statements));
-
-  return multi_ok(make_node<FunctionNode>(
-      *fn_token, name, std::move(parameters_node), std::move(return_type_node),
-      std::move(body_node)));
 }
 
 // param_list ::= param { "," param } ;
-MultiResult<ASTNode> Parser::parse_param_list() {
-  std::vector<ASTNode> parameters;
+Parser::Results<AstNode> Parser::parse_param_list() {
+  std::vector<AstNode> parameters;
+  std::vector<ParseError> errors;
 
   auto first_param_result = parse_param();
-  if (first_param_result.has_errors()) {
+  if (first_param_result.is_err()) {
     return first_param_result;
   }
-  parameters.push_back(std::move(first_param_result).take_value());
+  parameters.push_back(std::move(first_param_result).unwrap());
 
   while (match(lexer::TokenKind::kComma)) {
     auto param_result = parse_param();
-    if (param_result.has_errors()) {
-      return param_result;
+    if (param_result.is_err()) {
+      append_errs(&errors, std::move(param_result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      } else {
+        while (!eof() && !check(lexer::TokenKind::kComma) &&
+               !check(lexer::TokenKind::kRParen)) {
+          advance();
+        }
+        continue;
+      }
     }
-    parameters.push_back(std::move(param_result).take_value());
+
+    parameters.push_back(std::move(param_result).unwrap());
   }
 
-  return multi_ok(make_node<ParameterListNode>(peek(), std::move(parameters)));
+  if (errors.empty()) {
+    return ok(make_node<ParameterListNode>(peek(), std::move(parameters)));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // param ::= identifier ":" type ;
-MultiResult<ASTNode> Parser::parse_param() {
+Parser::Results<AstNode> Parser::parse_param() {
+  std::vector<ParseError> errors;
+
   auto name_token_result =
       consume(lexer::TokenKind::kIdentifier, "expected parameter name");
-  if (name_token_result.has_errors()) {
-    return MultiResult<ASTNode>(name_token_result.take_errors());
+  if (name_token_result.is_err()) {
+    errors.push_back(std::move(name_token_result).unwrap_err());
+    return err(std::move(errors));
   }
-  const auto* name_token = name_token_result.value();
+  const auto* name_token = std::move(name_token_result).unwrap();
   std::string_view name = name_token->lexeme(stream_.file_manager());
 
   auto colon_result =
       consume(lexer::TokenKind::kColon, "expected ':' after parameter name");
-  if (colon_result.has_errors()) {
-    return MultiResult<ASTNode>(colon_result.take_errors());
+  if (colon_result.is_err()) {
+    errors.push_back(std::move(colon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   auto type_result = parse_type();
-  if (type_result.has_errors()) {
-    return type_result;
+  if (type_result.is_err()) {
+    errors.push_back(std::move(type_result).unwrap_err());
+    return err(std::move(errors));
   }
 
-  return multi_ok(make_node<ParameterNode>(
-      *name_token, name, std::move(type_result).take_value()));
+  if (errors.empty()) {
+    return ok(make_node<ParameterNode>(*name_token, name,
+                                       std::move(type_result).unwrap()));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // type ::=
@@ -206,23 +226,24 @@ MultiResult<ASTNode> Parser::parse_param() {
 // "u8" | "u16" | "u32" | "u64" | "u128" |
 // "f32" | "f64" | "void" | "bool" | "char" |
 // "str" ;
-MultiResult<ASTNode> Parser::parse_type() {
+Parser::Result<AstNode> Parser::parse_type() {
+  std::vector<ParseError> errors;
+
   const auto& token = peek();
 
   if (!check(lexer::TokenKind::kType)) {
-    return multi_error<ASTNode>(ParseError(
-        "expected a type", token, stream_.file_manager(), stream_.position()));
+    return single_err(ParseError::make(
+        diagnostic::DiagnosticId::kUnexpectedToken, token, "expected a type"));
+  } else {
+    std::string type_name = std::string(token.lexeme(stream_.file_manager()));
+    advance();
+    return single_ok(make_node<TypeNode>(token, std::move(type_name)));
   }
-
-  std::string type_name = std::string(token.lexeme(stream_.file_manager()));
-  advance();
-
-  return multi_ok(make_node<TypeNode>(token, std::move(type_name)));
 }
 
 // statement ::= let_stmt | expr_stmt | return_stmt | if_stmt | block_stmt |
 // while_stmt | for_stmt ;
-MultiResult<ASTNode> Parser::parse_statement() {
+Parser::Results<AstNode> Parser::parse_statement() {
   if (check(lexer::TokenKind::kMut)) {
     // `mut x := ...` or `mut x: type = ...`
     if (check(lexer::TokenKind::kIdentifier, 1)) {
@@ -274,7 +295,9 @@ MultiResult<ASTNode> Parser::parse_statement() {
 
 // variable_declaration_stmt ::= ["mut"] identifier (":" type ["=" expression] |
 // ":=" expression) ";" ;
-MultiResult<ASTNode> Parser::parse_variable_declaration_statement() {
+Parser::Results<AstNode> Parser::parse_variable_declaration_statement() {
+  std::vector<ParseError> errors;
+
   const lexer::Token* mut_token = nullptr;
   if (check(lexer::TokenKind::kMut)) {
     mut_token = &peek();
@@ -283,356 +306,453 @@ MultiResult<ASTNode> Parser::parse_variable_declaration_statement() {
 
   auto name_result = consume(lexer::TokenKind::kIdentifier,
                              "expected variable name in declaration");
-  if (name_result.has_errors()) {
-    return MultiResult<ASTNode>(name_result.take_errors());
+  if (name_result.is_err()) {
+    errors.push_back(std::move(name_result).unwrap_err());
+    return err(std::move(errors));
   }
 
-  const auto* var_token = name_result.value();
+  const auto* var_token = name_result.unwrap();
   std::string_view name = var_token->lexeme(stream_.file_manager());
 
-  std::optional<ASTNode> type_node;
-  std::optional<ASTNode> initializer_expr;
+  std::optional<AstNode> type_node;
+  std::optional<AstNode> initializer_expr;
 
   if (match(lexer::TokenKind::kColon)) {
     // ":" - type specification
     auto type_result = parse_type();
-    if (type_result.has_errors()) {
-      return type_result;
+    if (type_result.is_err()) {
+      errors.push_back(std::move(type_result).unwrap_err());
+      return err(std::move(errors));
     }
-    type_node = std::move(type_result).take_value();
+    type_node = std::move(type_result).unwrap();
 
     if (match(lexer::TokenKind::kEqual)) {
       auto expr_result = parse_expression();
-      if (expr_result.has_errors()) {
-        return expr_result;
+      if (expr_result.is_err()) {
+        append_errs(&errors, std::move(expr_result).unwrap_err());
+        return err(std::move(errors));
       }
-      initializer_expr = std::move(expr_result).take_value();
+      initializer_expr = std::move(expr_result).unwrap();
     }
   } else if (match(lexer::TokenKind::kAssign)) {
     // ":="
     auto expr_result = parse_expression();
-    if (expr_result.has_errors()) {
-      return expr_result;
+    if (expr_result.is_err()) {
+      append_errs(&errors, std::move(expr_result).unwrap_err());
+      return err(std::move(errors));
     }
-    initializer_expr = std::move(expr_result).take_value();
+    initializer_expr = std::move(expr_result).unwrap();
   } else {
-    return multi_error<ASTNode>(
-        ParseError("expected ':' or ':=' in variable declaration", peek(),
-                   stream_.file_manager(), stream_.position()));
+    errors.push_back(
+        ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, peek(),
+                         "expected ':' or ':=' in variable declaration"));
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   auto semicolon_result = consume(lexer::TokenKind::kSemicolon,
                                   "expected ';' after variable declaration");
-  if (semicolon_result.has_errors()) {
-    return MultiResult<ASTNode>(semicolon_result.take_errors());
+  if (semicolon_result.is_err()) {
+    errors.push_back(std::move(semicolon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  return multi_ok(make_node<VariableDeclarationNode>(
-      *var_token, name, mut_token != nullptr, std::move(type_node),
-      std::move(initializer_expr)));
+  if (errors.empty()) {
+    return ok(make_node<VariableDeclarationNode>(
+        *var_token, name, mut_token != nullptr, std::move(type_node),
+        std::move(initializer_expr)));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // assignment_stmt ::= (identifier | expr) ("=" | "+=" | "-=" | ... ) expression
 // ";" ;
-MultiResult<ASTNode> Parser::parse_assignment_statement() {
+Parser::Results<AstNode> Parser::parse_assignment_statement() {
+  std::vector<ParseError> errors;
+
   auto target_result = parse_primary_expression();
-  if (target_result.has_errors()) {
+  if (target_result.is_err()) {
     return target_result;
   }
 
   lexer::TokenKind op_kind = peek().kind();
   if (!is_assignment_operator(op_kind)) {
-    return multi_error<ASTNode>(ParseError("expected assignment operator",
-                                           peek(), stream_.file_manager(),
-                                           stream_.position()));
+    errors.push_back(
+        ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, peek(),
+                         "expected assignment operator"));
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   const auto& op_token = peek();
   advance();
 
   auto value_result = parse_expression();
-  if (value_result.has_errors()) {
-    return value_result;
+  if (value_result.is_err()) {
+    append_errs(&errors, std::move(value_result).unwrap_err());
+    return err(std::move(errors));
   }
 
   auto semicolon_result = consume(lexer::TokenKind::kSemicolon,
                                   "expected ';' after assignment statement");
-  if (semicolon_result.has_errors()) {
-    return MultiResult<ASTNode>(semicolon_result.take_errors());
+  if (semicolon_result.is_err()) {
+    errors.push_back(std::move(semicolon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   BinaryOpNode::Operator assign_op = token_to_binary_op(op_kind);
   if (assign_op == BinaryOpNode::Operator::kUnknown) {
-    return multi_error<ASTNode>(ParseError("Invalid assignment operator",
-                                           op_token, stream_.file_manager(),
-                                           stream_.position()));
+    errors.push_back(
+        ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, op_token,
+                         "invalid assignment operator"));
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  return multi_ok(make_node<AssignmentNode>(
-      op_token, std::move(target_result).take_value(),
-      std::move(value_result).take_value(), assign_op));
+  // FIXME: `parse_primary_expression()` allows literals like `1 = x`,
+  //        but assignment targets should be limited to l-values (e.g.,
+  //        identifiers, deref, etc.)
+  //        -> we need to write `parse_lvalue_expression` or smth and use it
+
+  if (errors.empty()) {
+    return ok(
+        make_node<AssignmentNode>(op_token, std::move(target_result).unwrap(),
+                                  std::move(value_result).unwrap(), assign_op));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // return_stmt ::= "return" [expression] ";" ;
-MultiResult<ASTNode> Parser::parse_return_statement() {
+Parser::Results<AstNode> Parser::parse_return_statement() {
+  std::vector<ParseError> errors;
+
   const auto& return_token = previous();
 
-  std::optional<ASTNode> return_value;
+  std::optional<AstNode> return_value;
   if (!check(lexer::TokenKind::kSemicolon)) {
     auto expr_result = parse_expression();
-    if (expr_result.has_errors()) {
-      return expr_result;
+    if (expr_result.is_err()) {
+      append_errs(&errors, std::move(expr_result).unwrap_err());
+      return err(std::move(errors));
     }
-    return_value = std::move(expr_result).take_value();
+
+    return_value = std::move(expr_result).unwrap();
   }
 
   auto semicolon_result = consume(lexer::TokenKind::kSemicolon,
                                   "expected ';' after return statement");
-  if (semicolon_result.has_errors()) {
-    return MultiResult<ASTNode>(semicolon_result.take_errors());
+  if (semicolon_result.is_err()) {
+    errors.push_back(std::move(semicolon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  return multi_ok(make_node<ReturnNode>(return_token, std::move(return_value)));
+  if (errors.empty()) {
+    return ok(make_node<ReturnNode>(return_token, std::move(return_value)));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // if_stmt ::= "if" expression "{" { statement } "}" [ "else" ( "{" { statement
 // } "}" | if_stmt ) ] ;
-MultiResult<ASTNode> Parser::parse_if_statement() {
+Parser::Results<AstNode> Parser::parse_if_statement() {
+  std::vector<ParseError> errors;
+
   const auto& if_token = previous();
 
   auto condition_result = parse_expression();
-  if (condition_result.has_errors()) {
-    return condition_result;
+  if (condition_result.is_err()) {
+    return err({std::move(condition_result).unwrap_err()});
   }
 
   auto lbrace_result =
       consume(lexer::TokenKind::kLBrace, "expected '{' after if condition");
-  if (lbrace_result.has_errors()) {
-    return MultiResult<ASTNode>(lbrace_result.take_errors());
+  if (lbrace_result.is_err()) {
+    return err({std::move(lbrace_result).unwrap_err()});
   }
 
-  std::vector<ASTNode> then_statements;
-  ParseErrors local_errors;
+  std::vector<AstNode> then_statements;
 
   while (!check(lexer::TokenKind::kRBrace) && !eof()) {
     auto stmt_result = parse_statement();
-    if (stmt_result.has_errors()) {
-      auto errors = stmt_result.take_errors();
-      local_errors.insert(local_errors.end(),
-                          std::make_move_iterator(errors.begin()),
-                          std::make_move_iterator(errors.end()));
-      synchronize();
-      continue;
+    if (stmt_result.is_err()) {
+      append_errs(&errors, std::move(stmt_result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      } else {
+        synchronize();
+        continue;
+      }
     }
-    then_statements.push_back(std::move(stmt_result).take_value());
+    then_statements.push_back(std::move(stmt_result).unwrap());
   }
 
   auto rbrace_result =
       consume(lexer::TokenKind::kRBrace, "expected '}' after if body");
-  if (rbrace_result.has_errors()) {
-    auto errors = rbrace_result.take_errors();
-    local_errors.insert(local_errors.end(),
-                        std::make_move_iterator(errors.begin()),
-                        std::make_move_iterator(errors.end()));
+  if (rbrace_result.is_err()) {
+    errors.push_back(std::move(rbrace_result).unwrap_err());
+    return err(std::move(errors));
   }
 
-  if (!local_errors.empty()) {
-    return multi_error<ASTNode>(std::move(local_errors));
-  }
-
-  ASTNode then_block =
-      make_node<BlockNode>(*lbrace_result.value(), std::move(then_statements));
-  std::optional<ASTNode> else_branch;
+  AstNode then_block =
+      make_node<BlockNode>(*lbrace_result.unwrap(), std::move(then_statements));
+  std::optional<AstNode> else_branch;
 
   if (match(lexer::TokenKind::kElse)) {
     if (check(lexer::TokenKind::kLBrace)) {
       auto else_block_result = parse_block_statement();
-      if (else_block_result.has_errors()) {
-        return else_block_result;
+      if (else_block_result.is_err()) {
+        append_errs(&errors, std::move(else_block_result).unwrap_err());
+        return err(std::move(errors));
       }
-      else_branch = std::move(else_block_result).take_value();
+      else_branch = std::move(else_block_result).unwrap();
     } else if (check(lexer::TokenKind::kIf)) {
       advance();
       auto nested_if_result = parse_if_statement();
-      if (nested_if_result.has_errors()) {
-        return nested_if_result;
+      if (nested_if_result.is_err()) {
+        append_errs(&errors, std::move(nested_if_result).unwrap_err());
+        return err(std::move(errors));
       }
-      else_branch = std::move(nested_if_result).take_value();
+      else_branch = std::move(nested_if_result).unwrap();
     } else {
-      return multi_error<ASTNode>(
-          ParseError("expected '{' or 'if' after 'else'", peek(),
-                     stream_.file_manager(), stream_.position()));
+      errors.push_back(
+          ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, peek(),
+                           "expected '{' or 'if' after 'else'"));
+      if (strict_) {
+        return err(std::move(errors));
+      }
     }
   }
 
-  return multi_ok(
-      make_node<IfNode>(if_token, std::move(condition_result).take_value(),
-                        std::move(then_block), std::move(else_branch)));
+  if (errors.empty()) {
+    return ok(make_node<IfNode>(if_token, std::move(condition_result).unwrap(),
+                                std::move(then_block), std::move(else_branch)));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // while_stmt ::= "while" expression "{" { statement } "}" ;
-MultiResult<ASTNode> Parser::parse_while_statement() {
+Parser::Results<AstNode> Parser::parse_while_statement() {
+  std::vector<ParseError> errors;
+
   const auto& while_token = previous();
 
   auto condition_result = parse_expression();
-  if (condition_result.has_errors()) {
-    return condition_result;
+  if (condition_result.is_err()) {
+    append_errs(&errors, std::move(condition_result).unwrap_err());
+    return err(std::move(errors));
   }
 
   auto block_result = parse_block_statement();
-  if (block_result.has_errors()) {
-    return block_result;
+  if (block_result.is_err()) {
+    append_errs(&errors, std::move(block_result).unwrap_err());
+    return err(std::move(errors));
   }
 
-  return multi_ok(make_node<WhileNode>(while_token,
-                                       std::move(condition_result).take_value(),
-                                       std::move(block_result).take_value()));
+  if (errors.empty()) {
+    return ok(make_node<WhileNode>(while_token,
+                                   std::move(condition_result).unwrap(),
+                                   std::move(block_result).unwrap()));
+
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // for_stmt ::= "for" "(" [init_stmt] ";" [condition_expr] ";" [increment_expr]
 // ")" "{" { statement } "}" ;
-MultiResult<ASTNode> Parser::parse_for_statement() {
+Parser::Results<AstNode> Parser::parse_for_statement() {
+  std::vector<ParseError> errors;
+
   const auto& for_token = previous();
 
   auto lparen_result =
       consume(lexer::TokenKind::kLParen, "expected '(' after 'for'");
-  if (lparen_result.has_errors()) {
-    return MultiResult<ASTNode>(lparen_result.take_errors());
+  if (lparen_result.is_err()) {
+    errors.push_back(std::move(lparen_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  std::optional<ASTNode> init_stmt;
-  std::optional<ASTNode> condition_expr;
-  std::optional<ASTNode> increment_expr;
+  std::optional<AstNode> init_stmt;
+  std::optional<AstNode> condition_expr;
+  std::optional<AstNode> increment_expr;
 
   // Optional initializer
   if (!check(lexer::TokenKind::kSemicolon)) {
-    auto init_res = parse_statement();
-    if (init_res.has_errors()) {
-      return init_res;
+    auto init_result = parse_statement();
+    if (init_result.is_err()) {
+      append_errs(&errors, std::move(init_result).unwrap_err());
+      return err(std::move(errors));
     }
-    init_stmt = std::move(init_res).take_value();
+    init_stmt = std::move(init_result).unwrap();
   }
 
   auto first_semicolon_result =
       consume(lexer::TokenKind::kSemicolon,
               "expected ';' after for loop initialization");
-  if (first_semicolon_result.has_errors()) {
-    return MultiResult<ASTNode>(first_semicolon_result.take_errors());
+  if (first_semicolon_result.is_err()) {
+    errors.push_back(std::move(first_semicolon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   // Optional condition
   if (!check(lexer::TokenKind::kSemicolon)) {
-    auto cond_res = parse_expression();
-    if (cond_res.has_errors()) {
-      return cond_res;
+    auto cond_result = parse_expression();
+    if (cond_result.is_err()) {
+      append_errs(&errors, std::move(cond_result).unwrap_err());
+      return err(std::move(errors));
     }
-    condition_expr = std::move(cond_res).take_value();
+    condition_expr = std::move(cond_result).unwrap();
   }
 
   auto second_semicolon_result = consume(
       lexer::TokenKind::kSemicolon, "expected ';' after for loop condition");
-  if (second_semicolon_result.has_errors()) {
-    return MultiResult<ASTNode>(second_semicolon_result.take_errors());
+  if (second_semicolon_result.is_err()) {
+    errors.push_back(std::move(second_semicolon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   // Optional increment
   if (!check(lexer::TokenKind::kRParen)) {
-    auto incr_res = parse_expression();
-    if (incr_res.has_errors()) {
-      return incr_res;
+    auto incr_result = parse_expression();
+    if (incr_result.is_err()) {
+      append_errs(&errors, std::move(incr_result).unwrap_err());
+      return err(std::move(errors));
     }
-    increment_expr = std::move(incr_res).take_value();
+    increment_expr = std::move(incr_result).unwrap();
   }
 
   auto rparen_result = consume(lexer::TokenKind::kRParen,
                                "expected ')' after for loop increment");
-  if (rparen_result.has_errors()) {
-    return MultiResult<ASTNode>(rparen_result.take_errors());
+  if (rparen_result.is_err()) {
+    errors.push_back(std::move(rparen_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   auto block_result = parse_block_statement();
-  if (block_result.has_errors()) {
-    return block_result;
+  if (block_result.is_err()) {
+    append_errs(&errors, std::move(block_result).unwrap_err());
+    return err(std::move(errors));
   }
 
-  return multi_ok(make_node<ForNode>(
-      for_token, std::move(init_stmt), std::move(condition_expr),
-      std::move(increment_expr), std::move(block_result).take_value()));
+  if (errors.empty()) {
+    return ok(make_node<ForNode>(
+        for_token, std::move(init_stmt), std::move(condition_expr),
+        std::move(increment_expr), std::move(block_result).unwrap()));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // block_stmt ::= "{" { statement } "}" ;
-MultiResult<ASTNode> Parser::parse_block_statement() {
+Parser::Results<AstNode> Parser::parse_block_statement() {
+  std::vector<ParseError> errors;
+
   auto lbrace_result =
       consume(lexer::TokenKind::kLBrace, "expected '{' to start a block");
-  if (lbrace_result.has_errors()) {
-    return MultiResult<ASTNode>(lbrace_result.take_errors());
+  if (lbrace_result.is_err()) {
+    errors.push_back(std::move(lbrace_result).unwrap_err());
+    return err(std::move(errors));
   }
-  const auto* block_token = lbrace_result.value();
+  const auto* block_token = lbrace_result.unwrap();
 
-  std::vector<ASTNode> statements;
-  ParseErrors local_errors;
+  std::vector<AstNode> statements;
 
   while (!check(lexer::TokenKind::kRBrace) && !eof()) {
     auto stmt_result = parse_statement();
-    if (stmt_result.has_errors()) {
-      auto errors = stmt_result.take_errors();
-      local_errors.insert(local_errors.end(),
-                          std::make_move_iterator(errors.begin()),
-                          std::make_move_iterator(errors.end()));
+    if (stmt_result.is_err()) {
+      append_errs(&errors, std::move(stmt_result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      }
       synchronize();
       continue;
     }
-    statements.push_back(std::move(stmt_result).take_value());
+    statements.push_back(std::move(stmt_result).unwrap());
   }
 
   auto rbrace_result =
       consume(lexer::TokenKind::kRBrace, "expected '}' to end a block");
-  if (rbrace_result.has_errors()) {
-    auto errors = rbrace_result.take_errors();
-    local_errors.insert(local_errors.end(),
-                        std::make_move_iterator(errors.begin()),
-                        std::make_move_iterator(errors.end()));
+  if (rbrace_result.is_err()) {
+    errors.push_back(std::move(rbrace_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  if (!local_errors.empty()) {
-    return multi_error<ASTNode>(std::move(local_errors));
+  if (errors.empty()) {
+    return ok(make_node<BlockNode>(*block_token, std::move(statements)));
+  } else {
+    return err(std::move(errors));
   }
-
-  return multi_ok(make_node<BlockNode>(*block_token, std::move(statements)));
 }
 
 // expr_stmt ::= expression ";" ;
-MultiResult<ASTNode> Parser::parse_expression_statement() {
+Parser::Results<AstNode> Parser::parse_expression_statement() {
+  std::vector<ParseError> errors;
+
   auto expr_result = parse_expression();
-  if (expr_result.has_errors()) {
-    return expr_result;
+  if (expr_result.is_err()) {
+    append_errs(&errors, std::move(expr_result).unwrap_err());
+    return err(std::move(errors));
   }
 
   auto semicolon_result =
       consume(lexer::TokenKind::kSemicolon, "expected ';' after expression");
-  if (semicolon_result.has_errors()) {
-    return MultiResult<ASTNode>(semicolon_result.take_errors());
+  if (semicolon_result.is_err()) {
+    errors.push_back(std::move(semicolon_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
   const auto& token_for_expr_stmt = std::visit(
       [](const auto& node_ptr) -> const lexer::Token& {
         return node_ptr->token;
       },
-      expr_result.value());
+      expr_result.unwrap());
 
-  return multi_ok(make_node<ExpressionStatementNode>(
-      token_for_expr_stmt, std::move(expr_result).take_value()));
+  if (errors.empty()) {
+    return ok(make_node<ExpressionStatementNode>(
+        token_for_expr_stmt, std::move(expr_result).unwrap()));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // expression ::= assignment | binary_op | unary_op | primary_expression ;
-MultiResult<ASTNode> Parser::parse_expression() {
+Parser::Results<AstNode> Parser::parse_expression() {
+  // TODO: improve this
   return parse_assignment();
 }
 
-MultiResult<ASTNode> Parser::parse_assignment() {
+Parser::Results<AstNode> Parser::parse_assignment() {
+  std::vector<ParseError> errors;
+
   auto left_expr_result = parse_binary_expression(0);
-  if (left_expr_result.has_errors()) {
-    return left_expr_result;
+  if (left_expr_result.is_err()) {
+    append_errs(&errors, std::move(left_expr_result).unwrap_err());
+    return err(std::move(errors));
   }
 
   lexer::TokenKind op_kind = peek().kind();
@@ -641,32 +761,48 @@ MultiResult<ASTNode> Parser::parse_assignment() {
     advance();
 
     auto right_expr_result = parse_assignment();
-    if (right_expr_result.has_errors()) {
-      return right_expr_result;
+    if (right_expr_result.is_err()) {
+      append_errs(&errors, std::move(right_expr_result).unwrap_err());
+      return err(std::move(errors));
     }
 
     BinaryOpNode::Operator assign_op = token_to_binary_op(op_kind);
     if (assign_op == BinaryOpNode::Operator::kUnknown) {
-      return multi_error<ASTNode>(ParseError("Invalid assignment operator",
-                                             op_token, stream_.file_manager(),
-                                             stream_.position()));
+      errors.push_back(ParseError::make(diagnostic::DiagnosticId::kInvalidToken,
+                                        op_token,
+                                        "invalid assignment operator"));
+      if (strict_) {
+        return err(std::move(errors));
+      }
     }
 
-    return multi_ok(make_node<AssignmentNode>(
-        op_token, std::move(left_expr_result).take_value(),
-        std::move(right_expr_result).take_value(), assign_op));
+    if (errors.empty()) {
+      return ok(make_node<AssignmentNode>(
+          op_token, std::move(left_expr_result).unwrap(),
+          std::move(right_expr_result).unwrap(), assign_op));
+    } else {
+      return err(std::move(errors));
+    }
   }
-  return left_expr_result;
+
+  if (errors.empty()) {
+    return left_expr_result;
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // binary_op ::= expression ("+" | "-" | "*" | "/" | "^" | ... ) expression ;
-MultiResult<ASTNode> Parser::parse_binary_expression(int min_precedence) {
-  ASTNode left_node;
+Parser::Results<AstNode> Parser::parse_binary_expression(int min_precedence) {
+  std::vector<ParseError> errors;
+
+  AstNode left_node;
   auto left_result = parse_unary_expression();
-  if (left_result.has_errors()) {
-    return left_result;
+  if (left_result.is_err()) {
+    append_errs(&errors, std::move(left_result).unwrap_err());
+    return err(std::move(errors));
   }
-  left_node = std::move(left_result).take_value();
+  left_node = std::move(left_result).unwrap();
 
   while (!eof()) {
     auto op_kind = peek().kind();
@@ -687,78 +823,94 @@ MultiResult<ASTNode> Parser::parse_binary_expression(int min_precedence) {
       next_min_precedence = precedence;
     }
 
-    ASTNode right_node;
+    AstNode right_node;
     auto right_result = parse_binary_expression(next_min_precedence);
-    if (right_result.has_errors()) {
-      return right_result;
+    if (right_result.is_err()) {
+      append_errs(&errors, std::move(right_result).unwrap_err());
+      return err(std::move(errors));
     }
-    right_node = std::move(right_result).take_value();
+    right_node = std::move(right_result).unwrap();
 
     BinaryOpNode::Operator op = token_to_binary_op(op_kind);
     if (op == BinaryOpNode::Operator::kUnknown) {
-      return multi_error<ASTNode>(ParseError("Invalid binary operator",
-                                             op_token, stream_.file_manager(),
-                                             stream_.position()));
+      errors.push_back(ParseError::make(diagnostic::DiagnosticId::kInvalidToken,
+                                        op_token, "invalid binary operator"));
+      if (strict_) {
+        return err(std::move(errors));
+      }
     }
 
     left_node = make_node<BinaryOpNode>(op_token, op, std::move(left_node),
                                         std::move(right_node));
   }
 
-  return multi_ok(std::move(left_node));
+  if (errors.empty()) {
+    return ok(std::move(left_node));
+  } else {
+    return err(std::move(errors));
+  }
 }
 
 // unary_op ::= ("!" | "-" | "++" | "--" | "~") primary_expression ;
-MultiResult<ASTNode> Parser::parse_unary_expression() {
+Parser::Results<AstNode> Parser::parse_unary_expression() {
+  std::vector<ParseError> errors;
+
   lexer::TokenKind kind = peek().kind();
   if (is_unary_operator(kind)) {
     const auto& op_token = peek();
     advance();
 
     auto operand_result = parse_unary_expression();
-    if (operand_result.has_errors()) {
-      return operand_result;
+    if (operand_result.is_err()) {
+      append_errs(&errors, std::move(operand_result).unwrap_err());
+      return err(std::move(errors));
     }
 
     UnaryOpNode::Operator op = token_to_unary_op(kind);
     if (op == UnaryOpNode::Operator::kUnknown) {
-      return multi_error<ASTNode>(ParseError("Invalid unary operator", op_token,
-                                             stream_.file_manager(),
-                                             stream_.position()));
+      errors.push_back(ParseError::make(diagnostic::DiagnosticId::kInvalidToken,
+                                        op_token, "invalid unary operator"));
+      if (strict_) {
+        return err(std::move(errors));
+      }
     }
 
-    return multi_ok(make_node<UnaryOpNode>(
-        op_token, op, std::move(operand_result).take_value()));
+    if (errors.empty()) {
+      return ok(make_node<UnaryOpNode>(op_token, op,
+                                       std::move(operand_result).unwrap()));
+    } else {
+      return err(std::move(errors));
+    }
   }
   return parse_primary_expression();
 }
 
-MultiResult<ASTNode> Parser::parse_primary_expression() {
+Parser::Results<AstNode> Parser::parse_primary_expression() {
+  std::vector<ParseError> errors;
+
   // Handle literal parsing
   if (match(lexer::TokenKind::kLiteralNumeric)) {
     const auto& token = previous();
-    return multi_ok(
-        make_node<LiteralNode>(token, LiteralNode::Type::kNumeric,
-                               token.lexeme(stream_.file_manager())));
+    return ok(make_node<LiteralNode>(token, LiteralNode::Type::kNumeric,
+                                     token.lexeme(stream_.file_manager())));
   } else if (match(lexer::TokenKind::kLiteralChar)) {
     const auto& token = previous();
-    return multi_ok(make_node<LiteralNode>(
-        token, LiteralNode::Type::kChar, token.lexeme(stream_.file_manager())));
-  } else if (match(lexer::TokenKind::kLiteralString)) {
+    return ok(make_node<LiteralNode>(token, LiteralNode::Type::kChar,
+                                     token.lexeme(stream_.file_manager())));
+  } else if (match(lexer::TokenKind::kLiteralStr)) {
     const auto& token = previous();
-    return multi_ok(
-        make_node<LiteralNode>(token, LiteralNode::Type::kString,
-                               token.lexeme(stream_.file_manager())));
+    return ok(make_node<LiteralNode>(token, LiteralNode::Type::kString,
+                                     token.lexeme(stream_.file_manager())));
   } else if (match(lexer::TokenKind::kTrue)) {
     const auto& token = previous();
-    return multi_ok(make_node<LiteralNode>(token, true));
+    return ok(make_node<LiteralNode>(token, true));
   } else if (match(lexer::TokenKind::kFalse)) {
     const auto& token = previous();
-    return multi_ok(make_node<LiteralNode>(token, false));
+    return ok(make_node<LiteralNode>(token, false));
   } else if (match(lexer::TokenKind::kIdentifier)) {
     // Handle identifiers (could be variable access or function call)
     const auto& token = previous();
-    ASTNode identifier_node =
+    AstNode identifier_node =
         make_node<IdentifierNode>(token, token.lexeme(stream_.file_manager()));
 
     // Check for function call immediately after identifier
@@ -767,136 +919,177 @@ MultiResult<ASTNode> Parser::parse_primary_expression() {
     }
 
     // Just an identifier
-    return multi_ok(std::move(identifier_node));
+    return ok(std::move(identifier_node));
   } else if (match(lexer::TokenKind::kLParen)) {
     // Handle parenthesized expressions
     // Recursively parse the expression
     // inside parentheses
+
     auto expr_result = parse_expression();
-    if (expr_result.has_errors()) {
-      return multi_error<ASTNode>(expr_result.take_errors());
+    if (expr_result.is_err()) {
+      append_errs(&errors, std::move(expr_result).unwrap_err());
+      return err(std::move(errors));
     }
 
     auto rparen_result =
         consume(lexer::TokenKind::kRParen, "expected ')' after expression");
-    if (rparen_result.has_errors()) {
-      return multi_error<ASTNode>(rparen_result.take_errors());
+    if (rparen_result.is_err()) {
+      errors.push_back(std::move(rparen_result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      }
     }
 
-    return expr_result;
+    if (errors.empty()) {
+      return expr_result;
+    } else {
+      return err(std::move(errors));
+    }
   }
 
   const auto& token = peek();
-  return multi_error<ASTNode>(
-      ParseError("Unexpected token for primary expression", token,
-                 stream_.file_manager(), stream_.position()));
+  errors.push_back(ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken,
+                                    token,
+                                    "Unexpected token for primary expression"));
+  return err(std::move(errors));
 }
 
 // function_call ::= expression "(" [ expression { "," expression } ] ")" ;
-// Now takes an ASTNode for the callee, allowing calls like `obj.method()`
-MultiResult<ASTNode> Parser::parse_function_call(ASTNode callee_node) {
-  ParseErrors local_errors;
+// Now takes an AstNode for the callee, allowing calls like `obj.method()`
+Parser::Results<AstNode> Parser::parse_function_call(AstNode callee_node) {
+  std::vector<ParseError> errors;
 
   auto lparen_result =
       consume(lexer::TokenKind::kLParen, "expected '(' for function call");
-  if (lparen_result.has_errors()) {
-    auto errors = lparen_result.take_errors();
-    local_errors.insert(local_errors.end(),
-                        std::make_move_iterator(errors.begin()),
-                        std::make_move_iterator(errors.end()));
+  if (lparen_result.is_err()) {
+    errors.push_back(std::move(lparen_result).unwrap_err());
+    return err(std::move(errors));
   }
 
   // Use the '(' token for the call node's base
-  const auto* call_token = lparen_result.value();
+  const auto* call_token = std::move(lparen_result).unwrap();
 
-  std::vector<ASTNode> arguments;
+  std::vector<AstNode> arguments;
   if (!check(lexer::TokenKind::kRParen)) {
     auto first_arg_result = parse_expression();
-    if (first_arg_result.has_errors()) {
-      auto errors = first_arg_result.take_errors();
-      local_errors.insert(local_errors.end(),
-                          std::make_move_iterator(errors.begin()),
-                          std::make_move_iterator(errors.end()));
+    if (first_arg_result.is_err()) {
+      append_errs(&errors, std::move(first_arg_result).unwrap_err());
+      if (strict_) {
+        return err(std::move(errors));
+      }
+    } else {
+      arguments.push_back(std::move(first_arg_result).unwrap());
     }
-    arguments.push_back(std::move(first_arg_result.value()));
 
     while (match(lexer::TokenKind::kComma)) {
       auto arg_result = parse_expression();
-      if (arg_result.has_errors()) {
-        auto errors = arg_result.take_errors();
-        local_errors.insert(local_errors.end(),
-                            std::make_move_iterator(errors.begin()),
-                            std::make_move_iterator(errors.end()));
+      if (arg_result.is_err()) {
+        append_errs(&errors, std::move(arg_result).unwrap_err());
+        if (strict_) {
+          return err(std::move(errors));
+        }
+      } else {
+        arguments.push_back(std::move(arg_result).unwrap());
       }
-      arguments.push_back(std::move(first_arg_result.value()));
     }
   }
 
   auto rparen_result = consume(lexer::TokenKind::kRParen,
                                "expected ')' after function arguments");
-  if (rparen_result.has_errors()) {
-    auto errors = rparen_result.take_errors();
-    local_errors.insert(local_errors.end(),
-                        std::make_move_iterator(errors.begin()),
-                        std::make_move_iterator(errors.end()));
+  if (rparen_result.is_err()) {
+    errors.push_back(std::move(rparen_result).unwrap_err());
+    if (strict_) {
+      return err(std::move(errors));
+    }
   }
 
-  if (local_errors.empty()) {
-    return multi_ok(make_node<CallNode>(*call_token, std::move(callee_node),
-                                        std::move(arguments)));
+  if (errors.empty()) {
+    return ok(make_node<CallNode>(*call_token, std::move(callee_node),
+                                  std::move(arguments)));
   } else {
-    return multi_error<ASTNode>(std::move(local_errors));
+    return err(std::move(errors));
   }
 }
 
-// Helper methods
-MultiResult<const lexer::Token*> Parser::consume(
+Parser::Result<const lexer::Token*> Parser::consume(
     lexer::TokenKind expected,
-    const std::string& error_message) {
+    std::string&& error_message) {
   const auto& token = peek();
   if (check(expected)) {
     advance();
-    return multi_ok(&token);
+    return Result<const lexer::Token*>(diagnostic::make_ok(&token));
+  } else {
+    return Result<const lexer::Token*>(diagnostic::make_err(
+        ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, token,
+                         std::move(error_message))));
   }
-
-  return multi_error<const lexer::Token*>(ParseError(
-      error_message, token, stream_.file_manager(), stream_.position()));
 }
 
 void Parser::synchronize() {
-  using Tk = lexer::TokenKind;
-
-  if (!eof()) {
-    advance();
+  if (eof()) {
+    return;
   }
-
+  advance();
   while (!eof()) {
-    if (previous().kind() == Tk::kSemicolon) {
-      return;  // Stop after a semicolon, likely end of statement
+    if (previous().kind() == lexer::TokenKind::kSemicolon) {
+      return;
     }
-
-    switch (peek().kind()) {
-      // Keywords that typically start a new statement or declaration
-      case Tk::kFn:
-      case Tk::kIf:
-      case Tk::kWhile:
-      case Tk::kFor:
-      case Tk::kReturn:
-      case Tk::kMut:     // For variable declarations
-      case Tk::kStruct:  // If you add struct declarations
-      case Tk::kEnum:    // If you add enum declarations
-        return;
-      default: break;
+    if (is_sync_point(peek().kind())) {
+      return;
     }
-
     advance();
   }
 }
 
-ParseError Parser::make_error(const std::string& message) const {
-  const auto& token = peek();
-  return ParseError(message, token, stream_.file_manager(), stream_.position());
+// static
+bool Parser::is_sync_point(lexer::TokenKind kind) {
+  using Tk = lexer::TokenKind;
+  switch (kind) {
+    case Tk::kFn:
+    case Tk::kIf:
+    case Tk::kWhile:
+    case Tk::kFor:
+    case Tk::kReturn:
+    case Tk::kMut:
+    case Tk::kStruct:
+    case Tk::kEnum: return true;
+    default: return false;
+  }
 }
+
+// static
+Parser::Result<AstNode> Parser::single_ok(AstNode&& node) {
+  return Result<AstNode>(diagnostic::make_ok(std::move(node)));
+}
+
+// static
+Parser::Result<AstNode> Parser::single_err(ParseError&& error) {
+  return Result<AstNode>(diagnostic::make_err(std::move(error)));
+}
+
+// static
+Parser::Results<AstNode> Parser::ok(AstNode&& node) {
+  return Results<AstNode>(diagnostic::make_ok(std::move(node)));
+}
+
+// static
+Parser::Results<AstNode> Parser::err(std::vector<ParseError>&& errors) {
+  return Results<AstNode>(diagnostic::make_err(std::move(errors)));
+}
+
+// static
+void Parser::append_errs(std::vector<ParseError>* target,
+                         std::vector<ParseError>&& source) {
+  DCHECK(target);
+  target->insert(target->end(), std::make_move_iterator(source.begin()),
+                 std::make_move_iterator(source.end()));
+}
+
+// ParseError Parser::make_error(const std::string& message) const {
+//   const auto& token = peek();
+//   return ParseError(message, token, stream_.file_manager(),
+//   stream_.position());
+// }
 
 // static
 BinaryOpNode::Operator Parser::token_to_binary_op(lexer::TokenKind kind) {

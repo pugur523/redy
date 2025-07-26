@@ -14,9 +14,9 @@ namespace ast {
 
 // Statements
 struct AST_EXPORT BlockNode : BaseNode {
-  std::vector<ASTNode> statements;  // Statements are owned by BlockNode
+  std::vector<AstNode> statements;  // Statements are owned by BlockNode
 
-  explicit BlockNode(const lexer::Token& tok, std::vector<ASTNode>&& stmts);
+  explicit BlockNode(const lexer::Token& tok, std::vector<AstNode>&& stmts);
 
   std::string dump() const override;
 };

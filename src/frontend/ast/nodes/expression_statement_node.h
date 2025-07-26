@@ -12,9 +12,9 @@
 namespace ast {
 
 struct AST_EXPORT ExpressionStatementNode : BaseNode {
-  ASTNode expression;  // Owned by this node
+  AstNode expression;  // Owned by this node
 
-  ExpressionStatementNode(const lexer::Token& tok, ASTNode&& expr);
+  ExpressionStatementNode(const lexer::Token& tok, AstNode&& expr);
 
   std::string dump() const override;
 };

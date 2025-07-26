@@ -11,7 +11,7 @@
 
 namespace ast {
 
-WhileNode::WhileNode(const lexer::Token& tok, ASTNode&& cond, ASTNode&& b)
+WhileNode::WhileNode(const lexer::Token& tok, AstNode&& cond, AstNode&& b)
     : BaseNode(tok), condition(std::move(cond)), body(std::move(b)) {}
 
 std::string WhileNode::dump() const {

@@ -12,10 +12,10 @@
 namespace ast {
 
 struct AST_EXPORT WhileNode : BaseNode {
-  ASTNode condition;
-  ASTNode body;
+  AstNode condition;
+  AstNode body;
 
-  WhileNode(const lexer::Token& tok, ASTNode&& cond, ASTNode&& b);
+  WhileNode(const lexer::Token& tok, AstNode&& cond, AstNode&& b);
 
   std::string dump() const override;
 };

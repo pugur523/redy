@@ -49,7 +49,7 @@ TEST(DiagnosticEngineTest, FormatSingle) {
   std::string formatted = engine.format_batch();
   engine.clear();
 
-  DLOG(debug, "format single: \n{}", formatted);
+  // DLOG(debug, "format single: \n{}", formatted);
 
   constexpr const auto np = std::string::npos;
   EXPECT_NE(formatted.find("expected expression"), np);
@@ -93,7 +93,7 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
   std::string formatted2 = engine.format_batch();
   engine.clear();
 
-  DLOG(debug, "format multiple label: \n{}", formatted2);
+  // DLOG(debug, "format multiple label: \n{}", formatted2);
 
   constexpr const auto np = std::string::npos;
   EXPECT_NE(formatted2.find("value moved after borrow"), np);
@@ -135,7 +135,7 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
   std::string formatted3 = engine.format_batch();
   engine.clear();
 
-  DLOG(debug, "format very large line number: \n{}", formatted3);
+  // DLOG(debug, "format very large line number: \n{}", formatted3);
 
   constexpr const auto np = std::string::npos;
   EXPECT_NE(formatted3.find("expected expression"), np);

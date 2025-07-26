@@ -14,14 +14,14 @@ namespace ast {
 struct AST_EXPORT VariableDeclarationNode : BaseNode {
   std::string name;
   bool is_mutable;
-  std::optional<ASTNode> type;         // Owned by this node
-  std::optional<ASTNode> initializer;  // Owned by this node
+  std::optional<AstNode> type;         // Owned by this node
+  std::optional<AstNode> initializer;  // Owned by this node
 
   VariableDeclarationNode(const lexer::Token& tok,
                           std::string_view n,
                           bool is_mutable = false,
-                          std::optional<ASTNode>&& t = std::nullopt,
-                          std::optional<ASTNode>&& init = std::nullopt);
+                          std::optional<AstNode>&& t = std::nullopt,
+                          std::optional<AstNode>&& init = std::nullopt);
 
   std::string dump() const override;
 };

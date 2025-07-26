@@ -12,7 +12,7 @@
 namespace ast {
 
 ExpressionStatementNode::ExpressionStatementNode(const lexer::Token& tok,
-                                                 ASTNode&& expr)
+                                                 AstNode&& expr)
     : BaseNode(tok), expression(std::move(expr)) {}
 
 std::string ExpressionStatementNode::dump() const {

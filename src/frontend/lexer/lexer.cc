@@ -53,7 +53,7 @@ Lexer::Result<Token> Lexer::next_token() {
 
   // String Literals
   if (c == '"') {
-    return literal_string();
+    return literal_str();
   }
 
   // Character Literals
@@ -303,7 +303,7 @@ Lexer::Result<Token> Lexer::literal_numeric() {
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
 
-  // --- Handle base-prefixed literals ---
+  // Handle base-prefixed literals
   if (char_stream_.peek() == '0') {
     // consume '0'
     char_stream_.advance();
@@ -330,7 +330,7 @@ Lexer::Result<Token> Lexer::literal_numeric() {
     }
   }
 
-  // --- Handle decimal/floating-point ---
+  // Handle decimal/floating-point
   while (std::isdigit(char_stream_.peek())) {
     char_stream_.advance();
   }
@@ -365,7 +365,7 @@ Lexer::Result<Token> Lexer::literal_numeric() {
   return make_token(TokenKind::kLiteralNumeric, start, line, col);
 }
 
-Lexer::Result<Token> Lexer::literal_string() {
+Lexer::Result<Token> Lexer::literal_str() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -397,7 +397,7 @@ Lexer::Result<Token> Lexer::literal_string() {
   // Consume the closing '"'
   char_stream_.advance();
 
-  return make_token(TokenKind::kLiteralString, start, line, col);
+  return make_token(TokenKind::kLiteralStr, start, line, col);
 }
 
 Lexer::Result<Token> Lexer::literal_char() {

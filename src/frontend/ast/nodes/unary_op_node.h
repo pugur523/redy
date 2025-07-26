@@ -23,10 +23,10 @@ struct AST_EXPORT UnaryOpNode : BaseNode {
 
   Operator op;
 
-  // Child node is owned by this node (via ASTNode's unique_ptr)
-  ASTNode operand;
+  // Child node is owned by this node (via AstNode's unique_ptr)
+  AstNode operand;
 
-  UnaryOpNode(const lexer::Token& tok, Operator o, ASTNode&& operand_node);
+  UnaryOpNode(const lexer::Token& tok, Operator o, AstNode&& operand_node);
 
   std::string dump() const override;
 

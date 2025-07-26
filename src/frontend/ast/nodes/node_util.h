@@ -14,22 +14,22 @@
 namespace ast {
 
 // Function to dump the AST, implemented in .cc file
-std::string dump_ast(const ASTNode& node);
+std::string dump_ast(const AstNode& node);
 
 // Helper functions for AST node creation
 template <typename NodeType, typename... Args>
-inline ASTNode make_node(Args&&... args) {
+inline AstNode make_node(Args&&... args) {
   return std::make_unique<NodeType>(std::forward<Args>(args)...);
 }
 
-// Visitor pattern helper for ASTNode
+// Visitor pattern helper for AstNode
 template <typename Visitor>
-inline auto visit_node(const ASTNode& node, Visitor&& visitor) {
+inline auto visit_node(const AstNode& node, Visitor&& visitor) {
   return std::visit(std::forward<Visitor>(visitor), node);
 }
 
 template <typename T>
-inline const T* as(const ast::ASTNode& node) {
+inline const T* node_as(const ast::AstNode& node) {
   return std::get_if<std::unique_ptr<T>>(&node)->get();
 }
 

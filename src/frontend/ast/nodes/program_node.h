@@ -14,9 +14,9 @@ namespace ast {
 
 // Program (root node)
 struct AST_EXPORT ProgramNode : BaseNode {
-  std::vector<ASTNode> statements;
+  std::vector<AstNode> statements;
 
-  explicit ProgramNode(const lexer::Token& tok, std::vector<ASTNode>&& stmts);
+  explicit ProgramNode(const lexer::Token& tok, std::vector<AstNode>&& stmts);
 
   std::string dump() const override;
 };

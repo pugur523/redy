@@ -13,7 +13,7 @@ namespace ast {
 
 UnaryOpNode::UnaryOpNode(const lexer::Token& tok,
                          Operator o,
-                         ASTNode&& operand_node)
+                         AstNode&& operand_node)
     : BaseNode(tok), op(o), operand(std::move(operand_node)) {}
 
 std::string UnaryOpNode::dump() const {

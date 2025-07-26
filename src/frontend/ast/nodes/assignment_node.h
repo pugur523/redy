@@ -12,13 +12,13 @@
 namespace ast {
 
 struct AST_EXPORT AssignmentNode : BaseNode {
-  ASTNode target;             // Owned by this node
-  ASTNode value;              // Owned by this node
+  AstNode target;             // Owned by this node
+  AstNode value;              // Owned by this node
   BinaryOpNode::Operator op;  // To distinguish between =, +=, -=, etc.
 
   AssignmentNode(const lexer::Token& tok,
-                 ASTNode&& t,
-                 ASTNode&& v,
+                 AstNode&& t,
+                 AstNode&& v,
                  BinaryOpNode::Operator o = BinaryOpNode::Operator::kAssign);
 
   std::string dump() const override;

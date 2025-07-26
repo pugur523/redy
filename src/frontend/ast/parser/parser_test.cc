@@ -12,6 +12,7 @@
 #include "core/base/logger.h"
 #include "frontend/ast/base/base_node.h"
 #include "frontend/ast/nodes/node_util.h"
+#include "frontend/diagnostic/base/diagnostic_engine.h"
 #include "frontend/lexer/token/token_kind.h"
 #include "gtest/gtest.h"
 
@@ -36,11 +37,11 @@ TEST(ParserTest, ParseLiteral) {
   tokens.emplace_back(lexer::TokenKind::kSemicolon, file_id, 1, 3, 1);
   tokens.emplace_back(lexer::TokenKind::kEof, file_id, 1, 4, 0);
   auto parser = make_parser(std::move(tokens), &manager);
-  auto result = parser->parse_strict();
-  EXPECT_TRUE(result.is_ok()) << "Parse error: " << result.error().message;
+  auto result = parser->parse();
+  EXPECT_TRUE(result.is_ok());
 
   const auto& program_node =
-      std::get<std::unique_ptr<ProgramNode>>(result.value());
+      std::get<std::unique_ptr<ProgramNode>>(result.unwrap());
   EXPECT_NE(program_node, nullptr);
   // DLOG(info, "{}\n", program_node->dump());
   EXPECT_FALSE(program_node->statements.empty());
@@ -59,9 +60,8 @@ TEST(ParserTest, ParseError) {
   tokens.emplace_back(lexer::TokenKind::kSemicolon, file_id, 1, 44, 1);
   tokens.emplace_back(lexer::TokenKind::kEof, file_id, 1, 45, 0);
   auto parser = make_parser(std::move(tokens), &manager);
-  auto result = parser->parse_strict();
-  EXPECT_TRUE(result.is_error());
-  // DLOG(debug, "parse error: {}\n", result.error().format());
+  auto result = parser->parse();
+  EXPECT_TRUE(result.is_err());
 }
 
 TEST(ParserTest, ParseSimpleVariableDeclaration) {
@@ -75,10 +75,10 @@ TEST(ParserTest, ParseSimpleVariableDeclaration) {
   tokens.emplace_back(lexer::TokenKind::kSemicolon, file_id, 1, 8, 1);
   tokens.emplace_back(lexer::TokenKind::kEof, file_id, 1, 9, 0);
   auto parser = make_parser(std::move(tokens), &manager);
-  auto result = parser->parse_strict();
-  EXPECT_TRUE(result.is_ok()) << "Parse error: " << result.error().message;
+  auto result = parser->parse();
+  EXPECT_TRUE(result.is_ok());
 
-  const auto& program_node = as<ProgramNode>(result.value());
+  const auto& program_node = node_as<ProgramNode>(result.unwrap());
   EXPECT_NE(program_node, nullptr);
   // DLOG(info, "{}\n", program_node->dump());
   EXPECT_FALSE(program_node->statements.empty());

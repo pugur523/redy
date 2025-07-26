@@ -32,7 +32,7 @@ Token make_dummy_token(std::string&& lexeme = "dummy",
   return Token(kind, core::SourceLocation(1, 1, id), len);
 }
 
-TEST(ASTNodeTest, IdentifierNodeTest) {
+TEST(AstNodeTest, IdentifierNodeTest) {
   Token tok = make_dummy_token("foo");
   IdentifierNode node(tok, "foo");
 
@@ -40,7 +40,7 @@ TEST(ASTNodeTest, IdentifierNodeTest) {
   EXPECT_EQ(node.name, "foo");
 }
 
-TEST(ASTNodeTest, LiteralNodeIntegerTest) {
+TEST(AstNodeTest, LiteralNodeIntegerTest) {
   Token tok = make_dummy_token("42", TokenKind::kLiteralNumeric);
   LiteralNode node(tok, LiteralNode::Type::kNumeric, "42");
 
@@ -49,7 +49,7 @@ TEST(ASTNodeTest, LiteralNodeIntegerTest) {
   EXPECT_EQ(node.value, "42");
 }
 
-TEST(ASTNodeTest, LiteralNodeBooleanTest) {
+TEST(AstNodeTest, LiteralNodeBooleanTest) {
   Token tok = make_dummy_token("true", TokenKind::kTrue);
   LiteralNode node(tok, true);
 
@@ -57,7 +57,7 @@ TEST(ASTNodeTest, LiteralNodeBooleanTest) {
   EXPECT_EQ(node.value, "true");
 }
 
-TEST(ASTNodeTest, BinaryOpNodeTest) {
+TEST(AstNodeTest, BinaryOpNodeTest) {
   Token tok = make_dummy_token("+", TokenKind::kPlus);
 
   auto left =
@@ -75,7 +75,7 @@ TEST(ASTNodeTest, BinaryOpNodeTest) {
   EXPECT_TRUE(std::holds_alternative<std::unique_ptr<LiteralNode>>(node.right));
 }
 
-TEST(ASTNodeTest, UnaryOpNodeTest) {
+TEST(AstNodeTest, UnaryOpNodeTest) {
   Token tok = make_dummy_token("-", TokenKind::kMinus);
   auto operand =
       make_node<LiteralNode>(make_dummy_token("1", TokenKind::kLiteralNumeric),
@@ -88,14 +88,14 @@ TEST(ASTNodeTest, UnaryOpNodeTest) {
       std::holds_alternative<std::unique_ptr<LiteralNode>>(node.operand));
 }
 
-TEST(ASTNodeTest, TypeNodeTest) {
+TEST(AstNodeTest, TypeNodeTest) {
   Token tok = make_dummy_token("i32", TokenKind::kIdentifier);
   TypeNode node(tok, "i32");
 
   EXPECT_EQ(node.type_name, "i32");
 }
 
-TEST(ASTNodeTest, VariableDeclarationNodeTest) {
+TEST(AstNodeTest, VariableDeclarationNodeTest) {
   Token tok = make_dummy_token("x", TokenKind::kIdentifier);
 
   auto type = make_node<TypeNode>(make_dummy_token("i32"), "i32");
@@ -110,14 +110,14 @@ TEST(ASTNodeTest, VariableDeclarationNodeTest) {
   EXPECT_TRUE(node.initializer.has_value());
 }
 
-TEST(ASTNodeTest, ReturnNodeEmptyTest) {
+TEST(AstNodeTest, ReturnNodeEmptyTest) {
   Token tok = make_dummy_token("return", TokenKind::kReturn);
   ReturnNode node(tok);
 
   EXPECT_FALSE(node.value.has_value());
 }
 
-TEST(ASTNodeTest, ReturnNodeWithValueTest) {
+TEST(AstNodeTest, ReturnNodeWithValueTest) {
   Token tok = make_dummy_token("return", TokenKind::kReturn);
   auto val = make_node<LiteralNode>(make_dummy_token("42"),
                                     LiteralNode::Type::kNumeric, "42");
@@ -128,10 +128,10 @@ TEST(ASTNodeTest, ReturnNodeWithValueTest) {
       std::holds_alternative<std::unique_ptr<LiteralNode>>(*node.value));
 }
 
-TEST(ASTNodeTest, BlockNodeTest) {
+TEST(AstNodeTest, BlockNodeTest) {
   Token tok = make_dummy_token("{", TokenKind::kLBrace);
 
-  std::vector<ASTNode> stmts;
+  std::vector<AstNode> stmts;
   stmts.push_back(make_node<ReturnNode>(
       make_dummy_token("return"),
       make_node<LiteralNode>(make_dummy_token("1"), LiteralNode::Type::kNumeric,
@@ -144,7 +144,7 @@ TEST(ASTNodeTest, BlockNodeTest) {
       std::holds_alternative<std::unique_ptr<ReturnNode>>(node.statements[0]));
 }
 
-TEST(ASTNodeTest, ParameterNodeTest) {
+TEST(AstNodeTest, ParameterNodeTest) {
   Token tok = make_dummy_token("x", TokenKind::kIdentifier);
   auto type = make_node<TypeNode>(make_dummy_token("i32"), "i32");
 
@@ -154,23 +154,23 @@ TEST(ASTNodeTest, ParameterNodeTest) {
   EXPECT_TRUE(std::holds_alternative<std::unique_ptr<TypeNode>>(node.type));
 }
 
-TEST(ASTNodeTest, FunctionNodeTest) {
+TEST(AstNodeTest, FunctionNodeTest) {
   Token tok = make_dummy_token("fn", TokenKind::kFn);
-  ASTNode ret_type = make_node<TypeNode>(make_dummy_token("i32"), "i32");
+  AstNode ret_type = make_node<TypeNode>(make_dummy_token("i32"), "i32");
 
-  std::vector<ASTNode> params;
+  std::vector<AstNode> params;
   params.push_back(make_node<ParameterNode>(
       make_dummy_token("x"), "x",
       make_node<TypeNode>(make_dummy_token("i32"), "i32")));
-  ASTNode params_node = make_node<ParameterListNode>(
+  AstNode params_node = make_node<ParameterListNode>(
       make_dummy_token("(", lexer::TokenKind::kLParen), std::move(params));
 
-  std::vector<ASTNode> block;
+  std::vector<AstNode> block;
   block.push_back(make_node<ReturnNode>(
       make_dummy_token("return"),
       make_node<LiteralNode>(make_dummy_token("0"), LiteralNode::Type::kNumeric,
                              "0")));
-  ASTNode body = make_node<BlockNode>(make_dummy_token("{"), std::move(block));
+  AstNode body = make_node<BlockNode>(make_dummy_token("{"), std::move(block));
 
   std::string_view view = "add";
   FunctionNode node(tok, view, std::move(params_node), std::move(ret_type),

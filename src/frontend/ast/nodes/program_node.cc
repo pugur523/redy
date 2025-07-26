@@ -12,7 +12,7 @@
 
 namespace ast {
 
-ProgramNode::ProgramNode(const lexer::Token& tok, std::vector<ASTNode>&& stmts)
+ProgramNode::ProgramNode(const lexer::Token& tok, std::vector<AstNode>&& stmts)
     : BaseNode(tok), statements(std::move(stmts)) {}
 
 std::string ProgramNode::dump() const {

@@ -12,8 +12,8 @@
 namespace ast {
 
 AssignmentNode::AssignmentNode(const lexer::Token& tok,
-                               ASTNode&& t,
-                               ASTNode&& v,
+                               AstNode&& t,
+                               AstNode&& v,
                                BinaryOpNode::Operator o)
     : BaseNode(tok), target(std::move(t)), value(std::move(v)), op(o) {}
 

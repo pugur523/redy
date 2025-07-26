@@ -24,10 +24,10 @@ TEST(FrontendTest, SimpleCodePipeline) {
 
   ast::Parser parser(std::move(stream));
 
-  auto result = parser.parse_strict();
+  auto result = parser.parse();
   EXPECT_TRUE(result.is_ok());
   const auto& program_node =
-      std::get<std::unique_ptr<ast::ProgramNode>>(result.value());
+      std::get<std::unique_ptr<ast::ProgramNode>>(result.unwrap());
   EXPECT_FALSE(program_node->statements.empty());
   // DLOG(info, "{}\n", program_node->dump());
   core::write_file(
@@ -43,7 +43,8 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
             x: i32 = 42;
             print("hello {}\n", world_str);
             print("answer to the ultimate question of life, the universe,
-                    and everything is {}.\n", x); return;
+                    and everything is {}.\n", x);
+            return;
         }
     )";
   core::FileId id = manager.add_virtual_file(std::move(source));
@@ -52,14 +53,13 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
   auto tokens = lexer.lex_all().unwrap();
   EXPECT_FALSE(tokens.empty());
   lexer::TokenStream stream(std::move(tokens), &manager);
-  // DLOG(info, "{}", stream.dump());
 
   ast::Parser parser(std::move(stream));
 
-  auto result = parser.parse_strict();
+  auto result = parser.parse();
   EXPECT_TRUE(result.is_ok());
   const auto& program_node =
-      std::get<std::unique_ptr<ast::ProgramNode>>(result.value());
+      std::get<std::unique_ptr<ast::ProgramNode>>(result.unwrap());
   EXPECT_FALSE(program_node->statements.empty());
   // DLOG(info, "{}", program_node->dump());
 }

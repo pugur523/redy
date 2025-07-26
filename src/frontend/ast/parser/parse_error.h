@@ -1,0 +1,48 @@
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
+#ifndef FRONTEND_AST_PARSER_PARSE_ERROR_H_
+#define FRONTEND_AST_PARSER_PARSE_ERROR_H_
+
+#include <string>
+#include <utility>
+
+#include "frontend/ast/base/ast_export.h"
+#include "frontend/diagnostic/data/diagnostic_id.h"
+#include "frontend/lexer/token/token.h"
+
+namespace ast {
+
+struct AST_EXPORT ParseError {
+  std::string message;
+  std::size_t line;
+  std::size_t column;
+  std::size_t len;
+  diagnostic::DiagnosticId id;
+
+  inline static ParseError make(diagnostic::DiagnosticId id,
+                                std::size_t line,
+                                std::size_t column,
+                                std::size_t len,
+                                std::string&& message) {
+    return ParseError{
+        .message = std::move(message),
+        .line = line,
+        .column = column,
+        .len = len,
+        .id = id,
+    };
+  }
+
+  inline static ParseError make(diagnostic::DiagnosticId id,
+                                const lexer::Token& token,
+                                std::string&& message) {
+    return make(id, token.location().line(), token.location().column(),
+                token.length(), std::move(message));
+  }
+};
+
+}  // namespace ast
+
+#endif  // FRONTEND_AST_PARSER_PARSE_ERROR_H_

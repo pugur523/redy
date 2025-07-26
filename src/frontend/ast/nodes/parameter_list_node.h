@@ -15,10 +15,10 @@ namespace ast {
 // Represents the list of parameters for a function
 struct AST_EXPORT ParameterListNode : BaseNode {
   // Vector of ParameterNode. Owned by this node.
-  std::vector<ASTNode> parameters;
+  std::vector<AstNode> parameters;
 
   explicit ParameterListNode(const lexer::Token& tok,
-                             std::vector<ASTNode> params);
+                             std::vector<AstNode> params);
 
   std::string dump() const override;
 };

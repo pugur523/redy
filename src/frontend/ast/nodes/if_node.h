@@ -12,14 +12,14 @@
 namespace ast {
 
 struct AST_EXPORT IfNode : BaseNode {
-  ASTNode condition;
-  ASTNode then_branch;
-  std::optional<ASTNode> else_branch;  // else clause is optional
+  AstNode condition;
+  AstNode then_branch;
+  std::optional<AstNode> else_branch;  // else clause is optional
 
   IfNode(const lexer::Token& tok,
-         ASTNode&& cond,
-         ASTNode&& then_stmt,
-         std::optional<ASTNode>&& else_stmt = std::nullopt);
+         AstNode&& cond,
+         AstNode&& then_stmt,
+         std::optional<AstNode>&& else_stmt = std::nullopt);
 
   std::string dump() const override;
 };

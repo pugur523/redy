@@ -13,10 +13,10 @@
 namespace ast {
 
 struct AST_EXPORT CallNode : BaseNode {
-  ASTNode callee;
-  std::vector<ASTNode> arguments;
+  AstNode callee;
+  std::vector<AstNode> arguments;
 
-  CallNode(const lexer::Token& tok, ASTNode&& c, std::vector<ASTNode>&& args);
+  CallNode(const lexer::Token& tok, AstNode&& c, std::vector<AstNode>&& args);
 
   std::string dump() const override;
 };

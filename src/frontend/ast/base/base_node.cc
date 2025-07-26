@@ -14,7 +14,7 @@
 namespace ast {
 
 // Global AST dump function
-std::string dump_ast(const ASTNode& node) {
+std::string dump_ast(const AstNode& node) {
   return visit_node(node, [](auto&& arg) { return arg->dump(); });
 }
 

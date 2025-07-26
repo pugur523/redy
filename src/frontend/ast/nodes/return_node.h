@@ -12,10 +12,10 @@
 namespace ast {
 
 struct AST_EXPORT ReturnNode : BaseNode {
-  std::optional<ASTNode> value;  // Owned by this node
+  std::optional<AstNode> value;  // Owned by this node
 
   explicit ReturnNode(const lexer::Token& tok,
-                      std::optional<ASTNode>&& val = std::nullopt);
+                      std::optional<AstNode>&& val = std::nullopt);
 
   std::string dump() const override;
 };

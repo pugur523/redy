@@ -37,7 +37,7 @@ enum class TokenKind : uint8_t {
 
   // Literals
   kLiteralNumeric = 22,  // 42
-  kLiteralString = 23,   // "string"
+  kLiteralStr = 23,      // "string"
   kLiteralChar = 24,     // 'c'
   kTrue = 25,            // boolean true
   kFalse = 26,           // boolean false
@@ -105,7 +105,7 @@ enum class TokenKind : uint8_t {
   kEof = 79,
 };
 
-inline constexpr const char* to_string(TokenKind kind) {
+inline constexpr const char* token_kind_to_string(TokenKind kind) {
   switch (kind) {
     case TokenKind::kUnknown: return "unknown";
     case TokenKind::kIdentifier: return "identifier";
@@ -131,7 +131,7 @@ inline constexpr const char* to_string(TokenKind kind) {
     case TokenKind::kDeprecated: return "deprecated";
 
     case TokenKind::kLiteralNumeric: return "literal numeric";
-    case TokenKind::kLiteralString: return "literal string";
+    case TokenKind::kLiteralStr: return "literal string";
     case TokenKind::kLiteralChar: return "literal char";
     case TokenKind::kTrue: return "true";
     case TokenKind::kFalse: return "false";

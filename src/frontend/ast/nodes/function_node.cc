@@ -13,9 +13,9 @@ namespace ast {
 
 FunctionNode::FunctionNode(const lexer::Token& tok,
                            std::string_view n,
-                           ASTNode&& params,
-                           ASTNode&& ret_type,
-                           ASTNode&& b)
+                           AstNode&& params,
+                           AstNode&& ret_type,
+                           AstNode&& b)
     : BaseNode(tok),
       name(n),
       parameters(std::move(params)),

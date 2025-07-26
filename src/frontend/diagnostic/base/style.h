@@ -19,11 +19,12 @@ enum class Style : uint8_t {
   kYellow = 4,
   kGreen = 5,
   kCyan = 6,
-  kMagenta = 7,
-  kGray = 8,
-  kBrightRed = 9,
-  kBrightGreen = 10,
-  kBrightCyan = 11,
+  kBlue = 7,
+  kMagenta = 8,
+  kGray = 9,
+  kBrightRed = 10,
+  kBrightGreen = 11,
+  kBrightCyan = 12,
 };
 
 inline const char* style_to_string(Style style) {
@@ -35,12 +36,12 @@ inline const char* style_to_string(Style style) {
     case Style::kYellow: return core::kYellow;
     case Style::kGreen: return core::kGreen;
     case Style::kCyan: return core::kCyan;
+    case Style::kBlue: return core::kBlue;
     case Style::kMagenta: return core::kMagenta;
     case Style::kGray: return core::kGray;
     case Style::kBrightRed: return core::kBrightRed;
     case Style::kBrightGreen: return core::kBrightGreen;
     case Style::kBrightCyan: return core::kBrightCyan;
-    default: return "[invalid_style] ";
   }
 }
 

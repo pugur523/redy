@@ -13,7 +13,7 @@ namespace ast {
 
 ParameterNode::ParameterNode(const lexer::Token& tok,
                              std::string_view n,
-                             ASTNode&& t)
+                             AstNode&& t)
     : BaseNode(tok), name(n), type(std::move(t)) {}
 
 std::string ParameterNode::dump() const {

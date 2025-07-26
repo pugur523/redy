@@ -11,7 +11,7 @@
 
 namespace ast {
 
-ReturnNode::ReturnNode(const lexer::Token& tok, std::optional<ASTNode>&& val)
+ReturnNode::ReturnNode(const lexer::Token& tok, std::optional<AstNode>&& val)
     : BaseNode(tok), value(std::move(val)) {}
 
 std::string ReturnNode::dump() const {

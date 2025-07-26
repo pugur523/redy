@@ -14,26 +14,27 @@
 namespace lexer {
 
 struct LEXER_EXPORT LexError {
-  diagnostic::DiagnosticId id;
+  std::string message;
   std::size_t line;
   std::size_t column;
   std::size_t len;
-  std::string message;
+  diagnostic::DiagnosticId id;
 
   inline static LexError make(diagnostic::DiagnosticId id,
                               std::size_t line,
                               std::size_t column,
                               std::size_t len,
                               std::string&& message) {
-    return LexError{.id = id,
-                    .line = line,
-                    .column = column,
-                    .len = len,
-                    .message = std::move(message)};
+    return LexError{
+        .message = std::move(message),
+        .line = line,
+        .column = column,
+        .len = len,
+        .id = id,
+    };
   }
 };
 
 }  // namespace lexer
 
 #endif  // FRONTEND_LEXER_BASE_LEX_ERROR_H_
-

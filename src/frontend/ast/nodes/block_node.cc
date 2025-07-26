@@ -12,7 +12,7 @@
 
 namespace ast {
 
-BlockNode::BlockNode(const lexer::Token& tok, std::vector<ASTNode>&& stmts)
+BlockNode::BlockNode(const lexer::Token& tok, std::vector<AstNode>&& stmts)
     : BaseNode(tok), statements(std::move(stmts)) {}
 
 std::string BlockNode::dump() const {

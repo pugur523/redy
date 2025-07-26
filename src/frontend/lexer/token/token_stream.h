@@ -29,8 +29,8 @@ class LEXER_EXPORT TokenStream {
   TokenStream& operator=(TokenStream&&) = default;
 
   inline const Token& peek(std::size_t offset = 0) const;
-  inline const Token& advance();
   inline const Token& previous() const;
+  inline const Token& advance();
   inline bool match(TokenKind expected_kind);
 
   inline const core::FileManager* file_manager() const { return file_manager_; }
@@ -38,6 +38,7 @@ class LEXER_EXPORT TokenStream {
   inline constexpr void rewind(std::size_t pos) {
     DCHECK_LE(pos, tokens_.size()) << "rewind range is invalid";
     pos_ = pos;
+    current_token_ = &tokens_[pos_];
   }
 
   inline constexpr bool check(TokenKind expected_kind) const {
@@ -74,16 +75,16 @@ inline const Token& TokenStream::peek(std::size_t offset) const {
   return tokens_[target_pos];
 }
 
-inline const Token& TokenStream::advance() {
-  DCHECK_NE(current_token_, end_token_) << "Reached eof token unexpectedly";
-  ++pos_;
-  current_token_ = &tokens_[pos_];
-  return *current_token_;
-}
-
 inline const Token& TokenStream::previous() const {
   DCHECK_GT(pos_, 0) << "Previous token not found";
   return tokens_[pos_ - 1];
+}
+
+inline const Token& TokenStream::advance() {
+  DCHECK_NE(current_token_, end_token_) << "Reached eof token unexpectedly";
+  pos_++;
+  current_token_ = &tokens_[pos_];
+  return tokens_[pos_];
 }
 
 inline bool TokenStream::match(TokenKind expected_kind) {

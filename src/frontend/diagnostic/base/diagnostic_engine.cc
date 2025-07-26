@@ -92,8 +92,9 @@ void DiagnosticEngine::format_label_header(const Label& label,
   const core::File& file = file_manager_->file(label.file_id());
   const std::string& file_name = file.file_name();
 
+  out_str->append(line_number_width, ' ');
+  out_str->append("-> ");
   out_str->append(style(Style::kBold));
-  out_str->append("--> ");
   out_str->append(file_name);
   out_str->append(style(Style::kReset));
   out_str->append(":");
@@ -191,6 +192,13 @@ void DiagnosticEngine::format(DiagnosticEntry&& entry,
       format_label_header(label, line_number_width, current_line_buf,
                           current_line_len, current_col_buf, current_col_len,
                           out_str);
+    } else {
+      out_str->append(line_number_width, ' ');
+      out_str->append(" |   ");
+      out_str->append(40, '.');
+      out_str->append("\n");
+      out_str->append(line_number_width, ' ');
+      out_str->append(" |\n");
     }
     format_label(label, line_number_width, current_line_buf, current_line_len,
                  out_str);

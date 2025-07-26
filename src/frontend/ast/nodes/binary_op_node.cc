@@ -13,8 +13,8 @@ namespace ast {
 
 BinaryOpNode::BinaryOpNode(const lexer::Token& tok,
                            Operator o,
-                           ASTNode&& l,
-                           ASTNode&& r)
+                           AstNode&& l,
+                           AstNode&& r)
     : BaseNode(tok), op(o), left(std::move(l)), right(std::move(r)) {}
 
 std::string BinaryOpNode::dump() const {

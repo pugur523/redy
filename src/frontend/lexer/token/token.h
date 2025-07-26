@@ -59,8 +59,8 @@ class LEXER_EXPORT Token {
                    char* buf,
                    std::size_t buf_size) const {
     char* cursor = buf;
-    core::write_format(cursor, buf + buf_size, "{} ({})", to_string(kind_),
-                       lexeme(file_manager));
+    core::write_format(cursor, buf + buf_size, "{} ({})",
+                       token_kind_to_string(kind_), lexeme(file_manager));
   }
 
   inline void dump_detailed(const core::FileManager* file_manager,
@@ -70,7 +70,7 @@ class LEXER_EXPORT Token {
     core::write_format(
         cursor, buf + buf_size,
         "token:\n  kind: {} ({})\n  lexeme: {}\n  position: {}:{}",
-        to_string(kind_), std::to_string(static_cast<int8_t>(kind_)),
+        token_kind_to_string(kind_), std::to_string(static_cast<int8_t>(kind_)),
         lexeme(file_manager), location_.line(), location_.column());
   }
 

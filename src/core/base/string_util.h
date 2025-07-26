@@ -127,6 +127,7 @@ inline constexpr const char* kRed = "\033[31m";
 inline constexpr const char* kYellow = "\033[33m";
 inline constexpr const char* kGreen = "\033[32m";
 inline constexpr const char* kCyan = "\033[36m";
+inline constexpr const char* kBlue = "\033[34m";
 inline constexpr const char* kMagenta = "\033[35m";
 inline constexpr const char* kGray = "\033[90m";
 inline constexpr const char* kBrightRed = "\033[91m";

@@ -30,7 +30,7 @@ void verify_hello_world() {
   while (true) {
     Token token = lexer.next_token().unwrap();
 
-    EXPECT_FALSE(std::string(to_string(token.kind())).empty());
+    EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
 
     EXPECT_GT(token.location().line(), 0);
     EXPECT_GT(token.location().column(), 0);

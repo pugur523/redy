@@ -12,16 +12,16 @@
 namespace ast {
 
 struct AST_EXPORT ForNode : BaseNode {
-  std::optional<ASTNode> init;       // i := 0
-  std::optional<ASTNode> condition;  // i < 10
-  std::optional<ASTNode> increment;  // i++
-  ASTNode body;
+  std::optional<AstNode> init;       // i := 0
+  std::optional<AstNode> condition;  // i < 10
+  std::optional<AstNode> increment;  // i++
+  AstNode body;
 
   ForNode(const lexer::Token& tok,
-          std::optional<ASTNode>&& i,
-          std::optional<ASTNode>&& cond,
-          std::optional<ASTNode>&& incr,
-          ASTNode&& b);
+          std::optional<AstNode>&& i,
+          std::optional<AstNode>&& cond,
+          std::optional<AstNode>&& incr,
+          AstNode&& b);
 
   std::string dump() const override;
 };

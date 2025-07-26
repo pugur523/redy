@@ -37,7 +37,7 @@ class LEXER_EXPORT Lexer {
 
   Result<Token> identifier_or_keyword();
   Result<Token> literal_numeric();
-  Result<Token> literal_string();
+  Result<Token> literal_str();
   Result<Token> literal_char();
   Result<Token> make_token(TokenKind kind,
                            std::size_t start_pos,

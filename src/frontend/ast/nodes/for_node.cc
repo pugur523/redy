@@ -12,10 +12,10 @@
 namespace ast {
 
 ForNode::ForNode(const lexer::Token& tok,
-                 std::optional<ASTNode>&& i,
-                 std::optional<ASTNode>&& cond,
-                 std::optional<ASTNode>&& incr,
-                 ASTNode&& b)
+                 std::optional<AstNode>&& i,
+                 std::optional<AstNode>&& cond,
+                 std::optional<AstNode>&& incr,
+                 AstNode&& b)
     : BaseNode(tok),
       init(std::move(i)),
       condition(std::move(cond)),

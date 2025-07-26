@@ -48,11 +48,11 @@ struct AST_EXPORT BinaryOpNode : BaseNode {
 
   Operator op;
 
-  // Child nodes are owned by this node (via ASTNode's unique_ptr)
-  ASTNode left;
-  ASTNode right;
+  // Child nodes are owned by this node (via AstNode's unique_ptr)
+  AstNode left;
+  AstNode right;
 
-  BinaryOpNode(const lexer::Token& tok, Operator o, ASTNode&& l, ASTNode&& r);
+  BinaryOpNode(const lexer::Token& tok, Operator o, AstNode&& l, AstNode&& r);
 
   std::string dump() const override;
 

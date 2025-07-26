@@ -41,12 +41,11 @@ inline Style annotation_kind_to_style(AnnotationKind kind) {
   switch (kind) {
     case Kind::kUnknown: return Style::kUnknown;
     case Kind::kNote: return Style::kCyan;
-    case Kind::kSuggestion: return Style::kBrightRed;
-    case Kind::kHelp: return Style::kGreen;
+    case Kind::kSuggestion: return Style::kBrightCyan;
+    case Kind::kHelp: return Style::kBlue;
     case Kind::kWarn: return Style::kYellow;
     case Kind::kError: return Style::kRed;
     case Kind::kFatal: return Style::kMagenta;
-    default: return Style::kUnknown;
   }
 }
 
