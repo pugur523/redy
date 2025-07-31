@@ -30,7 +30,7 @@ constexpr const std::size_t kSymbolBufferSize = 512;
 constexpr const std::size_t kDemangledBufferSize = 512;
 constexpr const std::size_t kMangledBufferSize = 256;
 
-// Example stack trace output:
+// example stack trace output:
 //
 // @0     0x123456789abc   bar()        at /path/to/file
 // @1     0x23456789abcd   foo()        at /path/to/file

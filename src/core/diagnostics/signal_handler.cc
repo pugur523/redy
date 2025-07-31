@@ -45,11 +45,11 @@ const char* signal_to_string(int signal_number) {
     // case SIGKILL: return "SIGKILL (Kill signal)";
     // case SIGSTOP: return "SIGSTOP (Stop signal)";
     // case SIGALRM: return "SIGALRM (Alarm clock)";
-    default: return "Unknown signal";
+    default: return "unknown signal";
   }
 }
 
-// Example signal handling output:
+// example signal handling output:
 //
 // Aborted at Thu Jan  1 00:00:00 1970
 // (1234567890 in unix time)
@@ -62,7 +62,7 @@ void signal_handler(int signal_number) {
     const auto tid = std::this_thread::get_id();
     const auto hash_val = std::hash<std::thread::id>{}(tid);
 
-    // Ensure non-zero ID for better performance characteristics
+    // ensure non-zero id for better performance characteristics
     return static_cast<uint32_t>(hash_val) | 1;
   }();
   core::glog.fatal<

@@ -13,7 +13,7 @@ namespace core {
 
 namespace {
 
-// Setup temporary test files/directories
+// setup temporary test files/directories
 template <typename F>
 void with_temp_file(const std::string& content, const F& fn) {
   TempFile tmp("temp_file_for_bench", content);
@@ -224,7 +224,7 @@ void file_util_file_line_access_sequential(benchmark::State& state) {
   for (auto _ : state) {
     f.line(current_line);
 
-    current_line++;
+    ++current_line;
     if (current_line > num_lines) {
       current_line = 1;
     }

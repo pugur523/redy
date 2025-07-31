@@ -12,7 +12,7 @@
 namespace ast {
 
 struct AST_EXPORT ExpressionStatementNode : BaseNode {
-  AstNode expression;  // Owned by this node
+  AstNode expression;  // owned by this node
 
   ExpressionStatementNode(const lexer::Token& tok, AstNode&& expr);
 

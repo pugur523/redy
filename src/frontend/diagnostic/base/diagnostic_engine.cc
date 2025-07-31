@@ -126,7 +126,7 @@ void DiagnosticEngine::format_label(const Label& label,
   const core::SourceLocation& loc = label.range().start();
   const std::string& line = file.line(loc.line());
 
-  // Pad line number manually, append only once
+  // pad line number manually, append only once
   out_str->append(line_number_width - line_num_len, ' ');
   out_str->append(line_num_str, line_num_len);
   out_str->append(" | ");
@@ -176,7 +176,7 @@ void DiagnosticEngine::format(DiagnosticEntry&& entry,
   char max_line_buf[16];
   std::size_t line_number_width = itoa_to_buffer(max_line_number, max_line_buf);
 
-  // Buffer for current line and column numbers within the loop
+  // buffer for current line and column numbers within the loop
   char current_line_buf[16];
   char current_col_buf[16];
 
@@ -268,9 +268,9 @@ void DiagnosticEngine::indent(std::string* out_str, std::size_t count) {
 
 // static
 std::size_t DiagnosticEngine::itoa_to_buffer(int value, char* buffer) {
-  // Helper function to convert integer to string into a buffer
-  // Returns the number of characters written.
-  // Note: This is a simplified itoa. For full robustness (negative numbers,
+  // helper function to convert integer to string into a buffer
+  // returns the number of characters written.
+  // Note: this is a simplified itoa. for full robustness (negative numbers,
   // edge cases), consider a more comprehensive implementation or std::to_chars
   // if available.
 
@@ -278,13 +278,13 @@ std::size_t DiagnosticEngine::itoa_to_buffer(int value, char* buffer) {
     *buffer = '0';
     return 1;
   }
-  char temp_buffer[32];  // Max 10 digits for int + sign + null terminator
+  char temp_buffer[32];  // max 10 digits for int + sign + null terminator
   char* current = temp_buffer;
   bool is_negative = false;
 
   if (value < 0) {
     is_negative = true;
-    value = -value;  // Convert to positive for conversion
+    value = -value;  // convert to positive for conversion
   }
 
   while (value > 0) {
@@ -297,10 +297,10 @@ std::size_t DiagnosticEngine::itoa_to_buffer(int value, char* buffer) {
   }
 
   std::size_t length = current - temp_buffer;
-  std::reverse(temp_buffer, current);  // Reverse the digits
+  std::reverse(temp_buffer, current);  // reverse the digits
 
-  // Copy to the actual buffer
-  for (std::size_t i = 0; i < length; i++) {
+  // copy to the actual buffer
+  for (std::size_t i = 0; i < length; ++i) {
     buffer[i] = temp_buffer[i];
   }
   return length;

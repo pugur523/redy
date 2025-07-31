@@ -17,7 +17,7 @@ ProgramNode::ProgramNode(const lexer::Token& tok, std::vector<AstNode>&& stmts)
 
 std::string ProgramNode::dump() const {
   std::string s;
-  s.reserve(statements.size() * 128);  // Pre-allocate memory for efficiency
+  s.reserve(statements.size() * 128);  // pre-allocate memory for efficiency
 
   s.append("[program_node]\n");
   s.append("[program_node.statements]\n");

@@ -12,9 +12,9 @@
 
 namespace ast {
 
-// Represents the list of parameters for a function
+// represents the list of parameters for a function
 struct AST_EXPORT ParameterListNode : BaseNode {
-  // Vector of ParameterNode. Owned by this node.
+  // vector of parameternode. owned by this node.
   std::vector<AstNode> parameters;
 
   explicit ParameterListNode(const lexer::Token& tok,

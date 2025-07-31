@@ -42,7 +42,7 @@ void StackTraceEntry::to_string(char* out_buf, std::size_t out_buf_size) const {
     }
   }
 
-  // Ensure null termination
+  // ensure null termination
   if (cursor < end) {
     *cursor = '\0';
   } else if (out_buf_size > 0) {

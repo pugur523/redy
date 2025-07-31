@@ -2,19 +2,19 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_AST_PARSER_PARSE_ERROR_H_
-#define FRONTEND_AST_PARSER_PARSE_ERROR_H_
+#ifndef FRONTEND_PARSER_PARSE_ERROR_H_
+#define FRONTEND_PARSER_PARSE_ERROR_H_
 
 #include <string>
 #include <utility>
 
-#include "frontend/ast/base/ast_export.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "frontend/lexer/token/token.h"
+#include "frontend/parser/base/parser_export.h"
 
-namespace ast {
+namespace parser {
 
-struct AST_EXPORT ParseError {
+struct PARSER_EXPORT ParseError {
   std::string message;
   std::size_t line;
   std::size_t column;
@@ -43,6 +43,6 @@ struct AST_EXPORT ParseError {
   }
 };
 
-}  // namespace ast
+}  // namespace parser
 
-#endif  // FRONTEND_AST_PARSER_PARSE_ERROR_H_
+#endif  // FRONTEND_PARSER_PARSE_ERROR_H_

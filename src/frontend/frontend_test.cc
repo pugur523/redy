@@ -7,8 +7,8 @@
 
 #include "core/base/file_util.h"
 #include "core/base/logger.h"
-#include "frontend/ast/parser/parser.h"
 #include "frontend/lexer/lexer.h"
+#include "frontend/parser/parser.h"
 #include "gtest/gtest.h"
 #include "testing/test_util.h"
 
@@ -22,7 +22,7 @@ TEST(FrontendTest, SimpleCodePipeline) {
   lexer::TokenStream stream(std::move(tokens), &manager);
   // DLOG(info, "{}", stream.dump());
 
-  ast::Parser parser(std::move(stream));
+  parser::Parser parser(std::move(stream));
 
   auto result = parser.parse();
   EXPECT_TRUE(result.is_ok());
@@ -54,7 +54,7 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
   EXPECT_FALSE(tokens.empty());
   lexer::TokenStream stream(std::move(tokens), &manager);
 
-  ast::Parser parser(std::move(stream));
+  parser::Parser parser(std::move(stream));
 
   auto result = parser.parse();
   EXPECT_TRUE(result.is_ok());
@@ -62,4 +62,8 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
       std::get<std::unique_ptr<ast::ProgramNode>>(result.unwrap());
   EXPECT_FALSE(program_node->statements.empty());
   // DLOG(info, "{}", program_node->dump());
+  core::write_file(
+      core::join_path(test_dir(), "frontend_hello_world_function_pipeline.ast")
+          .c_str(),
+      program_node->dump());
 }

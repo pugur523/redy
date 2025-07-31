@@ -23,7 +23,7 @@ struct AST_EXPORT UnaryOpNode : BaseNode {
 
   Operator op;
 
-  // Child node is owned by this node (via AstNode's unique_ptr)
+  // child node is owned by this node (via AstNode's unique_ptr)
   AstNode operand;
 
   UnaryOpNode(const lexer::Token& tok, Operator o, AstNode&& operand_node);

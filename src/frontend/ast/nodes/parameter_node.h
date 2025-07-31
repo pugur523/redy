@@ -6,15 +6,16 @@
 #define FRONTEND_AST_NODES_PARAMETER_NODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "frontend/ast/base/base_node.h"
 
 namespace ast {
 
-// Represents a single parameter in a function definition
+// represents a single parameter in a function definition
 struct AST_EXPORT ParameterNode : BaseNode {
-  std::string name;
-  AstNode type;  // Owned by this node (expected to be TypeNode)
+  std::string_view name;
+  AstNode type;  // owned by this node (expected to be TypeNode)
 
   ParameterNode(const lexer::Token& tok, std::string_view n, AstNode&& t);
 

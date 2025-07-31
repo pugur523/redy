@@ -5,6 +5,7 @@
 #ifndef FRONTEND_AST_NODES_IF_NODE_H_
 #define FRONTEND_AST_NODES_IF_NODE_H_
 
+#include <optional>
 #include <string>
 
 #include "frontend/ast/base/base_node.h"

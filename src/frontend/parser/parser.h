@@ -2,25 +2,26 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_AST_PARSER_PARSER_H_
-#define FRONTEND_AST_PARSER_PARSER_H_
+#ifndef FRONTEND_PARSER_PARSER_H_
+#define FRONTEND_PARSER_PARSER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "core/check.h"
-#include "frontend/ast/base/ast_export.h"
 #include "frontend/ast/base/base_node.h"
 #include "frontend/ast/nodes/nodes.h"
-#include "frontend/ast/parser/parse_error.h"
 #include "frontend/diagnostic/data/result.h"
 #include "frontend/lexer/token/token_stream.h"
+#include "frontend/parser/base/parser_export.h"
+#include "frontend/parser/parse_error.h"
 
-namespace ast {
+namespace parser {
 
-class AST_EXPORT Parser {
+class PARSER_EXPORT Parser {
  public:
+  using AstNode = ast::AstNode;
   template <typename T>
   using Result = diagnostic::Result<T, ParseError>;
   template <typename T>
@@ -39,7 +40,7 @@ class AST_EXPORT Parser {
   Results<AstNode> parse();
 
  private:
-  // Grammar productions
+  // grammar productions
   Results<AstNode> parse_function();
 
   Results<AstNode> parse_param_list();
@@ -58,7 +59,7 @@ class AST_EXPORT Parser {
   Results<AstNode> parse_block_statement();
   Results<AstNode> parse_expression_statement();
 
-  // Expression parsing (precedence climbing)
+  // expression parsing (precedence climbing)
   Results<AstNode> parse_expression();
   Results<AstNode> parse_assignment();
   Results<AstNode> parse_binary_expression(int min_precedence);
@@ -66,7 +67,7 @@ class AST_EXPORT Parser {
   Results<AstNode> parse_primary_expression();
   Results<AstNode> parse_function_call(AstNode callee_node);
 
-  // Helper methods
+  // helper methods
   Result<const lexer::Token*> consume(lexer::TokenKind expected,
                                       std::string&& error_message);
   inline bool match(lexer::TokenKind kind) { return stream_.match(kind); }
@@ -77,13 +78,13 @@ class AST_EXPORT Parser {
   inline const lexer::Token& peek(std::size_t offset = 0) const {
     return stream_.peek(offset);
   }
-  // TODO: return token
+  // TODO: use return value of `stream_.advance()`
   inline void advance() { stream_.advance(); }
   inline const lexer::Token& previous() const { return stream_.previous(); }
 
   inline bool eof() const { return stream_.eof(); }
 
-  // Error handling
+  // error handling
   void synchronize();
 
   static bool is_sync_point(lexer::TokenKind kind);
@@ -97,11 +98,11 @@ class AST_EXPORT Parser {
   static void append_errs(std::vector<ParseError>* target,
                           std::vector<ParseError>&& source);
 
-  // Token kind to operator conversion
-  static BinaryOpNode::Operator token_to_binary_op(lexer::TokenKind kind);
-  static UnaryOpNode::Operator token_to_unary_op(lexer::TokenKind kind);
+  // token kind to operator conversion
+  static ast::BinaryOpNode::Operator token_to_binary_op(lexer::TokenKind kind);
+  static ast::UnaryOpNode::Operator token_to_unary_op(lexer::TokenKind kind);
 
-  // Precedence helpers
+  // precedence helpers
   static int get_precedence(lexer::TokenKind kind);
   static bool is_binary_operator(lexer::TokenKind kind);
   static bool is_unary_operator(lexer::TokenKind kind);
@@ -111,6 +112,6 @@ class AST_EXPORT Parser {
   bool strict_ : 1 = false;
 };
 
-}  // namespace ast
+}  // namespace parser
 
-#endif  // FRONTEND_AST_PARSER_PARSER_H_
+#endif  // FRONTEND_PARSER_PARSER_H_

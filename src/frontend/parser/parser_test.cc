@@ -1,8 +1,8 @@
 // Copyright 2025 pugur
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
-//
-#include "frontend/ast/parser/parser.h"
+
+#include "frontend/parser/parser.h"
 
 #include <memory>
 #include <utility>
@@ -20,10 +20,10 @@ namespace ast {
 
 namespace {
 
-std::unique_ptr<ast::Parser> make_parser(std::vector<lexer::Token>&& tokens,
-                                         const core::FileManager* manager) {
+std::unique_ptr<parser::Parser> make_parser(std::vector<lexer::Token>&& tokens,
+                                            const core::FileManager* manager) {
   lexer::TokenStream stream(std::move(tokens), manager);
-  return std::make_unique<ast::Parser>(std::move(stream));
+  return std::make_unique<parser::Parser>(std::move(stream));
 }
 
 }  // namespace

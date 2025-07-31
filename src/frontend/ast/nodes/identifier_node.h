@@ -6,14 +6,14 @@
 #define FRONTEND_AST_NODES_IDENTIFIER_NODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "frontend/ast/base/base_node.h"
 
 namespace ast {
 
-// Expressions
 struct AST_EXPORT IdentifierNode : BaseNode {
-  std::string name;
+  std::string_view name;
 
   IdentifierNode(const lexer::Token& tok, std::string_view n);
 

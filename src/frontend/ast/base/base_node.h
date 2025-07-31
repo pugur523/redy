@@ -18,7 +18,7 @@
 
 namespace ast {
 
-// Forward declarations for all AST nodes
+// forward declarations for all ast nodes
 struct ProgramNode;
 struct IdentifierNode;
 struct LiteralNode;
@@ -38,8 +38,8 @@ struct ParameterNode;
 struct ParameterListNode;
 struct TypeNode;
 
-// AST node variant type
-// This allows a single AstNode to hold any type of concrete node.
+// ast node variant type
+// this allows a single astnode to hold any type of concrete node.
 using AstNode = std::variant<std::unique_ptr<ProgramNode>,
                              std::unique_ptr<IdentifierNode>,
                              std::unique_ptr<LiteralNode>,
@@ -59,16 +59,14 @@ using AstNode = std::variant<std::unique_ptr<ProgramNode>,
                              std::unique_ptr<ParameterListNode>,
                              std::unique_ptr<TypeNode>>;
 
-// Base node interface for common operations
+// base node interface for common operations
 struct AST_EXPORT BaseNode {
-  // Source token for error reporting.
+  // source token for error reporting.
   const lexer::Token& token;
 
   explicit BaseNode(const lexer::Token& token) : token(token) {}
   virtual ~BaseNode() = default;
 
-  // Pure virtual function to get a string representation of the node for
-  // debugging/dumping.
   virtual std::string dump() const = 0;
 };
 

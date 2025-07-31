@@ -6,21 +6,22 @@
 #define FRONTEND_AST_NODES_FUNCTION_NODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "frontend/ast/base/base_node.h"
 
 namespace ast {
 
 struct AST_EXPORT FunctionNode : BaseNode {
-  std::string name;
-  AstNode parameters;   // Owned by this node (expected to be ParameterListNode)
-  AstNode return_type;  // Owned by this node (expected to be TypeNode)
-  AstNode body;         // Owned by this node (expected to be BlockNode)
+  std::string_view name;
+  AstNode parameters;   // owned by this node (expected to be ParameterListNode)
+  AstNode return_type;  // owned by this node (expected to be TypeNode)
+  AstNode body;         // owned by this node (expected to be BlockNode)
 
   FunctionNode(const lexer::Token& tok,
                std::string_view n,
-               AstNode&& params,    // Expects ParameterListNode
-               AstNode&& ret_type,  // Expects TypeNode
+               AstNode&& params,    // expects ParameterListNode
+               AstNode&& ret_type,  // expects TypeNode
                AstNode&& b);
 
   std::string dump() const override;

@@ -19,7 +19,6 @@ class Vec {
  public:
   static_assert(std::is_arithmetic_v<T>, "Vec only supports arithmetic types.");
 
-  // Constructors
   constexpr Vec() : data_() {}
 
   constexpr Vec(std::initializer_list<T> list) : data_{} {
@@ -45,11 +44,11 @@ class Vec {
 
   inline constexpr std::array<T, kDimNumber> to_array() const { return data_; }
 
-  // Element access
+  // element access
   inline constexpr T& operator[](std::size_t i) { return data_[i]; }
   inline constexpr const T& operator[](std::size_t i) const { return data_[i]; }
 
-  // Arithmetic
+  // arithmetic
   constexpr Vec operator+(const Vec& other) const {
     Vec result;
     for (std::size_t i = 0; i < kDimNumber; ++i) {
@@ -110,7 +109,7 @@ class Vec {
     return *this;
   }
 
-  // Dot product
+  // dot product
   constexpr T dot(const Vec& other) const {
     T result = T{};
     for (std::size_t i = 0; i < kDimNumber; ++i) {
@@ -138,7 +137,7 @@ class Vec {
     return result;
   }
 
-  // Min/Max element
+  // min/max element
   constexpr T min_element() const {
     return *std::min_element(data_.begin(), data_.end());
   }
@@ -147,7 +146,7 @@ class Vec {
     return *std::max_element(data_.begin(), data_.end());
   }
 
-  // Cross product (3D only)
+  // cross product (3d only)
   template <std::size_t D = kDimNumber>
   inline constexpr typename std::enable_if_t<D == 3, Vec> cross(
       const Vec& other) const {
@@ -156,7 +155,7 @@ class Vec {
                data_[0] * other[1] - data_[1] * other[0]};
   }
 
-  // Comparison
+  // comparison
   inline constexpr bool operator==(const Vec& other) const {
     return data_ == other.data_;
   }
@@ -165,7 +164,7 @@ class Vec {
     return !(*this == other);
   }
 
-  // Output
+  // output
   friend std::ostream& operator<<(std::ostream& os, const Vec& v) {
     os << "[";
     for (std::size_t i = 0; i < kDimNumber; ++i) {
@@ -182,7 +181,7 @@ class Vec {
   std::array<T, kDimNumber> data_;
 };
 
-// Type aliases
+// type aliases
 template <typename T>
 using Vec2 = Vec<T, 2>;
 template <typename T>

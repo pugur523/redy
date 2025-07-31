@@ -181,9 +181,9 @@ BENCHMARK(string_util_to_upper_const_string_ref);
 
 void string_util_utf8_char_length(benchmark::State& state) {
   const unsigned char lead_byte_ascii = 'A';
-  const unsigned char lead_byte_2byte = 0xC2;  // Example for '¢'
-  const unsigned char lead_byte_3byte = 0xE2;  // Example for '€'
-  const unsigned char lead_byte_4byte = 0xF0;  // Example for '𐐷'
+  const unsigned char lead_byte_2byte = 0xc2;  // example for '¢'
+  const unsigned char lead_byte_3byte = 0xe2;  // example for '€'
+  const unsigned char lead_byte_4byte = 0xf0;  // example for '𐐷'
 
   for (auto _ : state) {
     benchmark::DoNotOptimize(utf8_char_length(lead_byte_ascii));

@@ -239,7 +239,7 @@ void ArgumentParser::print_warn(const std::string& message) const {
 void ArgumentParser::print_error(const std::string& message) const {
   glog.error<
       "{}\n"
-      "Use '-h' or '--help' "
+      "use '-h' or '--help' "
       "to show the help message\n">(message);
 }
 
@@ -259,7 +259,7 @@ void ArgumentParser::print_help() const {
       usage_str.push_back(']');
     }
   }
-  for (std::size_t i = 0; i < positional_names_.size(); i++) {
+  for (std::size_t i = 0; i < positional_names_.size(); ++i) {
     if (positional_required_[i]) {
       usage_str.push_back(' ');
       usage_str.append(positional_names_[i]);

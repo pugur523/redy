@@ -5,6 +5,7 @@
 #ifndef FRONTEND_AST_NODES_RETURN_NODE_H_
 #define FRONTEND_AST_NODES_RETURN_NODE_H_
 
+#include <optional>
 #include <string>
 
 #include "frontend/ast/base/base_node.h"
@@ -12,7 +13,7 @@
 namespace ast {
 
 struct AST_EXPORT ReturnNode : BaseNode {
-  std::optional<AstNode> value;  // Owned by this node
+  std::optional<AstNode> value;  // owned by this node
 
   explicit ReturnNode(const lexer::Token& tok,
                       std::optional<AstNode>&& val = std::nullopt);

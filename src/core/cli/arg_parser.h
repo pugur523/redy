@@ -36,7 +36,7 @@ enum class ParseResult : uint8_t {
   kErrorPositionalParseFailed = 11,
   kErrorPositionalTooMany = 12,
 
-  // Keep this at the end and equal to the last entry.
+  // keep this at the end and equal to the last entry.
   kMaxValue = kErrorPositionalTooMany,
 };
 
@@ -51,7 +51,7 @@ class CORE_EXPORT ArgumentParser {
   ArgumentParser(ArgumentParser&&) = default;
   ArgumentParser& operator=(ArgumentParser&&) = default;
 
-  // Flag / Option / List / Positional adders
+  // flag / option / list / positional adders
 
   template <typename T = bool>
   void add_flag(T* storage,
@@ -60,7 +60,7 @@ class CORE_EXPORT ArgumentParser {
                 bool required = false,
                 const std::optional<T>& default_value = {false}) {
     static_assert(std::is_same_v<T, bool> || std::is_integral_v<T>,
-                  "Flag only supports bool or integral types.");
+                  "flag only supports bool or integral types.");
     add_option_impl<Flag>(storage, name, description, required, default_value);
   }
 

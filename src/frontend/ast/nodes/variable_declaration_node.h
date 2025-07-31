@@ -6,16 +6,17 @@
 #define FRONTEND_AST_NODES_VARIABLE_DECLARATION_NODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "frontend/ast/base/base_node.h"
 
 namespace ast {
 
 struct AST_EXPORT VariableDeclarationNode : BaseNode {
-  std::string name;
+  std::string_view name;
   bool is_mutable;
-  std::optional<AstNode> type;         // Owned by this node
-  std::optional<AstNode> initializer;  // Owned by this node
+  std::optional<AstNode> type;         // owned by this node
+  std::optional<AstNode> initializer;  // owned by this node
 
   VariableDeclarationNode(const lexer::Token& tok,
                           std::string_view n,

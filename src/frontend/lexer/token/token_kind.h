@@ -12,7 +12,7 @@ namespace lexer {
 enum class TokenKind : uint8_t {
   kUnknown = 0,
 
-  // Keywords, see also frontend/lexer/keyword/keyword.cc
+  // keywords, see also frontend/lexer/keyword/keyword.cc
   kIdentifier = 1,
   kType = 2,
   kMut = 3,
@@ -35,14 +35,14 @@ enum class TokenKind : uint8_t {
   kDefault = 20,
   kDeprecated = 21,
 
-  // Literals
+  // literals
   kLiteralNumeric = 22,  // 42
   kLiteralStr = 23,      // "string"
   kLiteralChar = 24,     // 'c'
   kTrue = 25,            // boolean true
   kFalse = 26,           // boolean false
 
-  // Operators
+  // operators
   kPlus = 27,        // +
   kMinus = 28,       // -
   kStar = 29,        // *
@@ -63,7 +63,7 @@ enum class TokenKind : uint8_t {
   kAndAnd = 44,      // && (logical AND)
   kPipePipe = 45,    // || (logical OR)
 
-  // Bitwise Operators
+  // bitwise operators
   kAmp = 46,    // & (bitwise AND)
   kPipe = 47,   // | (bitwise OR)
   kCaret = 48,  // ^ (bitwise XOR)
@@ -71,7 +71,7 @@ enum class TokenKind : uint8_t {
   kLtLt = 50,   // << (left shift)
   kGtGt = 51,   // >> (right shift)
 
-  // Compound Assignment Operators
+  // compound assignment operators
   kPlusEq = 52,     // +=
   kMinusEq = 53,    // -=
   kStarEq = 54,     // *=
@@ -83,7 +83,7 @@ enum class TokenKind : uint8_t {
   kLtLtEq = 60,     // <<=
   kGtGtEq = 61,     // >>=
 
-  // Delimiters
+  // delimiters
   kArrow = 62,       // ->
   kColon = 63,       // :
   kColonColon = 64,  // ::

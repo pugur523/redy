@@ -6,14 +6,15 @@
 #define FRONTEND_AST_NODES_TYPE_NODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "frontend/ast/base/base_node.h"
 
 namespace ast {
 
-// Represents a type, e.g., "i32", "string", "bool"
+// represents a type, e.g., "i32", "string", "bool"
 struct AST_EXPORT TypeNode : BaseNode {
-  std::string type_name;
+  std::string_view type_name;
 
   TypeNode(const lexer::Token& tok, std::string_view name);
 

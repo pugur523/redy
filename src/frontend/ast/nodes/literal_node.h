@@ -6,8 +6,10 @@
 #define FRONTEND_AST_NODES_LITERAL_NODE_H_
 
 #include <string>
+#include <string_view>
 
 #include "frontend/ast/base/base_node.h"
+
 namespace ast {
 
 struct AST_EXPORT LiteralNode : BaseNode {
@@ -19,11 +21,11 @@ struct AST_EXPORT LiteralNode : BaseNode {
     kBoolean = 4,
   };
   Type type;
-  std::string value;
+  std::string_view value;
 
   LiteralNode(const lexer::Token& tok, Type t, std::string_view v);
 
-  // Overload for boolean true/false
+  // overload for literal boolean true/false
   LiteralNode(const lexer::Token& tok, bool val);
 
   std::string dump() const override;

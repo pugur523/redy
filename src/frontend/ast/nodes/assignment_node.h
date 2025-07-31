@@ -12,9 +12,9 @@
 namespace ast {
 
 struct AST_EXPORT AssignmentNode : BaseNode {
-  AstNode target;             // Owned by this node
-  AstNode value;              // Owned by this node
-  BinaryOpNode::Operator op;  // To distinguish between =, +=, -=, etc.
+  AstNode target;             // owned by this node
+  AstNode value;              // owned by this node
+  BinaryOpNode::Operator op;  // to distinguish between =, +=, -=, etc.
 
   AssignmentNode(const lexer::Token& tok,
                  AstNode&& t,

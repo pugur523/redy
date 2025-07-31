@@ -55,7 +55,7 @@ RTL_OSVERSIONINFOW get_windows_version_info() {
 
 SystemInfo::SystemInfo() {
   if (!init()) {
-    glog.error<"Failed to get the system information\n">();
+    glog.error<"failed to get the system information\n">();
   }
 }
 
@@ -66,7 +66,7 @@ bool SystemInfo::init() {
 #if IS_WINDOWS
   auto osvi = get_windows_version_info();
 
-  os_str_ = "Windows ";
+  os_str_ = "windows ";
 
   if (osvi.dwMajorVersion == 10) {
     if (osvi.dwBuildNumber >= 22000) {
@@ -81,9 +81,9 @@ bool SystemInfo::init() {
   } else if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 1) {
     os_str_ += "7";
   } else if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0) {
-    os_str_ += "Vista";
+    os_str_ += "vista";
   } else {
-    os_str_ += "Unknown";
+    os_str_ += "unknown";
     result = false;
   }
 
@@ -94,11 +94,11 @@ bool SystemInfo::init() {
   switch (sys_info.wProcessorArchitecture) {
     case PROCESSOR_ARCHITECTURE_AMD64: cpu_arch_ = "x64"; break;
     case PROCESSOR_ARCHITECTURE_INTEL: cpu_arch_ = "x86"; break;
-    case PROCESSOR_ARCHITECTURE_ARM: cpu_arch_ = "ARM"; break;
-    case PROCESSOR_ARCHITECTURE_ARM64: cpu_arch_ = "ARM64"; break;
-    case PROCESSOR_ARCHITECTURE_IA64: cpu_arch_ = "IA64"; break;
+    case PROCESSOR_ARCHITECTURE_ARM: cpu_arch_ = "arm"; break;
+    case PROCESSOR_ARCHITECTURE_ARM64: cpu_arch_ = "arm64"; break;
+    case PROCESSOR_ARCHITECTURE_IA64: cpu_arch_ = "ia64"; break;
     default:
-      cpu_arch_ = "Unknown";
+      cpu_arch_ = "unknown";
       result = false;
       break;
   }
@@ -116,8 +116,8 @@ bool SystemInfo::init() {
     os_str_ = std::string(uts.sysname) + " " + uts.release;
     cpu_arch_ = uts.machine;
   } else {
-    os_str_ = "Unknown OS";
-    cpu_arch_ = "Unknown architecture";
+    os_str_ = "unknown os";
+    cpu_arch_ = "unknown architecture";
     result = false;
   }
 #if IS_MAC
@@ -181,7 +181,7 @@ uint64_t SystemInfo::ram_usage_raw() const {
   memory_status.dwLength = sizeof(MEMORYSTATUSEX);
 
   if (!GlobalMemoryStatusEx(&memory_status)) {
-    glog.error<"Failed to get the ram usage\n">();
+    glog.error<"failed to get the ram usage\n">();
     return 0;
   }
   return static_cast<uint64_t>(memory_status.ullTotalPhys -
@@ -192,7 +192,7 @@ uint64_t SystemInfo::ram_usage_raw() const {
   if (sysinfo(&mem_info) == 0) {
     used = mem_info.totalram - mem_info.freeram;
   } else {
-    glog.error<"Failed to get the ram usage\n">();
+    glog.error<"failed to get the ram usage\n">();
   }
   return used;
 #elif IS_MAC
@@ -202,7 +202,7 @@ uint64_t SystemInfo::ram_usage_raw() const {
       host_statistics64(mach_host_self(), HOST_VM_INFO64,
                         reinterpret_cast<host_info64_t>(&vm_stat), &count);
   if (kr != KERN_SUCCESS) {
-    glog.error<"Failed to get the ram usage\n">();
+    glog.error<"failed to get the ram usage\n">();
     return 0;
   }
 
@@ -222,13 +222,13 @@ std::string SystemInfo::ram_usage() const {
 std::string SystemInfo::to_string() const {
   std::string result;
   result.reserve(kSystemInfoStringPredictedSize);
-  result.append("Operating System: ");
+  result.append("operating system: ");
   result.append(os());
-  result.append("\nCPU Architecture: ");
+  result.append("\ncpu architecture: ");
   result.append(cpu_arch());
-  result.append("\nTotal RAM: ");
+  result.append("\ntotal ram: ");
   result.append(total_ram());
-  result.append("\nRAM Usage: ");
+  result.append("\nram usage: ");
   result.append(ram_usage());
   return result;
 }

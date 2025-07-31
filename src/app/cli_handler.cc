@@ -28,7 +28,7 @@ int handle_arguments(int argc, char** argv) {
   bool rel_w_deb_info = false;
   bool min_size_rel = false;
 
-  // Runtime overridable options
+  // runtime overridable options
   parser.add_option(&options->config_file, "config",
                     "relative config file path to use", false,
                     {options->config_file});

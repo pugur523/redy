@@ -12,7 +12,7 @@
 
 namespace ast {
 
-// Program (root node)
+// program (root node)
 struct AST_EXPORT ProgramNode : BaseNode {
   std::vector<AstNode> statements;
 

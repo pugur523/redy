@@ -48,7 +48,7 @@ struct AST_EXPORT BinaryOpNode : BaseNode {
 
   Operator op;
 
-  // Child nodes are owned by this node (via AstNode's unique_ptr)
+  // child nodes are owned by this node (via astnode's unique_ptr)
   AstNode left;
   AstNode right;
 

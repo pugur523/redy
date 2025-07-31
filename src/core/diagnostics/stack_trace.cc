@@ -47,7 +47,7 @@ void stack_trace_entries_to_buffer(
   char line_buffer[kLineBufferSize];
   std::size_t written = 0;
 
-  for (std::size_t i = 0; i < count && written < buffer_size - 1; i++) {
+  for (std::size_t i = 0; i < count && written < buffer_size - 1; ++i) {
     entries[i].to_string(line_buffer, sizeof(line_buffer));
     std::size_t line_len = safe_strlen(line_buffer);
 
@@ -58,7 +58,7 @@ void stack_trace_entries_to_buffer(
 
       if (written < buffer_size - 1) {
         buffer[written] = '\n';
-        written++;
+        ++written;
       }
     } else {
       break;
@@ -78,19 +78,21 @@ const char* demangle_symbol_safe(const char* mangled_name,
 
   int status = 0;
 
-  // Try to demangle - __cxa_demangle may allocate internally but we control the
+  // try to demangle - __cxa_demangle may allocate internally but we control the
   // output buffer
   char* demangled = abi::__cxa_demangle(mangled_name, demangled_buffer,
                                         &demangled_len, &status);
 
-  // If demangling succeeded and the result fits in our buffer
+  // if demangling succeeded and the result fits in our buffer
   if (demangled && status == 0 && demangled == demangled_buffer) {
     return demangled_buffer;
   }
 
   if (demangled && status == 0) {
     write_raw(demangled_buffer, demangled, demangled_len);
-    free(demangled);  // __cxa_demangle allocated this
+
+    // __cxa_demangle allocated this
+    free(demangled);
     return demangled_buffer;
   }
 
@@ -104,8 +106,8 @@ bool is_valid_address(uintptr_t addr) {
     return false;
   }
 
-// Basic sanity check for user space addresses
-// This is a conservative check that should work on most systems
+// basic sanity check for user space addresses
+// this is a conservative check that should work on most systems
 #if ARCH_X64
   // 64-bit: user space typically below 0x800000000000
   if (addr >= 0x800000000000ULL) {
@@ -172,7 +174,7 @@ std::size_t collect_stack_trace(StackTraceEntry out[kPlatformMaxFrames],
       continue;
     }
 
-    // Validate address before processing
+    // validate address before processing
     if (!is_valid_address(static_cast<uintptr_t>(instruction_pointer))) {
       ++frame_index;
       continue;
@@ -184,7 +186,7 @@ std::size_t collect_stack_trace(StackTraceEntry out[kPlatformMaxFrames],
     entry.offset = 0;
     entry.use_index = use_index;
 
-    // Format address
+    // format address
     format_address_safe(static_cast<uintptr_t>(instruction_pointer),
                         address_buffer, sizeof(address_buffer));
     char* address_cursor = entry.address.data();
@@ -239,8 +241,8 @@ std::size_t collect_stack_trace(StackTraceEntry out[kPlatformMaxFrames],
     char* file_cursor = entry.file.data();
     write_raw(file_cursor, file_name, kFileStrLength);
 
-    collected_count++;
-    frame_index++;
+    ++collected_count;
+    ++frame_index;
   } while (unw_step(&cursor) > 0);
 
   return collected_count;
@@ -253,7 +255,7 @@ std::size_t collect_stack_trace(StackTraceEntry out[kPlatformMaxFrames],
   char symbol_buf[kSymbolBufferSize];
   std::size_t collected_count = 0;
 
-  for (std::size_t i = first_frame; i < static_cast<std::size_t>(frames); i++) {
+  for (std::size_t i = first_frame; i < static_cast<std::size_t>(frames); ++i) {
     uintptr_t current_address = reinterpret_cast<uintptr_t>(stack[i]);
 
     if (!is_valid_address(current_address)) {
@@ -301,7 +303,7 @@ std::size_t collect_stack_trace(StackTraceEntry out[kPlatformMaxFrames],
     write_raw(function_cursor, function_name, kFunctionStrLength);
     write_raw(file_cursor, file_name, kFileStrLength);
 
-    collected_count++;
+    ++collected_count;
   }
 
   return collected_count;
@@ -330,10 +332,10 @@ std::size_t collect_stack_trace(StackTraceEntry out[kPlatformMaxFrames],
   char address_buf[32];
   std::size_t count = 0;
 
-  for (WORD i = 0; i < frames; i++) {
+  for (WORD i = 0; i < frames; ++i) {
     DWORD64 current_address = reinterpret_cast<DWORD64>(stack[i + first_frame]);
 
-    // Skip invalid addresses
+    // skip invalid addresses
     if (!is_valid_address(current_address)) {
       continue;
     }
@@ -401,8 +403,8 @@ struct WindowsStackTraceHandler {
   WindowsStackTraceHandler() {
     DWORD sym_options = SymGetOptions();
     sym_options |= SYMOPT_DEFERRED_LOADS | SYMOPT_UNDNAME | SYMOPT_LOAD_LINES;
-    sym_options |= SYMOPT_FAIL_CRITICAL_ERRORS;  // Don't show error dialogs
-    sym_options &= ~SYMOPT_NO_PROMPTS;           // Disable prompts
+    sym_options |= SYMOPT_FAIL_CRITICAL_ERRORS;  // don't show error dialogs
+    sym_options &= ~SYMOPT_NO_PROMPTS;           // disable prompts
     SymSetOptions(sym_options);
     SymInitialize(GetCurrentProcess(), exe_dir().c_str(), TRUE);
   }

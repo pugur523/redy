@@ -74,25 +74,25 @@ void decode_escape_impl(std::string_view input, std::string* out) {
   char* write_ptr = out->data();
   char* begin = write_ptr;
 
-  for (std::size_t i = 0; i < input.size(); i++) {
+  for (std::size_t i = 0; i < input.size(); ++i) {
     if (input[i] == '\\') {
       if (i < input.size() - 1) {
         switch (input[i + 1]) {
           case 'n':
             *write_ptr++ = '\n';
-            i++;
+            ++i;
             break;
           case 'r':
             *write_ptr++ = '\r';
-            i++;
+            ++i;
             break;
           case 't':
             *write_ptr++ = '\t';
-            i++;
+            ++i;
             break;
           case '\\':
             *write_ptr++ = '\\';
-            i++;
+            ++i;
             break;
           default: *write_ptr++ = input[i]; break;
         }
@@ -171,7 +171,7 @@ void to_upper(char* input, std::size_t len) {
   if (!input) {
     return;
   }
-  for (std::size_t i = 0; i < len; i++) {
+  for (std::size_t i = 0; i < len; ++i) {
     input[i] = to_upper(input[i]);
   }
 }
@@ -235,9 +235,9 @@ std::string utf8_truncate(const std::string& input, std::size_t max_chars) {
 
   while (i < input_size && chars < max_chars) {
     std::size_t len = utf8_char_length(static_cast<unsigned char>(data[i]));
-    // Check if the character is valid and complete within the string boundary
+    // check if the character is valid and complete within the string boundary
     if (i + len > input_size) {
-      // Incomplete character at the end, break
+      // incomplete character at the end, break
       break;
     }
     i += len;
@@ -256,7 +256,7 @@ std::queue<std::string> split_string(const std::string& input,
 
   if (delimiter_length == 0) {
     if (!input.empty()) {
-      // Each character becomes a token
+      // each character becomes a token
       for (char c : input) {
         result.emplace(1, c);
       }
@@ -268,11 +268,11 @@ std::queue<std::string> split_string(const std::string& input,
   while (pos < input_length) {
     next_pos = input.find(delimiter, pos);
     if (next_pos == std::string::npos) {
-      // No more delimiters, push the rest of the string
+      // no more delimiters, push the rest of the string
       result.push(input.substr(pos));
       break;
     } else {
-      // Push the substring from pos to next_pos - pos
+      // push the substring from pos to next_pos - pos
       result.push(input.substr(pos, next_pos - pos));
       pos = next_pos + delimiter_length;
     }
@@ -298,8 +298,8 @@ std::string remove_bracket(const std::string& input,
   const char* read_ptr = input.data();
   const char* end_ptr = read_ptr + input.size();
 
-  // Lookup table for bracket matching (faster than switch)
-  // Index by character value, 0 means not a bracket
+  // lookup table for bracket matching (faster than switch)
+  // index by character value, 0 means not a bracket
   static constexpr std::array<int8_t, 256> bracket_map = make_bracket_table();
 
   while (read_ptr < end_ptr) {
@@ -307,14 +307,14 @@ std::string remove_bracket(const std::string& input,
     int8_t bracket_type = bracket_map[static_cast<unsigned char>(c)];
 
     if (bracket_type > 0) {
-      // Opening bracket
+      // opening bracket
       if (depth < max_nest_size) {
         stack[depth++] = bracket_type;
       } else {
-        depth++;
+        ++depth;
       }
     } else if (bracket_type < 0) {
-      // Closing bracket
+      // closing bracket
       if (depth > 0) {
         if (depth <= max_nest_size && stack[depth - 1] == -bracket_type) {
           --depth;
@@ -324,7 +324,7 @@ std::string remove_bracket(const std::string& input,
         }
       }
     } else if (depth == 0) {
-      // Not a bracket and not inside brackets
+      // not a bracket and not inside brackets
       *write_ptr++ = c;
     }
   }
