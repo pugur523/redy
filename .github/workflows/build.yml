@@ -68,7 +68,7 @@ jobs:
               # Install LLVM's libunwind after running llvm.sh
               sudo apt install -y libunwind-${{ matrix.llvm_version }}-dev
               # Setup alternatives (simplified)
-              for tool in clang clang++ clang-tidy clang-format llvm-ar llvm-nm llvm-ranlib FileCheck; do
+              for tool in clang clang++ clang-tidy clang-format llvm-ar llvm-nm llvm-ranlib lld FileCheck; do
                 sudo update-alternatives --install /usr/bin/$tool $tool /usr/bin/$tool-${{ matrix.llvm_version }} 100
               done
               ;;
