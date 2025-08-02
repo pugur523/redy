@@ -26,8 +26,124 @@ namespace core {
 [[nodiscard]] CORE_EXPORT std::string decode_escape(const char* s,
                                                     std::size_t len);
 
-[[nodiscard]] constexpr char to_lower(char c) {
-  return (c >= 'A' && c <= 'Z') ? (c | 0x20) : c;
+[[nodiscard]] inline constexpr bool is_valid_escape_sequence(char backslash,
+                                                             char next) {
+  if (backslash != '\\') {
+    return false;
+  }
+
+  switch (next) {
+    // simple escape sequences
+    case 'n':
+    case 'r':
+    case 't':
+    case 'v':
+    case 'b':
+    case 'a':
+    case 'f':
+    case '\\':
+    case '\'':
+    case '\"':
+    case '?':
+
+    // hexadecimal \xhh
+    case 'x':  // need to validate digits after 'x' elsewhere
+
+    // Unicode escape sequences (C++: \uXXXX and \UXXXXXXXX, Rust: \u{XXXX})
+    case 'u':
+    case 'U':
+
+    // octal escape \[0-7]{1,3}
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7': return true;
+
+    default: return false;
+  }
+}
+
+[[nodiscard]] inline bool is_valid_unicode_escape(std::string_view input) {
+  if (input.size() != 5 && input.size() != 9) {
+    return false;
+  }
+  if (input.starts_with("u")) {
+    return input.size() == 5 &&
+           std::all_of(input.begin() + 1, input.end(), ::isxdigit);
+  }
+  if (input.starts_with("U")) {
+    return input.size() == 9 &&
+           std::all_of(input.begin() + 1, input.end(), ::isxdigit);
+  }
+  return false;
+}
+
+[[nodiscard]] inline bool is_valid_hex_escape(std::string_view input) {
+  if (input.empty() || input[0] != 'x') {
+    return false;
+  }
+  return std::all_of(input.begin() + 1, input.end(), ::isxdigit);
+}
+
+[[nodiscard]] inline bool is_valid_octal_escape(std::string_view input) {
+  if (input.empty() || input.size() > 3) {
+    return false;
+  }
+  return std::all_of(input.begin(), input.end(),
+                     [](char c) { return c >= '0' && c <= '7'; });
+}
+
+[[nodiscard]] inline constexpr bool is_ascii_char(char c) {
+  return 0 <= c && c <= 127;
+}
+
+[[nodiscard]] inline constexpr bool is_lower_ascii_char(char c) {
+  return 'a' <= c && c <= 'z';
+}
+
+[[nodiscard]] inline constexpr bool is_upper_ascii_char(char c) {
+  return 'A' <= c && c <= 'Z';
+}
+
+[[nodiscard]] inline constexpr bool is_ascii_alphabet(char c) {
+  return is_lower_ascii_char(c) || is_upper_ascii_char(c);
+}
+
+[[nodiscard]] inline constexpr bool is_ascii_digit(char c) {
+  return '0' <= c && c <= '9';
+}
+
+[[nodiscard]] inline constexpr bool is_utf8_start_byte(unsigned char byte) {
+  return (byte & 0xC0) != 0x80;
+}
+
+[[nodiscard]] inline constexpr uint8_t utf8_codepoint_length(
+    unsigned char byte) {
+  if ((byte & 0x80) == 0x00) {
+    return 1;
+  } else if ((byte & 0xE0) == 0xC0) {
+    return 2;
+  } else if ((byte & 0xF0) == 0xE0) {
+    return 3;
+  } else if ((byte & 0xF8) == 0xF0) {
+    return 4;
+  } else {
+    return 0;
+  }
+}
+
+// FIXME: use unicode database
+[[nodiscard]] inline constexpr bool is_unicode_whitespace(char c) {
+  // currently only support ascii whitespaces
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+}
+
+[[nodiscard]] inline constexpr char to_lower(char c) {
+  return is_upper_ascii_char(c) ? (c | 0x20) : c;
 }
 CORE_EXPORT void to_lower(char* input, std::size_t len);
 CORE_EXPORT void to_lower(char* input);
@@ -35,7 +151,7 @@ CORE_EXPORT void to_lower(std::string* input);
 [[nodiscard]] CORE_EXPORT std::string to_lower(const std::string& input);
 
 [[nodiscard]] constexpr char to_upper(char c) {
-  return (c >= 'a' && c <= 'z') ? (c & ~0x20) : c;
+  return is_lower_ascii_char(c) ? (c & ~0x20) : c;
 }
 CORE_EXPORT void to_upper(char* input, std::size_t len);
 CORE_EXPORT void to_upper(char* input);

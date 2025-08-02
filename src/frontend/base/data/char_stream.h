@@ -38,6 +38,9 @@ class BASE_EXPORT CharStream {
   void advance();
   void rewind();
 
+  uint32_t peek_codepoint() const;
+  void advance_codepoint();
+
   inline constexpr bool eof() const { return pos_ >= file().source().size(); }
 
   inline constexpr std::size_t position() const { return pos_; }

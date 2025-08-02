@@ -8,29 +8,30 @@ set(MODULE_OBJECTS_NAME "parser_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  parser.cc
+  dummy.cc
+  # parser.cc
 
-  parse/assignment.cc
-  parse/expression.cc
-  parse/function_call.cc
-  parse/function.cc
-  parse/param_list.cc
-  parse/param.cc
-  parse/statement.cc
-  parse/type.cc
+  # parse/assignment.cc
+  # parse/expression.cc
+  # parse/function_call.cc
+  # parse/function.cc
+  # parse/param_list.cc
+  # parse/param.cc
+  # parse/statement.cc
+  # parse/type.cc
 
-  parse/expression/binary.cc
-  parse/expression/primary.cc
-  parse/expression/unary.cc
+  # parse/expression/binary.cc
+  # parse/expression/primary.cc
+  # parse/expression/unary.cc
 
-  parse/statement/assignment.cc
-  parse/statement/block.cc
-  parse/statement/expression.cc
-  parse/statement/for.cc
-  parse/statement/if.cc
-  parse/statement/return.cc
-  parse/statement/variable_declaration.cc
-  parse/statement/while.cc
+  # parse/statement/assignment.cc
+  # parse/statement/block.cc
+  # parse/statement/expression.cc
+  # parse/statement/for.cc
+  # parse/statement/if.cc
+  # parse/statement/return.cc
+  # parse/statement/variable_declaration.cc
+  # parse/statement/while.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

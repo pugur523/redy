@@ -67,24 +67,24 @@ enum class DiagnosticId : uint8_t {
   kInvalidEscapeSequence = 6,
   kInvalidNumericLiteral = 7,
   kNumericLiteralOutOfRange = 8,
+  kUnexpectedEndOfFile = 9,
 
   // parser
-  kUnexpectedToken = 9,
-  kMissingToken = 10,
-  kExpectedSemicolon = 11,
-  kExpectedIdentifier = 12,
-  kExpectedType = 13,
-  kExpectedLParen = 14,
-  kExpectedRParen = 15,
-  kExpectedLBrace = 16,
-  kExpectedRBrace = 17,
-  kExpectedLBracket = 18,
-  kExpectedRBracket = 19,
-  kExpectedExpression = 20,
-  kExpectedReturnExpression = 21,
-  kExpectedBlock = 22,
-  kUnexpectedKeyword = 23,
-  kUnexpectedEndOfFile = 24,
+  kUnexpectedToken = 10,
+  kMissingToken = 11,
+  kExpectedSemicolon = 12,
+  kExpectedIdentifier = 13,
+  kExpectedType = 14,
+  kExpectedLParen = 15,
+  kExpectedRParen = 16,
+  kExpectedLBrace = 17,
+  kExpectedRBrace = 18,
+  kExpectedLBracket = 19,
+  kExpectedRBracket = 20,
+  kExpectedExpression = 21,
+  kExpectedReturnExpression = 22,
+  kExpectedBlock = 23,
+  kUnexpectedKeyword = 24,
   kMalformedDeclaration = 25,
   kDuplicateParameterName = 26,
   kParameterCountMismatch = 27,
@@ -173,6 +173,7 @@ inline const char* diagnostic_id_to_str(DiagnosticId id) {
     case Id::kInvalidEscapeSequence: return "invalid_escape_sequence";
     case Id::kInvalidNumericLiteral: return "invalid_numeric_literal";
     case Id::kNumericLiteralOutOfRange: return "numeric_literal_out_of_range";
+    case Id::kUnexpectedEndOfFile: return "unexpected_end_of_file";
 
     // parser
     case Id::kUnexpectedToken: return "unexpected_token";
@@ -190,7 +191,6 @@ inline const char* diagnostic_id_to_str(DiagnosticId id) {
     case Id::kExpectedReturnExpression: return "expected_return_expression";
     case Id::kExpectedBlock: return "expected_block";
     case Id::kUnexpectedKeyword: return "unexpected_keyword";
-    case Id::kUnexpectedEndOfFile: return "unexpected_end_of_file";
     case Id::kMalformedDeclaration: return "malformed_declaration";
     case Id::kDuplicateParameterName: return "duplicate_parameter_name";
     case Id::kParameterCountMismatch: return "parameter_count_mismatch";

@@ -9,6 +9,10 @@ message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
   lexer.cc 
+  
+  literal/char.cc
+  literal/numeric.cc
+  literal/str.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

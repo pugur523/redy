@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "core/base/string_util.h"
 #include "frontend/base/data/char_stream.h"
 #include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/result.h"
@@ -48,10 +49,8 @@ class LEXER_EXPORT Lexer {
                            std::size_t line,
                            std::size_t col);
 
-  // check if a character is a valid identifier character after the first one
-  inline static bool is_identifier_char(char c) {
-    return std::isalnum(c) || c == '_';
-  }
+  inline static constexpr bool is_unicode_identifier_start(char c);
+  inline static constexpr bool is_unicode_identifier_char(char c);
 
   CharStream char_stream_;
 

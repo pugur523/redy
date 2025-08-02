@@ -11,7 +11,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "build/build_config.h"
 #include "core/base/file_util.h"
 #include "core/base/logger.h"
 #include "core/base/string_util.h"
@@ -374,22 +373,6 @@ void ArgumentParser::print_help() const {
     }
   }
   core::glog.info<"{}">(help_str);
-}
-
-// static
-void ArgumentParser::print_version() {
-  core::glog.info<R"(
-    {} version {} ({})
-    Build Platform: {} - {}
-    Target Platform: {} - {}
-    Target Bits: {}
-    Build Compiler: {}
-    Installed Directory: {}
-    Build Time: {}
-    Commit Hash: {}
-)">(BUILD_NAME, BUILD_VERSION, BUILD_TYPE, BUILD_PLATFORM, BUILD_ARCH,
-    TARGET_PLATFORM, TARGET_ARCH, TARGET_BITS, BUILD_COMPILER, exe_dir(),
-    BUILD_TIME, BUILD_GIT_COMMIT_HASH);
 }
 
 }  // namespace core

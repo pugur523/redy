@@ -25,7 +25,7 @@ namespace parser {
 Parser::Parser(base::TokenStream&& stream, bool strict)
     : stream_(std::move(stream)), strict_(strict) {}
 
-// program ::= { function | statement } ;
+// program ::= { statement } ;
 Parser::Results<Parser::AstNode> Parser::parse() {
   std::vector<AstNode> statements;
   std::vector<ParseError> errors;

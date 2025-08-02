@@ -12,11 +12,13 @@ set(SOURCES
   location.cc
   base/file_manager.cc
   base/file_util.cc
+  base/file_util_build_info.cc
   base/logger.cc
   base/source_location.cc
   base/source_range.cc
   base/string_util.cc
   cli/arg_parser.cc
+  cli/arg_parser_build_info.cc
   diagnostics/signal_handler.cc
   diagnostics/stack_trace_entry.cc
   diagnostics/stack_trace.cc

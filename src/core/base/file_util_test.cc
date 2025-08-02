@@ -61,7 +61,7 @@ TEST(FileUtilTest, WriteBinaryToFile) {
 
 TEST(FileUtilTest, JoinPathBasic) {
   std::string result = join_path("folder", "sub", "file.txt");
-#ifdef _WIN32
+#if IS_WINDOWS
   EXPECT_EQ(result, "folder\\sub\\file.txt");
 #else
   EXPECT_EQ(result, "folder/sub/file.txt");

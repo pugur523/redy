@@ -5,10 +5,13 @@
 #include "frontend/lexer/lexer.h"
 
 #include <cctype>
+#include <charconv>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "core/base/string_util.h"
 #include "frontend/base/keyword/keyword.h"
 #include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
@@ -29,37 +32,54 @@ Lexer::Result<Lexer::Token> Lexer::next_token() {
         Token(TokenKind::kEof, char_stream_.file_id(), char_stream_.line(),
               char_stream_.column(), 0)));
   }
-
-  const char c1 = char_stream_.peek();
+  const char current = char_stream_.peek();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
   const std::size_t start = char_stream_.position();
 
+  if (current == '\0') {
+    return Result<Token>(diagnostic::make_err(
+        LexError::make(diagnostic::DiagnosticId::kUnexpectedEndOfFile, line,
+                       col, 0, "unexpected eof")));
+  }
+
   // identifiers and keywords
-  if (std::isalpha(c1) || c1 == '_') {
+  // if (core::is_ascii_char(current) || current == '_') {
+  //   return identifier_or_keyword();
+  // }
+  if (is_unicode_identifier_start(current)) {
     return identifier_or_keyword();
   }
 
   // numeric literals
-  if (std::isdigit(c1)) {
+  if (std::isdigit(current)) {
     return literal_numeric();
   }
 
   // string literals
-  if (c1 == '"') {
+  if (current == '"') {
     return literal_str();
   }
 
+  if (current == '\\' && !char_stream_.eof()) {
+    char next = char_stream_.peek(1);
+    if (!core::is_valid_escape_sequence(current, next)) {
+      return Result<Token>(diagnostic::make_err(
+          LexError::make(diagnostic::DiagnosticId::kInvalidEscapeSequence,
+                         start, line, col, "invalid escape sequence")));
+    }
+  }
+
   // character literals
-  if (c1 == '\'') {
+  if (current == '\'') {
     return literal_char();
   }
 
   // consume the current character
   char_stream_.advance();
-  const char c2 = char_stream_.peek();
+  const char next = char_stream_.peek();
 
-  switch (c1) {
+  switch (current) {
     // single character tokens
     case ';': return make_token(TokenKind::kSemicolon, start, line, col);
     case ',': return make_token(TokenKind::kComma, start, line, col);
@@ -75,34 +95,34 @@ Lexer::Result<Lexer::Token> Lexer::next_token() {
     case '?': return make_token(TokenKind::kQuestion, start, line, col);
     case '~': return make_token(TokenKind::kTilde, start, line, col);
     case '%':  // % or %=
-      if (c2 == '=') {
+      if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kPercentEq, start, line, col);
       } else {
         return make_token(TokenKind::kPercent, start, line, col);
       }
     case '&':  // & or && or &=
-      if (c2 == '&') {
+      if (next == '&') {
         char_stream_.advance();
         return make_token(TokenKind::kAndAnd, start, line, col);
-      } else if (c2 == '=') {
+      } else if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kAndEq, start, line, col);
       } else {
         return make_token(TokenKind::kAnd, start, line, col);
       }
     case '|':  // | or || or |=
-      if (c2 == '|') {
+      if (next == '|') {
         char_stream_.advance();
         return make_token(TokenKind::kPipePipe, start, line, col);
-      } else if (c2 == '=') {
+      } else if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kPipeEq, start, line, col);
       } else {
         return make_token(TokenKind::kPipe, start, line, col);
       }
     case '^':  // ^ or ^=
-      if (c2 == '=') {
+      if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kCaretEq, start, line, col);
       } else {
@@ -111,47 +131,47 @@ Lexer::Result<Lexer::Token> Lexer::next_token() {
 
     // multi-character token handling (longest match first)
     case '+':  // +, +=, ++
-      if (c2 == '=') {
+      if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kPlusEq, start, line, col);
-      } else if (c2 == '+') {
+      } else if (next == '+') {
         char_stream_.advance();
         return make_token(TokenKind::kPlusPlus, start, line, col);
       } else {
         return make_token(TokenKind::kPlus, start, line, col);
       }
     case '-':  // -, ->, --, -=
-      if (c2 == '>') {
+      if (next == '>') {
         char_stream_.advance();
         return make_token(TokenKind::kArrow, start, line, col);
-      } else if (c2 == '-') {
+      } else if (next == '-') {
         char_stream_.advance();
         return make_token(TokenKind::kMinusMinus, start, line, col);
-      } else if (c2 == '=') {
+      } else if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kMinusEq, start, line, col);
       } else {
         return make_token(TokenKind::kMinus, start, line, col);
       }
     case '*':  // *, ** or *=
-      if (c2 == '*') {
+      if (next == '*') {
         char_stream_.advance();
         return make_token(TokenKind::kStarStar, start, line, col);
-      } else if (c2 == '=') {
+      } else if (next == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kStarEq, start, line, col);
       } else {
         return make_token(TokenKind::kStar, start, line, col);
       }
     case '/':  // /, //, /*, /=
-      if (c2 == '/') {
+      if (next == '/') {
         char_stream_.advance();  // consume second '/'
         // read until end of file or line
         while (!char_stream_.eof() && char_stream_.peek() != '\n') {
           char_stream_.advance();
         }
         return make_token(TokenKind::kInlineComment, start, line, col);
-      } else if (c2 == '*') {
+      } else if (next == '*') {
         char_stream_.advance();  // consume '*'
         while (!char_stream_.eof()) {
           if (char_stream_.peek() == '*' && char_stream_.peek(1) == '/') {
@@ -231,7 +251,10 @@ Lexer::Result<Lexer::Token> Lexer::next_token() {
         return make_token(TokenKind::kDot, start, line, col);
       }
 
-    default: return make_token(TokenKind::kUnknown, start, line, col);
+    default:
+      return Result<Token>(diagnostic::make_err(
+          LexError::make(diagnostic::DiagnosticId::kUnrecognizedCharacter,
+                         start, line, col, "unrecognized character")));
   }
 }
 
@@ -267,10 +290,8 @@ Lexer::Results<Lexer::Token> Lexer::lex_all(bool strict) {
 
 void Lexer::skip_whitespace() {
   while (!char_stream_.eof()) {
-    char c = char_stream_.peek();
-
-    if (std::isspace(c)) {
-      char_stream_.advance();
+    if (core::is_unicode_whitespace(char_stream_.peek_codepoint())) {
+      char_stream_.advance_codepoint();
     } else {
       break;
     }
@@ -283,150 +304,13 @@ Lexer::Result<Lexer::Token> Lexer::identifier_or_keyword() {
   const std::size_t col = char_stream_.column();
 
   // use the new helper to be consistent with identifier rules
-  while (is_identifier_char(char_stream_.peek())) {
-    char_stream_.advance();
+  while (is_unicode_identifier_char(char_stream_.peek())) {
+    char_stream_.advance_codepoint();
   }
 
   TokenKind kind = base::lookup_id_or_keyword(
       char_stream_.file().source(), start, char_stream_.position() - start);
   return make_token(kind, start, line, col);
-}
-
-Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
-  const std::size_t start = char_stream_.position();
-  const std::size_t line = char_stream_.line();
-  const std::size_t col = char_stream_.column();
-
-  // handle base-prefixed literals
-  if (char_stream_.peek() == '0') {
-    // consume '0'
-    char_stream_.advance();
-    if (char_stream_.peek() == 'x' || char_stream_.peek() == 'X') {
-      char_stream_.advance();
-      while (std::isxdigit(char_stream_.peek())) {
-        char_stream_.advance();
-      }
-      return make_token(TokenKind::kLiteralNumeric, start, line, col);
-    } else if (char_stream_.peek() == 'b' || char_stream_.peek() == 'B') {
-      char_stream_.advance();
-      while (char_stream_.peek() == '0' || char_stream_.peek() == '1') {
-        char_stream_.advance();
-      }
-      return make_token(TokenKind::kLiteralNumeric, start, line, col);
-    } else if (char_stream_.peek() == 'o' || char_stream_.peek() == 'O') {
-      char_stream_.advance();
-      while (char_stream_.peek() >= '0' && char_stream_.peek() <= '7') {
-        char_stream_.advance();
-      }
-      return make_token(TokenKind::kLiteralNumeric, start, line, col);
-    } else {
-      // just a plain '0'
-    }
-  }
-
-  // handle decimal/floating-point
-  while (std::isdigit(char_stream_.peek())) {
-    char_stream_.advance();
-  }
-
-  if (char_stream_.peek() == '.' && std::isdigit(char_stream_.peek(1))) {
-    char_stream_.advance();  // consume '.'
-    while (std::isdigit(char_stream_.peek())) {
-      char_stream_.advance();
-    }
-  }
-
-  // scientific notation
-  if ((char_stream_.peek() == 'e' || char_stream_.peek() == 'E')) {
-    char_stream_.advance();
-    if (char_stream_.peek() == '+' || char_stream_.peek() == '-') {
-      char_stream_.advance();
-    }
-    while (std::isdigit(char_stream_.peek())) {
-      char_stream_.advance();
-    }
-  }
-
-  // optional suffix
-  if (std::isalpha(char_stream_.peek())) {
-    char suffix = char_stream_.peek();
-    if (suffix == 'f' || suffix == 'd' || suffix == 'L') {
-      // optionally handle suffix type in future
-      char_stream_.advance();
-    }
-  }
-
-  return make_token(TokenKind::kLiteralNumeric, start, line, col);
-}
-
-Lexer::Result<Lexer::Token> Lexer::literal_str() {
-  const std::size_t start = char_stream_.position();
-  const std::size_t line = char_stream_.line();
-  const std::size_t col = char_stream_.column();
-
-  char_stream_.advance();  // consume the opening '"'
-
-  // consume characters until closing '"' or eof
-  while (!char_stream_.eof() && char_stream_.peek() != '"') {
-    // handle escape sequences like \" or \\ (basic example, could be more
-    // robust)
-    if (char_stream_.peek() == '\\') {
-      // consume '\'
-      char_stream_.advance();
-      if (!char_stream_.eof()) {
-        // consume escaped character
-        char_stream_.advance();
-      }
-    } else {
-      char_stream_.advance();
-    }
-  }
-
-  if (char_stream_.eof()) {
-    return Result<Token>(diagnostic::make_err(
-        LexError::make(diagnostic::DiagnosticId::kUnterminatedStringLiteral,
-                       start, line, col, "unterminated string literal")));
-  }
-
-  // consume the closing '"'
-  char_stream_.advance();
-
-  return make_token(TokenKind::kLiteralStr, start, line, col);
-}
-
-Lexer::Result<Lexer::Token> Lexer::literal_char() {
-  const std::size_t start = char_stream_.position();
-  const std::size_t line = char_stream_.line();
-  const std::size_t col = char_stream_.column();
-
-  // consume the opening '\''
-  char_stream_.advance();
-
-  // consume character(s) inside quotes
-  if (!char_stream_.eof() && char_stream_.peek() != '\'') {
-    // handle basic escape sequences like '\n', '\t', '\\', '\''
-    if (char_stream_.peek() == '\\') {
-      // consume '\'
-      char_stream_.advance();
-      if (!char_stream_.eof()) {
-        // consume escaped character
-        char_stream_.advance();
-      }
-    } else {
-      char_stream_.advance();
-    }
-  }
-
-  if (char_stream_.eof() || char_stream_.peek() != '\'') {
-    return Result<Token>(diagnostic::make_err(
-        LexError::make(diagnostic::DiagnosticId::kUnterminatedCharacterLiteral,
-                       start, line, col, "unterminated character literal")));
-  }
-
-  // consume the closing '\''
-  char_stream_.advance();
-
-  return make_token(TokenKind::kLiteralChar, start, line, col);
 }
 
 inline Lexer::Result<Lexer::Token> Lexer::make_token(TokenKind kind,
@@ -438,6 +322,20 @@ inline Lexer::Result<Lexer::Token> Lexer::make_token(TokenKind kind,
   const std::size_t length = end_pos - start_pos;
   return Result(
       diagnostic::make_ok(Token(kind, file_id, line, column, length)));
+}
+
+// static
+inline constexpr bool Lexer::is_unicode_identifier_start(char c) {
+  // FIXME: use unicode database
+  // currently only support ascii characters and '_'
+  return core::is_ascii_alphabet(c) || c == '_';
+}
+
+// static
+inline constexpr bool Lexer::is_unicode_identifier_char(char c) {
+  // FIXME: use unicode database
+  // currently support ascii characters, digits, '_'
+  return core::is_ascii_alphabet(c) || core::is_ascii_digit(c) || c == '_';
 }
 
 }  // namespace lexer

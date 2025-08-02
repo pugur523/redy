@@ -28,12 +28,12 @@ Parser::Results<Parser::AstNode> Parser::parse_statement() {
     }
 
     // check for assignment: `x = ...`, `x += ...`, etc.
-    if (token_is_assignment_operator(kind1)) {
+    if (base::token_is_assignment_operator(kind1)) {
       return parse_assignment_statement();
     }
   }
 
-  if (match(base::TokenKind::kRet)) {
+  if (match(base::TokenKind::kReturn)) {
     return parse_return_statement();
   }
 
