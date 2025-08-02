@@ -59,22 +59,24 @@ jobs:
         run: |
           case "${{ matrix.os }}" in
             ubuntu-latest)
-              sudo apt-get update && sudo apt-get install -y wget curl ninja-build libunwind-${{ matrix.llvm_version }}-dev
+              sudo apt-get update && sudo apt-get install -y wget curl ninja-build
               # Install CMake
               wget -qO- "https://github.com/Kitware/CMake/releases/download/v${{ env.CMAKE_VERSION }}/cmake-${{ env.CMAKE_VERSION }}-linux-x86_64.sh" | sudo bash -s -- --skip-license --prefix=/usr/local
               # Install LLVM
               wget -qOllvm.sh https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && sudo ./llvm.sh ${{ matrix.llvm_version }} all
+              # Install LLVM's libunwind after running llvm.sh
+              sudo apt install -y libunwind-${{ matrix.llvm_version }}-dev
               # Setup alternatives (simplified)
               for tool in clang clang++ clang-tidy clang-format llvm-ar llvm-nm llvm-ranlib FileCheck; do
                 sudo update-alternatives --install /usr/bin/$tool $tool /usr/bin/$tool-${{ matrix.llvm_version }} 100
               done
               ;;
-            windows)
+            windows-latest)
               choco install -y cmake --version=${{ env.CMAKE_VERSION }}
               choco install -y llvm --version=${{ matrix.llvm_version }} --allow-downgrade
               choco install -y nsis ninja
               ;;
-            darwin)
+            macos-latest)
               brew update && brew install cmake llvm@${{ matrix.llvm_version }} lld@${{ matrix.llvm_version }}
               echo "$(brew --prefix llvm@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
               echo "$(brew --prefix lld@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
