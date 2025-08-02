@@ -44,13 +44,28 @@ class LEXER_EXPORT Lexer {
   Result<Token> literal_numeric();
   Result<Token> literal_str();
   Result<Token> literal_char();
-  Result<Token> make_token(TokenKind kind,
-                           std::size_t start_pos,
-                           std::size_t line,
-                           std::size_t col);
+  inline Result<Token> make_token(TokenKind kind,
+                                  std::size_t start_pos,
+                                  std::size_t line,
+                                  std::size_t column) {
+    const std::size_t end_pos = char_stream_.position();
+    const core::FileId file_id = char_stream_.file_id();
+    const std::size_t length = end_pos - start_pos;
+    return Result(
+        diagnostic::make_ok(Token(kind, file_id, line, column, length)));
+  }
 
-  inline static constexpr bool is_unicode_identifier_start(char c);
-  inline static constexpr bool is_unicode_identifier_char(char c);
+  inline static constexpr bool is_unicode_identifier_start(char c) {
+    // FIXME: use unicode database
+    // currently only support ascii alphabets and '_'
+    return core::is_ascii_alphabet(c) || c == '_';
+  }
+
+  inline static constexpr bool is_unicode_identifier_char(char c) {
+    // FIXME: use unicode database
+    // currently support ascii alphabets, digits, '_'
+    return core::is_ascii_alphabet(c) || core::is_ascii_digit(c) || c == '_';
+  }
 
   CharStream char_stream_;
 
