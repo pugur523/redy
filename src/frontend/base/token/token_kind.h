@@ -11,14 +11,13 @@
 
 namespace base {
 
+// NOTE: when adding a new token kind, add it here and to
+// `token_kind_to_string()`, and also to `keyword/*.[cc|h]` and
+// `operator/*.[cc|h]` if neccessary.
 enum class TokenKind : uint8_t {
   kUnknown = 0,
 
   kIdentifier = 1,
-
-  // NOTE: when adding a new kind, write it here and in `token_kind_to_string`,
-  // and add it to `keyword/*.[cc|h]` and `operator/*.[cc|h]` as well if
-  // necessary.
 
   // # keywords
   kType = 2,  // primitive types (e.g., i32, char, bool, byte)
@@ -94,69 +93,73 @@ enum class TokenKind : uint8_t {
   kLtLt = 46,  // <<
   kGtGt = 47,  // >>
 
-  // ## relational & comparison
-  kLt = 48,        // <
-  kGt = 49,        // >
-  kLe = 50,        // <=
-  kGe = 51,        // >=
-  kEqEq = 52,      // ==
-  kNotEqual = 53,  // !=
+  // ## comparisons
+  kThreeWay = 48,  // <=>
+
+  kLt = 49,  // <
+  kGt = 50,  // >
+  kLe = 51,  // <=
+  kGe = 52,  // >=
+
+  kEqEq = 53,      // ==
+  kNotEqual = 54,  // !=
 
   // ## bitwise
-  kAnd = 54,       // &
-  kCaret = 55,     // ^
-  kPipe = 56,      // |
-  kAndAnd = 57,    // &&
-  kPipePipe = 58,  // ||
+  kAnd = 55,       // &
+  kCaret = 56,     // ^
+  kPipe = 57,      // |
+  kAndAnd = 58,    // &&
+  kPipePipe = 59,  // ||
 
   // ## assignment
-  kAssign = 59,  // :=
-  kEqual = 60,   // =
+  kAssign = 60,  // :=
+  kEqual = 61,   // =
 
   // ## compound assignment
-  kPlusEq = 61,     // +=
-  kMinusEq = 62,    // -=
-  kStarEq = 63,     // *=
-  kSlashEq = 64,    // /=
-  kPercentEq = 65,  // %=
-  kAndEq = 66,      // &=
-  kPipeEq = 67,     // |=
-  kCaretEq = 68,    // ^=
-  kLtLtEq = 69,     // <<=
-  kGtGtEq = 70,     // >>=
+  kPlusEq = 62,     // +=
+  kMinusEq = 63,    // -=
+  kStarEq = 64,     // *=
+  kSlashEq = 65,    // /=
+  kPercentEq = 66,  // %=
+  kAndEq = 67,      // &=
+  kPipeEq = 68,     // |=
+  kCaretEq = 69,    // ^=
+  kLtLtEq = 70,     // <<=
+  kGtGtEq = 71,     // >>=
   kOperatorsBegin = kPlusPlus,
   kOperatorsEnd = kGtGtEq,
 
   // # delimiters
-  kArrow = 71,         // ->
-  kColon = 72,         // :
-  kColonColon = 73,    // ::
-  kSemicolon = 74,     // ;
-  kComma = 75,         // ,
-  kDot = 76,           // .
-  kDotDot = 77,        // ..
-  kLeftParen = 78,     // (
-  kRightParen = 79,    // )
-  kLeftBrace = 80,     // {
-  kRightBrace = 81,    // }
-  kLeftBracket = 82,   // [
-  kRightBracket = 83,  // ]
-  kAt = 84,            // @
-  kHash = 85,          // #
-  kDollar = 86,        // $
-  kQuestion = 87,      // ?
+  kArrow = 72,         // ->
+  kColon = 73,         // :
+  kColonColon = 74,    // ::
+  kSemicolon = 75,     // ;
+  kComma = 76,         // ,
+  kDot = 77,           // .
+  kDotDot = 78,        // ..
+  kLeftParen = 79,     // (
+  kRightParen = 80,    // )
+  kLeftBrace = 81,     // {
+  kRightBrace = 82,    // }
+  kLeftBracket = 83,   // [
+  kRightBracket = 84,  // ]
+  kAt = 85,            // @
+  kHash = 86,          // #
+  kDollar = 87,        // $
+  kQuestion = 88,      // ?
   kDelimitersBegin = kArrow,
   kDelimitersEnd = kQuestion,
 
   // # comment
-  kInlineComment = 88,
-  kBlockComment = 89,
+  kInlineComment = 89,
+  kBlockComment = 90,
 
   // # eof
-  kEof = 90,
+  kEof = 91,
 };
 
 inline constexpr const char* token_kind_to_string(TokenKind kind) {
+  // TODO: replace this with table
   switch (kind) {
     case TokenKind::kUnknown: return "unknown";
 
@@ -218,10 +221,13 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kLtLt: return "double less than";
     case TokenKind::kGtGt: return "double greater than";
 
+    case TokenKind::kThreeWay: return "three way";
+
     case TokenKind::kLt: return "less than";
     case TokenKind::kGt: return "greater than";
     case TokenKind::kLe: return "less than or equal";
     case TokenKind::kGe: return "greater than or equal";
+
     case TokenKind::kEqEq: return "double equal";
     case TokenKind::kNotEqual: return "not equal";
 
@@ -268,6 +274,10 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
 
     case TokenKind::kEof: return "eof";
   }
+}
+
+inline bool is_operator(TokenKind kind) {
+  return kind >= TokenKind::kOperatorsBegin && kind <= TokenKind::kOperatorsEnd;
 }
 
 }  // namespace base

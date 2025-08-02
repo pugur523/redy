@@ -7,45 +7,97 @@
 
 #include <cstdint>
 
-#include "frontend/base/base_export.h"
-#include "frontend/base/token/token.h"
+#include "frontend/base/operator/operator.h"
 #include "frontend/base/token/token_kind.h"
 
 namespace base {
 
 enum class UnaryOperator : uint8_t {
   kUnknown = 0,
-  kNot = 1,         // ! (logical NOT)
-  kNegate = 2,      // - (unary minus)
-  kBitwiseNot = 3,  // ~ (bitwise NOT)
-  kIncrement = 4,   // ++
-  kDecrement = 5,   // --
+  kPostfixIncrement = 1,  // a++
+  kPostfixDecrement = 2,  // a--
+  kPrefixIncrement = 3,   // ++a
+  kPrefixDecrement = 4,   // --a
+  kNot = 5,               // !a
+  kBitwiseNot = 6,        // ~a
+  kUnaryPlus = 7,         // +a
+  kUnaryMinus = 8,        // -a
 };
 
-inline UnaryOperator token_kind_to_unary_op(TokenKind kind) {
+enum class IncrementPosition : uint8_t {
+  kUnknown = 0,
+  kPostfix = 1,
+  kPrefix = 2,
+};
+
+// designate pos as `IncrementPosition::kPostfix` or `kPrefix` to distinguish
+// post/pre increment(decrement).
+// no need to specify it when call with a token like `!`, `~`, `+`, `-`
+inline UnaryOperator token_kind_to_unary_op(
+    TokenKind kind,
+    IncrementPosition pos = IncrementPosition::kUnknown) {
   switch (kind) {
-    case TokenKind::kBang: return UnaryOperator::kNot;              // !
-    case TokenKind::kMinus: return UnaryOperator::kNegate;          // -
-    case TokenKind::kTilde: return UnaryOperator::kBitwiseNot;      // ~
-    case TokenKind::kPlusPlus: return UnaryOperator::kIncrement;    // ++
-    case TokenKind::kMinusMinus: return UnaryOperator::kDecrement;  // --
+    case TokenKind::kPlusPlus:  // ++
+      switch (pos) {
+        case IncrementPosition::kPostfix:
+          return UnaryOperator::kPostfixIncrement;
+        case IncrementPosition::kPrefix: return UnaryOperator::kPrefixIncrement;
+        default: DCHECK(false); return UnaryOperator::kUnknown;
+      }
+    case TokenKind::kMinusMinus:  // --
+      switch (pos) {
+        case IncrementPosition::kPostfix:
+          return UnaryOperator::kPostfixDecrement;
+        case IncrementPosition::kPrefix: return UnaryOperator::kPrefixDecrement;
+        default: DCHECK(false); return UnaryOperator::kUnknown;
+      }
+    case TokenKind::kBang: return UnaryOperator::kNot;          // !
+    case TokenKind::kTilde: return UnaryOperator::kBitwiseNot;  // ~
+    case TokenKind::kPlus: return UnaryOperator::kUnaryPlus;    // +
+    case TokenKind::kMinus: return UnaryOperator::kUnaryMinus;  // -
     default: return UnaryOperator::kUnknown;
   }
 }
 
 inline bool token_kind_is_unary_operator(TokenKind kind) {
-  return token_kind_to_unary_op(kind) != UnaryOperator::kUnknown;
+  switch (kind) {
+    case TokenKind::kPlusPlus:
+    case TokenKind::kMinusMinus:
+    case TokenKind::kBang:
+    case TokenKind::kTilde:
+    case TokenKind::kPlus:
+    case TokenKind::kMinus: return true;
+    default: return false;
+  }
 }
 
 inline const char* unary_op_to_string(UnaryOperator op) {
+  static constexpr const char* kNames[] = {
+      "unknown",          "postfix increment", "postfix decrement",
+      "prefix increment", "prefix decrement",  "not",
+      "bitwise not",      "unary plus",        "unary minus",
+      "invalid",
+  };
+  const auto idx = static_cast<std::size_t>(op);
+  DCHECK_LT(idx, std::size(kNames));
+  return kNames[idx];
+}
+
+inline OperatorPrecedence unary_op_to_precedence(UnaryOperator op) {
   switch (op) {
-    case UnaryOperator::kUnknown: return "unknown";
-    case UnaryOperator::kNot: return "not";
-    case UnaryOperator::kNegate: return "negate";
-    case UnaryOperator::kBitwiseNot: return "bitwise not";
-    case UnaryOperator::kIncrement: return "increment";
-    case UnaryOperator::kDecrement: return "decrement";
-    default: DCHECK(false); return "invalid";
+    case UnaryOperator::kPostfixIncrement:
+      return OperatorPrecedence::kPostIncrement;
+    case UnaryOperator::kPostfixDecrement:
+      return OperatorPrecedence::kPostIncrement;
+    case UnaryOperator::kPrefixIncrement:
+      return OperatorPrecedence::kPreIncrement;
+    case UnaryOperator::kPrefixDecrement:
+      return OperatorPrecedence::kPreIncrement;
+    case UnaryOperator::kNot: return OperatorPrecedence::kLogicalNot;
+    case UnaryOperator::kBitwiseNot: return OperatorPrecedence::kLogicalNot;
+    case UnaryOperator::kUnaryPlus: return OperatorPrecedence::kUnaryPlusMinus;
+    case UnaryOperator::kUnaryMinus: return OperatorPrecedence::kUnaryPlusMinus;
+    default: DCHECK(false); return OperatorPrecedence::kUnknown;
   }
 }
 

@@ -6,9 +6,9 @@
 #define FRONTEND_BASE_OPERATOR_BINARY_OPERATOR_H_
 
 #include <cstdint>
+#include <type_traits>
 
-#include "frontend/base/base_export.h"
-#include "frontend/base/token/token.h"
+#include "frontend/base/operator/operator.h"
 #include "frontend/base/token/token_kind.h"
 
 namespace base {
@@ -32,36 +32,39 @@ enum class BinaryOperator : uint8_t {
   kLeftShift = 7,   // <<
   kRightShift = 8,  // >>
 
-  // # comparison
-  kLessThan = 9,             // <
-  kGreaterThan = 10,         // >
-  kLessThanOrEqual = 11,     // <=
-  kGreaterThanOrEqual = 12,  // >=
-  kEqualEqual = 13,          // ==
-  kNotEqual = 14,            // !=
+  // # comparisons
+  kThreeWay = 9,  // <=>
+
+  kLessThan = 10,            // <
+  kGreaterThan = 11,         // >
+  kLessThanOrEqual = 12,     // <=
+  kGreaterThanOrEqual = 13,  // >=
+
+  kCompareEqual = 14,  // ==
+  kNotEqual = 15,      // !=
 
   // # bitwise
-  kBitwiseAnd = 15,  // &
-  kBitwiseXor = 16,  // ^
-  kBitwiseOr = 17,   // |
-  kAnd = 18,         // &&
-  kOr = 19,          // ||
+  kBitwiseAnd = 16,  // &
+  kBitwiseXor = 17,  // ^
+  kBitwiseOr = 18,   // |
+  kLogicalAnd = 19,  // &&
+  kLogicalOr = 20,   // ||
 
   // # assignment
-  kAssign = 20,  // :=
-  kEqual = 21,   // =
+  kDeclarationAssign = 21,  // :=
+  kStandardAssign = 22,     // =
 
   // # compound assignment
-  kAddAssign = 22,         // +=
-  kSubtractAssign = 23,    // -=
-  kMultiplyAssign = 24,    // *=
-  kDivideAssign = 25,      // /=
-  kModuloAssign = 26,      // %=
-  kBitwiseAndAssign = 27,  // &=
-  kBitwiseOrAssign = 28,   // |=
-  kBitwiseXorAssign = 29,  // ^=
-  kLeftShiftAssign = 30,   // <<=
-  kRightShiftAssign = 31,  // >>=
+  kAddAssign = 23,         // +=
+  kSubtractAssign = 24,    // -=
+  kMultiplyAssign = 25,    // *=
+  kDivideAssign = 26,      // /=
+  kModuloAssign = 27,      // %=
+  kBitwiseAndAssign = 28,  // &=
+  kBitwiseOrAssign = 29,   // |=
+  kBitwiseXorAssign = 30,  // ^=
+  kLeftShiftAssign = 31,   // <<=
+  kRightShiftAssign = 32,  // >>=
 };
 
 inline BinaryOperator token_kind_to_binary_op(TokenKind kind) {
@@ -78,21 +81,22 @@ inline BinaryOperator token_kind_to_binary_op(TokenKind kind) {
     case TokenKind::kLtLt: return BinaryOperator::kLeftShift;
     case TokenKind::kGtGt: return BinaryOperator::kRightShift;
 
+    case TokenKind::kThreeWay: return BinaryOperator::kThreeWay;
     case TokenKind::kLt: return BinaryOperator::kLessThan;
     case TokenKind::kGt: return BinaryOperator::kGreaterThan;
     case TokenKind::kLe: return BinaryOperator::kLessThanOrEqual;
     case TokenKind::kGe: return BinaryOperator::kGreaterThanOrEqual;
-    case TokenKind::kEqEq: return BinaryOperator::kEqualEqual;
+    case TokenKind::kEqEq: return BinaryOperator::kCompareEqual;
     case TokenKind::kNotEqual: return BinaryOperator::kNotEqual;
 
     case TokenKind::kAnd: return BinaryOperator::kBitwiseAnd;
     case TokenKind::kCaret: return BinaryOperator::kBitwiseXor;
     case TokenKind::kPipe: return BinaryOperator::kBitwiseOr;
-    case TokenKind::kAndAnd: return BinaryOperator::kAnd;
-    case TokenKind::kPipePipe: return BinaryOperator::kOr;
+    case TokenKind::kAndAnd: return BinaryOperator::kLogicalAnd;
+    case TokenKind::kPipePipe: return BinaryOperator::kLogicalOr;
 
-    case TokenKind::kAssign: return BinaryOperator::kAssign;
-    case TokenKind::kEqual: return BinaryOperator::kEqual;
+    case TokenKind::kAssign: return BinaryOperator::kDeclarationAssign;
+    case TokenKind::kEqual: return BinaryOperator::kStandardAssign;
 
     case TokenKind::kPlusEq: return BinaryOperator::kAddAssign;
     case TokenKind::kMinusEq: return BinaryOperator::kSubtractAssign;
@@ -113,49 +117,89 @@ inline bool token_kind_is_binary_operator(TokenKind kind) {
 }
 
 inline const char* binary_op_to_string(BinaryOperator op) {
-  switch (op) {
-    case BinaryOperator::kUnknown: return "unknown";
+  static constexpr const char* kNames[] = {
+      "unknown",
+      "power",
+      "multiply",
+      "divide",
+      "modulo",
+      "add",
+      "subtract",
+      "left shift",
+      "right shift",
+      "three way",
+      "less than",
+      "greater than",
+      "less than or equal",
+      "greater than or equal",
+      "compare equal",
+      "not equal",
+      "bitwise and",
+      "bitwise xor",
+      "bitwise or",
+      "and",
+      "or",
+      "init assign equal",
+      "normal assign equal",
+      "add assign",
+      "subtract assign",
+      "multiply assign",
+      "divide assign",
+      "modulo assign",
+      "bitwise and assign",
+      "bitwise or assign",
+      "bitwise xor assign",
+      "left shift assign",
+      "right shift assign",
+      "invalid",
+  };
+  const auto idx = static_cast<std::size_t>(op);
+  DCHECK_LT(idx, std::size(kNames));
+  return kNames[idx];
+}
 
-    case BinaryOperator::kPower: return "power";
-
-    case BinaryOperator::kMultiply: return "multiply";
-    case BinaryOperator::kDivide: return "devide";
-    case BinaryOperator::kModulo: return "modulo";
-
-    case BinaryOperator::kAdd: return "add";
-    case BinaryOperator::kSubtract: return "subtract";
-
-    case BinaryOperator::kLeftShift: return "left shift";
-    case BinaryOperator::kRightShift: return "right shift";
-
-    case BinaryOperator::kLessThan: return "less than";
-    case BinaryOperator::kGreaterThan: return "greater than";
-    case BinaryOperator::kLessThanOrEqual: return "less than or equal";
-    case BinaryOperator::kGreaterThanOrEqual: return "greater than or equal";
-    case BinaryOperator::kEqualEqual: return "equal equal";
-    case BinaryOperator::kNotEqual: return "not equal";
-
-    case BinaryOperator::kBitwiseAnd: return "bitwise and";
-    case BinaryOperator::kBitwiseXor: return "bitwise xor";
-    case BinaryOperator::kBitwiseOr: return "bitwise or";
-    case BinaryOperator::kAnd: return "and";
-    case BinaryOperator::kOr: return "or";
-
-    case BinaryOperator::kAssign: return "assign";
-    case BinaryOperator::kEqual: return "equal";
-
-    case BinaryOperator::kAddAssign: return "add assign";
-    case BinaryOperator::kSubtractAssign: return "subtract assign";
-    case BinaryOperator::kMultiplyAssign: return "multiply assign";
-    case BinaryOperator::kDivideAssign: return "divide assign";
-    case BinaryOperator::kModuloAssign: return "modulo assign";
-    case BinaryOperator::kBitwiseAndAssign: return "bitwise and assign";
-    case BinaryOperator::kBitwiseOrAssign: return "bitwise or assign";
-    case BinaryOperator::kBitwiseXorAssign: return "bitwise xor assign";
-    case BinaryOperator::kLeftShiftAssign: return "left shift assign";
-    case BinaryOperator::kRightShiftAssign: return "right shift assign";
-    default: DCHECK(false); return "invalid";
+inline OperatorPrecedence binary_op_to_precedence(BinaryOperator op) {
+  if (op == BinaryOperator::kPower) {
+    return OperatorPrecedence::kExponentiation;
+  } else if (op >= BinaryOperator::kMultiply && op <= BinaryOperator::kModulo) {
+    return OperatorPrecedence::kMultiplicative;
+  } else if (op >= BinaryOperator::kAdd && op <= BinaryOperator::kSubtract) {
+    return OperatorPrecedence::kAdditive;
+  } else if (op >= BinaryOperator::kLeftShift &&
+             op <= BinaryOperator::kRightShift) {
+    return OperatorPrecedence::kBitwiseShift;
+  } else if (op >= BinaryOperator::kThreeWay &&
+             op <= BinaryOperator::kThreeWay) {
+    return OperatorPrecedence::kThreeWayComparison;
+  } else if (op >= BinaryOperator::kLessThan &&
+             op <= BinaryOperator::kGreaterThanOrEqual) {
+    return OperatorPrecedence::kRelationalComparison;
+  } else if (op >= BinaryOperator::kCompareEqual &&
+             op <= BinaryOperator::kNotEqual) {
+    return OperatorPrecedence::kEqualityComparison;
+  } else if (op == BinaryOperator::kBitwiseAnd) {
+    return OperatorPrecedence::kBitwiseAnd;
+  } else if (op == BinaryOperator::kBitwiseXor) {
+    return OperatorPrecedence::kBitwiseXor;
+  } else if (op == BinaryOperator::kBitwiseOr) {
+    return OperatorPrecedence::kBitwiseOr;
+  } else if (op == BinaryOperator::kLogicalAnd) {
+    return OperatorPrecedence::kLogicalAnd;
+  } else if (op == BinaryOperator::kLogicalOr) {
+    return OperatorPrecedence::kLogicalOr;
+  } else if (op >= BinaryOperator::kDeclarationAssign &&
+             op <= BinaryOperator::kStandardAssign) {
+    return OperatorPrecedence::kAssignment;
+  } else if (op >= BinaryOperator::kAddAssign &&
+             op <= BinaryOperator::kModuloAssign) {
+    return OperatorPrecedence::kCompoundAssignment;
+  } else if (op >= BinaryOperator::kBitwiseAndAssign &&
+             op <= BinaryOperator::kRightShiftAssign) {
+    return OperatorPrecedence::kBitwiseCompoundAssignment;
   }
+
+  DCHECK(false);
+  return OperatorPrecedence::kUnknown;
 }
 
 }  // namespace base

@@ -7,35 +7,81 @@
 
 #include <cstdint>
 
-#include "frontend/base/token/token_kind.h"
+#include "core/check.h"
 
 namespace base {
 
-inline bool is_operator(TokenKind kind) {
-  return kind >= TokenKind::kOperatorsBegin && kind <= TokenKind::kOperatorsEnd;
-}
-
-// lower value means it is high priority
+// lower value means it has high priority
+// evaluate unary operations first, then binary operations
+// see README.md for detail.
 enum class OperatorPrecedence : uint8_t {
   kUnknown = 0,
-  kUnary = 1,   // -x, !x, x++, x--,
-  kBinary = 2,  // x ** y, x / y, x + y, x << y, x == y, x && y, x := y, x += y,
+  kPostIncrement = 1,               // a++ a--
+  kPreIncrement = 2,                // ++a --a
+  kLogicalNot = 2,                  // !a ~a
+  kUnaryPlusMinus = 2,              // +a -a
+  kExponentiation = 3,              // a ** b
+  kMultiplicative = 4,              // a * b a / b a % b
+  kAdditive = 5,                    // a + b a - b
+  kBitwiseShift = 6,                // a << b a >> b
+  kThreeWayComparison = 7,          // a <=> b
+  kRelationalComparison = 8,        // a < b a <= b a > b a >= b
+  kEqualityComparison = 9,          // a == b a != b
+  kBitwiseAnd = 10,                 // a & b
+  kBitwiseXor = 11,                 // a ^ b
+  kBitwiseOr = 12,                  // a \| b
+  kLogicalAnd = 13,                 // a && b
+  kLogicalOr = 14,                  // a \|\| b
+  kAssignment = 15,                 // a = b a := b
+  kCompoundAssignment = 15,         // a += b a -= b a *= b a /= b a %= b
+  kBitwiseCompoundAssignment = 15,  // a &= b a ^= b a \|= b a <<= b a >>= b
 };
 
-// enum class UnaryOperatorPrecedence : uint8_t {
-// };
-
-enum class BinaryOperatorPrecedence : uint8_t {
+enum class OperatorAssociativity : uint8_t {
   kUnknown = 0,
-  kExponentiation = 1,      // **
-  kMultiplicative = 2,      // *, /, %
-  kAdditive = 3,            // +, -
-  kBitwiseShift = 4,        // <<, >>
-  kComparison = 5,          // ==, !=, <, <=, >, >=
-  kBitwise = 6,             // &, |, ^, &&, ||
-  kAssignment = 7,          // :=, =
-  kCompoundAssignment = 8,  // +=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=
+  kLeftToRight = 1,
+  kRightToLeft = 2,
 };
+
+inline OperatorAssociativity operator_precedence_to_associativity(
+    OperatorPrecedence precedence) {
+  switch (precedence) {
+    case OperatorPrecedence::kUnknown: return OperatorAssociativity::kUnknown;
+    case OperatorPrecedence::kPostIncrement:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kPreIncrement:  // contains `kLogicalNot`,
+                                             // `kUnaryPlusMinus`
+      return OperatorAssociativity::kRightToLeft;
+    case OperatorPrecedence::kExponentiation:
+      return OperatorAssociativity::kRightToLeft;
+    case OperatorPrecedence::kMultiplicative:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kAdditive:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kBitwiseShift:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kThreeWayComparison:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kRelationalComparison:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kEqualityComparison:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kBitwiseAnd:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kBitwiseXor:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kBitwiseOr:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kLogicalAnd:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kLogicalOr:
+      return OperatorAssociativity::kLeftToRight;
+    case OperatorPrecedence::kAssignment:  // contains `kCompoundAssignment`,
+                                           // `kBitwiseCompoundAssignment`
+      return OperatorAssociativity::kRightToLeft;
+    default: DCHECK(false); return OperatorAssociativity::kUnknown;
+  }
+}
 
 }  // namespace base
 
