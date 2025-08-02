@@ -1,5 +1,7 @@
 #/!bin/bash
 
+set -e
+
 script_dir=$(cd $(dirname $0) && pwd)
 build_scripts_dir=${script_dir}/src/build/scripts
 out_bin_dir=${script_dir}/out/build/linux/x86_64/debug/bin
