@@ -8,8 +8,14 @@ out_bin_dir=${script_dir}/out/build/linux/x86_64/debug/bin
 
 action=$1
 
-shift 1
-remain_args=$@
+if [ -n "$action" ]; then
+  shift 1
+  remain_args=$@
+else
+  action="build"
+  remain_args="--build_mode=all"
+fi
+
 
 if [ "$action" == "build" ]; then
   ${build_scripts_dir}/build.py $remain_args
@@ -22,3 +28,4 @@ else
 fi
 
 exit 0
+
