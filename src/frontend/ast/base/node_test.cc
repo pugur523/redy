@@ -11,19 +11,18 @@
 #include "core/base/source_location.h"
 #include "frontend/ast/base/base_node.h"
 #include "frontend/ast/nodes/node_util.h"
-#include "frontend/lexer/token/token_kind.h"
+#include "frontend/base/operator/binary_operator.h"
+#include "frontend/base/token/token_kind.h"
 #include "gtest/gtest.h"
 
-using Token = lexer::Token;
-using TokenKind = lexer::TokenKind;
+using Token = base::Token;
+using TokenKind = base::TokenKind;
 
 namespace ast {
 
 namespace {
 
 static core::FileManager file_manager;
-
-}
 
 Token make_dummy_token(std::string&& lexeme = "dummy",
                        TokenKind kind = TokenKind::kIdentifier) {
@@ -67,10 +66,10 @@ TEST(AstNodeTest, BinaryOpNodeTest) {
       make_node<LiteralNode>(make_dummy_token("2", TokenKind::kLiteralNumeric),
                              LiteralNode::Type::kNumeric, "2");
 
-  BinaryOpNode node(tok, BinaryOpNode::Operator::kAdd, std::move(left),
+  BinaryOpNode node(tok, base::BinaryOperator::kAdd, std::move(left),
                     std::move(right));
 
-  EXPECT_EQ(node.op, BinaryOpNode::Operator::kAdd);
+  EXPECT_EQ(node.op, base::BinaryOperator::kAdd);
   EXPECT_TRUE(std::holds_alternative<std::unique_ptr<LiteralNode>>(node.left));
   EXPECT_TRUE(std::holds_alternative<std::unique_ptr<LiteralNode>>(node.right));
 }
@@ -81,9 +80,9 @@ TEST(AstNodeTest, UnaryOpNodeTest) {
       make_node<LiteralNode>(make_dummy_token("1", TokenKind::kLiteralNumeric),
                              LiteralNode::Type::kNumeric, "1");
 
-  UnaryOpNode node(tok, UnaryOpNode::Operator::kNegate, std::move(operand));
+  UnaryOpNode node(tok, base::UnaryOperator::kNegate, std::move(operand));
 
-  EXPECT_EQ(node.op, UnaryOpNode::Operator::kNegate);
+  EXPECT_EQ(node.op, base::UnaryOperator::kNegate);
   EXPECT_TRUE(
       std::holds_alternative<std::unique_ptr<LiteralNode>>(node.operand));
 }
@@ -111,14 +110,14 @@ TEST(AstNodeTest, VariableDeclarationNodeTest) {
 }
 
 TEST(AstNodeTest, ReturnNodeEmptyTest) {
-  Token tok = make_dummy_token("return", TokenKind::kReturn);
+  Token tok = make_dummy_token("ret", TokenKind::kRet);
   ReturnNode node(tok);
 
   EXPECT_FALSE(node.value.has_value());
 }
 
 TEST(AstNodeTest, ReturnNodeWithValueTest) {
-  Token tok = make_dummy_token("return", TokenKind::kReturn);
+  Token tok = make_dummy_token("ret", TokenKind::kRet);
   auto val = make_node<LiteralNode>(make_dummy_token("42"),
                                     LiteralNode::Type::kNumeric, "42");
   ReturnNode node(tok, std::move(val));
@@ -129,11 +128,11 @@ TEST(AstNodeTest, ReturnNodeWithValueTest) {
 }
 
 TEST(AstNodeTest, BlockNodeTest) {
-  Token tok = make_dummy_token("{", TokenKind::kLBrace);
+  Token tok = make_dummy_token("{", TokenKind::kLeftBrace);
 
   std::vector<AstNode> stmts;
   stmts.push_back(make_node<ReturnNode>(
-      make_dummy_token("return"),
+      make_dummy_token("ret"),
       make_node<LiteralNode>(make_dummy_token("1"), LiteralNode::Type::kNumeric,
                              "1")));
 
@@ -155,7 +154,7 @@ TEST(AstNodeTest, ParameterNodeTest) {
 }
 
 TEST(AstNodeTest, FunctionNodeTest) {
-  Token tok = make_dummy_token("fn", TokenKind::kFn);
+  Token tok = make_dummy_token("fn", TokenKind::kFunction);
   AstNode ret_type = make_node<TypeNode>(make_dummy_token("i32"), "i32");
 
   std::vector<AstNode> params;
@@ -163,11 +162,11 @@ TEST(AstNodeTest, FunctionNodeTest) {
       make_dummy_token("x"), "x",
       make_node<TypeNode>(make_dummy_token("i32"), "i32")));
   AstNode params_node = make_node<ParameterListNode>(
-      make_dummy_token("(", lexer::TokenKind::kLParen), std::move(params));
+      make_dummy_token("(", base::TokenKind::kLParen), std::move(params));
 
   std::vector<AstNode> block;
   block.push_back(make_node<ReturnNode>(
-      make_dummy_token("return"),
+      make_dummy_token("ret"),
       make_node<LiteralNode>(make_dummy_token("0"), LiteralNode::Type::kNumeric,
                              "0")));
   AstNode body = make_node<BlockNode>(make_dummy_token("{"), std::move(block));
@@ -180,5 +179,7 @@ TEST(AstNodeTest, FunctionNodeTest) {
   // EXPECT_EQ(node.parameters, 1);
   EXPECT_TRUE(std::holds_alternative<std::unique_ptr<BlockNode>>(node.body));
 }
+
+}  // namespace
 
 }  // namespace ast
