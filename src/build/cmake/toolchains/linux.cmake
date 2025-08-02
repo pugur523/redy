@@ -29,8 +29,8 @@ set(CMAKE_OBJDUMP "${LLVM_OBJDUMP_PATH}")
 set(CMAKE_STRIP "${LLVM_STRIP_PATH}")
 
 # Linker flags - use lld
-set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld")
-set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=${LLD_PATH}")
+set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=${LLD_PATH}")
 
 # Search paths
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
