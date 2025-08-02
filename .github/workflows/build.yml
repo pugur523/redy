@@ -27,7 +27,7 @@ jobs:
             target_platform: linux
             cc: clang
             cxx: clang++
-            llvm_version: "22"
+            llvm_version: "20"
           - os: windows-latest
             target_platform: windows
             cc: clang-cl
@@ -42,7 +42,7 @@ jobs:
             target_platform: mingw
             cc: x86_64-w64-mingw32-clang
             cxx: x86_64-w64-mingw32-clang++
-            llvm_version: "22"
+            llvm_version: "20"
 
     runs-on: ${{ matrix.os }}
     
