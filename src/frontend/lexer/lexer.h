@@ -37,7 +37,6 @@ class LEXER_EXPORT Lexer {
   Results<Token> lex_all(bool strict = false);
 
  private:
-  // void skip_whitespace_and_comments();
   void skip_whitespace();
 
   Result<Token> identifier_or_keyword();
