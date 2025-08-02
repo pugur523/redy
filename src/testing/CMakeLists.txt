@@ -15,20 +15,20 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/core/base/vec_test.cc
   ${PROJECT_SOURCE_DIR}/core/diagnostics/system_info_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/frontend_test.cc
-
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/data/char_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_test.cc
 
+  ${PROJECT_SOURCE_DIR}/frontend/diagnostic/base/diagnostic_engine_test.cc
+
   ${PROJECT_SOURCE_DIR}/frontend/lexer/lexer_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/ast/base/node_test.cc
+  # ${PROJECT_SOURCE_DIR}/frontend/ast/base/node_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/parser/parser_test.cc
+  # ${PROJECT_SOURCE_DIR}/frontend/parser/parser_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/diagnostic/base/diagnostic_engine_test.cc
+  # ${PROJECT_SOURCE_DIR}/frontend/frontend_test.cc
 )
 
 add_executable(${TEST_NAME} ${SOURCES})

@@ -90,7 +90,7 @@ class DIAGNOSTIC_EXPORT Result {
     }
     other.is_ok_ = false;
   }
-  //
+
   Result& operator=(const Result& other) {
     if (this != &other) {
       this->~Result();

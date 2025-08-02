@@ -2,69 +2,63 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include <climits>
+#include <cctype>
 #include <cstdint>
 #include <string>
 
+#include "core/base/string_util.h"
 #include "frontend/lexer/lexer.h"
 
 namespace lexer {
+
+namespace {
+
+struct NumericMeta {
+  bool has_digit : 1 = false;
+  bool seen_dot : 1 = false;
+  bool seen_exponent : 1 = false;
+  bool is_base_prefixed : 1 = false;
+};
+
+}  // namespace
 
 Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
 
-  std::string literal_value;
-  bool is_floating_point = false;
-  int base = 10;
+  NumericMeta meta;
 
-  // handle base-prefixed literals
+  // handle base prefixes (0x, 0b, 0o)
   if (char_stream_.peek() == '0') {
-    literal_value += char_stream_.peek();
-    char_stream_.advance();
-
-    char next = char_stream_.peek();
+    const char next = char_stream_.peek(1);
     if (next == 'x' || next == 'X') {
-      // hexadecimal
-      base = 16;
-      literal_value += next;
-      char_stream_.advance();
+      // hex
+      meta.is_base_prefixed = true;
+      char_stream_.advance();  // consume '0'
+      char_stream_.advance();  // consume 'x'/'X'
 
-      bool has_digits = false;
+      // consume hex digits
       while (std::isxdigit(char_stream_.peek())) {
-        literal_value += char_stream_.peek();
+        meta.has_digit = true;
         char_stream_.advance();
-        has_digits = true;
-      }
-
-      if (!has_digits) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                           start, line, col, "invalid hexadecimal literal")));
       }
 
     } else if (next == 'b' || next == 'B') {
       // binary
-      base = 2;
-      literal_value += next;
-      char_stream_.advance();
+      meta.is_base_prefixed = true;
+      char_stream_.advance();  // consume '0'
+      char_stream_.advance();  // consume 'b'/'B'
 
-      bool has_digits = false;
+      // consume binary digits
       while (char_stream_.peek() == '0' || char_stream_.peek() == '1') {
-        literal_value += char_stream_.peek();
+        meta.has_digit = true;
         char_stream_.advance();
-        has_digits = true;
       }
 
-      // check for invalid binary digits
-      if (std::isdigit(char_stream_.peek()) && char_stream_.peek() > '1') {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                           start, line, col, "invalid binary literal")));
-      }
-
-      if (!has_digits) {
+      // check for invalid binary digits (2-9)
+      if (core::is_ascii_digit(char_stream_.peek()) &&
+          char_stream_.peek() > '1') {
         return Result<Token>(diagnostic::make_err(
             LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
                            start, line, col, "invalid binary literal")));
@@ -72,68 +66,63 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
 
     } else if (next == 'o' || next == 'O') {
       // octal
-      base = 8;
-      literal_value += next;
-      char_stream_.advance();
+      meta.is_base_prefixed = true;
+      char_stream_.advance();  // consume '0'
+      char_stream_.advance();  // consume 'o'/'O'
 
-      bool has_digits = false;
+      // consume octal digits
       while (char_stream_.peek() >= '0' && char_stream_.peek() <= '7') {
-        literal_value += char_stream_.peek();
+        meta.has_digit = true;
         char_stream_.advance();
-        has_digits = true;
       }
 
-      // check for invalid octal digits
-      if (std::isdigit(char_stream_.peek()) && char_stream_.peek() > '7') {
+      // check for invalid octal digits (8-9)
+      if (core::is_ascii_digit(char_stream_.peek()) &&
+          char_stream_.peek() > '7') {
         return Result<Token>(diagnostic::make_err(
             LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
                            start, line, col, "invalid octal literal")));
       }
-
-      if (!has_digits) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                           start, line, col, "invalid octal literal")));
-      }
-
-    } else {
-      // just a plain '0' or decimal starting with 0
-      // continue to decimal handling
     }
   }
 
-  // handle decimal/floating-point (if not already handled base-prefixed)
-  if (base == 10) {
-    while (std::isdigit(char_stream_.peek())) {
-      literal_value += char_stream_.peek();
+  // handle decimal numbers (if not base-prefixed)
+  if (!meta.is_base_prefixed) {
+    // consume initial digits
+    while (core::is_ascii_digit(char_stream_.peek())) {
+      meta.has_digit = true;
       char_stream_.advance();
     }
 
-    if (char_stream_.peek() == '.' && std::isdigit(char_stream_.peek(1))) {
-      is_floating_point = true;
-      literal_value += char_stream_.peek();
-      char_stream_.advance();
-      while (std::isdigit(char_stream_.peek())) {
-        literal_value += char_stream_.peek();
+    // handle decimal point
+    if (char_stream_.peek() == '.' &&
+        core::is_ascii_digit(char_stream_.peek(1))) {
+      meta.seen_dot = true;
+      char_stream_.advance();  // consume '.'
+
+      // consume fractional digits
+      while (core::is_ascii_digit(char_stream_.peek())) {
+        meta.has_digit = true;
         char_stream_.advance();
       }
     }
 
-    // scientific notation
-    if ((char_stream_.peek() == 'e' || char_stream_.peek() == 'E')) {
-      is_floating_point = true;
-      literal_value += char_stream_.peek();
-      char_stream_.advance();
+    // handle scientific notation
+    if ((char_stream_.peek() == 'e' || char_stream_.peek() == 'E') &&
+        meta.has_digit) {
+      meta.seen_exponent = true;
+      char_stream_.advance();  // consume 'e'/'E'
+
+      // optional sign
       if (char_stream_.peek() == '+' || char_stream_.peek() == '-') {
-        literal_value += char_stream_.peek();
         char_stream_.advance();
       }
 
+      // must have digits after exponent
       bool has_exp_digits = false;
-      while (std::isdigit(char_stream_.peek())) {
-        literal_value += char_stream_.peek();
-        char_stream_.advance();
+      while (core::is_ascii_digit(char_stream_.peek())) {
         has_exp_digits = true;
+        char_stream_.advance();
       }
 
       if (!has_exp_digits) {
@@ -144,70 +133,23 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
     }
   }
 
-  // check for invalid characters immediately following the number
-  if (std::isalpha(char_stream_.peek()) && char_stream_.peek() != 'f' &&
-      char_stream_.peek() != 'd' && char_stream_.peek() != 'L') {
+  // check if we actually found any valid digits
+  if (!meta.has_digit) {
     return Result<Token>(diagnostic::make_err(
         LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral, start,
                        line, col, "invalid numeric literal")));
   }
 
-  // range check for integer literals (skip for floating point)
-  if (!is_floating_point && base != 10) {
-    try {
-      // extract the numeric part (skip prefix like "0x", "0b", "0o")
-      std::string numeric_part = literal_value;
-      if (base == 16 && literal_value.length() > 2) {
-        numeric_part = literal_value.substr(2);
-      } else if ((base == 2 || base == 8) && literal_value.length() > 2) {
-        numeric_part = literal_value.substr(2);
-      }
-
-      if (!numeric_part.empty()) {
-        // convert to check range
-        uint64_t value = std::stoull(numeric_part, nullptr, base);
-
-        // check if value exceeds usize max (assume 64-bit for now)
-        const uint64_t USIZE_MAX = UINT64_MAX;
-        if (value > USIZE_MAX) {
-          return Result<Token>(diagnostic::make_err(LexError::make(
-              diagnostic::DiagnosticId::kNumericLiteralOutOfRange, start, line,
-              col, "numeric literal out of range")));
-        }
-      }
-    } catch (const std::exception&) {
-      return Result<Token>(diagnostic::make_err(
-          LexError::make(diagnostic::DiagnosticId::kNumericLiteralOutOfRange,
-                         start, line, col, "numeric literal out of range")));
-    }
-  } else if (!is_floating_point && base == 10) {
-    try {
-      // for decimal integers, check both signed and unsigned ranges
-      int64_t signed_value = std::stoll(literal_value);
-      uint64_t unsigned_value = std::stoull(literal_value);
-
-      const int64_t kIsizeMin = LLONG_MIN;
-      const uint64_t kUsizeMax = UINT64_MAX;
-
-      // check if it's outside both signed and unsigned ranges
-      if (signed_value < kIsizeMin || unsigned_value > kUsizeMax) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kNumericLiteralOutOfRange,
-                           start, line, col, "numeric literal out of range")));
-      }
-    } catch (const std::exception&) {
-      return Result<Token>(diagnostic::make_err(
-          LexError::make(diagnostic::DiagnosticId::kNumericLiteralOutOfRange,
-                         start, line, col, "numeric literal out of range")));
-    }
-  }
-
-  // optional suffix
-  if (std::isalpha(char_stream_.peek())) {
-    char suffix = char_stream_.peek();
+  // handle optional suffix
+  if (core::is_ascii_alphabet(char_stream_.peek())) {
+    const char suffix = char_stream_.peek();
     if (suffix == 'f' || suffix == 'd' || suffix == 'L') {
-      // optionally handle suffix type in future
       char_stream_.advance();
+    } else {
+      // invalid suffix
+      return Result<Token>(diagnostic::make_err(
+          LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
+                         start, line, col, "invalid numeric literal suffix")));
     }
   }
 

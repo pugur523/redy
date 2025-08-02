@@ -5,6 +5,7 @@
 #ifndef CORE_BASE_STRING_UTIL_H_
 #define CORE_BASE_STRING_UTIL_H_
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <cstdio>
@@ -46,10 +47,10 @@ namespace core {
     case '\"':
     case '?':
 
-    // hexadecimal \xhh
+    // hexadecimal \xHH
     case 'x':  // need to validate digits after 'x' elsewhere
 
-    // Unicode escape sequences (C++: \uXXXX and \UXXXXXXXX, Rust: \u{XXXX})
+    // unicode escape sequences
     case 'u':
     case 'U':
 
@@ -70,16 +71,15 @@ namespace core {
 [[nodiscard]] inline bool is_valid_unicode_escape(std::string_view input) {
   if (input.size() != 5 && input.size() != 9) {
     return false;
-  }
-  if (input.starts_with("u")) {
+  } else if (input.starts_with("u")) {
     return input.size() == 5 &&
            std::all_of(input.begin() + 1, input.end(), ::isxdigit);
-  }
-  if (input.starts_with("U")) {
+  } else if (input.starts_with("U")) {
     return input.size() == 9 &&
            std::all_of(input.begin() + 1, input.end(), ::isxdigit);
+  } else {
+    return false;
   }
-  return false;
 }
 
 [[nodiscard]] inline bool is_valid_hex_escape(std::string_view input) {
