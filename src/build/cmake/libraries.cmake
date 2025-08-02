@@ -65,7 +65,7 @@ endmacro()
 macro(setup_llvm)
   # Windows: manually specify llvm paths
   if(NOT TARGET_OS_NAME MATCHES "windows")
-    find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config-21 llvm-config)
+    find_program(LLVM_CONFIG_EXECUTABLE NAMES llvm-config-20 llvm-config)
 
     if(NOT LLVM_CONFIG_EXECUTABLE)
       message(FATAL_ERROR "llvm-config not found. Please install LLVM development tools.")
