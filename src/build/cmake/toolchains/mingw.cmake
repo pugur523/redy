@@ -34,8 +34,9 @@ set(CMAKE_OBJDUMP "${OBJDUMP_PATH}")
 set(CMAKE_RC_COMPILER "${RC_PATH}")
 set(CMAKE_STRIP "${STRIP_PATH}")
 
-set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=${LD_PATH}")
-set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=${LD_PATH}")
+# Linker flags - use lld
+set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld")
+set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld")
 
 # Search paths
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

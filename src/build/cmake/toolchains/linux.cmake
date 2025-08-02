@@ -8,7 +8,7 @@ set(CMAKE_SYSTEM_PROCESSOR x86_64)
 # Prefer versioned LLVM tools if available
 find_program(CLANG_PATH NAMES clang-21 clang REQUIRED)
 find_program(CLANGXX_PATH NAMES clang++-21 clang++ REQUIRED)
-find_program(LLD_PATH NAMES ld.lld-21 ld.lld lld REQUIRED)
+find_program(LLD_PATH NAMES ld.lld-21 ld.lld REQUIRED)
 find_program(LLVM_AR_PATH NAMES llvm-ar-21 llvm-ar REQUIRED)
 find_program(LLVM_RANLIB_PATH NAMES llvm-ranlib-21 llvm-ranlib REQUIRED)
 find_program(LLVM_NM_PATH NAMES llvm-nm-21 llvm-nm REQUIRED)
@@ -29,8 +29,8 @@ set(CMAKE_OBJDUMP "${LLVM_OBJDUMP_PATH}")
 set(CMAKE_STRIP "${LLVM_STRIP_PATH}")
 
 # Linker flags - use lld
-set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=${LLD_PATH}")
-set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=${LLD_PATH}")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld")
+set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld")
 
 # Search paths
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

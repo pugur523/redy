@@ -65,12 +65,13 @@ jobs:
               wget -nv "${cmake_url}" -O cmake-installer.sh && chmod +x cmake-installer.sh && sudo ./cmake-installer.sh --skip-license --prefix=/usr/local && rm cmake-installer.sh
               # Install LLVM
               wget -qOllvm.sh https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && sudo ./llvm.sh ${{ matrix.llvm_version }} all && rm ./llvm.sh
-              # Install LLVM's libunwind after running llvm.sh
-              sudo apt install -y libunwind-${{ matrix.llvm_version }}-dev
               # Setup alternatives (simplified)
-              for tool in clang clang++ clang-tidy clang-format lld llvm-ar llvm-ranlib llvm-nm llvm-objcopy llvm-objdump llvm-strip FileCheck; do
+              for tool in clang clang++ clang-tidy clang-format llvm-ar llvm-ranlib llvm-nm llvm-objcopy llvm-objdump llvm-strip FileCheck; do
                 sudo update-alternatives --install /usr/bin/$tool $tool /usr/bin/$tool-${{ matrix.llvm_version }} 100
               done
+          
+              sudo update-alternatives --install /usr/bin/ld ld /usr/bin/lld-${{ matrix.llvm_version }} 100
+              sudo update-alternatives --install /usr/bin/lld lld /usr/bin/lld-${{ matrix.llvm_version }} 100
               ;;
             windows-latest)
               choco install -y cmake --version=${{ env.CMAKE_VERSION }}
