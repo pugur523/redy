@@ -14,7 +14,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  CMAKE_VERSION: "4.0.2"
+  CMAKE_VERSION: "4.0.3"
 
 jobs:
   build:
@@ -27,22 +27,22 @@ jobs:
             target_platform: linux
             cc: clang
             cxx: clang++
-            llvm_version: "20"
+            llvm_version: "22"
           - os: windows-latest
             target_platform: windows
             cc: clang-cl
             cxx: clang-cl
-            llvm_version: "20.1.4"
+            llvm_version: "20.1.8"
           - os: macos-latest
             target_platform: darwin
             cc: clang
             cxx: clang++
-            llvm_version: "19"
+            llvm_version: "20"
           - os: ubuntu-latest
             target_platform: mingw
             cc: x86_64-w64-mingw32-clang
             cxx: x86_64-w64-mingw32-clang++
-            llvm_version: "20"
+            llvm_version: "22"
 
     runs-on: ${{ matrix.os }}
     
@@ -57,8 +57,8 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          case "${{ matrix.target_platform }}" in
-            linux)
+          case "${{ matrix.os }}" in
+            ubuntu-latest)
               sudo apt-get update && sudo apt-get install -y wget curl ninja-build libunwind-${{ matrix.llvm_version }}-dev
               # Install CMake
               wget -qO- "https://github.com/Kitware/CMake/releases/download/v${{ env.CMAKE_VERSION }}/cmake-${{ env.CMAKE_VERSION }}-linux-x86_64.sh" | sudo bash -s -- --skip-license --prefix=/usr/local
@@ -69,13 +69,10 @@ jobs:
                 sudo update-alternatives --install /usr/bin/$tool $tool /usr/bin/$tool-${{ matrix.llvm_version }} 100
               done
               ;;
-            mingw)
-              sudo apt-get update && sudo apt-get install -y nsis wine
-              source ./src/build/scripts/install_llvm_mingw.sh
-              echo "LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> $GITHUB_ENV
-              ;;
             windows)
-              choco install -y cmake --version=${{ env.CMAKE_VERSION }} llvm --version=${{ matrix.llvm_version }} nsis ninja
+              choco install -y cmake --version=${{ env.CMAKE_VERSION }}
+              choco install -y llvm --version=${{ matrix.llvm_version }} --allow-downgrade
+              choco install -y nsis ninja
               ;;
             darwin)
               brew update && brew install cmake llvm@${{ matrix.llvm_version }} lld@${{ matrix.llvm_version }}
@@ -83,6 +80,12 @@ jobs:
               echo "$(brew --prefix lld@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
               ;;
           esac
+          
+          if [ "${{ matrix.target_platform }}" == "mingw" ]; then
+            sudo apt-get update && sudo apt-get install -y nsis wine
+            source ./src/build/scripts/install_llvm_mingw.sh
+            echo "LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> $GITHUB_ENV
+          fi
         shell: bash
 
       - name: Install Python dependencies
