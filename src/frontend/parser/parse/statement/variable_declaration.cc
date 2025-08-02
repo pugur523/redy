@@ -16,13 +16,13 @@ Parser::Results<Parser::AstNode>
 Parser::parse_variable_declaration_statement() {
   std::vector<ParseError> errors;
 
-  const lexer::Token* mut_token = nullptr;
-  if (check(lexer::TokenKind::kMut)) {
+  const base::Token* mut_token = nullptr;
+  if (check(base::TokenKind::kMutable)) {
     mut_token = &peek();
     advance();
   }
 
-  auto name_result = consume(lexer::TokenKind::kIdentifier,
+  auto name_result = consume(base::TokenKind::kIdentifier,
                              "expected variable name in declaration");
   if (name_result.is_err()) {
     errors.push_back(std::move(name_result).unwrap_err());
@@ -35,7 +35,7 @@ Parser::parse_variable_declaration_statement() {
   std::optional<AstNode> type_node;
   std::optional<AstNode> initializer_expr;
 
-  if (match(lexer::TokenKind::kColon)) {
+  if (match(base::TokenKind::kColon)) {
     // ":" - type specification
     auto type_result = parse_type();
     if (type_result.is_err()) {
@@ -44,7 +44,7 @@ Parser::parse_variable_declaration_statement() {
     }
     type_node = std::move(type_result).unwrap();
 
-    if (match(lexer::TokenKind::kEqual)) {
+    if (match(base::TokenKind::kEqual)) {
       auto expr_result = parse_expression();
       if (expr_result.is_err()) {
         append_errs(&errors, std::move(expr_result).unwrap_err());
@@ -52,7 +52,7 @@ Parser::parse_variable_declaration_statement() {
       }
       initializer_expr = std::move(expr_result).unwrap();
     }
-  } else if (match(lexer::TokenKind::kAssign)) {
+  } else if (match(base::TokenKind::kAssign)) {
     // ":="
     auto expr_result = parse_expression();
     if (expr_result.is_err()) {
@@ -69,7 +69,7 @@ Parser::parse_variable_declaration_statement() {
     }
   }
 
-  auto semicolon_result = consume(lexer::TokenKind::kSemicolon,
+  auto semicolon_result = consume(base::TokenKind::kSemicolon,
                                   "expected ';' after variable declaration");
   if (semicolon_result.is_err()) {
     errors.push_back(std::move(semicolon_result).unwrap_err());

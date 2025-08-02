@@ -10,48 +10,47 @@ namespace parser {
 // statement ::= let_stmt | expr_stmt | return_stmt | if_stmt | block_stmt |
 // while_stmt | for_stmt ;
 Parser::Results<Parser::AstNode> Parser::parse_statement() {
-  if (check(lexer::TokenKind::kMut)) {
+  if (check(base::TokenKind::kMutable)) {
     // `mut x := ...` or `mut x: type = ...`
-    if (check(lexer::TokenKind::kIdentifier, 1)) {
+    if (check(base::TokenKind::kIdentifier, 1)) {
       auto kind2 = peek(2).kind();
-      if (kind2 == lexer::TokenKind::kColon ||
-          kind2 == lexer::TokenKind::kAssign) {
+      if (kind2 == base::TokenKind::kColon ||
+          kind2 == base::TokenKind::kAssign) {
         return parse_variable_declaration_statement();
       }
     }
-  } else if (check(lexer::TokenKind::kIdentifier)) {
+  } else if (check(base::TokenKind::kIdentifier)) {
     auto kind1 = peek(1).kind();
 
     // check for declaration: `x := ...` or `x: type = ...`
-    if (kind1 == lexer::TokenKind::kAssign ||
-        kind1 == lexer::TokenKind::kColon) {
+    if (kind1 == base::TokenKind::kAssign || kind1 == base::TokenKind::kColon) {
       return parse_variable_declaration_statement();
     }
 
     // check for assignment: `x = ...`, `x += ...`, etc.
-    if (is_assignment_operator(kind1)) {
+    if (token_is_assignment_operator(kind1)) {
       return parse_assignment_statement();
     }
   }
 
-  if (match(lexer::TokenKind::kReturn)) {
+  if (match(base::TokenKind::kRet)) {
     return parse_return_statement();
   }
 
-  if (match(lexer::TokenKind::kIf)) {
+  if (match(base::TokenKind::kIf)) {
     return parse_if_statement();
   }
 
-  if (match(lexer::TokenKind::kWhile)) {
+  if (match(base::TokenKind::kWhile)) {
     return parse_while_statement();
   }
 
-  if (match(lexer::TokenKind::kFor)) {
+  if (match(base::TokenKind::kFor)) {
     return parse_for_statement();
   }
 
   // block statement
-  if (check(lexer::TokenKind::kLBrace)) {
+  if (check(base::TokenKind::kLeftBrace)) {
     return parse_block_statement();
   }
 

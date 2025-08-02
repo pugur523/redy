@@ -21,7 +21,7 @@ Parser::Result<Parser::AstNode> Parser::parse_type() {
 
   const auto& token = peek();
 
-  if (!check(lexer::TokenKind::kType)) {
+  if (!check(base::TokenKind::kType)) {
     return single_err(ParseError::make(
         diagnostic::DiagnosticId::kUnexpectedToken, token, "expected a type"));
   } else {

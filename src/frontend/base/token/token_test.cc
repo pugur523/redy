@@ -2,11 +2,11 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "frontend/lexer/token/token.h"
+#include "frontend/base/token/token.h"
 
 #include "gtest/gtest.h"
 
-namespace lexer {
+namespace base {
 
 TEST(TokenTest, BasicConstruction) {
   core::FileManager manager;
@@ -23,4 +23,4 @@ TEST(TokenTest, BasicConstruction) {
   EXPECT_FALSE(tok.dump_detailed(&manager).empty());
 }
 
-}  // namespace lexer
+}  // namespace base

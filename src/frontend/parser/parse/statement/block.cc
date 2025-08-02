@@ -15,7 +15,7 @@ Parser::Results<Parser::AstNode> Parser::parse_block_statement() {
   std::vector<ParseError> errors;
 
   auto lbrace_result =
-      consume(lexer::TokenKind::kLBrace, "expected '{' to start a block");
+      consume(base::TokenKind::kLeftBrace, "expected '{' to start a block");
   if (lbrace_result.is_err()) {
     errors.push_back(std::move(lbrace_result).unwrap_err());
     return err(std::move(errors));
@@ -24,7 +24,7 @@ Parser::Results<Parser::AstNode> Parser::parse_block_statement() {
 
   std::vector<AstNode> statements;
 
-  while (!check(lexer::TokenKind::kRBrace) && !eof()) {
+  while (!check(base::TokenKind::kRightBrace) && !eof()) {
     auto stmt_result = parse_statement();
     if (stmt_result.is_err()) {
       append_errs(&errors, std::move(stmt_result).unwrap_err());
@@ -38,7 +38,7 @@ Parser::Results<Parser::AstNode> Parser::parse_block_statement() {
   }
 
   auto rbrace_result =
-      consume(lexer::TokenKind::kRBrace, "expected '}' to end a block");
+      consume(base::TokenKind::kRightBrace, "expected '}' to end a block");
   if (rbrace_result.is_err()) {
     errors.push_back(std::move(rbrace_result).unwrap_err());
     if (strict_) {

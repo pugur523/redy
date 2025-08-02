@@ -243,9 +243,7 @@ enable warnings as errors: ${ENABLE_WARNINGS_AS_ERRORS}
   print_all_build_flags()
 endif()
 
-if(ENABLE_BUILD_INFO_DEFINITIONS)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build)
-endif()
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/build)
 
 if(ENABLE_BUILD_PROGRAM)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/app)

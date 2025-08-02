@@ -130,7 +130,7 @@ bool SystemInfo::init() {
   struct sysinfo mem_info;
   if (sysinfo(&mem_info) == 0) {
     total_ram_ = mem_info.totalram;
-    // Does not contain swap.
+    // does not contain swap.
     // total_ram_ += mem_info.totalswap;
     total_ram_ *= mem_info.mem_unit;
   } else {

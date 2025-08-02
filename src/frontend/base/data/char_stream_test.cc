@@ -2,7 +2,7 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "frontend/lexer/base/char_stream.h"
+#include "frontend/base/data/char_stream.h"
 
 #include <string>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "core/base/file_manager.h"
 #include "gtest/gtest.h"
 
-namespace lexer {
+namespace base {
 
 TEST(CharStreamTest, BasicAdvanceAndPeek) {
   std::string input("abc\ndef");
@@ -30,4 +30,4 @@ TEST(CharStreamTest, BasicAdvanceAndPeek) {
   EXPECT_EQ(cs.column(), 1);
 }
 
-}  // namespace lexer
+}  // namespace base

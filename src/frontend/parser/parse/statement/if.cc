@@ -23,14 +23,14 @@ Parser::Results<Parser::AstNode> Parser::parse_if_statement() {
   }
 
   auto lbrace_result =
-      consume(lexer::TokenKind::kLBrace, "expected '{' after if condition");
+      consume(base::TokenKind::kLeftBrace, "expected '{' after if condition");
   if (lbrace_result.is_err()) {
     return err({std::move(lbrace_result).unwrap_err()});
   }
 
   std::vector<AstNode> then_statements;
 
-  while (!check(lexer::TokenKind::kRBrace) && !eof()) {
+  while (!check(base::TokenKind::kRightBrace) && !eof()) {
     auto stmt_result = parse_statement();
     if (stmt_result.is_err()) {
       append_errs(&errors, std::move(stmt_result).unwrap_err());
@@ -45,7 +45,7 @@ Parser::Results<Parser::AstNode> Parser::parse_if_statement() {
   }
 
   auto rbrace_result =
-      consume(lexer::TokenKind::kRBrace, "expected '}' after if body");
+      consume(base::TokenKind::kRightBrace, "expected '}' after if body");
   if (rbrace_result.is_err()) {
     errors.push_back(std::move(rbrace_result).unwrap_err());
     return err(std::move(errors));
@@ -55,15 +55,15 @@ Parser::Results<Parser::AstNode> Parser::parse_if_statement() {
       *lbrace_result.unwrap(), std::move(then_statements));
   std::optional<AstNode> else_branch;
 
-  if (match(lexer::TokenKind::kElse)) {
-    if (check(lexer::TokenKind::kLBrace)) {
+  if (match(base::TokenKind::kElse)) {
+    if (check(base::TokenKind::kLeftBrace)) {
       auto else_block_result = parse_block_statement();
       if (else_block_result.is_err()) {
         append_errs(&errors, std::move(else_block_result).unwrap_err());
         return err(std::move(errors));
       }
       else_branch = std::move(else_block_result).unwrap();
-    } else if (check(lexer::TokenKind::kIf)) {
+    } else if (check(base::TokenKind::kIf)) {
       advance();
       auto nested_if_result = parse_if_statement();
       if (nested_if_result.is_err()) {

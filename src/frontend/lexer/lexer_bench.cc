@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "benchmark/benchmark.h"
-#include "frontend/lexer/base/char_stream.h"
+#include "frontend/base/data/char_stream.h"
 #include "frontend/lexer/lexer.h"
 
 namespace lexer {
@@ -15,7 +15,7 @@ namespace lexer {
 namespace {
 
 void lexer_loop(benchmark::State& state) {
-  std::string code = "x := 42; while x < 100 { x = x + 1; }";
+  std::string code = "x := 42 while x < 100 { x = x + 1 }";
 
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(code));
@@ -23,8 +23,8 @@ void lexer_loop(benchmark::State& state) {
 
   for (auto _ : state) {
     while (true) {
-      Token token = lexer.next_token().unwrap();
-      if (token.kind() == TokenKind::kEof) {
+      base::Token token = lexer.next_token().unwrap();
+      if (token.kind() == base::TokenKind::kEof) {
         break;
       }
     }

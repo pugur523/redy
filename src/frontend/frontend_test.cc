@@ -19,7 +19,7 @@ TEST(FrontendTest, SimpleCodePipeline) {
 
   auto tokens = lexer.lex_all().unwrap();
   EXPECT_FALSE(tokens.empty());
-  lexer::TokenStream stream(std::move(tokens), &manager);
+  base::TokenStream stream(std::move(tokens), &manager);
   // DLOG(info, "{}", stream.dump());
 
   parser::Parser parser(std::move(stream));
@@ -38,13 +38,13 @@ TEST(FrontendTest, SimpleCodePipeline) {
 TEST(FrontendTest, HelloWorldFunctionPipeline) {
   core::FileManager manager;
   std::string source = R"(
-        fn main() -> void {
-            world_str := "world";
-            x: i32 = 42;
-            print("hello {}\n", world_str);
-            print("answer to the ultimate question of life, the universe,
-                    and everything is {}.\n", x);
-            return;
+        fn main() -> i32 {
+            world_str := "world"
+            x: i32 = 42
+            println#("hello {}", world_str)
+            println#("answer to the ultimate question of life, the universe,
+                    and everything is {}.", x)
+            ret 0
         }
     )";
   core::FileId id = manager.add_virtual_file(std::move(source));
@@ -52,7 +52,7 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
 
   auto tokens = lexer.lex_all().unwrap();
   EXPECT_FALSE(tokens.empty());
-  lexer::TokenStream stream(std::move(tokens), &manager);
+  base::TokenStream stream(std::move(tokens), &manager);
 
   parser::Parser parser(std::move(stream));
 
@@ -61,9 +61,10 @@ TEST(FrontendTest, HelloWorldFunctionPipeline) {
   const auto& program_node =
       std::get<std::unique_ptr<ast::ProgramNode>>(result.unwrap());
   EXPECT_FALSE(program_node->statements.empty());
-  // DLOG(info, "{}", program_node->dump());
-  core::write_file(
-      core::join_path(test_dir(), "frontend_hello_world_function_pipeline.ast")
-          .c_str(),
-      program_node->dump());
+  DLOG(info, "{}", program_node->dump());
+  // core::write_file(
+  //     core::join_path(test_dir(),
+  //     "frontend_hello_world_function_pipeline.ast")
+  //         .c_str(),
+  //     program_node->dump());
 }

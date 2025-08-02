@@ -2,8 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_LEXER_TOKEN_TOKEN_H_
-#define FRONTEND_LEXER_TOKEN_TOKEN_H_
+#ifndef FRONTEND_BASE_TOKEN_TOKEN_H_
+#define FRONTEND_BASE_TOKEN_TOKEN_H_
 
 #include <cstddef>
 #include <optional>
@@ -15,12 +15,12 @@
 #include "core/base/source_location.h"
 #include "core/base/string_util.h"
 #include "core/check.h"
-#include "frontend/lexer/base/lexer_export.h"
-#include "frontend/lexer/token/token_kind.h"
+#include "frontend/base/base_export.h"
+#include "frontend/base/token/token_kind.h"
 
-namespace lexer {
+namespace base {
 
-class LEXER_EXPORT Token {
+class BASE_EXPORT Token {
  public:
   Token(TokenKind kind,
         const core::SourceLocation& location,
@@ -69,7 +69,9 @@ class LEXER_EXPORT Token {
     char* cursor = buf;
     core::write_format(
         cursor, buf + buf_size,
-        "token:\n  kind: {} ({})\n  lexeme: {}\n  position: {}:{}",
+        "[token]\n"
+        "kind_str = \"{}\"\nkind_id = {}\n"
+        "lexeme = \"{}\"\nline = {}\ncolumn = {}\n",
         token_kind_to_string(kind_), std::to_string(static_cast<int8_t>(kind_)),
         lexeme(file_manager), location_.line(), location_.column());
   }
@@ -92,6 +94,6 @@ class LEXER_EXPORT Token {
   TokenKind kind_ = TokenKind::kUnknown;
 };
 
-}  // namespace lexer
+}  // namespace base
 
-#endif  // FRONTEND_LEXER_TOKEN_TOKEN_H_
+#endif  // FRONTEND_BASE_TOKEN_TOKEN_H_

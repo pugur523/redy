@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "core/base/file_manager.h"
+#include "frontend/base/token/token.h"
 #include "frontend/diagnostic/base/diagnostic_options.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/label.h"
-#include "frontend/lexer/token/token.h"
 
 namespace diagnostic {
 
@@ -49,14 +49,14 @@ class DiagnosticEngine {
   void format_label_header(const Label& label,
                            std::size_t line_number_width,
                            const char* line_num_str,
-                           size_t line_num_len,
+                           std::size_t line_num_len,
                            const char* col_num_str,
-                           size_t col_num_len,
+                           std::size_t col_num_len,
                            std::string* out_str) const;
   void format_label(const Label& label,
                     std::size_t line_number_width,
                     const char* line_num_str,
-                    size_t line_num_len,
+                    std::size_t line_num_len,
                     std::string* out_str) const;
   void format(DiagnosticEntry&& entry, std::string* out_str) const;
   void format(Entries&& entries, std::string* out_str) const;

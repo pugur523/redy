@@ -4,6 +4,7 @@
 
 # add_subdirectory(pipeline)
 
+add_subdirectory(base)
 add_subdirectory(diagnostic)
 add_subdirectory(lexer)
 add_subdirectory(ast)

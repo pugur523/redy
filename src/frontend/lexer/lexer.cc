@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "frontend/base/keyword/keyword.h"
+#include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "frontend/diagnostic/data/result.h"
-#include "frontend/lexer/keyword/keyword.h"
-#include "frontend/lexer/token/token.h"
 
 namespace lexer {
 
@@ -22,14 +22,8 @@ using FileId = core::FileId;
 Lexer::Lexer(FileManager* file_manager, FileId file_id)
     : char_stream_(file_manager, file_id) {}
 
-// helper to check if a character is a valid identifier character after the
-// first one
-inline bool is_identifier_char(char c) {
-  return std::isalnum(c) || c == '_';
-}
-
-Lexer::Result<Token> Lexer::next_token() {
-  skip_whitespace_and_comments();
+Lexer::Result<Lexer::Token> Lexer::next_token() {
+  skip_whitespace();
   if (char_stream_.eof()) {
     return Result(diagnostic::make_ok(
         Token(TokenKind::kEof, char_stream_.file_id(), char_stream_.line(),
@@ -68,12 +62,12 @@ Lexer::Result<Token> Lexer::next_token() {
     // single character tokens
     case ';': return make_token(TokenKind::kSemicolon, start, line, col);
     case ',': return make_token(TokenKind::kComma, start, line, col);
-    case '(': return make_token(TokenKind::kLParen, start, line, col);
-    case ')': return make_token(TokenKind::kRParen, start, line, col);
-    case '{': return make_token(TokenKind::kLBrace, start, line, col);
-    case '}': return make_token(TokenKind::kRBrace, start, line, col);
-    case '[': return make_token(TokenKind::kLBracket, start, line, col);
-    case ']': return make_token(TokenKind::kRBracket, start, line, col);
+    case '(': return make_token(TokenKind::kLeftParen, start, line, col);
+    case ')': return make_token(TokenKind::kRightParen, start, line, col);
+    case '{': return make_token(TokenKind::kLeftBrace, start, line, col);
+    case '}': return make_token(TokenKind::kRightBrace, start, line, col);
+    case '[': return make_token(TokenKind::kLeftBracket, start, line, col);
+    case ']': return make_token(TokenKind::kRightBracket, start, line, col);
     case '@': return make_token(TokenKind::kAt, start, line, col);
     case '#': return make_token(TokenKind::kHash, start, line, col);
     case '$': return make_token(TokenKind::kDollar, start, line, col);
@@ -92,9 +86,9 @@ Lexer::Result<Token> Lexer::next_token() {
         return make_token(TokenKind::kAndAnd, start, line, col);
       } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
-        return make_token(TokenKind::kAmpEq, start, line, col);
+        return make_token(TokenKind::kAndEq, start, line, col);
       } else {
-        return make_token(TokenKind::kAmp, start, line, col);
+        return make_token(TokenKind::kAnd, start, line, col);
       }
     case '|':  // | or || or |=
       if (char_stream_.peek() == '|') {
@@ -148,8 +142,14 @@ Lexer::Result<Token> Lexer::next_token() {
       } else {
         return make_token(TokenKind::kStar, start, line, col);
       }
-    case '/':  // /, /= (and comments handled in skip_whitespace_and_comments)
-      if (char_stream_.peek() == '=') {
+    case '/':  // /, //, /*, /=
+      if (char_stream_.peek() == '/') {
+        char_stream_.advance();
+        return make_token(TokenKind::kInlineComment, start, line, col);
+      } else if (char_stream_.peek() == '*') {
+        char_stream_.advance();
+        return make_token(TokenKind::kBlockComment, start, line, col);
+      } else if (char_stream_.peek() == '=') {
         char_stream_.advance();
         return make_token(TokenKind::kSlashEq, start, line, col);
       } else {
@@ -165,7 +165,7 @@ Lexer::Result<Token> Lexer::next_token() {
     case '!':  // !, !=
       if (char_stream_.peek() == '=') {
         char_stream_.advance();
-        return make_token(TokenKind::kNeq, start, line, col);
+        return make_token(TokenKind::kNotEqual, start, line, col);
       } else {
         return make_token(TokenKind::kBang, start, line, col);
       }
@@ -219,7 +219,7 @@ Lexer::Result<Token> Lexer::next_token() {
   }
 }
 
-Lexer::Results<Token> Lexer::lex_all(bool strict) {
+Lexer::Results<Lexer::Token> Lexer::lex_all(bool strict) {
   std::vector<Token> tokens;
   tokens.reserve(kPredictedTokensCount);
 
@@ -249,41 +249,54 @@ Lexer::Results<Token> Lexer::lex_all(bool strict) {
   return Results<Token>(diagnostic::make_ok(std::move(tokens)));
 }
 
-void Lexer::skip_whitespace_and_comments() {
+// void Lexer::skip_whitespace_and_comments() {
+//   while (!char_stream_.eof()) {
+//     char c = char_stream_.peek();
+//
+//     if (std::isspace(c)) {
+//       char_stream_.advance();
+//     } else if (c == '/' && char_stream_.peek(1) == '/') {
+//       // line comments //
+//       while (!char_stream_.eof() && char_stream_.peek() != '\n') {
+//         char_stream_.advance();
+//       }
+//       // consume the newline character for single-line comments if present
+//       if (!char_stream_.eof() && char_stream_.peek() == '\n') {
+//         char_stream_.advance();
+//       }
+//     } else if (c == '/' && char_stream_.peek(1) == '*') {
+//       // block comments /* ... */
+//       char_stream_.advance();  // consume '/'
+//       char_stream_.advance();  // consume '*'
+//       while (!char_stream_.eof()) {
+//         if (char_stream_.peek() == '*' && char_stream_.peek(1) == '/')
+//         {
+//           char_stream_.advance();  // consume '*'
+//           char_stream_.advance();  // consume '/'
+//           break;                   // end of block comment
+//         }
+//         char_stream_.advance();
+//       }
+//     } else {
+//       // not whitespace or a comment, stop skipping
+//       break;
+//     }
+//   }
+// }
+
+void Lexer::skip_whitespace() {
   while (!char_stream_.eof()) {
     char c = char_stream_.peek();
 
     if (std::isspace(c)) {
       char_stream_.advance();
-    } else if (c == '/' && char_stream_.peek_ahead(1) == '/') {
-      // line comments //
-      while (!char_stream_.eof() && char_stream_.peek() != '\n') {
-        char_stream_.advance();
-      }
-      // consume the newline character for single-line comments if present
-      if (!char_stream_.eof() && char_stream_.peek() == '\n') {
-        char_stream_.advance();
-      }
-    } else if (c == '/' && char_stream_.peek_ahead(1) == '*') {
-      // block comments /* ... */
-      char_stream_.advance();  // consume '/'
-      char_stream_.advance();  // consume '*'
-      while (!char_stream_.eof()) {
-        if (char_stream_.peek() == '*' && char_stream_.peek_ahead(1) == '/') {
-          char_stream_.advance();  // consume '*'
-          char_stream_.advance();  // consume '/'
-          break;                   // end of block comment
-        }
-        char_stream_.advance();
-      }
     } else {
-      // not whitespace or a comment, stop skipping
       break;
     }
   }
 }
 
-Lexer::Result<Token> Lexer::identifier_or_keyword() {
+Lexer::Result<Lexer::Token> Lexer::identifier_or_keyword() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -293,12 +306,12 @@ Lexer::Result<Token> Lexer::identifier_or_keyword() {
     char_stream_.advance();
   }
 
-  TokenKind kind = lookup_identifier_or_keyword(
+  TokenKind kind = base::lookup_id_or_keyword(
       char_stream_.file().source(), start, char_stream_.position() - start);
   return make_token(kind, start, line, col);
 }
 
-Lexer::Result<Token> Lexer::literal_numeric() {
+Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -335,7 +348,7 @@ Lexer::Result<Token> Lexer::literal_numeric() {
     char_stream_.advance();
   }
 
-  if (char_stream_.peek() == '.' && std::isdigit(char_stream_.peek_ahead(1))) {
+  if (char_stream_.peek() == '.' && std::isdigit(char_stream_.peek(1))) {
     char_stream_.advance();  // consume '.'
     while (std::isdigit(char_stream_.peek())) {
       char_stream_.advance();
@@ -365,7 +378,7 @@ Lexer::Result<Token> Lexer::literal_numeric() {
   return make_token(TokenKind::kLiteralNumeric, start, line, col);
 }
 
-Lexer::Result<Token> Lexer::literal_str() {
+Lexer::Result<Lexer::Token> Lexer::literal_str() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -391,7 +404,7 @@ Lexer::Result<Token> Lexer::literal_str() {
   if (char_stream_.eof()) {
     return Result<Token>(diagnostic::make_err(
         LexError::make(diagnostic::DiagnosticId::kUnterminatedStringLiteral,
-                       start, line, col, "unclosed string literal")));
+                       start, line, col, "unterminated string literal")));
   }
 
   // consume the closing '"'
@@ -400,7 +413,7 @@ Lexer::Result<Token> Lexer::literal_str() {
   return make_token(TokenKind::kLiteralStr, start, line, col);
 }
 
-Lexer::Result<Token> Lexer::literal_char() {
+Lexer::Result<Lexer::Token> Lexer::literal_char() {
   const std::size_t start = char_stream_.position();
   const std::size_t line = char_stream_.line();
   const std::size_t col = char_stream_.column();
@@ -426,7 +439,7 @@ Lexer::Result<Token> Lexer::literal_char() {
   if (char_stream_.eof() || char_stream_.peek() != '\'') {
     return Result<Token>(diagnostic::make_err(
         LexError::make(diagnostic::DiagnosticId::kUnterminatedCharacterLiteral,
-                       start, line, col, "unclosed character literal")));
+                       start, line, col, "unterminated character literal")));
   }
 
   // consume the closing '\''
@@ -435,10 +448,10 @@ Lexer::Result<Token> Lexer::literal_char() {
   return make_token(TokenKind::kLiteralChar, start, line, col);
 }
 
-Lexer::Result<Token> Lexer::make_token(TokenKind kind,
-                                       std::size_t start_pos,
-                                       std::size_t line,
-                                       std::size_t col) {
+inline Lexer::Result<Lexer::Token> Lexer::make_token(TokenKind kind,
+                                                     std::size_t start_pos,
+                                                     std::size_t line,
+                                                     std::size_t col) {
   const std::size_t end_pos = char_stream_.position();
   return Result(diagnostic::make_ok(
       Token(kind, char_stream_.file_id(), line, col, end_pos - start_pos)));

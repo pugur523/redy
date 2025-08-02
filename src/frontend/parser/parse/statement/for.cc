@@ -18,7 +18,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
   const auto& for_token = previous();
 
   auto lparen_result =
-      consume(lexer::TokenKind::kLParen, "expected '(' after 'for'");
+      consume(base::TokenKind::kLeftParen, "expected '(' after 'for'");
   if (lparen_result.is_err()) {
     errors.push_back(std::move(lparen_result).unwrap_err());
     if (strict_) {
@@ -31,7 +31,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
   std::optional<AstNode> increment_expr;
 
   // optional initializer
-  if (!check(lexer::TokenKind::kSemicolon)) {
+  if (!check(base::TokenKind::kSemicolon)) {
     auto init_result = parse_statement();
     if (init_result.is_err()) {
       append_errs(&errors, std::move(init_result).unwrap_err());
@@ -41,7 +41,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
   }
 
   auto first_semicolon_result =
-      consume(lexer::TokenKind::kSemicolon,
+      consume(base::TokenKind::kSemicolon,
               "expected ';' after for loop initialization");
   if (first_semicolon_result.is_err()) {
     errors.push_back(std::move(first_semicolon_result).unwrap_err());
@@ -51,7 +51,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
   }
 
   // optional condition
-  if (!check(lexer::TokenKind::kSemicolon)) {
+  if (!check(base::TokenKind::kSemicolon)) {
     auto cond_result = parse_expression();
     if (cond_result.is_err()) {
       append_errs(&errors, std::move(cond_result).unwrap_err());
@@ -61,7 +61,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
   }
 
   auto second_semicolon_result = consume(
-      lexer::TokenKind::kSemicolon, "expected ';' after for loop condition");
+      base::TokenKind::kSemicolon, "expected ';' after for loop condition");
   if (second_semicolon_result.is_err()) {
     errors.push_back(std::move(second_semicolon_result).unwrap_err());
     if (strict_) {
@@ -70,7 +70,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
   }
 
   // optional increment
-  if (!check(lexer::TokenKind::kRParen)) {
+  if (!check(base::TokenKind::kRightParen)) {
     auto incr_result = parse_expression();
     if (incr_result.is_err()) {
       append_errs(&errors, std::move(incr_result).unwrap_err());
@@ -79,7 +79,7 @@ Parser::Results<Parser::AstNode> Parser::parse_for_statement() {
     increment_expr = std::move(incr_result).unwrap();
   }
 
-  auto rparen_result = consume(lexer::TokenKind::kRParen,
+  auto rparen_result = consume(base::TokenKind::kRightParen,
                                "expected ')' after for loop increment");
   if (rparen_result.is_err()) {
     errors.push_back(std::move(rparen_result).unwrap_err());

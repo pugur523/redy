@@ -36,7 +36,7 @@ class CORE_EXPORT FileManager {
   [[nodiscard]] FileId add_file(std::string&& file_name);
   [[nodiscard]] FileId add_virtual_file(std::string&& source);
 
-  const File& file(FileId id) const;
+  [[nodiscard]] const File& file(FileId id) const;
 
  private:
   std::vector<File> files_;

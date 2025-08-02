@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "frontend/ast/nodes/node_util.h"
+#include "frontend/base/operator/binary_operator.h"
 #include "frontend/parser/parser.h"
 
 namespace parser {
@@ -19,8 +20,8 @@ Parser::Results<Parser::AstNode> Parser::parse_assignment() {
     return err(std::move(errors));
   }
 
-  lexer::TokenKind op_kind = peek().kind();
-  if (is_assignment_operator(op_kind)) {
+  base::TokenKind op_kind = peek().kind();
+  if (base::token_is_assignment_operator(op_kind)) {
     const auto& op_token = peek();
     advance();
 
@@ -30,8 +31,8 @@ Parser::Results<Parser::AstNode> Parser::parse_assignment() {
       return err(std::move(errors));
     }
 
-    ast::BinaryOpNode::Operator assign_op = token_to_binary_op(op_kind);
-    if (assign_op == ast::BinaryOpNode::Operator::kUnknown) {
+    base::BinaryOperator assign_op = base::token_kind_to_binary_op(op_kind);
+    if (assign_op == base::BinaryOperator::kUnknown) {
       errors.push_back(ParseError::make(diagnostic::DiagnosticId::kInvalidToken,
                                         op_token,
                                         "invalid assignment operator"));

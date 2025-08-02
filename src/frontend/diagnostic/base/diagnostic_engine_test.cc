@@ -61,7 +61,7 @@ TEST(DiagnosticEngineTest, FormatSingle) {
 TEST(DiagnosticEngineTest, FormatMultipleLabel) {
   std::string source = R"(
     ref := &data;
-    print("{}", ref);
+    println#("{}", ref);
     consume(data);
   )";
   core::FileId fid = file_manager.add_virtual_file(std::move(source));

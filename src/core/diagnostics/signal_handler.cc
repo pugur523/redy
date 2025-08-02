@@ -51,7 +51,7 @@ const char* signal_to_string(int signal_number) {
 
 // example signal handling output:
 //
-// Aborted at Thu Jan  1 00:00:00 1970
+// aborted at Thu Jan  1 00:00:00 1970
 // (1234567890 in unix time)
 // SIGABRT (Aborted) received by PID 12345(TID 67890)
 void signal_handler(int signal_number) {
@@ -66,7 +66,7 @@ void signal_handler(int signal_number) {
     return static_cast<uint32_t>(hash_val) | 1;
   }();
   core::glog.fatal<
-      "Aborted at {} \n"
+      "aborted at {} \n"
       "({} in unix time)\n"
       "{} received by PID {} (TID {})\n{}">(
       std::ctime(&now), now, signal_to_string(signal_number), get_pid(),

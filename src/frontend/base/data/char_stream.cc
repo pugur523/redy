@@ -2,26 +2,18 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "frontend/lexer/base/char_stream.h"
+#include "frontend/base/data/char_stream.h"
 
 #include <string>
 
 #include "core/base/file_util.h"
 #include "core/check.h"
 
-namespace lexer {
+namespace base {
 
 CharStream::CharStream(FileManager* file_manager, FileId file_id)
     : file_manager_(file_manager), file_id_(file_id) {
   DCHECK(file_manager_);
-}
-
-char CharStream::peek() const {
-  return pos_ < file().source().size() ? file().source()[pos_] : '\0';
-}
-
-char CharStream::peek_ahead(std::size_t n) const {
-  return (pos_ + n < file().source().size()) ? file().source()[pos_ + n] : '\0';
 }
 
 void CharStream::advance() {
@@ -52,4 +44,4 @@ void CharStream::rewind() {
   }
 }
 
-}  // namespace lexer
+}  // namespace base

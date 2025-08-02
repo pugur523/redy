@@ -14,40 +14,40 @@ Parser::Results<Parser::AstNode> Parser::parse_primary_expression() {
   std::vector<ParseError> errors;
 
   // handle literal parsing
-  if (match(lexer::TokenKind::kLiteralNumeric)) {
+  if (match(base::TokenKind::kLiteralNumeric)) {
     const auto& token = previous();
     return ok(ast::make_node<ast::LiteralNode>(
         token, ast::LiteralNode::Type::kNumeric,
         token.lexeme(stream_.file_manager())));
-  } else if (match(lexer::TokenKind::kLiteralChar)) {
+  } else if (match(base::TokenKind::kLiteralChar)) {
     const auto& token = previous();
     return ok(
         ast::make_node<ast::LiteralNode>(token, ast::LiteralNode::Type::kChar,
                                          token.lexeme(stream_.file_manager())));
-  } else if (match(lexer::TokenKind::kLiteralStr)) {
+  } else if (match(base::TokenKind::kLiteralStr)) {
     const auto& token = previous();
     return ok(
         ast::make_node<ast::LiteralNode>(token, ast::LiteralNode::Type::kString,
                                          token.lexeme(stream_.file_manager())));
-  } else if (match(lexer::TokenKind::kTrue)) {
+  } else if (match(base::TokenKind::kTrue)) {
     const auto& token = previous();
     return ok(ast::make_node<ast::LiteralNode>(token, true));
-  } else if (match(lexer::TokenKind::kFalse)) {
+  } else if (match(base::TokenKind::kFalse)) {
     const auto& token = previous();
     return ok(ast::make_node<ast::LiteralNode>(token, false));
-  } else if (match(lexer::TokenKind::kIdentifier)) {
+  } else if (match(base::TokenKind::kIdentifier)) {
     // handle identifiers (could be variable access or function call)
     const auto& token = previous();
     AstNode identifier_node = ast::make_node<ast::IdentifierNode>(
         token, token.lexeme(stream_.file_manager()));
     // check for function call immediately after identifier
-    if (check(lexer::TokenKind::kLParen)) {
+    if (check(base::TokenKind::kLeftParen)) {
       return parse_function_call(std::move(identifier_node));
     }
 
     // just an identifier
     return ok(std::move(identifier_node));
-  } else if (match(lexer::TokenKind::kLParen)) {
+  } else if (match(base::TokenKind::kLeftParen)) {
     // handle parenthesized expressions
     // recursively parse the expression
     // inside parentheses
@@ -58,7 +58,7 @@ Parser::Results<Parser::AstNode> Parser::parse_primary_expression() {
     }
 
     auto rparen_result =
-        consume(lexer::TokenKind::kRParen, "expected ')' after expression");
+        consume(base::TokenKind::kRightParen, "expected ')' after expression");
     if (rparen_result.is_err()) {
       errors.push_back(std::move(rparen_result).unwrap_err());
       if (strict_) {

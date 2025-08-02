@@ -21,7 +21,7 @@ Parser::Results<Parser::AstNode> Parser::parse_expression_statement() {
   }
 
   auto semicolon_result =
-      consume(lexer::TokenKind::kSemicolon, "expected ';' after expression");
+      consume(base::TokenKind::kSemicolon, "expected ';' after expression");
   if (semicolon_result.is_err()) {
     errors.push_back(std::move(semicolon_result).unwrap_err());
     if (strict_) {
@@ -30,7 +30,7 @@ Parser::Results<Parser::AstNode> Parser::parse_expression_statement() {
   }
 
   const auto& token_for_expr_stmt = std::visit(
-      [](const auto& node_ptr) -> const lexer::Token& {
+      [](const auto& node_ptr) -> const base::Token& {
         return node_ptr->token;
       },
       expr_result.unwrap());

@@ -2,8 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_LEXER_BASE_CHAR_STREAM_H_
-#define FRONTEND_LEXER_BASE_CHAR_STREAM_H_
+#ifndef FRONTEND_BASE_DATA_CHAR_STREAM_H_
+#define FRONTEND_BASE_DATA_CHAR_STREAM_H_
 
 #include <cstddef>
 #include <stack>
@@ -11,11 +11,11 @@
 
 #include "core/base/file_manager.h"
 #include "core/check.h"
-#include "frontend/lexer/base/lexer_export.h"
+#include "frontend/base/base_export.h"
 
-namespace lexer {
+namespace base {
 
-class LEXER_EXPORT CharStream {
+class BASE_EXPORT CharStream {
  public:
   using FileManager = core::FileManager;
   using FileId = core::FileId;
@@ -30,8 +30,11 @@ class LEXER_EXPORT CharStream {
   CharStream(CharStream&&) = default;
   CharStream& operator=(CharStream&&) = default;
 
-  char peek() const;
-  char peek_ahead(std::size_t n) const;
+  inline char peek(std::size_t n = 0) const {
+    return (pos_ + n < file().source().size()) ? file().source()[pos_ + n]
+                                               : '\0';
+  }
+
   void advance();
   void rewind();
 
@@ -67,6 +70,6 @@ class LEXER_EXPORT CharStream {
   std::stack<History> history_;
 };
 
-}  // namespace lexer
+}  // namespace base
 
-#endif  // FRONTEND_LEXER_BASE_CHAR_STREAM_H_
+#endif  // FRONTEND_BASE_DATA_CHAR_STREAM_H_

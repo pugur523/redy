@@ -2,20 +2,20 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_LEXER_TOKEN_TOKEN_STREAM_H_
-#define FRONTEND_LEXER_TOKEN_TOKEN_STREAM_H_
+#ifndef FRONTEND_BASE_TOKEN_TOKEN_STREAM_H_
+#define FRONTEND_BASE_TOKEN_TOKEN_STREAM_H_
 
 #include <string>
 #include <vector>
 
 #include "core/check.h"
-#include "frontend/lexer/base/lexer_export.h"
-#include "frontend/lexer/token/token.h"
-#include "frontend/lexer/token/token_kind.h"
+#include "frontend/base/base_export.h"
+#include "frontend/base/token/token.h"
+#include "frontend/base/token/token_kind.h"
 
-namespace lexer {
+namespace base {
 
-class LEXER_EXPORT TokenStream {
+class BASE_EXPORT TokenStream {
  public:
   explicit TokenStream(std::vector<Token>&& tokens,
                        const core::FileManager* file_manager);
@@ -45,7 +45,7 @@ class LEXER_EXPORT TokenStream {
     return current_token_->kind() == expected_kind;
   }
 
-  inline constexpr bool check(lexer::TokenKind expected_kind,
+  inline constexpr bool check(TokenKind expected_kind,
                               std::size_t offset) const {
     DCHECK_LT(pos_ + offset, size());
     return peek(offset).kind() == expected_kind;
@@ -76,19 +76,19 @@ inline const Token& TokenStream::peek(std::size_t offset) const {
 }
 
 inline const Token& TokenStream::previous() const {
-  DCHECK_GT(pos_, 0) << "Previous token not found";
+  DCHECK_GT(pos_, 0) << "previous token not found";
   return tokens_[pos_ - 1];
 }
 
 inline const Token& TokenStream::advance() {
-  DCHECK_NE(current_token_, end_token_) << "Reached eof token unexpectedly";
+  DCHECK_NE(current_token_, end_token_) << "reached eof token unexpectedly";
   pos_++;
   current_token_ = &tokens_[pos_];
   return tokens_[pos_];
 }
 
 inline bool TokenStream::match(TokenKind expected_kind) {
-  DCHECK_NE(current_token_, end_token_) << "Reached eof token unexpectedly";
+  DCHECK_NE(current_token_, end_token_) << "reached eof token unexpectedly";
   if (peek().kind() == expected_kind) [[likely]] {
     advance();
     return true;
@@ -96,6 +96,6 @@ inline bool TokenStream::match(TokenKind expected_kind) {
   return false;
 }
 
-}  // namespace lexer
+}  // namespace base
 
-#endif  // FRONTEND_LEXER_TOKEN_TOKEN_STREAM_H_
+#endif  // FRONTEND_BASE_TOKEN_TOKEN_STREAM_H_

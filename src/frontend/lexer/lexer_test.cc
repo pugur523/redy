@@ -15,12 +15,12 @@ namespace {
 
 void verify_hello_world() {
   std::string source = R"(
-        fn main() -> void {
-            world_str := "world";
-            x: i32 = 42;
-            print("hello {}", world_str);
-            print("answer to the ultimate question of life, the universe, and everything is {}.", x);
-            return;
+        fn main() -> i32 {
+            world_str := "world"
+            x: i32 = 42
+            println#("hello {}", world_str)
+            println#("answer to the ultimate question of life, the universe, and everything is {}.", x)
+            ret 0
         }
     )";
   core::FileManager manager;
@@ -28,16 +28,16 @@ void verify_hello_world() {
   Lexer lexer(&manager, id);
 
   while (true) {
-    Token token = lexer.next_token().unwrap();
+    base::Token token = lexer.next_token().unwrap();
 
     EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
 
     EXPECT_GT(token.location().line(), 0);
     EXPECT_GT(token.location().column(), 0);
 
-    EXPECT_NE(token.kind(), TokenKind::kUnknown);
+    EXPECT_NE(token.kind(), base::TokenKind::kUnknown);
 
-    if (token.kind() == TokenKind::kEof) {
+    if (token.kind() == base::TokenKind::kEof) {
       EXPECT_TRUE(token.lexeme(&manager).empty());
       break;
     } else {
@@ -50,19 +50,17 @@ void verify_hello_world() {
 
 TEST(LexerTest, LexSimpleCode) {
   core::FileManager manager;
-  core::FileId id = manager.add_virtual_file("x := 42;");
+  core::FileId id = manager.add_virtual_file("x := 42");
   Lexer lexer(&manager, id);
 
-  Token t1 = lexer.next_token().unwrap();
-  Token t2 = lexer.next_token().unwrap();
-  Token t3 = lexer.next_token().unwrap();
-  Token t4 = lexer.next_token().unwrap();
-  Token t5 = lexer.next_token().unwrap();
-  EXPECT_EQ(t1.kind(), TokenKind::kIdentifier);
-  EXPECT_EQ(t2.kind(), TokenKind::kAssign);
-  EXPECT_EQ(t3.kind(), TokenKind::kLiteralNumeric);
-  EXPECT_EQ(t4.kind(), TokenKind::kSemicolon);
-  EXPECT_EQ(t5.kind(), TokenKind::kEof);
+  base::Token t1 = lexer.next_token().unwrap();
+  base::Token t2 = lexer.next_token().unwrap();
+  base::Token t3 = lexer.next_token().unwrap();
+  base::Token t4 = lexer.next_token().unwrap();
+  EXPECT_EQ(t1.kind(), base::TokenKind::kIdentifier);
+  EXPECT_EQ(t2.kind(), base::TokenKind::kAssign);
+  EXPECT_EQ(t3.kind(), base::TokenKind::kLiteralNumeric);
+  EXPECT_EQ(t4.kind(), base::TokenKind::kEof);
 }
 
 TEST(LexerTest, HelloWorldFunction) {

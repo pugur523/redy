@@ -2,16 +2,16 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "frontend/lexer/token/token_stream.h"
+#include "frontend/base/token/token_stream.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "core/check.h"
-#include "frontend/lexer/token/token.h"
+#include "frontend/base/token/token.h"
 
-namespace lexer {
+namespace base {
 
 TokenStream::TokenStream(std::vector<Token>&& tokens,
                          const core::FileManager* file_manager)
@@ -46,4 +46,4 @@ std::string TokenStream::dump() const {
   return result;
 }
 
-}  // namespace lexer
+}  // namespace base

@@ -25,11 +25,11 @@ Parser::Results<Parser::AstNode> Parser::parse_binary_expression(
 
   while (!eof()) {
     auto op_kind = peek().kind();
-    if (!is_binary_operator(op_kind) || is_assignment_operator(op_kind)) {
+    if (!is_binary_operator(op_kind) || token_is_assignment_operator(op_kind)) {
       break;
     }
 
-    int precedence = get_precedence(op_kind);
+    int precedence = binary_operator_precedence(op_kind);
     if (precedence < min_precedence) {
       break;
     }
@@ -38,7 +38,7 @@ Parser::Results<Parser::AstNode> Parser::parse_binary_expression(
     advance();
 
     int next_min_precedence = precedence + 1;
-    if (op_kind == lexer::TokenKind::kStarStar) {
+    if (op_kind == base::TokenKind::kStarStar) {
       next_min_precedence = precedence;
     }
 
@@ -50,8 +50,8 @@ Parser::Results<Parser::AstNode> Parser::parse_binary_expression(
     }
     right_node = std::move(right_result).unwrap();
 
-    ast::BinaryOpNode::Operator op = token_to_binary_op(op_kind);
-    if (op == ast::BinaryOpNode::Operator::kUnknown) {
+    base::BinaryOperator op = token_kind_to_binary_op(op_kind);
+    if (op == base::BinaryOperator::kUnknown) {
       errors.push_back(ParseError::make(diagnostic::DiagnosticId::kInvalidToken,
                                         op_token, "invalid binary operator"));
       if (strict_) {

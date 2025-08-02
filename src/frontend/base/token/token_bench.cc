@@ -3,9 +3,9 @@
 // which can be found in the LICENSE file.
 
 #include "benchmark/benchmark.h"
-#include "frontend/lexer/token/token.h"
+#include "frontend/base/token/token.h"
 
-namespace lexer {
+namespace base {
 
 namespace {
 
@@ -22,4 +22,4 @@ BENCHMARK(token_construction);
 
 }  // namespace
 
-}  // namespace lexer
+}  // namespace base

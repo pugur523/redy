@@ -79,7 +79,7 @@ int handle_arguments(int argc, char** argv) {
   }
 
   if (options->verbose) {
-    core::glog.info<"Parsed arguments:\n  {}">(options->to_string(2));
+    core::glog.info<"parsed arguments:\n  {}">(options->to_string(2));
   }
 
   return 0;

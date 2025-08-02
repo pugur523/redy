@@ -17,11 +17,12 @@ set(SOURCES
 
   ${PROJECT_SOURCE_DIR}/frontend/frontend_test.cc
 
+  ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/base/data/char_stream_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/base/token/token_test.cc
+
   ${PROJECT_SOURCE_DIR}/frontend/lexer/lexer_test.cc
-  ${PROJECT_SOURCE_DIR}/frontend/lexer/base/char_stream_test.cc
-  ${PROJECT_SOURCE_DIR}/frontend/lexer/keyword/keyword_test.cc
-  ${PROJECT_SOURCE_DIR}/frontend/lexer/token/token_stream_test.cc
-  ${PROJECT_SOURCE_DIR}/frontend/lexer/token/token_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/ast/base/node_test.cc
 
@@ -37,7 +38,7 @@ target_compile_options(${TEST_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS})
 target_compile_definitions(${TEST_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${TEST_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${TEST_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${TEST_NAME} PRIVATE core diagnostic lexer ast parser ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${TEST_NAME} PRIVATE core base diagnostic lexer ast parser ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${TEST_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

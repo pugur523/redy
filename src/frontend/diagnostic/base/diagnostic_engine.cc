@@ -32,7 +32,7 @@ namespace diagnostic {
 // 10 | ref := &data;
 //    |         ---- borrow occurs here
 //    |
-// 11 | print("{}", ref);
+// 11 | println#("{}", ref);
 // 12 | consume(data);
 //    |         ^~~~ move occurs here
 //    |
@@ -85,9 +85,9 @@ void DiagnosticEngine::format_annotation(const Annotation& annotation,
 void DiagnosticEngine::format_label_header(const Label& label,
                                            std::size_t line_number_width,
                                            const char* line_num_str,
-                                           size_t line_num_len,
+                                           std::size_t line_num_len,
                                            const char* col_num_str,
-                                           size_t col_num_len,
+                                           std::size_t col_num_len,
                                            std::string* out_str) const {
   const core::File& file = file_manager_->file(label.file_id());
   const std::string& file_name = file.file_name();
@@ -120,7 +120,7 @@ void DiagnosticEngine::format_label_header(const Label& label,
 void DiagnosticEngine::format_label(const Label& label,
                                     std::size_t line_number_width,
                                     const char* line_num_str,
-                                    size_t line_num_len,
+                                    std::size_t line_num_len,
                                     std::string* out_str) const {
   const core::File& file = file_manager_->file(label.file_id());
   const core::SourceLocation& loc = label.range().start();
@@ -270,9 +270,9 @@ void DiagnosticEngine::indent(std::string* out_str, std::size_t count) {
 std::size_t DiagnosticEngine::itoa_to_buffer(int value, char* buffer) {
   // helper function to convert integer to string into a buffer
   // returns the number of characters written.
-  // Note: this is a simplified itoa. for full robustness (negative numbers,
-  // edge cases), consider a more comprehensive implementation or std::to_chars
-  // if available.
+
+  // FIXME: this is a simplified itoa. for full robustness (negative numbers,
+  // edge cases), use more comprehensive implementation or std::to_chars
 
   if (value == 0) {
     *buffer = '0';

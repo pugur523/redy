@@ -9,11 +9,6 @@ message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
   lexer.cc 
-
-  base/char_stream.cc
-  keyword/keyword.cc
-  token/token.cc
-  token/token_stream.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})
@@ -24,7 +19,7 @@ setup_module(${MODULE_NAME} ${MODULE_OBJECTS_NAME}
   COMPILE_DEFINITIONS ${PROJECT_COMPILE_DEFINITIONS}
   LINK_OPTIONS ${PROJECT_LINK_OPTIONS}
   LINK_DIRS ${PROJECT_LINK_DIRECTORIES}
-  LINK_LIBS ${ZLIB_LIBRARIES} ${PROJECT_LINK_LIBRARIES}
+  LINK_LIBS base ${PROJECT_LINK_LIBRARIES}
 )
 
 if(ENABLE_VERBOSE)

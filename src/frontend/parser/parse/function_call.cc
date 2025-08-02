@@ -17,7 +17,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function_call(
   std::vector<ParseError> errors;
 
   auto lparen_result =
-      consume(lexer::TokenKind::kLParen, "expected '(' for function call");
+      consume(base::TokenKind::kLeftParen, "expected '(' for function call");
   if (lparen_result.is_err()) {
     errors.push_back(std::move(lparen_result).unwrap_err());
     return err(std::move(errors));
@@ -27,7 +27,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function_call(
   const auto* call_token = std::move(lparen_result).unwrap();
 
   std::vector<AstNode> arguments;
-  if (!check(lexer::TokenKind::kRParen)) {
+  if (!check(base::TokenKind::kRightParen)) {
     auto first_arg_result = parse_expression();
     if (first_arg_result.is_err()) {
       append_errs(&errors, std::move(first_arg_result).unwrap_err());
@@ -38,7 +38,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function_call(
       arguments.push_back(std::move(first_arg_result).unwrap());
     }
 
-    while (match(lexer::TokenKind::kComma)) {
+    while (match(base::TokenKind::kComma)) {
       auto arg_result = parse_expression();
       if (arg_result.is_err()) {
         append_errs(&errors, std::move(arg_result).unwrap_err());
@@ -51,7 +51,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function_call(
     }
   }
 
-  auto rparen_result = consume(lexer::TokenKind::kRParen,
+  auto rparen_result = consume(base::TokenKind::kRightParen,
                                "expected ')' after function arguments");
   if (rparen_result.is_err()) {
     errors.push_back(std::move(rparen_result).unwrap_err());

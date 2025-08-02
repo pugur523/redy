@@ -6,9 +6,9 @@
 #include <utility>
 
 #include "benchmark/benchmark.h"
-#include "frontend/lexer/base/char_stream.h"
+#include "frontend/base/data/char_stream.h"
 
-namespace lexer {
+namespace base {
 
 void char_stream_advance(benchmark::State& state) {
   std::string input(state.range(0), 'a');
@@ -23,4 +23,4 @@ void char_stream_advance(benchmark::State& state) {
 }
 BENCHMARK(char_stream_advance)->Arg(100)->Arg(1000)->Arg(10000);
 
-}  // namespace lexer
+}  // namespace base

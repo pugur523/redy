@@ -45,7 +45,7 @@ target_compile_options(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_COMPILE_OPTIONS
 target_compile_definitions(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE core diagnostic lexer ast parser ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE core base diagnostic lexer ast parser ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${MAIN_EXECUTABLE_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

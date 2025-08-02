@@ -15,28 +15,28 @@ namespace parser {
 Parser::Results<Parser::AstNode> Parser::parse_function() {
   std::vector<ParseError> errors;
 
-  auto fn_result = consume(lexer::TokenKind::kFn, "expected 'fn'");
+  auto fn_result = consume(base::TokenKind::kFunction, "expected 'fn'");
   if (fn_result.is_err()) {
     return err({std::move(fn_result).unwrap_err()});
   }
   const auto& fn_token = fn_result.unwrap();
 
   auto name_result =
-      consume(lexer::TokenKind::kIdentifier, "expected function name");
+      consume(base::TokenKind::kIdentifier, "expected function name");
   if (name_result.is_err()) {
     return err({std::move(name_result).unwrap_err()});
   }
   std::string_view name = name_result.unwrap()->lexeme(stream_.file_manager());
 
   auto lparen_result =
-      consume(lexer::TokenKind::kLParen, "expected '(' after function name");
+      consume(base::TokenKind::kLeftParen, "expected '(' after function name");
   if (lparen_result.is_err()) {
     return err({std::move(lparen_result).unwrap_err()});
   }
 
   // parse parameter list
   AstNode parameters_node;
-  if (!check(lexer::TokenKind::kRParen)) {
+  if (!check(base::TokenKind::kRightParen)) {
     auto param_list_result = parse_param_list();
     if (param_list_result.is_err()) {
       return err(std::move(param_list_result).unwrap_err());
@@ -45,13 +45,13 @@ Parser::Results<Parser::AstNode> Parser::parse_function() {
   }
 
   auto rparen_result =
-      consume(lexer::TokenKind::kRParen, "expected ')' after parameters");
+      consume(base::TokenKind::kRightParen, "expected ')' after parameters");
   if (rparen_result.is_err()) {
     return err({std::move(rparen_result).unwrap_err()});
   }
 
   auto arrow_result =
-      consume(lexer::TokenKind::kArrow, "expected '->' after parameters");
+      consume(base::TokenKind::kArrow, "expected '->' after parameters");
   if (arrow_result.is_err()) {
     return err({std::move(arrow_result).unwrap_err()});
   }
@@ -63,7 +63,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function() {
   AstNode return_type_node = std::move(return_type_result).unwrap();
 
   auto lbrace_result =
-      consume(lexer::TokenKind::kLBrace, "expected '{' before function body");
+      consume(base::TokenKind::kLeftBrace, "expected '{' before function body");
   if (lbrace_result.is_err()) {
     return err({std::move(lbrace_result).unwrap_err()});
   }
@@ -72,7 +72,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function() {
   const auto& body_token = peek();
   std::vector<AstNode> statements;
 
-  while (!check(lexer::TokenKind::kRBrace) && !eof()) {
+  while (!check(base::TokenKind::kRightBrace) && !eof()) {
     auto stmt_result = parse_statement();
     if (stmt_result.is_err()) {
       append_errs(&errors, std::move(stmt_result).unwrap_err());
@@ -88,7 +88,7 @@ Parser::Results<Parser::AstNode> Parser::parse_function() {
   }
 
   auto rbrace_result =
-      consume(lexer::TokenKind::kRBrace, "expected '}' after function body");
+      consume(base::TokenKind::kRightBrace, "expected '}' after function body");
   if (rbrace_result.is_err()) {
     errors.push_back(std::move(rbrace_result).unwrap_err());
     if (strict_) {

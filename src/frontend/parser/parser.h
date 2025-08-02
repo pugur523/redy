@@ -12,8 +12,8 @@
 #include "core/check.h"
 #include "frontend/ast/base/base_node.h"
 #include "frontend/ast/nodes/nodes.h"
+#include "frontend/base/token/token_stream.h"
 #include "frontend/diagnostic/data/result.h"
-#include "frontend/lexer/token/token_stream.h"
 #include "frontend/parser/base/parser_export.h"
 #include "frontend/parser/parse_error.h"
 
@@ -27,7 +27,7 @@ class PARSER_EXPORT Parser {
   template <typename T>
   using Results = diagnostic::Result<T, std::vector<ParseError>>;
 
-  explicit Parser(lexer::TokenStream&& stream, bool strict = false);
+  explicit Parser(base::TokenStream&& stream, bool strict = false);
 
   ~Parser() = default;
 
@@ -68,26 +68,26 @@ class PARSER_EXPORT Parser {
   Results<AstNode> parse_function_call(AstNode callee_node);
 
   // helper methods
-  Result<const lexer::Token*> consume(lexer::TokenKind expected,
-                                      std::string&& error_message);
-  inline bool match(lexer::TokenKind kind) { return stream_.match(kind); }
-  inline bool check(lexer::TokenKind kind) const { return stream_.check(kind); }
-  inline bool check(lexer::TokenKind kind, std::size_t offset) const {
+  Result<const base::Token*> consume(base::TokenKind expected,
+                                     std::string&& error_message);
+  inline bool match(base::TokenKind kind) { return stream_.match(kind); }
+  inline bool check(base::TokenKind kind) const { return stream_.check(kind); }
+  inline bool check(base::TokenKind kind, std::size_t offset) const {
     return stream_.check(kind, offset);
   }
-  inline const lexer::Token& peek(std::size_t offset = 0) const {
+  inline const base::Token& peek(std::size_t offset = 0) const {
     return stream_.peek(offset);
   }
   // TODO: use return value of `stream_.advance()`
   inline void advance() { stream_.advance(); }
-  inline const lexer::Token& previous() const { return stream_.previous(); }
+  inline const base::Token& previous() const { return stream_.previous(); }
 
   inline bool eof() const { return stream_.eof(); }
 
   // error handling
   void synchronize();
 
-  static bool is_sync_point(lexer::TokenKind kind);
+  static bool is_sync_point(base::TokenKind kind);
 
   static Result<AstNode> single_ok(AstNode&& node);
   static Result<AstNode> single_err(ParseError&& error);
@@ -98,17 +98,7 @@ class PARSER_EXPORT Parser {
   static void append_errs(std::vector<ParseError>* target,
                           std::vector<ParseError>&& source);
 
-  // token kind to operator conversion
-  static ast::BinaryOpNode::Operator token_to_binary_op(lexer::TokenKind kind);
-  static ast::UnaryOpNode::Operator token_to_unary_op(lexer::TokenKind kind);
-
-  // precedence helpers
-  static int get_precedence(lexer::TokenKind kind);
-  static bool is_binary_operator(lexer::TokenKind kind);
-  static bool is_unary_operator(lexer::TokenKind kind);
-  static bool is_assignment_operator(lexer::TokenKind kind);
-
-  lexer::TokenStream stream_;
+  base::TokenStream stream_;
   bool strict_ : 1 = false;
 };
 

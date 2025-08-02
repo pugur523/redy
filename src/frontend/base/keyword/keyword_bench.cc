@@ -5,17 +5,17 @@
 #include <string>
 
 #include "benchmark/benchmark.h"
-#include "frontend/lexer/keyword/keyword.h"
+#include "frontend/base/keyword/keyword.h"
 
-namespace lexer {
+namespace base {
 
 static void keyword_lookup_keyword(benchmark::State& state) {
   const std::string id = "if";
   for (auto _ : state) {
-    TokenKind k = lookup_identifier_or_keyword(id);
+    TokenKind k = lookup_id_or_keyword(id);
     benchmark::DoNotOptimize(k);
   }
 }
 BENCHMARK(keyword_lookup_keyword);
 
-}  // namespace lexer
+}  // namespace base

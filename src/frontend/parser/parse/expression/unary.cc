@@ -14,7 +14,7 @@ namespace parser {
 Parser::Results<Parser::AstNode> Parser::parse_unary_expression() {
   std::vector<ParseError> errors;
 
-  lexer::TokenKind kind = peek().kind();
+  base::TokenKind kind = peek().kind();
   if (is_unary_operator(kind)) {
     const auto& op_token = peek();
     advance();
@@ -25,8 +25,8 @@ Parser::Results<Parser::AstNode> Parser::parse_unary_expression() {
       return err(std::move(errors));
     }
 
-    ast::UnaryOpNode::Operator op = token_to_unary_op(kind);
-    if (op == ast::UnaryOpNode::Operator::kUnknown) {
+    base::UnaryOperator op = token_kind_to_unary_op(kind);
+    if (op == base::UnaryOperator::kUnknown) {
       errors.push_back(ParseError::make(diagnostic::DiagnosticId::kInvalidToken,
                                         op_token, "invalid unary operator"));
       if (strict_) {

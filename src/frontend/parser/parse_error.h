@@ -8,8 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
-#include "frontend/lexer/token/token.h"
 #include "frontend/parser/base/parser_export.h"
 
 namespace parser {
@@ -36,7 +36,7 @@ struct PARSER_EXPORT ParseError {
   }
 
   inline static ParseError make(diagnostic::DiagnosticId id,
-                                const lexer::Token& token,
+                                const base::Token& token,
                                 std::string&& message) {
     return make(id, token.location().line(), token.location().column(),
                 token.length(), std::move(message));

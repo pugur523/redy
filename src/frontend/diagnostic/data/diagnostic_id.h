@@ -62,7 +62,7 @@ enum class DiagnosticId : uint8_t {
   kInvalidToken = 1,
   kUnterminatedStringLiteral = 2,
   kUnterminatedCharacterLiteral = 3,
-  kUnterminatedComment = 4,
+  kUnterminatedBlockComment = 4,
   kUnrecognizedCharacter = 5,
   kInvalidEscapeSequence = 6,
   kInvalidNumericLiteral = 7,
@@ -168,7 +168,7 @@ inline const char* diagnostic_id_to_str(DiagnosticId id) {
     case Id::kUnterminatedStringLiteral: return "unterminated_string_literal";
     case Id::kUnterminatedCharacterLiteral:
       return "unterminated_character_literal";
-    case Id::kUnterminatedComment: return "unterminated_comment";
+    case Id::kUnterminatedBlockComment: return "unterminated_block_comment";
     case Id::kUnrecognizedCharacter: return "unrecognized_character";
     case Id::kInvalidEscapeSequence: return "invalid_escape_sequence";
     case Id::kInvalidNumericLiteral: return "invalid_numeric_literal";
@@ -272,9 +272,8 @@ inline const char* diagnostic_id_to_str(DiagnosticId id) {
 inline void diagnostic_id_to_code(DiagnosticId id,
                                   Severity severity,
                                   char out_buf[6]) {
-  static constexpr char kSeverityPrefix[] = {'U', 'F', 'E', 'W', 'I', 'D', 'T'};
-  out_buf[0] =
-      kSeverityPrefix[static_cast<std::underlying_type_t<Severity>>(severity)];
+  static constexpr char kSeverityPrefix[] = {'u', 'f', 'e', 'w', 'i', 'd', 't'};
+  out_buf[0] = kSeverityPrefix[static_cast<uint8_t>(severity)];
 
   uint16_t code = static_cast<uint16_t>(id);
   out_buf[4] = '0' + (code % 10);

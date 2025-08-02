@@ -82,7 +82,7 @@ class DIAGNOSTIC_EXPORT Result {
     }
   }
 
-  Result(Result&& other) noexcept : is_ok_(other.is_ok_) {
+  Result(Result&& other) : is_ok_(other.is_ok_) {
     if (is_ok_) {
       new (&storage_.ok_value_) T(std::move(other.storage_.ok_value_));
     } else {
@@ -99,7 +99,7 @@ class DIAGNOSTIC_EXPORT Result {
     return *this;
   }
 
-  Result& operator=(Result&& other) noexcept {
+  Result& operator=(Result&& other) {
     if (this != &other) {
       this->~Result();
       new (this) Result(std::move(other));
@@ -201,7 +201,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto and_then(F&& f) && {
     using NextResult = std::invoke_result_t<F, T>;
     static_assert(std::is_same_v<typename NextResult::ErrorType, E>,
-                  "Error types must match for and_then");
+                  "error types must match for and_then");
     if (is_ok_) {
       return std::forward<F>(f)(std::move(storage_.ok_value_));
     } else {
@@ -213,7 +213,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto and_then(F&& f) const& {
     using NextResult = std::invoke_result_t<F, const T&>;
     static_assert(std::is_same_v<typename NextResult::ErrorType, E>,
-                  "Error types must match for and_then");
+                  "error types must match for and_then");
     if (is_ok_) {
       return std::forward<F>(f)(storage_.ok_value_);
     } else {

@@ -20,7 +20,7 @@ enum class Platform : uint8_t {
   kLinux = 3,
   kAndroid = 4,
 
-  // Keep this at the end and equal to the last entry.
+  // keep this at the end and equal to the last entry.
   kMaxValue = kAndroid,
 };
 

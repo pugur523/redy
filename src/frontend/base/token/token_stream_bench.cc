@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "benchmark/benchmark.h"
-#include "frontend/lexer/token/token.h"
-#include "frontend/lexer/token/token_stream.h"
+#include "frontend/base/token/token.h"
+#include "frontend/base/token/token_stream.h"
 
-namespace lexer {
+namespace base {
 
 namespace {
 
@@ -61,4 +61,4 @@ BENCHMARK(token_stream_peak);
 
 }  // namespace
 
-}  // namespace lexer
+}  // namespace base

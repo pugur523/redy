@@ -9,16 +9,20 @@
 #include <string>
 #include <vector>
 
+#include "frontend/base/data/char_stream.h"
+#include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/result.h"
-#include "frontend/lexer/base/char_stream.h"
 #include "frontend/lexer/base/lex_error.h"
 #include "frontend/lexer/base/lexer_export.h"
-#include "frontend/lexer/token/token.h"
 
 namespace lexer {
 
 class LEXER_EXPORT Lexer {
  public:
+  using Token = base::Token;
+  using TokenKind = base::TokenKind;
+  using CharStream = base::CharStream;
+
   template <typename T>
   using Result = diagnostic::Result<T, LexError>;
   template <typename T>
@@ -33,7 +37,8 @@ class LEXER_EXPORT Lexer {
   Results<Token> lex_all(bool strict = false);
 
  private:
-  void skip_whitespace_and_comments();
+  // void skip_whitespace_and_comments();
+  void skip_whitespace();
 
   Result<Token> identifier_or_keyword();
   Result<Token> literal_numeric();
@@ -43,6 +48,11 @@ class LEXER_EXPORT Lexer {
                            std::size_t start_pos,
                            std::size_t line,
                            std::size_t col);
+
+  // check if a character is a valid identifier character after the first one
+  inline static bool is_identifier_char(char c) {
+    return std::isalnum(c) || c == '_';
+  }
 
   CharStream char_stream_;
 

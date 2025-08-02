@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "frontend/ast/nodes/node_util.h"
+#include "frontend/base/operator/binary_operator.h"
 #include "frontend/parser/parser.h"
 
 namespace parser {
@@ -20,8 +21,8 @@ Parser::Results<Parser::AstNode> Parser::parse_assignment_statement() {
     return target_result;
   }
 
-  lexer::TokenKind op_kind = peek().kind();
-  if (!is_assignment_operator(op_kind)) {
+  base::TokenKind op_kind = peek().kind();
+  if (!token_is_assignment_operator(op_kind)) {
     errors.push_back(
         ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, peek(),
                          "expected assignment operator"));
@@ -39,7 +40,7 @@ Parser::Results<Parser::AstNode> Parser::parse_assignment_statement() {
     return err(std::move(errors));
   }
 
-  auto semicolon_result = consume(lexer::TokenKind::kSemicolon,
+  auto semicolon_result = consume(base::TokenKind::kSemicolon,
                                   "expected ';' after assignment statement");
   if (semicolon_result.is_err()) {
     errors.push_back(std::move(semicolon_result).unwrap_err());
@@ -48,8 +49,8 @@ Parser::Results<Parser::AstNode> Parser::parse_assignment_statement() {
     }
   }
 
-  ast::BinaryOpNode::Operator assign_op = token_to_binary_op(op_kind);
-  if (assign_op == ast::BinaryOpNode::Operator::kUnknown) {
+  base::BinaryOperator assign_op = token_kind_to_binary_op(op_kind);
+  if (assign_op == base::BinaryOperator::kUnknown) {
     errors.push_back(
         ParseError::make(diagnostic::DiagnosticId::kUnexpectedToken, op_token,
                          "invalid assignment operator"));
