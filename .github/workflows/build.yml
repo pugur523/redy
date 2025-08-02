@@ -28,7 +28,7 @@ jobs:
             shell: bash
             cc: clang
             cxx: clang++
-            llvm_version: "21"
+            llvm_version: "20"
           - os: windows-latest
             target_platform: windows
             shell: pwsh
