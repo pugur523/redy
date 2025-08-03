@@ -47,17 +47,21 @@ RUN pacman -Scc --noconfirm \
 WORKDIR /app
 
 COPY ${SCRIPTS_DIR} ${SCRIPTS_DIR}
+COPY pyproject.toml .
+COPY poetry.lock .
 
-RUN curl -sSL https://install.python-poetry.org | python3 - && poetry install
+RUN curl -sSL https://install.python-poetry.org | python3 - \
+    && export PATH="/root/.local/bin:$PATH" \
+    && poetry install
 
 COPY ${THIRD_PARTY_DIR} ${THIRD_PARTY_DIR}
-COPY . /app
+COPY . .
 
-RUN poetry run python3 -u ${SCRIPTS_DIR}/build.py \
+RUN export PATH="/root/.local/bin:$PATH" \
+    && poetry run python3 -u ${SCRIPTS_DIR}/build.py \
         --build_mode=all \
         --cpplint \
         --no-clang_format \
         --clang_tidy \
-        --build_async \
         --no-fail_fast \
         --extra_args="-DENABLE_BUILD_REPORT=true,-DENABLE_COVERAGE=true,-DENABLE_OPTIMIZATION_REPORT=true,-DENABLE_XRAY=false,-DENABLE_SANITIZERS=false"

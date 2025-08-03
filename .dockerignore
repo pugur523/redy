@@ -1,10 +1,6 @@
 .git
-.clang-format
-.clang-tidy
-.clangd
 .gitignore
 .gitmodules
-/cc
 
 # Output
 /out

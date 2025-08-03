@@ -41,7 +41,7 @@
                     modernize-use-transparent-functors,
                     performance-*,
                     readability-redundant-member-init'
-  HeaderFilterRegex: '^src[\\/](?!third_party[\\/]|external[\\/]).*'
+  HeaderFilterRegex: '^.*src[\\/](?!third_party[\\/]|external[\\/]|include[\\/]).*$'
   SystemHeaders:    false
   WarningsAsErrors: '*'
   ExtraArgsBefore:
