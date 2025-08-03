@@ -14,24 +14,21 @@ from build_util import (
 )
 
 
-def run_cpplint(src_dir, cpplint_cfg=""):
-    if not is_installed("cpplint"):
-        print("cpplint not found. please install cpplint and add it to $PATH.")
-        return 1
+def run_cpplint(root_dir, cpplint_cfg=""):
     if not cpplint_cfg:
         cpplint_cfg = "CPPLINT.cfg"
-    result = run_command(
-        [
-            "python3",
-            "-m",
-            "cpplint",
-            "--exclude=src/third_party",
-            "--recursive",
-            "--config=" + cpplint_cfg,
-            "./src",
-        ],
-        cwd=src_dir,
-    )
+    command = [
+        "python3",
+        "-m",
+        "cpplint",
+        "--exclude=./src/third_party",
+        "--exclude=./out",
+        "--exclude=./.venv",
+        "--recursive",
+        "--config=" + cpplint_cfg,
+        root_dir,
+    ]
+    result = run_command(command, cwd=root_dir)
     if result.returncode != 0:
         print("cpplint failed: ", result.returncode)
     return result.returncode
