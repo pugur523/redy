@@ -56,7 +56,23 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install Poetry
-        run: pipx install poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          virtualenvs-path: ~/.venv
+
+      - name: Install Python dependencies
+        run: |
+          poetry config virtualenvs.create true
+          poetry install
+
+          # verify installation
+          poetry --version
+          poetry show --tree
+          poetry env info
+        shell: bash
 
       - name: Install system dependencies
         run: |
@@ -91,11 +107,6 @@ jobs:
             source ./src/build/scripts/install_llvm_mingw.sh
             echo "LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> $GITHUB_ENV
           fi
-        shell: bash
-
-      - name: Install Python dependencies
-        run: |
-          poetry install
         shell: bash
 
       - name: Build
