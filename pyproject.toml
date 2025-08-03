@@ -3,7 +3,6 @@ name = "redy"
 version = "0.1.0"
 description = ""
 authors = [{ name = "pugur", email = "pugurmc@gmail.com" }]
-readme = "README.md"
 requires-python = ">=3.13"
 
 [tool.poetry]
@@ -14,6 +13,7 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
+python = ">=3.13"
 requests = ">=2.32.3,<2.33.0"
 cpplint = ">=2.0.2,<2.1.0"
 pyyaml = ">=6.0.2,<6.1.0"

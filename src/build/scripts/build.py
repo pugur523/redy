@@ -151,20 +151,20 @@ def select_best_toolchain(build_os, target_os):
     if build_os == "windows":
         if target_os != "windows":
             # TODO: cygwin support
-            print("Cross compile on windows is currently not supported.")
+            print("cross compile on windows is currently not supported.")
             return None
     elif build_os == "darwin":
         if target_os != "darwin":
-            print("Cross compile on darwin is currently not supported.")
+            print("cross compile on darwin is currently not supported.")
             return None
     elif build_os == "linux":
         if target_os == "windows" or target_os == "mingw":
             toolchain_name = "mingw"
         elif target_os == "darwin":
-            print("Cross compile for darwin is currently not supported.")
+            print("cross compile for darwin is currently not supported.")
             return None
     else:
-        print("Unknown build os detected: ", build_os)
+        print("unknown build os detected: ", build_os)
         return None
 
     return os.path.join(toolchains_dir, (toolchain_name + ".cmake"))
@@ -276,7 +276,7 @@ def build_with_all_option_combinations(
         )
 
     results = []
-    print(f"Testing {len(all_combinations)} option combinations...")
+    print(f"testing {len(all_combinations)} option combinations...")
 
     start_time = time()
     for platform, arch, build_type, opt_values in all_combinations:
@@ -286,7 +286,7 @@ def build_with_all_option_combinations(
             print(tabulate(results, headers=headers, tablefmt="grid"))
             return 1
 
-    print("\nBuild Result: \n")
+    print("\nbuild result: \n")
     print(tabulate(results, headers=headers, tablefmt="grid"))
 
     ret = 0
@@ -299,7 +299,7 @@ def build_with_all_option_combinations(
     total_sec = time() - start_time
     minutes = int(total_sec // 60)
     seconds = int(total_sec % 60)
-    print(f"\nAll builds completed in {minutes} min {seconds} sec.")
+    print(f"\nall builds completed in {minutes} min {seconds} sec.")
     return ret
 
 
@@ -315,10 +315,10 @@ def build_project(
     extra_args: str = "",
 ):
     if target_platform not in supported_platforms:
-        print(f"Unknown platform specified ({target_platform})")
+        print(f"unknown platform specified ({target_platform})")
         return 1
     if target_arch not in supported_architectures:
-        print(f"Unknown architecture specified ({target_arch})")
+        print(f"unknown architecture specified ({target_arch})")
         return 2
 
     build_dir = os.path.join(
@@ -329,12 +329,12 @@ def build_project(
     )
 
     print(
-        f"Configuring project with CMake for {target_platform} ({target_arch}) in {build_type} mode..."
+        f"configuring project with CMake for {target_platform} ({target_arch}) in {build_type} mode..."
     )
 
     toolchain_file = select_best_toolchain(get_platform_name(), target_platform)
     if not toolchain_file:
-        print("Compatible toolchain not found.")
+        print("compatible toolchain not found.")
         return -1
 
     args = [
@@ -557,11 +557,11 @@ def main(argv):
             successful_configs.append(config_entry)
 
     if successful_configs:
-        print("\nsuccessful Builds:")
+        print("\nsuccessful builds:")
         print(tabulate(successful_configs, headers="keys", tablefmt="grid"))
 
     if failed_configs:
-        print("\nFailed Builds:")
+        print("\nfailed builds:")
         print(tabulate(failed_configs, headers="keys", tablefmt="grid"))
         failed_counts = len(failed_configs)
         return failed_counts
@@ -570,7 +570,7 @@ def main(argv):
     total_sec = end_time - start_time
     minutes = int(total_sec // 60)
     seconds = int(total_sec % 60)
-    print(f"\nBuild completed in {minutes} min {seconds} sec.")
+    print(f"\nbuild completed in {minutes} min {seconds} sec.")
 
     return 0
 
@@ -579,4 +579,4 @@ if __name__ == "__main__":
     try:
         sys.exit(main(sys.argv))
     except KeyboardInterrupt:
-        print("\nAborted building process.")
+        print("\naborted building process.")
