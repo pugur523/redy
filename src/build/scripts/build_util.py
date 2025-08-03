@@ -44,6 +44,7 @@ scripts_dir: str = os.path.dirname(__file__)
 project_root_dir: str = os.path.abspath(os.path.join(scripts_dir, "..", "..", ".."))
 project_src_dir: str = os.path.join(project_root_dir, "src")
 project_config_file: str = os.path.join(project_root_dir, "project_config.toml")
+project_resources_dir: str = os.path.join(project_src_dir, "build", "resources")
 third_party_src_dir: str = os.path.join(project_src_dir, "third_party")
 
 out_root_dir: str = os.path.join(project_root_dir, "out")

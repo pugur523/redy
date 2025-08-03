@@ -16,6 +16,16 @@ if(NOT PROJECT_CONFIG_EXIT_CODE EQUAL 0)
   message(FATAL_ERROR "Failed to read project config: exit code ${PROJECT_CONFIG_EXIT_CODE}")
 endif()
 
+execute_process(
+  COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/build/scripts/ucd_gen.py
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  RESULT_VARIABLE UCD_GEN_CONFIG_EXIT_CODE
+)
+
+if(NOT UCD_GEN_CONFIG_EXIT_CODE EQUAL 0)
+  message(FATAL_ERROR "Failed to read project config: exit code ${UCD_GEN_CONFIG_EXIT_CODE}")
+endif()
+
 string(REPLACE "\n" ";" PROJECT_CONFIG_LIST "${PROJECT_CONFIG_OUTPUT}")
 
 list(LENGTH PROJECT_CONFIG_LIST REAL_LENGTH)
