@@ -51,7 +51,7 @@ class LEXER_EXPORT Lexer {
     const std::size_t end_pos = char_stream_.position();
     const core::FileId file_id = char_stream_.file_id();
     const std::size_t length = end_pos - start_pos;
-    return Result(
+    return Result<Token>(
         diagnostic::make_ok(Token(kind, file_id, line, column, length)));
   }
 

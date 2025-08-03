@@ -28,7 +28,7 @@ Lexer::Lexer(FileManager* file_manager, FileId file_id)
 Lexer::Result<Lexer::Token> Lexer::next_token() {
   skip_whitespace();
   if (char_stream_.eof()) {
-    return Result(diagnostic::make_ok(
+    return Result<Token>(diagnostic::make_ok(
         Token(TokenKind::kEof, char_stream_.file_id(), char_stream_.line(),
               char_stream_.column(), 0)));
   }
