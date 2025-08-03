@@ -1,11 +1,12 @@
 # Output
 /out
+
 # Cache
 __pycache__
 .cache
 
 # Editor
-/venv
+/*venv
 /compile_commands.json
 .vscode
 

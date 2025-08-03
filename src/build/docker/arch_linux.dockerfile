@@ -46,15 +46,14 @@ RUN pacman -Scc --noconfirm \
 
 WORKDIR /app
 
-COPY ${SCRIPTS_DIR}/requirements.txt ${SCRIPTS_DIR}/
-
-RUN pip3 install --break-system-packages --no-cache-dir --ignore-installed -r ${SCRIPTS_DIR}/requirements.txt
-
 COPY ${SCRIPTS_DIR} ${SCRIPTS_DIR}
+
+RUN curl -sSL https://install.python-poetry.org | python3 - && poetry install
+
 COPY ${THIRD_PARTY_DIR} ${THIRD_PARTY_DIR}
 COPY . /app
 
-RUN python3 -u ${SCRIPTS_DIR}/build.py \
+RUN poetry run python3 -u ${SCRIPTS_DIR}/build.py \
         --build_mode=all \
         --cpplint \
         --no-clang_format \

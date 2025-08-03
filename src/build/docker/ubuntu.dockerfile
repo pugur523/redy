@@ -7,7 +7,7 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG LLVM_VERSION=20
-ARG CMAKE_VERSION=4.0.2
+ARG CMAKE_VERSION=4.0.3
 ARG CMAKE_OS=linux
 ARG CMAKE_ARCH=x86_64
 ARG SCRIPTS_DIR=./src/build/scripts
@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y \
     && chmod +x llvm.sh \
     && ./llvm.sh ${LLVM_VERSION} all \
     && rm llvm.sh \
+    && curl -sSL https://install.python-poetry.org | python3 - \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -55,15 +56,14 @@ RUN ln -s /usr/bin/clang-${LLVM_VERSION} /usr/bin/clang \
 
 WORKDIR /app
 
-COPY ${SCRIPTS_DIR}/requirements.txt ${SCRIPTS_DIR}/
-
-RUN pip3 install --break-system-packages --no-cache-dir --ignore-installed -r ${SCRIPTS_DIR}/requirements.txt
-
 COPY ${SCRIPTS_DIR} ${SCRIPTS_DIR}
+
+RUN poetry install
+
 COPY ${THIRD_PARTY_DIR} ${THIRD_PARTY_DIR}
 COPY . /app
 
-RUN python3 -u ${SCRIPTS_DIR}/build.py \
+RUN poetry run python3 -u ${SCRIPTS_DIR}/build.py \
         --build_mode=all \
         --cpplint \
         --no-clang_format \
