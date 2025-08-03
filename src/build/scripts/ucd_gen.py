@@ -9,7 +9,7 @@ from build_util import (
 )
 
 ucd_raw_dir = os.path.join(project_resources_dir, "ucd_raw")
-ucd_generated_dir = os.path.join(os.path.join(project_src_dir, "build", "ucd"))
+ucd_generated_dir = os.path.join(os.path.join(project_src_dir, "core", "base", "utf", "ucd"))
 header_path = os.path.join(ucd_generated_dir, "unicode_data.h")
 source_path = os.path.join(ucd_generated_dir, "unicode_data.cc")
 
@@ -45,7 +45,7 @@ def extract_property_ranges(prop_name, file_path):
 
 
 def emit_range_array(varname, ranges):
-    lines = [f"constexpr UnicodeRange {varname}[] = {{"]
+    lines = [f"constexpr const UnicodeRange {varname}[] = {{"]
     for start, end in ranges:
         lines.append(f"  {{0x{start:04X}, 0x{end:04X}}},")
     lines.append("};\n")
@@ -61,11 +61,13 @@ def generate_cc_files(xid_start, xid_continue):
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef BUILD_UCD_UNICODE_DATA_H_
-#define BUILD_UCD_UNICODE_DATA_H_
+#ifndef CORE_BASE_UTF_UCD_UNICODE_DATA_H_
+#define CORE_BASE_UTF_UCD_UNICODE_DATA_H_
 
 #include <cstddef>
 #include <cstdint>
+
+namespace core {{
 
 struct UnicodeRange {{
   uint32_t start;
@@ -77,25 +79,7 @@ extern const std::size_t kXIDStartCount;
 extern const UnicodeRange kXIDContinue[];
 extern const std::size_t kXIDContinueCount;
 
-bool is_xid_start(uint32_t codepoint);
-bool is_xid_continue(uint32_t codepoint);
-
-#endif  // BUILD_UCD_UNICODE_DATA_H_
-""")
-
-    with open(source_path, "w", encoding="utf-8") as cc:
-        cc.write(f"""\
-// Copyright 2025 pugur
-// This source code is licensed under the Apache License, Version 2.0
-// which can be found in the LICENSE file.
-
-#include "build/ucd/unicode_data.h"
-
-{emit_range_array("kXIDStart", xid_start)}
-const std::size_t kXIDStartCount = sizeof(kXIDStart) / sizeof(UnicodeRange);
-{emit_range_array("kXIDContinue", xid_continue)}
-const std::size_t kXIDContinueCount = sizeof(kXIDContinue) / sizeof(UnicodeRange);
-bool is_in_ranges(const UnicodeRange* ranges, std::size_t count, uint32_t codepoint) {{
+constexpr bool is_in_ranges(const UnicodeRange* ranges, std::size_t count, uint32_t codepoint) {{
   for (std::size_t i = 0; i < count; ++i) {{
     if (codepoint >= ranges[i].start && codepoint <= ranges[i].end) {{
       return true;
@@ -104,13 +88,36 @@ bool is_in_ranges(const UnicodeRange* ranges, std::size_t count, uint32_t codepo
   return false;
 }}
 
-bool is_xid_start(uint32_t codepoint) {{
+inline constexpr bool is_xid_start(uint32_t codepoint) {{
   return is_in_ranges(kXIDStart, kXIDStartCount, codepoint);
 }}
 
-bool is_xid_continue(uint32_t codepoint) {{
+inline constexpr bool is_xid_continue(uint32_t codepoint) {{
   return is_in_ranges(kXIDContinue, kXIDContinueCount, codepoint);
 }}
+
+}}  // namespace core
+
+#endif  // CORE_BASE_UTF_UCD_UNICODE_DATA_H_
+""")
+
+    with open(source_path, "w", encoding="utf-8") as cc:
+        cc.write(f"""\
+// Copyright 2025 pugur
+// This source code is licensed under the Apache License, Version 2.0
+// which can be found in the LICENSE file.
+
+#include "core/base/utf/ucd/unicode_data.h"
+
+namespace core {{
+
+{emit_range_array("kXIDStart", xid_start)}
+constexpr std::size_t kXIDStartCount = sizeof(kXIDStart) / sizeof(UnicodeRange);
+{emit_range_array("kXIDContinue", xid_continue)}
+constexpr std::size_t kXIDContinueCount = sizeof(kXIDContinue) / sizeof(UnicodeRange);
+
+}}  // namespace core
+
 """)
 
 
@@ -124,7 +131,7 @@ def main():
         download_file(file_name, file_path)
     
     if os.path.exists(header_path) and os.path.exists(source_path):
-        print(f"{file_path} found; skipped generate")
+        print(f"{header_path} and {source_path} found; skipped generate")
     else:
         xid_start = extract_property_ranges("XID_Start", file_path)
         xid_continue = extract_property_ranges("XID_Continue", file_path)

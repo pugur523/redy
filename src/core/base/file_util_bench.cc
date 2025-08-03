@@ -206,7 +206,7 @@ void file_util_file_line_access_random(benchmark::State& state) {
 
   for (auto _ : state) {
     std::size_t line_no = distrib(gen);
-    f.line(line_no);
+    benchmark::DoNotOptimize(f.line(line_no).size());
   }
   state.SetBytesProcessed(state.iterations() * line_length);
 }
@@ -222,7 +222,7 @@ void file_util_file_line_access_sequential(benchmark::State& state) {
   std::size_t current_line = 1;
 
   for (auto _ : state) {
-    f.line(current_line);
+    benchmark::DoNotOptimize(f.line(current_line).size());
 
     ++current_line;
     if (current_line > num_lines) {

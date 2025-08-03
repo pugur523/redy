@@ -28,7 +28,7 @@ set(SOURCES
 
   # ${PROJECT_SOURCE_DIR}/frontend/parser/parser_test.cc
 
-  # ${PROJECT_SOURCE_DIR}/frontend/frontend_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/frontend_test.cc
 )
 
 add_executable(${TEST_NAME} ${SOURCES})

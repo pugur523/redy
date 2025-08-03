@@ -17,6 +17,8 @@ set(SOURCES
   base/source_location.cc
   base/source_range.cc
   base/string_util.cc
+  base/utf/utf8_reader.cc
+  base/utf/ucd/unicode_data.cc
   cli/arg_parser.cc
   cli/arg_parser_build_info.cc
   diagnostics/signal_handler.cc

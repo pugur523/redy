@@ -22,6 +22,8 @@ class BASE_EXPORT TokenStream {
 
   ~TokenStream() = default;
 
+  TokenStream() = delete;
+
   TokenStream(const TokenStream&) = delete;
   TokenStream& operator=(const TokenStream&) = delete;
 

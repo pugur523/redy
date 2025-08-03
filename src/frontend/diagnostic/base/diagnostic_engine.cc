@@ -124,7 +124,7 @@ void DiagnosticEngine::format_label(const Label& label,
                                     std::string* out_str) const {
   const core::File& file = file_manager_->file(label.file_id());
   const core::SourceLocation& loc = label.range().start();
-  const std::string& line = file.line(loc.line());
+  std::string_view line = file.line(loc.line());
 
   // pad line number manually, append only once
   out_str->append(line_number_width - line_num_len, ' ');
@@ -217,7 +217,7 @@ void DiagnosticEngine::format(Entries&& entries, std::string* out_str) const {
   }
 }
 
-void DiagnosticEngine::render_source_line(const std::string& line,
+void DiagnosticEngine::render_source_line(std::string_view line,
                                           std::size_t column_start,
                                           std::size_t column_end,
                                           const std::string& marker_msg,

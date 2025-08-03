@@ -14,7 +14,7 @@
 
 namespace core {
 
-class CORE_EXPORT RuntimeOptions {
+struct CORE_EXPORT RuntimeOptions {
  public:
   ~RuntimeOptions() = default;
 
@@ -24,16 +24,16 @@ class CORE_EXPORT RuntimeOptions {
   RuntimeOptions(RuntimeOptions&&) = default;
   RuntimeOptions& operator=(RuntimeOptions&&) = default;
 
-  // options
-  std::string config_file = "redy_config.toml";
-  bool verbose = false;
-  BuildType build_type = BuildType::kDebug;
-
   std::string to_string(std::size_t padding_size = 0);
   inline void print_all() { core::glog.info<"{}\n">(to_string()); }
   inline static std::unique_ptr<RuntimeOptions> create() {
     return std::unique_ptr<RuntimeOptions>(new RuntimeOptions());
   }
+
+  // options
+  std::string config_file = "redy_config.toml";
+  bool verbose = false;
+  BuildType build_type = BuildType::kDebug;
 
  private:
   RuntimeOptions() = default;

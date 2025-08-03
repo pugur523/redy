@@ -67,7 +67,7 @@ class DiagnosticEngine {
   }
 
   // renders a specific source line Rith marker
-  void render_source_line(const std::string& line,
+  void render_source_line(std::string_view line,
                           std::size_t column_start,
                           std::size_t column_end,
                           const std::string& marker_msg,

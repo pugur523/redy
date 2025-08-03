@@ -62,7 +62,7 @@ class BASE_EXPORT CharStream {
   std::size_t pos_ = 0;
   std::size_t line_ = 1;
   std::size_t col_ = 1;
-  FileManager* file_manager_;
+  const FileManager* file_manager_ = nullptr;
   FileId file_id_;
 
   struct History {

@@ -63,7 +63,7 @@ bool dir_exists(const char* dir_name) {
 #endif
 }
 
-std::string read_file(const char* path) {
+std::vector<char> read_file_bin(const char* path) {
 #if IS_WINDOWS
   int fd = _open(path, _O_RDONLY | _O_BINARY);
 #else
@@ -71,7 +71,7 @@ std::string read_file(const char* path) {
 #endif
   if (fd < 0) {
     glog.error<"failed to open file: {} ({})\n">(path, std::strerror(errno));
-    return "";
+    return {};
   }
 
 #if IS_WINDOWS
@@ -88,26 +88,26 @@ std::string read_file(const char* path) {
 #else
     close(fd);
 #endif
-    return "";
+    return {};
   }
 
-  std::string contents;
+  std::vector<char> result;
   if (st.st_size > 0) {
-    contents.resize(static_cast<std::size_t>(st.st_size));
+    result.resize(static_cast<std::size_t>(st.st_size));
     std::size_t total_read = 0;
     while (total_read < static_cast<std::size_t>(st.st_size)) {
 #if IS_WINDOWS
-      int bytes = _read(fd, &contents[total_read],
+      int bytes = _read(fd, &result[total_read],
                         static_cast<unsigned int>(st.st_size - total_read));
 #else
-      ssize_t bytes = read(fd, &contents[total_read], st.st_size - total_read);
+      ssize_t bytes = read(fd, &result[total_read], st.st_size - total_read);
 #endif
       if (bytes <= 0) {
         break;
       }
       total_read += static_cast<std::size_t>(bytes);
     }
-    contents.resize(total_read);
+    result.resize(total_read);
   }
 
 #if IS_WINDOWS
@@ -115,7 +115,12 @@ std::string read_file(const char* path) {
 #else
   close(fd);
 #endif
-  return contents;
+  return result;
+}
+
+std::string read_file(const char* path) {
+  const auto in_bytes = read_file_bin(path);
+  return std::string(in_bytes.begin(), in_bytes.end());
 }
 
 const std::string& exe_path() {
@@ -580,6 +585,23 @@ std::vector<std::string> read_lines_default(const std::string& content) {
   return lines;
 }
 
+std::vector<std::size_t> index_newlines_default(const std::string& content) {
+  std::vector<std::size_t> indexes;
+  indexes.reserve(content.size() / 80);
+
+  for (std::size_t i = 0; i < content.size(); ++i) {
+    if (content[i] == '\n') {
+      indexes.push_back(i);
+    }
+  }
+
+  if (indexes.empty() || indexes.back() != content.size() - 1) {
+    indexes.push_back(content.size());
+  }
+
+  return indexes;
+}
+
 #if ENABLE_AVX2
 
 std::vector<std::string> read_lines_with_avx2(const std::string& content) {
@@ -649,6 +671,45 @@ std::vector<std::string> read_lines_with_avx2(const std::string& content) {
   return lines;
 }
 
+std::vector<std::size_t> index_newlines_with_avx2(const std::string& content) {
+  std::vector<std::size_t> indexes;
+  indexes.reserve(content.size() / 80);
+
+  const char* data = content.data();
+  std::size_t size = content.size();
+  std::size_t pos = 0;
+
+  const __m256i newline_vec = _mm256_set1_epi8('\n');
+
+  while (pos + 32 <= size) {
+    __m256i chunk =
+        _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data + pos));
+    __m256i cmp = _mm256_cmpeq_epi8(chunk, newline_vec);
+    uint32_t mask = _mm256_movemask_epi8(cmp);
+
+    while (mask) {
+      int offset = __builtin_ctz(mask);
+      indexes.push_back(pos + offset);
+      mask &= mask - 1;
+    }
+
+    pos += 32;
+  }
+
+  // scalar fallback
+  for (; pos < size; ++pos) {
+    if (data[pos] == '\n') {
+      indexes.push_back(pos);
+    }
+  }
+
+  if (indexes.empty() || indexes.back() != content.size() - 1) {
+    indexes.push_back(content.size());
+  }
+
+  return indexes;
+}
+
 #endif  // ENABLE_AVX2
 
 TempFile::TempFile(const std::string& prefix, const std::string& content) {
@@ -698,7 +759,7 @@ TempDir::~TempDir() {
 File::File(std::string&& file_name, std::string&& source)
     : file_name_(std::move(file_name)),
       source_(std::move(source)),
-      lines_(read_lines<true>(source_)) {}
+      line_ends_(index_newlines<true>(source_)) {}
 
 File::File(std::string&& file_name)
     : File(std::move(file_name), read_file(file_name.c_str())) {}
