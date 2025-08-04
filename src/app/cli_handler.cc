@@ -86,4 +86,3 @@ int handle_arguments(int argc, char** argv) {
 }
 
 }  // namespace app
-

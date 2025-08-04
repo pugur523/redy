@@ -14,4 +14,3 @@ namespace base {
 }  // namespace base
 
 #endif  // FRONTEND_BASE_BASE_EXPORT_H_
-

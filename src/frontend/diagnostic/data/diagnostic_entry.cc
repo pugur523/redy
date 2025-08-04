@@ -16,4 +16,3 @@ DiagnosticEntry::DiagnosticEntry(Header&& header, Labels&& labels)
     : header_(std::move(header)), labels_(std::move(labels)) {}
 
 }  // namespace diagnostic
-

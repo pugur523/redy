@@ -58,4 +58,3 @@ Parser::Results<Parser::AstNode> Parser::parse_assignment() {
 }
 
 }  // namespace parser
-

@@ -9,13 +9,14 @@ from build_util import (
 )
 
 ucd_raw_dir = os.path.join(project_resources_dir, "ucd_raw")
-ucd_generated_dir = os.path.join(os.path.join(project_src_dir, "core", "base", "utf", "ucd"))
-header_path = os.path.join(ucd_generated_dir, "unicode_data.h")
+ucd_generated_dir = os.path.join(os.path.join(project_src_dir, "unicode", "base", "ucd"))
 source_path = os.path.join(ucd_generated_dir, "unicode_data.cc")
 
 kBaseUrl = "https://www.unicode.org/Public/UCD/latest/ucd/"
 kFiles = {
-    "DerivedCoreProperties.txt": "XID_Start_and_Continue",
+    "DerivedCoreProperties.txt": ["XID_Start", "XID_Continue"],
+    "PropList.txt": ["White_Space"],
+    "UnicodeData.txt": ["General_Category"],  # for Nd (decimal numbers), Lu/Ll/Lt (letters)
 }
 
 def download_file(file_name, dest_path):
@@ -24,22 +25,53 @@ def download_file(file_name, dest_path):
     os.makedirs(ucd_raw_dir, exist_ok=True)
     urllib.request.urlretrieve(url, dest_path)
 
-def parse_and_compress_ucd(file_path, target_property):
-    ranges = []
+def parse_prop_list(file_path, target_properties):
+    """Parse PropList.txt or DerivedCoreProperties.txt format"""
+    properties_data = {prop: [] for prop in target_properties}
+    
     with open(file_path, encoding="utf-8") as f:
         for line in f:
             line = line.split("#")[0].strip()
             if not line or ";" not in line:
                 continue
             range_part, prop = [s.strip() for s in line.split(";", 1)]
-            if prop != target_property:
+            if prop not in target_properties:
                 continue
+            
             if ".." in range_part:
                 start, end = [int(x, 16) for x in range_part.split("..")]
             else:
                 start = end = int(range_part, 16)
-            ranges.append((start, end))
-    return compress_ranges(ranges)
+            properties_data[prop].append((start, end))
+    
+    return {prop: compress_ranges(ranges) for prop, ranges in properties_data.items()}
+
+def parse_unicode_data(file_path):
+    categories_data = {
+        "Nd": [],  # decimal numbers
+        "Lu": [],  # uppercase letters
+        "Ll": [],  # lowercase letters
+        "Lt": [],  # titlecase letters
+        "Lm": [],  # modifier letters
+        "Lo": [],  # other letters
+    }
+    
+    with open(file_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            fields = line.split(";")
+            if len(fields) < 3:
+                continue
+            
+            codepoint = int(fields[0], 16)
+            category = fields[2]
+            
+            if category in categories_data:
+                categories_data[category].append((codepoint, codepoint))
+    
+    return {cat: compress_ranges(ranges) for cat, ranges in categories_data.items()}
 
 def compress_ranges(ranges):
     if not ranges:
@@ -62,62 +94,8 @@ def emit_range_array(varname, ranges):
     lines.append(f"constexpr std::size_t {varname}Count = sizeof({varname}) / sizeof(UnicodeRange);")
     return "\n".join(lines)
 
-
-def generate_cc_files(xid_start, xid_continue):
+def generate_cc(all_data):
     os.makedirs(ucd_generated_dir, exist_ok=True)
-
-    with open(header_path, "w", encoding="utf-8") as h:
-        h.write(f"""\
-// Copyright 2025 pugur
-// This source code is licensed under the Apache License, Version 2.0
-// which can be found in the LICENSE file.
-
-#ifndef CORE_BASE_UTF_UCD_UNICODE_DATA_H_
-#define CORE_BASE_UTF_UCD_UNICODE_DATA_H_
-
-#include <cstddef>
-#include <cstdint>
-
-namespace core {{
-
-struct UnicodeRange {{
-  uint32_t start;
-  uint32_t end;
-}};
-
-extern const UnicodeRange kXIDStart[];
-extern const std::size_t kXIDStartCount;
-extern const UnicodeRange kXIDContinue[];
-extern const std::size_t kXIDContinueCount;
-
-constexpr bool is_in_ranges(const UnicodeRange* ranges, std::size_t count, uint32_t codepoint) {{
-  std::size_t low = 0;
-  std::size_t high = count;
-  while (low < high) {{
-    std::size_t mid = (low + high) / 2;
-    if (codepoint < ranges[mid].start) {{
-      high = mid;
-    }} else if (codepoint > ranges[mid].end) {{
-      low = mid + 1;
-    }} else {{
-      return true;
-    }}
-  }}
-  return false;
-}}
-
-inline constexpr bool is_xid_start(uint32_t codepoint) {{
-  return is_in_ranges(kXIDStart, kXIDStartCount, codepoint);
-}}
-
-inline constexpr bool is_xid_continue(uint32_t codepoint) {{
-  return is_in_ranges(kXIDContinue, kXIDContinueCount, codepoint);
-}}
-
-}}  // namespace core
-
-#endif  // CORE_BASE_UTF_UCD_UNICODE_DATA_H_
-""")
 
     with open(source_path, "w", encoding="utf-8") as cc:
         cc.write(f"""\
@@ -125,32 +103,61 @@ inline constexpr bool is_xid_continue(uint32_t codepoint) {{
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "core/base/utf/ucd/unicode_data.h"
+#include "unicode/base/ucd/unicode_data.h"
 
-namespace core {{
+namespace unicode {{
 
-{emit_range_array("kXIDStart", xid_start)}
+// xid properties
+{emit_range_array("kXIDStart", all_data["XID_Start"])}
 
-{emit_range_array("kXIDContinue", xid_continue)}
+{emit_range_array("kXIDContinue", all_data["XID_Continue"])}
 
-}}  // namespace core
+// whitespace property
+{emit_range_array("kWhiteSpace", all_data["White_Space"])}
 
+// general categories
+{emit_range_array("kDecimalNumber", all_data["Nd"])}
+
+{emit_range_array("kUppercaseLetter", all_data["Lu"])}
+
+{emit_range_array("kLowercaseLetter", all_data["Ll"])}
+
+{emit_range_array("kTitlecaseLetter", all_data["Lt"])}
+
+{emit_range_array("kModifierLetter", all_data["Lm"])}
+
+{emit_range_array("kOtherLetter", all_data["Lo"])}
+
+}}  // namespace unicode
 """)
 
+def download_ucd_raw_if_not_exists(file):
+    path = os.path.join(ucd_raw_dir, file)
+    if not os.path.exists(path):
+        download_file(file, path)
+    return path
+  
 
 def main():
-    file_name = "DerivedCoreProperties.txt"
-    file_path = os.path.join(ucd_raw_dir, file_name)
+    all_data = {}
+    
+    # download and parse DerivedCoreProperties.txt
+    derived_path = download_ucd_raw_if_not_exists("DerivedCoreProperties.txt")
+    derived_data = parse_prop_list(derived_path, ["XID_Start", "XID_Continue"])
+    all_data.update(derived_data)
 
-    if not os.path.exists(file_path):
-        download_file(file_name, file_path)
-
-    xid_start = parse_and_compress_ucd(file_path, "XID_Start")
-    xid_continue = parse_and_compress_ucd(file_path, "XID_Continue")
-
-    generate_cc_files(xid_start, xid_continue)
+    # download and parse PropList.txt
+    prop_path = download_ucd_raw_if_not_exists("PropList.txt")
+    prop_data = parse_prop_list(prop_path, ["White_Space"])
+    all_data.update(prop_data)
+    
+    # download and parse UnicodeData.txt
+    unicode_path = download_ucd_raw_if_not_exists("UnicodeData.txt")
+    unicode_data = parse_unicode_data(unicode_path)
+    all_data.update(unicode_data)
+    
+    generate_cc(all_data)
     print("Done: generated unicode_data.h / unicode_data.cc")
-
 
 if __name__ == "__main__":
     main()

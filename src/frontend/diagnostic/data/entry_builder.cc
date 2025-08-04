@@ -46,4 +46,3 @@ DiagnosticEntry EntryBuilder::build() {
 }
 
 }  // namespace diagnostic
-

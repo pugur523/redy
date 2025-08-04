@@ -31,4 +31,3 @@ Parser::Result<Parser::AstNode> Parser::parse_type() {
 }
 
 }  // namespace parser
-

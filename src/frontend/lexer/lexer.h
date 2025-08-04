@@ -5,11 +5,10 @@
 #ifndef FRONTEND_LEXER_LEXER_H_
 #define FRONTEND_LEXER_LEXER_H_
 
-#include <cctype>
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "core/base/string_util.h"
 #include "frontend/base/data/char_stream.h"
 #include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/result.h"
@@ -44,30 +43,36 @@ class LEXER_EXPORT Lexer {
   Result<Token> literal_numeric();
   Result<Token> literal_str();
   Result<Token> literal_char();
+
+  Result<Token> ascii_token(char current_char,
+                            std::size_t start,
+                            std::size_t line,
+                            std::size_t col);
+
+  Result<Token> unicode_token(uint32_t current_codepoint,
+                              std::size_t start,
+                              std::size_t line,
+                              std::size_t col);
+
+  // operator or punctuation
+  Result<Token> other_token(char current,
+                            char next,
+                            std::size_t start,
+                            std::size_t line,
+                            std::size_t col);
+
   inline Result<Token> make_token(TokenKind kind,
                                   std::size_t start_pos,
                                   std::size_t line,
                                   std::size_t column) {
-    const std::size_t end_pos = char_stream_.position();
-    const core::FileId file_id = char_stream_.file_id();
+    const std::size_t end_pos = char_stream_->position();
+    const core::FileId file_id = char_stream_->file_id();
     const std::size_t length = end_pos - start_pos;
     return Result<Token>(
         diagnostic::make_ok(Token(kind, file_id, line, column, length)));
   }
 
-  inline static constexpr bool is_unicode_identifier_start(char c) {
-    // FIXME: use unicode database
-    // currently only support ascii alphabets and '_'
-    return core::is_ascii_alphabet(c) || c == '_';
-  }
-
-  inline static constexpr bool is_unicode_identifier_char(char c) {
-    // FIXME: use unicode database
-    // currently support ascii alphabets, digits, '_'
-    return core::is_ascii_alphabet(c) || core::is_ascii_digit(c) || c == '_';
-  }
-
-  CharStream char_stream_;
+  std::unique_ptr<CharStream> char_stream_ = nullptr;
 
   static constexpr const std::size_t kPredictedTokensCount = 1024;
 };

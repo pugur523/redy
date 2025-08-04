@@ -16,4 +16,3 @@ Header::Header(Severity severity, DiagnosticId diag_id, std::string&& message)
     : message_(std::move(message)), severity_(severity), diag_id_(diag_id) {}
 
 }  // namespace diagnostic
-

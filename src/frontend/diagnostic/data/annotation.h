@@ -72,4 +72,3 @@ class DIAGNOSTIC_EXPORT Annotation {
 }  // namespace diagnostic
 
 #endif  // FRONTEND_DIAGNOSTIC_DATA_ANNOTATION_H_
-

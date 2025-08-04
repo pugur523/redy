@@ -23,8 +23,9 @@ void verify_ok(std::string&& source,
   Lexer lexer(&manager, id);
 
   for (uint32_t i = 0; i < n; ++i) {
-    base::Token token = lexer.next_token().unwrap();
-    EXPECT_EQ(token.kind(), expected_kind);
+    auto result = lexer.next_token();
+    ASSERT_TRUE(result.is_ok()) << result.unwrap_err().message;
+    EXPECT_EQ(result.unwrap().kind(), expected_kind);
   }
 
   base::Token eof = lexer.next_token().unwrap();
@@ -37,7 +38,8 @@ void verify_error(std::string&& source,
   core::FileId id = manager.add_virtual_file(std::move(source));
   Lexer lexer(&manager, id);
   auto token_or_err = lexer.next_token();
-  ASSERT_TRUE(token_or_err.is_err());
+  ASSERT_TRUE(token_or_err.is_err())
+      << base::token_kind_to_string(token_or_err.unwrap().kind());
   EXPECT_EQ(token_or_err.unwrap_err().id, expected_error_id);
 }
 
@@ -93,6 +95,10 @@ TEST(LexerTest, HelloWorldFunction) {
   }
 }
 
+TEST(LexerTest, UnicodeCharacter) {
+  verify_ok("α 中　", base::TokenKind::kIdentifier, 2);
+}
+
 TEST(LexerErrorTest, UnterminatedStringLiteral) {
   verify_error(R"("hello)",
                diagnostic::DiagnosticId::kUnterminatedStringLiteral);
@@ -120,9 +126,9 @@ TEST(LexerErrorTest, UnrecognizedCharacter) {
 }
 
 TEST(LexerErrorTest, UnrecognizedUnicodeCharacter) {
-  verify_error("α", diagnostic::DiagnosticId::kUnrecognizedCharacter);
-  verify_error("中", diagnostic::DiagnosticId::kUnrecognizedCharacter);
+  verify_error("☄", diagnostic::DiagnosticId::kUnrecognizedCharacter);
   verify_error("🚀", diagnostic::DiagnosticId::kUnrecognizedCharacter);
+  verify_error("☺", diagnostic::DiagnosticId::kUnrecognizedCharacter);
 }
 
 TEST(LexerErrorTest, UnrecognizedControlCharacter) {
@@ -154,7 +160,7 @@ TEST(LexerErrorTest, InvalidNumericSuffix) {
   verify_error("42xyz", diagnostic::DiagnosticId::kInvalidNumericLiteral);
 }
 
-// Edge cases
+// edge cases
 TEST(LexerTest, ZeroWithDifferentBases) {
   verify_ok("0 0x0 0b0 0o0", base::TokenKind::kLiteralNumeric);
 }

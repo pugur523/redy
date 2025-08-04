@@ -45,4 +45,3 @@ Parser::Results<Parser::AstNode> Parser::parse_return_statement() {
 }
 
 }  // namespace parser
-

@@ -21,4 +21,3 @@ TEST(SystemInfoTest, BasicSystemInfo) {
 }
 
 }  // namespace core
-

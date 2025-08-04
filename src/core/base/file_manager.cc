@@ -40,4 +40,3 @@ const File& FileManager::file(FileId id) const {
 }
 
 }  // namespace core
-

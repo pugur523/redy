@@ -44,4 +44,3 @@ Parser::Results<Parser::AstNode> Parser::parse_expression_statement() {
 }
 
 }  // namespace parser
-

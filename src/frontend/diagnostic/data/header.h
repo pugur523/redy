@@ -41,4 +41,3 @@ class DIAGNOSTIC_EXPORT Header {
 }  // namespace diagnostic
 
 #endif  // FRONTEND_DIAGNOSTIC_DATA_HEADER_H_
-

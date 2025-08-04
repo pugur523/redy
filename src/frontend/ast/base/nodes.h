@@ -127,4 +127,3 @@ struct AST_EXPORT StatementNode {
 }  // namespace ast
 
 #endif  // FRONTEND_AST_BASE_NODES_H_
-

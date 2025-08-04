@@ -117,6 +117,19 @@ namespace core {
   return '0' <= c && c <= '9';
 }
 
+[[nodiscard]] inline constexpr bool is_ascii_binary_digit(char c) {
+  return c == '0' || c == '1';
+}
+
+[[nodiscard]] inline constexpr bool is_ascii_octal_digit(char c) {
+  return '0' <= c && c <= '7';
+}
+
+[[nodiscard]] inline constexpr bool is_ascii_hex_digit(char c) {
+  return ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') ||
+         ('A' <= c && c <= 'F');
+}
+
 [[nodiscard]] inline constexpr bool is_utf8_start_byte(unsigned char byte) {
   return (byte & 0xC0) != 0x80;
 }
@@ -134,12 +147,6 @@ namespace core {
   } else {
     return 0;
   }
-}
-
-// FIXME: use unicode database
-[[nodiscard]] inline constexpr bool is_unicode_whitespace(char c) {
-  // currently only support ascii whitespaces
-  return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
 [[nodiscard]] inline constexpr char to_lower(char c) {
