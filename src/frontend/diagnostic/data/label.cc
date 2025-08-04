@@ -12,10 +12,10 @@
 namespace diagnostic {
 
 Label::Label(core::FileId file_id,
-             core::SourceRange&& range,
+             const core::SourceRange& range,
              Annotations&& annotations,
              std::string&& message)
-    : range_(std::move(range)),
+    : range_(range),
       annotations_(std::move(annotations)),
       message_(std::move(message)),
       file_id_(file_id) {}

@@ -33,7 +33,7 @@ class DIAGNOSTIC_EXPORT EntryBuilder {
   EntryBuilder& operator=(EntryBuilder&&) = default;
 
   EntryBuilder& label(core::FileId file_Id,
-                      core::SourceRange&& range,
+                      const core::SourceRange& range,
                       std::string&& message);
 
   EntryBuilder& label(core::FileId file_id,

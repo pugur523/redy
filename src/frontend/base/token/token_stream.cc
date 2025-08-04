@@ -13,12 +13,12 @@
 
 namespace base {
 
-TokenStream::TokenStream(std::vector<Token>&& tokens,
-                         const core::FileManager* file_manager)
+TokenStream::TokenStream(std::vector<Token>&& tokens, const core::File* file)
     : tokens_(std::move(tokens)),
-      file_manager_(file_manager),
+      file_(file),
       current_token_(&tokens_[0]),
       end_token_(&tokens_.back()) {
+  DCHECK(file_);
   DCHECK(!tokens_.empty()) << "TokenStream requires at least one token";
 }
 
@@ -33,14 +33,14 @@ std::string TokenStream::dump() const {
     result.append("\n");
 
     result.append("lexeme = ");
-    result.append(token.lexeme(file_manager_));
+    result.append(token.lexeme(*file_));
     result.append("\n");
 
     result.append("line = ");
-    result.append(std::to_string(token.location().line()));
+    result.append(std::to_string(token.start().line()));
     result.append("\n");
     result.append("column = ");
-    result.append(std::to_string(token.location().column()));
+    result.append(std::to_string(token.start().column()));
     result.append("\n");
   }
   return result;

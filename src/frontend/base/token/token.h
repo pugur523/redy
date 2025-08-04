@@ -13,6 +13,7 @@
 
 #include "core/base/file_util.h"
 #include "core/base/source_location.h"
+#include "core/base/source_range.h"
 #include "core/base/string_util.h"
 #include "core/check.h"
 #include "frontend/base/base_export.h"
@@ -22,15 +23,19 @@ namespace base {
 
 class BASE_EXPORT Token {
  public:
-  Token(TokenKind kind,
-        const core::SourceLocation& location,
-        std::size_t length);
+  constexpr Token(TokenKind kind,
+                  const core::SourceLocation& location,
+                  std::size_t length)
+      : range_(location, length), kind_(kind) {}
 
-  Token(TokenKind kind,
-        core::FileId file_id,
-        std::size_t line,
-        std::size_t column,
-        std::size_t length);
+  constexpr Token(TokenKind kind, const core::SourceRange& range)
+      : range_(range), kind_(kind) {}
+
+  constexpr Token(TokenKind kind,
+                  std::size_t line,
+                  std::size_t column,
+                  std::size_t length)
+      : Token(kind, core::SourceRange(line, column, length)) {}
 
   Token() = delete;
 
@@ -42,55 +47,53 @@ class BASE_EXPORT Token {
   Token(Token&&) = default;
   Token& operator=(Token&&) = default;
 
-  inline const core::SourceLocation& location() const { return location_; }
-  inline std::size_t length() const { return length_; }
+  inline const core::SourceRange& range() const { return range_; }
+  inline const core::SourceLocation& start() const { return range_.start(); }
+  inline const core::SourceLocation end() const { return range_.end(); }
+  inline std::size_t length() const { return range_.length(); }
   inline TokenKind kind() const { return kind_; }
 
-  inline const std::string_view lexeme(
-      const core::FileManager* file_manager) const {
-    DCHECK(file_manager);
+  inline const std::string_view lexeme(const core::File& file) const {
     return std::string_view(
-        file_manager->file(location_.file_id()).line(location_.line()).data() +
-            location_.column() - 1,
-        length_);
+        file.line(range_.start().line()).data() + range_.start().column() - 1,
+        range_.length());
   }
 
-  inline void dump(const core::FileManager* file_manager,
+  inline void dump(const core::File& file,
                    char* buf,
                    std::size_t buf_size) const {
     char* cursor = buf;
     core::write_format(cursor, buf + buf_size, "{} ({})",
-                       token_kind_to_string(kind_), lexeme(file_manager));
+                       token_kind_to_string(kind_), lexeme(file));
   }
 
-  inline void dump_detailed(const core::FileManager* file_manager,
+  inline void dump_detailed(const core::File& file,
                             char* buf,
                             std::size_t buf_size) {
     char* cursor = buf;
-    core::write_format(
-        cursor, buf + buf_size,
-        "[token]\n"
-        "kind_str = \"{}\"\nkind_id = {}\n"
-        "lexeme = \"{}\"\nline = {}\ncolumn = {}\n",
-        token_kind_to_string(kind_), std::to_string(static_cast<int8_t>(kind_)),
-        lexeme(file_manager), location_.line(), location_.column());
+    core::write_format(cursor, buf + buf_size,
+                       "[token]\n"
+                       "kind_str = \"{}\"\nkind_id = {}\n"
+                       "lexeme = \"{}\"\nline = {}\ncolumn = {}\n",
+                       token_kind_to_string(kind_),
+                       std::to_string(static_cast<int8_t>(kind_)), lexeme(file),
+                       range_.start().line(), range_.start().column());
   }
 
-  inline std::string dump(const core::FileManager* file_manager) {
+  inline std::string dump(const core::File& file) {
     char buf[512];
-    dump(file_manager, buf, 512);
+    dump(file, buf, 512);
     return std::string(buf);
   }
 
-  inline std::string dump_detailed(const core::FileManager* file_manager) {
+  inline std::string dump_detailed(const core::File& file) {
     char buf[2048];
-    dump_detailed(file_manager, buf, 2048);
+    dump_detailed(file, buf, 2048);
     return std::string(buf);
   }
 
  private:
-  core::SourceLocation location_;
-  std::size_t length_ = 0;
+  core::SourceRange range_;
   TokenKind kind_ = TokenKind::kUnknown;
 };
 

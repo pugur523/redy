@@ -13,7 +13,9 @@ namespace core {
 
 class CORE_EXPORT SourceLocation {
  public:
-  SourceLocation(std::size_t line, std::size_t column, FileId file_id);
+  constexpr SourceLocation(std::size_t line, std::size_t column)
+      : internal_vec_({line, column}) {}
+
   ~SourceLocation() = default;
 
   SourceLocation(const SourceLocation&) = default;
@@ -24,11 +26,9 @@ class CORE_EXPORT SourceLocation {
 
   inline constexpr std::size_t line() const { return internal_vec_[0]; }
   inline constexpr std::size_t column() const { return internal_vec_[1]; }
-  inline constexpr FileId file_id() const { return file_id_; }
 
  private:
   core::Vec2<std::size_t> internal_vec_;
-  FileId file_id_;
 };
 
 }  // namespace core

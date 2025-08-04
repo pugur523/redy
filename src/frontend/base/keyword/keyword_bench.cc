@@ -15,6 +15,8 @@ static void keyword_lookup_keyword(benchmark::State& state) {
     TokenKind k = lookup_id_or_keyword(id);
     benchmark::DoNotOptimize(k);
   }
+
+  state.SetBytesProcessed(id.size() * sizeof(char) * state.iterations());
 }
 BENCHMARK(keyword_lookup_keyword);
 

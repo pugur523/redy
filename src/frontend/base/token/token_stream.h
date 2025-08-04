@@ -17,8 +17,7 @@ namespace base {
 
 class BASE_EXPORT TokenStream {
  public:
-  explicit TokenStream(std::vector<Token>&& tokens,
-                       const core::FileManager* file_manager);
+  explicit TokenStream(std::vector<Token>&& tokens, const core::File* file);
 
   ~TokenStream() = default;
 
@@ -35,7 +34,7 @@ class BASE_EXPORT TokenStream {
   inline const Token& advance();
   inline bool match(TokenKind expected_kind);
 
-  inline const core::FileManager* file_manager() const { return file_manager_; }
+  inline const core::File* file() const { return file_; }
 
   inline constexpr void rewind(std::size_t pos) {
     DCHECK_LE(pos, tokens_.size()) << "rewind range is invalid";
@@ -65,7 +64,7 @@ class BASE_EXPORT TokenStream {
 
  private:
   std::vector<Token> tokens_;
-  const core::FileManager* file_manager_;
+  const core::File* file_ = nullptr;
   const Token* current_token_ = nullptr;
   const Token* end_token_ = nullptr;
   std::size_t pos_ = 0;

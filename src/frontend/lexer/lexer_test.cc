@@ -74,6 +74,7 @@ TEST(LexerTest, HelloWorldFunction) {
     )";
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(source));
+  const core::File& file = manager.file(id);
   Lexer lexer(&manager, id);
 
   while (true) {
@@ -81,16 +82,48 @@ TEST(LexerTest, HelloWorldFunction) {
 
     EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
 
-    EXPECT_GT(token.location().line(), 0);
-    EXPECT_GT(token.location().column(), 0);
+    EXPECT_GT(token.start().line(), 0);
+    EXPECT_GT(token.start().column(), 0);
 
     EXPECT_NE(token.kind(), base::TokenKind::kUnknown);
 
     if (token.kind() == base::TokenKind::kEof) {
-      EXPECT_TRUE(token.lexeme(&manager).empty());
+      EXPECT_TRUE(token.lexeme(file).empty());
       break;
     } else {
-      EXPECT_FALSE(token.lexeme(&manager).empty());
+      EXPECT_FALSE(token.lexeme(file).empty());
+    }
+  }
+}
+
+TEST(LexerTest, HelloWorldWithUnicodeCharacters) {
+  std::string source = R"(
+      fn メイン() -> i32 {
+        ワールド := "ワールド";
+        println#("ハロー{}", ワールド);
+        ret 0;
+      } 
+    )";
+  core::FileManager manager;
+  core::FileId id = manager.add_virtual_file(std::move(source));
+  const core::File& file = manager.file(id);
+  Lexer lexer(&manager, id);
+
+  while (true) {
+    base::Token token = lexer.next_token().unwrap();
+
+    EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
+
+    EXPECT_GT(token.start().line(), 0);
+    EXPECT_GT(token.start().column(), 0);
+
+    EXPECT_NE(token.kind(), base::TokenKind::kUnknown);
+
+    if (token.kind() == base::TokenKind::kEof) {
+      EXPECT_TRUE(token.lexeme(file).empty());
+      break;
+    } else {
+      EXPECT_FALSE(token.lexeme(file).empty());
     }
   }
 }

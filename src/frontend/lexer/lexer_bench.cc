@@ -16,6 +16,7 @@ namespace {
 
 void lexer_loop(benchmark::State& state) {
   std::string code = "x := 42 while x < 100 { x = x + 1 }";
+  std::size_t code_size = code.size();
 
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(code));
@@ -29,6 +30,7 @@ void lexer_loop(benchmark::State& state) {
       }
     }
   }
+  state.SetBytesProcessed(code_size * sizeof(char) * state.iterations());
 }
 
 }  // namespace

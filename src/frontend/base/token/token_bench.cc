@@ -10,12 +10,15 @@ namespace base {
 namespace {
 
 void token_construction(benchmark::State& state) {
-  core::FileManager manager;
-  core::FileId id = manager.add_virtual_file("42");
   for (auto _ : state) {
-    Token tok(TokenKind::kLiteralNumeric, id, 1, 1, 2);
-    benchmark::DoNotOptimize(tok);
+    Token tok(TokenKind::kLiteralNumeric, 1, 1, 2);
+    benchmark::DoNotOptimize(tok.kind());
+    benchmark::DoNotOptimize(tok.start().line());
+    benchmark::DoNotOptimize(tok.start().column());
+    benchmark::DoNotOptimize(tok.length());
   }
+
+  state.SetBytesProcessed(sizeof(Token) * state.iterations());
 }
 
 BENCHMARK(token_construction);

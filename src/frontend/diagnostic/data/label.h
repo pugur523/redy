@@ -22,7 +22,7 @@ class DIAGNOSTIC_EXPORT Label {
   using Annotations = std::vector<Annotation>;
 
   Label(core::FileId file_id,
-        core::SourceRange&& range,
+        const core::SourceRange& range,
         Annotations&& annotations,
         std::string&& message);
 
