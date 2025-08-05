@@ -73,7 +73,8 @@ option(ENABLE_OPTIMIZATION_REPORT "generate optimization report" FALSE)
 option(ENABLE_XRAY "enable llvm-xray. not compatible with windows build, debug build, address sanitizers. runs main app and test on post build if available." FALSE)
 option(ENABLE_SANITIZERS "enable address and undefined sanitizers" FALSE)
 option(ENABLE_LLVM_UNWIND "enable llvm libunwind to fetch stacktrace" FALSE)
-option(ENABLE_AVX2 "enable avx2 if available" TRUE)
+option(ENABLE_AVX2 "enable avx2 for optimization if available" TRUE)
+option(ENABLE_X86_ASM "enable x86 assembly for optimization if available" TRUE)
 
 option(ENABLE_WARNINGS_AS_ERRORS "treat warnings as errors" FALSE)
 
@@ -111,6 +112,12 @@ if(ENABLE_AVX2 AND TARGET_OS_NAME MATCHES "darwin")
   message(WARNING "ENABLE_AVX2 for Darwin build is not supported.\n"
     "set ENABLE_AVX2 to false forcely.")
   set(ENABLE_AVX2 FALSE)
+endif()
+
+if(ENABLE_X86_ASM AND NOT (${lower_arch} MATCHES "x86"))
+  message(WARNING "ENABLE_X86_ASM for not x86 is not supported.\n"
+    "set ENABLE_X86_ASM to false forcely.")
+  set(ENABLE_X86_ASM FALSE)
 endif()
 
 if(ENABLE_XRAY AND ENABLE_SANITIZERS)
@@ -206,7 +213,7 @@ host arch name: ${HOST_ARCH_NAME}
 target os name: ${TARGET_OS_NAME}
 target arch name: ${TARGET_ARCH_NAME}
 project include directories: ${PROJECT_INCLUDE_DIRECTORIES}
-project compile options: ${PROJECT_COMPILE_OPTIONS}
+project compile options: ${PROJECT_C_CXX_COMPILE_OPTIONS}
 project compile definitions: ${PROJECT_COMPILE_DEFINITIONS}
 project link options: ${PROJECT_LINK_OPTIONS}
 project link directories: ${PROJECT_LINK_DIRECTORIES}
@@ -238,6 +245,7 @@ enable xray: ${ENABLE_XRAY}
 enable sanitizers: ${ENABLE_SANITIZERS}
 enable llvm unwind: ${ENABLE_LLVM_UNWIND}
 enable avx2: ${ENABLE_AVX2}
+enable x86 asm: ${ENABLE_X86_ASM}
 enable warnings as errors: ${ENABLE_WARNINGS_AS_ERRORS}
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-${ColourReset}")
   print_all_build_flags()
