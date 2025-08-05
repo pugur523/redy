@@ -2,6 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
+#include "unicode/base/utf8_decode.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <utility>
@@ -9,8 +11,6 @@
 #include "unicode/base/unicode_util.h"
 
 namespace unicode {
-
-constexpr uint32_t kInvalidUnicodePoint = 0xFFFD;
 
 // returns (codepoint, byte_count). if invalid, returns (0xFFFD, 1).
 std::pair<uint32_t, std::size_t> decode_utf8(const char* input,
