@@ -16,6 +16,7 @@
 namespace core {
 
 using FileId = uint32_t;
+using RawFileId = uint32_t;
 
 inline constexpr const FileId kInvalidFileId =
     std::numeric_limits<FileId>::max();

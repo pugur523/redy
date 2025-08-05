@@ -134,21 +134,6 @@ namespace core {
   return (byte & 0xC0) != 0x80;
 }
 
-[[nodiscard]] inline constexpr uint8_t utf8_codepoint_length(
-    unsigned char byte) {
-  if ((byte & 0x80) == 0x00) {
-    return 1;
-  } else if ((byte & 0xE0) == 0xC0) {
-    return 2;
-  } else if ((byte & 0xF0) == 0xE0) {
-    return 3;
-  } else if ((byte & 0xF8) == 0xF0) {
-    return 4;
-  } else {
-    return 0;
-  }
-}
-
 [[nodiscard]] inline constexpr char to_lower(char c) {
   return is_upper_ascii_char(c) ? (c | 0x20) : c;
 }

@@ -27,7 +27,8 @@ using Files = std::vector<std::string>;
 
 [[nodiscard]] CORE_EXPORT bool file_exists(const char* file_name);
 [[nodiscard]] CORE_EXPORT bool dir_exists(const char* dir_name);
-[[nodiscard]] CORE_EXPORT std::vector<char> read_file_bin(const char* path);
+[[nodiscard]] CORE_EXPORT std::vector<std::byte> read_file_bin(
+    const char* path);
 [[nodiscard]] CORE_EXPORT std::string read_file(const char* path);
 [[nodiscard]] CORE_EXPORT const std::string& exe_path();
 [[nodiscard]] CORE_EXPORT const std::string& exe_dir();
@@ -102,16 +103,16 @@ template <typename... Parts>
 }
 
 [[nodiscard]] CORE_EXPORT std::vector<std::string> read_lines_default(
-    const std::string& content);
+    std::string_view content);
 
 #if ENABLE_AVX2
 [[nodiscard]] CORE_EXPORT std::vector<std::string> read_lines_with_avx2(
-    const std::string& content);
+    std::string_view content);
 #endif
 
 template <bool use_avx2_if_available = true>
 [[nodiscard]] inline std::vector<std::string> read_lines(
-    const std::string& content) {
+    std::string_view content) {
 #if ENABLE_AVX2
   if constexpr (use_avx2_if_available) {
     return read_lines_with_avx2(content);
@@ -121,16 +122,16 @@ template <bool use_avx2_if_available = true>
 }
 
 [[nodiscard]] CORE_EXPORT std::vector<std::size_t> index_newlines_default(
-    const std::string& content);
+    std::string_view content);
 
 #if ENABLE_AVX2
 [[nodiscard]] CORE_EXPORT std::vector<std::size_t> index_newlines_with_avx2(
-    const std::string& content);
+    std::string_view content);
 #endif
 
 template <bool use_avx2_if_available = true>
 [[nodiscard]] inline std::vector<std::size_t> index_newlines(
-    const std::string& content) {
+    std::string_view content) {
 #if ENABLE_AVX2
   if constexpr (use_avx2_if_available) {
     return index_newlines_with_avx2(content);

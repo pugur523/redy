@@ -63,7 +63,10 @@ bool dir_exists(const char* dir_name) {
 #endif
 }
 
-std::vector<char> read_file_bin(const char* path) {
+namespace {
+
+template <typename T>
+T read_file_impl(const char* path) {
 #if IS_WINDOWS
   int fd = _open(path, _O_RDONLY | _O_BINARY);
 #else
@@ -91,7 +94,7 @@ std::vector<char> read_file_bin(const char* path) {
     return {};
   }
 
-  std::vector<char> result;
+  T result;
   if (st.st_size > 0) {
     result.resize(static_cast<std::size_t>(st.st_size));
     std::size_t total_read = 0;
@@ -118,9 +121,14 @@ std::vector<char> read_file_bin(const char* path) {
   return result;
 }
 
+}  // namespace
+
+std::vector<std::byte> read_file_bin(const char* path) {
+  return read_file_impl<std::vector<std::byte>>(path);
+}
+
 std::string read_file(const char* path) {
-  const auto in_bytes = read_file_bin(path);
-  return std::string(in_bytes.begin(), in_bytes.end());
+  return read_file_impl<std::string>(path);
 }
 
 const std::string& exe_path() {
@@ -552,7 +560,7 @@ std::string sanitize_component(const char* part, bool is_first) {
   return result;
 }
 
-std::vector<std::string> read_lines_default(const std::string& content) {
+std::vector<std::string> read_lines_default(std::string_view content) {
   std::vector<std::string> lines;
 
   if (content.empty()) {
@@ -585,7 +593,7 @@ std::vector<std::string> read_lines_default(const std::string& content) {
   return lines;
 }
 
-std::vector<std::size_t> index_newlines_default(const std::string& content) {
+std::vector<std::size_t> index_newlines_default(std::string_view content) {
   std::vector<std::size_t> indexes;
   indexes.reserve(content.size() / 80);
 
@@ -604,7 +612,7 @@ std::vector<std::size_t> index_newlines_default(const std::string& content) {
 
 #if ENABLE_AVX2
 
-std::vector<std::string> read_lines_with_avx2(const std::string& content) {
+std::vector<std::string> read_lines_with_avx2(std::string_view content) {
   std::vector<std::string> lines;
 
   if (content.empty()) {
@@ -671,7 +679,7 @@ std::vector<std::string> read_lines_with_avx2(const std::string& content) {
   return lines;
 }
 
-std::vector<std::size_t> index_newlines_with_avx2(const std::string& content) {
+std::vector<std::size_t> index_newlines_with_avx2(std::string_view content) {
   std::vector<std::size_t> indexes;
   indexes.reserve(content.size() / 80);
 

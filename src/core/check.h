@@ -90,16 +90,17 @@ std::ostream& log_check_failure(const char* type,
                                 const char* expression,
                                 const L& lhs,
                                 const R& rhs) {
-  auto& os = CheckFailureStream(
-                 type, file, line, expression,
-                 (is_ostreamable_v<L> && is_ostreamable_v<R>)
-                     ? (std::ostringstream() << "   lhs: " << lhs << "\n"
-                                             << "   rhs: " << rhs)
-                           .str()
-                           .c_str()
-                     : "  [value output not available for operands]")
-                 .stream();
-  return os;
+  std::ostringstream oss;
+
+  if constexpr (is_ostreamable_v<L> && is_ostreamable_v<R>) {
+    oss << "   lhs: " << lhs << "\n"
+        << "   rhs: " << rhs;
+  } else {
+    oss << "  [value output not available for operands]";
+  }
+
+  return CheckFailureStream(type, file, line, expression, oss.str().c_str())
+      .stream();
 }
 
 class NullBuffer : public std::streambuf {
