@@ -12,10 +12,14 @@ set(SOURCES
   base/ucd/unicode_data.cc
   
   base/unicode_util.cc
+  base/utf8_decode.cc
 )
 
 if(ENABLE_X86_ASM)
-  list(APPEND SOURCES base/unicode_util.asm)
+  list(APPEND SOURCES
+    base/unicode_util.asm
+    base/unicode_util_avx2.asm
+  )
 endif()
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

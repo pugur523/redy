@@ -14,12 +14,13 @@
 #endif
 
 #include "unicode/base/ucd/unicode_data.h"
+#include "unicode/base/unicode_export.h"
 
 namespace unicode {
 
-constexpr bool is_in_ranges(const UnicodeRange* ranges,
-                            std::size_t count,
-                            uint32_t codepoint) {
+UNICODE_EXPORT constexpr bool is_in_ranges(const UnicodeRange* ranges,
+                                           std::size_t count,
+                                           uint32_t codepoint) {
   if (count == 0) [[unlikely]] {
     return false;
   }
@@ -117,6 +118,17 @@ bool is_ascii_digits_bulk_avx2(const uint32_t* codepoints,
                                bool* results,
                                std::size_t count);
 #endif  // ENABLE_AVX2
+
+#if ENABLE_AVX2 && ENABLE_X86_ASM
+extern "C" {
+bool is_ascii_letters_bulk_avx2_x86(const uint32_t* codepoints,
+                                    bool* results,
+                                    std::size_t count);
+bool is_ascii_digits_bulk_avx2_x86(const uint32_t* codepoints,
+                                   bool* results,
+                                   std::size_t count);
+}
+#endif  // ENABLE_AVX2 && ENABLE_X86_ASM
 
 #if ENABLE_X86_ASM
 extern "C" {
@@ -246,17 +258,33 @@ inline constexpr bool is_alphanumeric(uint32_t codepoint) {
   return is_letter(codepoint) || is_decimal_number(codepoint);
 }
 
-#if ENABLE_AVX2
+#if ENABLE_AVX2 || ENABLE_X86_ASM
 inline bool is_letters_bulk(const uint32_t* codepoints,
                             bool* results,
                             std::size_t count) {
+#if ENABLE_AVX2 && ENABLE_X86_ASM
+  return detail::is_ascii_letters_bulk_avx2_x86(codepoints, results, count);
+#elif ENABLE_AVX2
   return detail::is_ascii_letters_bulk_avx2(codepoints, results, count);
+#elif ENABLE_X86_ASM
+  return detail::is_ascii_letters_bulk_x86(codepoints, results, count);
+#else
+  static_assert(false);
+#endif
 }
 
 inline bool is_digits_bulk(const uint32_t* codepoints,
                            bool* results,
                            std::size_t count) {
+#if ENABLE_AVX2 && ENABLE_X86_ASM
+  return detail::is_ascii_digits_bulk_avx2_x86(codepoints, results, count);
+#elif ENABLE_AVX2
   return detail::is_ascii_digits_bulk_avx2(codepoints, results, count);
+#elif ENABLE_X86_ASM
+  return detail::is_ascii_digits_bulk_x86(codepoints, results, count);
+#else
+  static_assert(false);
+#endif
 }
 #endif  // ENABLE_AVX2
 

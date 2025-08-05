@@ -11,9 +11,10 @@ global is_ascii_alnum_x86
 global is_ascii_letters_bulk_x86
 global is_ascii_digits_bulk_x86
 
-; bool is_ascii_letter_x86(uint32_t codepoint)
-; input: RDI = codepoint (uint32_t)
-; output: RAX = result (bool)
+; function: is_ascii_letter_x86
+; parameters:
+;   rdi - uint32_t codepoint
+; returns: bool (1 = true, 0 = false)
 is_ascii_letter_x86:
     ; check if codepoint > 0x7F (not ascii)
     cmp     edi, 0x7F
@@ -23,7 +24,7 @@ is_ascii_letter_x86:
     mov     eax, edi
     sub     eax, 'A'        ; eax = codepoint - 'A'
     cmp     eax, 25         ; compare with 'Z' - 'A'
-    jbe     .is_letter      ; If <= 25, it's uppercase
+    jbe     .is_letter      ; if <= 25, it's uppercase
     
     ; check lowercase a-z (0x61-0x7A)  
     mov     eax, edi
@@ -39,9 +40,10 @@ is_ascii_letter_x86:
     mov     eax, 1          ; return true
     ret
 
-; bool is_ascii_digit_x86(uint32_t codepoint)
-; input: RDI = codepoint (uint32_t)
-; output: RAX = result (bool)
+; function: is_ascii_digit_x86
+; parameters:
+;   rdi - uint32_t codepoint
+; returns: bool (1 = true, 0 = false)
 is_ascii_digit_x86:
     ; check if codepoint > 0x7F (not ascii)
     cmp     edi, 0x7F
@@ -61,9 +63,10 @@ is_ascii_digit_x86:
     mov     eax, 1          ; return true
     ret
 
-; bool is_ascii_alnum_x86(uint32_t codepoint)
-; input: RDI = codepoint (uint32_t)
-; output: RAX = result (bool)
+; function: is_ascii_alnum_x86
+; parameters:
+;   rdi - uint32_t codepoint
+; returns: bool (1 = true, 0 = false)
 is_ascii_alnum_x86:
     ; check if codepoint > 0x7F (not ascii)
     cmp     edi, 0x7F
@@ -95,8 +98,12 @@ is_ascii_alnum_x86:
     mov     eax, 1          ; return true
     ret
 
-; void is_ascii_letters_bulk_x86(const uint32_t* codepoints, bool* results, size_t count)
-; input: RDI = codepoints array, RSI = results array, RDX = count
+; function: is_ascii_letters_bulk_x86
+; parameters:
+;   rdi - const uint32_t* codepoints
+;   rsi - bool* results
+;   rdx - size_t count
+; returns: void
 is_ascii_letters_bulk_x86:
     test    rdx, rdx        ; check if count == 0
     jz      .done
@@ -147,8 +154,12 @@ is_ascii_letters_bulk_x86:
 .done:
     ret
 
-; void is_ascii_digits_bulk_x86(const uint32_t* codepoints, bool* results, size_t count)
-; input: RDI = codepoints array, RSI = results array, RDX = count
+; function: is_ascii_digits_bulk_x86
+; parameters:
+;   rdi - const uint32_t* codepoints
+;   rsi - bool* results
+;   rdx - size_t count
+; returns: void
 is_ascii_digits_bulk_x86:
     test    rdx, rdx
     jz      .done_digits

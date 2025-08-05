@@ -8,9 +8,9 @@ namespace unicode::detail {
 
 #if ENABLE_AVX2
 
-inline bool is_ascii_letters_bulk_avx2(const uint32_t* codepoints,
-                                       bool* results,
-                                       std::size_t count) {
+bool is_ascii_letters_bulk_avx2(const uint32_t* codepoints,
+                                bool* results,
+                                std::size_t count) {
   // process 8 element unit
   const std::size_t simd_count = count & ~7;
 
@@ -64,9 +64,9 @@ inline bool is_ascii_letters_bulk_avx2(const uint32_t* codepoints,
   return true;
 }
 
-inline bool is_ascii_digits_bulk_avx2(const uint32_t* codepoints,
-                                      bool* results,
-                                      std::size_t count) {
+bool is_ascii_digits_bulk_avx2(const uint32_t* codepoints,
+                               bool* results,
+                               std::size_t count) {
   const std::size_t simd_count = count & ~7;
 
   const __m256i ascii_max = _mm256_set1_epi32(0x7F);
