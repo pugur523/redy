@@ -20,7 +20,7 @@ void lexer_loop(benchmark::State& state) {
 
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(code));
-  Lexer lexer(&manager, id);
+  Lexer lexer(&manager.file(id));
 
   for (auto _ : state) {
     while (true) {

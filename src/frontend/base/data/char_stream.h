@@ -23,7 +23,7 @@ class BASE_EXPORT CharStream {
   using FileId = core::FileId;
   using File = core::File;
 
-  explicit CharStream(FileManager* file_manager, FileId file_id);
+  explicit CharStream(const File* file);
   ~CharStream() = default;
 
   CharStream(const CharStream&) = delete;
@@ -62,15 +62,9 @@ class BASE_EXPORT CharStream {
     return cursor_.cp_col;
   }
 
-  inline constexpr const FileManager* file_manager() const {
-    DCHECK(file_manager_);
-    return file_manager_;
-  }
-  inline constexpr FileId file_id() const { return file_id_; }
-
-  inline constexpr const CharStream::File& file() const {
-    DCHECK(file_manager_);
-    return file_manager_->file(file_id_);
+  inline constexpr const File& file() const {
+    DCHECK(file_);
+    return *file_;
   }
 
  private:
@@ -115,8 +109,7 @@ class BASE_EXPORT CharStream {
   mutable std::optional<uint32_t> current_codepoint_cache_ = std::nullopt;
   mutable std::size_t cached_pos_ = 0;
 
-  const FileManager* file_manager_ = nullptr;
-  FileId file_id_;
+  const File* file_ = nullptr;
 
   static constexpr uint32_t kInvalidUtfChar = 0xFFFD;
 };

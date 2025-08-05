@@ -28,7 +28,7 @@ class LEXER_EXPORT Lexer {
   template <typename T>
   using Results = diagnostic::Result<std::vector<T>, std::vector<LexError>>;
 
-  explicit Lexer(core::FileManager* file_manager, core::FileId file_id);
+  explicit Lexer(const core::File* file);
 
   ~Lexer() = default;
 

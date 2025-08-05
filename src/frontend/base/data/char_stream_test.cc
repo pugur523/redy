@@ -16,7 +16,7 @@ TEST(CharStreamTest, BasicAdvanceAndPeek) {
   std::string input("abc\ndef");
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
 
   EXPECT_EQ(cs.peek(), 'a');
   cs.advance();
@@ -34,7 +34,7 @@ TEST(CharStreamTest, Utf8CodepointAdvanceAndPeek) {
   std::string input = "aあ😊b";
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
 
   EXPECT_EQ(cs.peek(), 'a');
   EXPECT_EQ(cs.peek_codepoint(), 'a');
@@ -68,7 +68,7 @@ TEST(CharStreamTest, Utf8PositionTracking) {
   std::string input = "a\nあ😊\nb";
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
 
   EXPECT_EQ(cs.line(), 1u);
   EXPECT_EQ(cs.column(), 1u);
@@ -104,7 +104,7 @@ TEST(CharStreamTest, InvalidUtf8Handling) {
                       static_cast<char>(0xAF) + "b";
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
 
   EXPECT_FALSE(cs.is_valid_utf8_whole_stream());
   EXPECT_EQ(cs.peek_codepoint(), 'a');

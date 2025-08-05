@@ -15,7 +15,7 @@ void char_stream_peek(benchmark::State& state) {
   std::size_t input_size = input.size();
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
   for (auto _ : state) {
     for (int64_t i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(cs.peek());
@@ -30,7 +30,7 @@ void char_stream_advance(benchmark::State& state) {
   std::size_t input_size = input.size();
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
   for (auto _ : state) {
     // this code will be optimized (maybe unroll loop related)
     // while (!cs.eof()) {
@@ -57,7 +57,7 @@ void char_stream_advance_codepoint_utf8(benchmark::State& state) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
   for (auto _ : state) {
-    CharStream cs(&manager, id);
+    CharStream cs(&manager.file(id));
     while (!cs.eof()) {
       cs.advance_codepoint();
     }
@@ -76,7 +76,7 @@ void char_stream_peek_codepoint(benchmark::State& state) {
 
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
-  CharStream cs(&manager, id);
+  CharStream cs(&manager.file(id));
   for (auto _ : state) {
     std::size_t sum = 0;
     for (int64_t i = 0; i < state.range(0); ++i) {
@@ -94,7 +94,7 @@ void char_stream_rewind(benchmark::State& state) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
   for (auto _ : state) {
-    CharStream cs(&manager, id);
+    CharStream cs(&manager.file(id));
     for (int64_t i = 0; i < state.range(0); ++i) {
       cs.advance();
     }
@@ -118,7 +118,7 @@ void char_stream_mixed_advance(benchmark::State& state) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(input));
   for (auto _ : state) {
-    CharStream cs(&manager, id);
+    CharStream cs(&manager.file(id));
     while (!cs.eof()) {
       cs.advance_codepoint();
     }

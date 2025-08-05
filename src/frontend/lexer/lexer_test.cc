@@ -20,7 +20,7 @@ void verify_ok(std::string&& source,
                uint32_t n = 4) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(source));
-  Lexer lexer(&manager, id);
+  Lexer lexer(&manager.file(id));
 
   for (uint32_t i = 0; i < n; ++i) {
     auto result = lexer.next_token();
@@ -36,7 +36,7 @@ void verify_error(std::string&& source,
                   diagnostic::DiagnosticId expected_error_id) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(source));
-  Lexer lexer(&manager, id);
+  Lexer lexer(&manager.file(id));
   auto token_or_err = lexer.next_token();
   ASSERT_TRUE(token_or_err.is_err())
       << base::token_kind_to_string(token_or_err.unwrap().kind());
@@ -48,7 +48,7 @@ void verify_error(std::string&& source,
 TEST(LexerTest, LexSimpleCode) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file("x := 42;");
-  Lexer lexer(&manager, id);
+  Lexer lexer(&manager.file(id));
 
   base::Token t1 = lexer.next_token().unwrap();
   base::Token t2 = lexer.next_token().unwrap();
@@ -75,7 +75,7 @@ TEST(LexerTest, HelloWorldFunction) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(source));
   const core::File& file = manager.file(id);
-  Lexer lexer(&manager, id);
+  Lexer lexer(&manager.file(id));
 
   while (true) {
     base::Token token = lexer.next_token().unwrap();
@@ -107,7 +107,7 @@ TEST(LexerTest, HelloWorldWithUnicodeCharacters) {
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(source));
   const core::File& file = manager.file(id);
-  Lexer lexer(&manager, id);
+  Lexer lexer(&manager.file(id));
 
   while (true) {
     base::Token token = lexer.next_token().unwrap();

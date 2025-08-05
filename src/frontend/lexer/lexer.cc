@@ -18,11 +18,8 @@
 
 namespace lexer {
 
-using FileManager = core::FileManager;
-using FileId = core::FileId;
-
-Lexer::Lexer(FileManager* file_manager, FileId file_id)
-    : char_stream_(std::make_unique<CharStream>(file_manager, file_id)) {
+Lexer::Lexer(const core::File* file)
+    : char_stream_(std::make_unique<CharStream>(file)) {
   DCHECK(char_stream_);
 }
 

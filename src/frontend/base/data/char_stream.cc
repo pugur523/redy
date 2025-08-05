@@ -13,9 +13,8 @@
 
 namespace base {
 
-CharStream::CharStream(FileManager* file_manager, FileId file_id)
-    : file_manager_(file_manager), file_id_(file_id) {
-  DCHECK(file_manager_);
+CharStream::CharStream(const File* file) : file_(file) {
+  DCHECK(file_);
 }
 
 void CharStream::advance() {
