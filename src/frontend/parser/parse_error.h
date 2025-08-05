@@ -38,7 +38,7 @@ struct PARSER_EXPORT ParseError {
   inline static ParseError make(diagnostic::DiagnosticId id,
                                 const base::Token& token,
                                 std::string&& message) {
-    return make(id, token.location().line(), token.location().column(),
+    return make(id, token.start().line(), token.start().column(),
                 token.length(), std::move(message));
   }
 };
