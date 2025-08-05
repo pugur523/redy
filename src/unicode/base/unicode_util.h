@@ -61,6 +61,8 @@ inline constexpr bool is_ascii_letter(uint32_t c) {
   return (normalized - 'a') <= 25;
 }
 
+namespace detail {
+
 inline constexpr bool is_ascii_digit(uint32_t c) {
   return (c - '0') <= 9;
 }
@@ -68,8 +70,6 @@ inline constexpr bool is_ascii_digit(uint32_t c) {
 inline constexpr bool is_ascii_alnum(uint32_t c) {
   return is_ascii_letter(c) || is_ascii_digit(c);
 }
-
-namespace detail {
 
 template <bool (*Generator)(int)>
 struct AsciiTable {
@@ -142,7 +142,7 @@ inline constexpr bool is_xid_start(uint32_t codepoint) {
 #if ENABLE_X86_ASM
     return detail::is_ascii_letter_x86(codepoint) || codepoint == '_';
 #else
-    return detail::is_ascii_identifier_start(codepoint);
+    return detail::kAsciiIdStartTable[codepoint];
 #endif
   }
   return is_in_ranges(kXIDStart, kXIDStartCount, codepoint);
@@ -153,7 +153,7 @@ inline constexpr bool is_xid_continue(uint32_t codepoint) {
 #if ENABLE_X86_ASM
     return detail::is_ascii_alnum_x86(codepoint) || codepoint == '_';
 #else
-    return detail::is_ascii_identifier_continue(codepoint);
+    return detail::kAsciiIdContinueTable[codepoint];
 #endif
   }
   return is_in_ranges(kXIDContinue, kXIDContinueCount, codepoint);
@@ -177,7 +177,7 @@ inline constexpr bool is_decimal_number(uint32_t codepoint) {
 #if ENABLE_X86_ASM
     return detail::is_ascii_digit_x86(codepoint);
 #else
-    return detail::is_ascii_digit(codepoint);
+    return detail::kAsciiDigitTable[codepoint];
 #endif
   }
   return is_in_ranges(kDecimalNumber, kDecimalNumberCount, codepoint);
@@ -226,7 +226,7 @@ inline constexpr bool is_letter(uint32_t codepoint) {
 #if ENABLE_X86_ASM
     return detail::is_ascii_letter_x86(codepoint);
 #else
-    return detail::is_ascii_letter(codepoint);
+    return detail::kAsciiLetterTable[codepoint];
 #endif
   }
   // non-ascii range multiple checks
@@ -240,7 +240,7 @@ inline constexpr bool is_alphanumeric(uint32_t codepoint) {
 #if ENABLE_X86_ASM
     return detail::is_ascii_alnum_x86(codepoint);
 #else
-    return detail::is_ascii_alnum(codepoint);
+    return detail::kAsciiAlnumTable[codepoint];
 #endif
   }
   return is_letter(codepoint) || is_decimal_number(codepoint);
