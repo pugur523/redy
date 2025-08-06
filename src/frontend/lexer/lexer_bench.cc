@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "benchmark/benchmark.h"
-#include "frontend/base/data/char_stream.h"
 #include "frontend/lexer/lexer.h"
 
 namespace lexer {
@@ -20,7 +19,7 @@ void lexer_loop(benchmark::State& state) {
 
   core::FileManager manager;
   core::FileId id = manager.add_virtual_file(std::move(code));
-  Lexer lexer(&manager.file(id));
+  Lexer lexer(manager.file(id));
 
   for (auto _ : state) {
     while (true) {

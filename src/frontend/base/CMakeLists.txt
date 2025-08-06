@@ -9,7 +9,6 @@ message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
   keyword/keyword.cc
-  data/char_stream.cc
   token/token.cc
   token/token_stream.cc
 )

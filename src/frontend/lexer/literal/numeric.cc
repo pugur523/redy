@@ -22,49 +22,49 @@ struct NumericMeta {
 }  // namespace
 
 Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
-  const std::size_t start = char_stream_->position();
-  const std::size_t line = char_stream_->line();
-  const std::size_t col = char_stream_->column();
+  const std::size_t start = stream_->position();
+  const std::size_t line = stream_->line();
+  const std::size_t col = stream_->column();
 
   NumericMeta meta;
 
-  const char32_t ch0 = char_stream_->peek_codepoint();
-  const char32_t ch1 = char_stream_->peek_codepoint(1);
+  const char32_t ch0 = stream_->peek();
+  const char32_t ch1 = stream_->peek(1);
 
   // base prefixes (0x, 0b, 0o)
   if (ch0 == U'0') {
     if (ch1 == U'x' || ch1 == U'X') {
       // hex
       meta.is_base_prefixed = true;
-      char_stream_->advance_codepoint();  // consume '0'
-      char_stream_->advance_codepoint();  // consume 'x'
+      stream_->advance();  // consume '0'
+      stream_->advance();  // consume 'x'
 
       // consume hex digits
-      while (core::is_ascii_hex_digit(char_stream_->peek_codepoint())) {
+      while (core::is_ascii_hex_digit(stream_->peek())) {
         meta.has_digit = true;
-        char_stream_->advance_codepoint();
+        stream_->advance();
       }
 
     } else if (ch1 == U'b' || ch1 == U'B') {
       // binary
       meta.is_base_prefixed = true;
-      char_stream_->advance_codepoint();  // consume '0'
-      char_stream_->advance_codepoint();  // consume 'b'
+      stream_->advance();  // consume '0'
+      stream_->advance();  // consume 'b'
 
       // consume binary digits
       while (true) {
-        const char32_t c = char_stream_->peek_codepoint();
+        const char32_t c = stream_->peek();
         if (core::is_ascii_binary_digit(c)) {
           meta.has_digit = true;
-          char_stream_->advance_codepoint();
+          stream_->advance();
         } else {
           break;
         }
       }
 
       // check for invalid binary digits (2-9)
-      if (core::is_ascii_digit(char_stream_->peek_codepoint()) &&
-          !core::is_ascii_binary_digit(char_stream_->peek_codepoint())) {
+      if (core::is_ascii_digit(stream_->peek()) &&
+          !core::is_ascii_binary_digit(stream_->peek())) {
         return Result<Token>(diagnostic::make_err(
             LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
                            start, line, col, "invalid binary literal")));
@@ -73,23 +73,23 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
     } else if (ch1 == U'o' || ch1 == U'O') {
       // octal
       meta.is_base_prefixed = true;
-      char_stream_->advance_codepoint();  // consume '0'
-      char_stream_->advance_codepoint();  // consume 'o'
+      stream_->advance();  // consume '0'
+      stream_->advance();  // consume 'o'
 
       // consume octal digits
       while (true) {
-        const char32_t c = char_stream_->peek_codepoint();
+        const char32_t c = stream_->peek();
         if (core::is_ascii_octal_digit(c)) {
           meta.has_digit = true;
-          char_stream_->advance_codepoint();
+          stream_->advance();
         } else {
           break;
         }
       }
 
       // check for invalid octal digits (8-9)
-      if (core::is_ascii_digit(char_stream_->peek_codepoint()) &&
-          !core::is_ascii_octal_digit(char_stream_->peek_codepoint())) {
+      if (core::is_ascii_digit(stream_->peek()) &&
+          !core::is_ascii_octal_digit(stream_->peek())) {
         return Result<Token>(diagnostic::make_err(
             LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
                            start, line, col, "invalid octal literal")));
@@ -100,42 +100,39 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
   // handle decimal numbers (if not base-prefixed)
   if (!meta.is_base_prefixed) {
     // consume initial digits
-    while (core::is_ascii_digit(char_stream_->peek_codepoint())) {
+    while (core::is_ascii_digit(stream_->peek())) {
       meta.has_digit = true;
-      char_stream_->advance_codepoint();
+      stream_->advance();
     }
 
     // handle decimal point
-    if (char_stream_->peek_codepoint() == U'.' &&
-        core::is_ascii_digit(char_stream_->peek_codepoint(1))) {
+    if (stream_->peek() == U'.' && core::is_ascii_digit(stream_->peek(1))) {
       meta.seen_dot = true;
-      char_stream_->advance_codepoint();  // consume '.'
+      stream_->advance();  // consume '.'
 
       // consume fractional digits
-      while (core::is_ascii_digit(char_stream_->peek_codepoint())) {
+      while (core::is_ascii_digit(stream_->peek())) {
         meta.has_digit = true;
-        char_stream_->advance_codepoint();
+        stream_->advance();
       }
     }
 
     // handle scientific notation
-    if ((char_stream_->peek_codepoint() == U'e' ||
-         char_stream_->peek_codepoint() == U'E') &&
+    if ((stream_->peek() == U'e' || stream_->peek() == U'E') &&
         meta.has_digit) {
       meta.seen_exponent = true;
-      char_stream_->advance_codepoint();  // consume 'e'
+      stream_->advance();  // consume 'e'
 
       // optional sign
-      if (char_stream_->peek_codepoint() == U'+' ||
-          char_stream_->peek_codepoint() == U'-') {
-        char_stream_->advance_codepoint();
+      if (stream_->peek() == U'+' || stream_->peek() == U'-') {
+        stream_->advance();
       }
 
       // must have digits after exponent
       bool has_exp_digits = false;
-      while (core::is_ascii_digit(char_stream_->peek_codepoint())) {
+      while (core::is_ascii_digit(stream_->peek())) {
         has_exp_digits = true;
-        char_stream_->advance_codepoint();
+        stream_->advance();
       }
 
       if (!has_exp_digits) {
@@ -154,10 +151,10 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
   }
 
   // handle optional suffix
-  if (core::is_ascii_alphabet(char_stream_->peek_codepoint())) {
-    const char32_t suffix = char_stream_->peek_codepoint();
+  if (core::is_ascii_alphabet(stream_->peek())) {
+    const char32_t suffix = stream_->peek();
     if (suffix == U'f' || suffix == U'd' || suffix == U'L') {
-      char_stream_->advance_codepoint();
+      stream_->advance();
     } else {
       // invalid suffix
       return Result<Token>(diagnostic::make_err(

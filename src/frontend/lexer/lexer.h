@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "frontend/base/data/char_stream.h"
 #include "frontend/base/token/token.h"
 #include "frontend/diagnostic/data/result.h"
 #include "frontend/lexer/base/lex_error.h"
 #include "frontend/lexer/base/lexer_export.h"
+#include "unicode/base/utf8_stream.h"
 
 namespace lexer {
 
@@ -21,14 +21,13 @@ class LEXER_EXPORT Lexer {
  public:
   using Token = base::Token;
   using TokenKind = base::TokenKind;
-  using CharStream = base::CharStream;
 
   template <typename T>
   using Result = diagnostic::Result<T, LexError>;
   template <typename T>
   using Results = diagnostic::Result<std::vector<T>, std::vector<LexError>>;
 
-  explicit Lexer(const core::File* file);
+  explicit Lexer(const core::File& file);
 
   ~Lexer() = default;
 
@@ -65,13 +64,13 @@ class LEXER_EXPORT Lexer {
                                   std::size_t start_pos,
                                   std::size_t line,
                                   std::size_t column) {
-    const std::size_t end_pos = char_stream_->position();
+    const std::size_t end_pos = stream_->position();
     const std::size_t length = end_pos - start_pos;
     return Result<Token>(
         diagnostic::make_ok(Token(kind, line, column, length)));
   }
 
-  std::unique_ptr<CharStream> char_stream_ = nullptr;
+  std::unique_ptr<unicode::Utf8Stream> stream_ = nullptr;
 
   static constexpr const std::size_t kPredictedTokensCount = 1024;
 };

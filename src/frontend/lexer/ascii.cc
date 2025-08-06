@@ -29,8 +29,8 @@ Lexer::Result<Lexer::Token> Lexer::ascii_token(char current_char,
     return literal_char();
   }
 
-  if (current_char == '\\' && !char_stream_->eof()) {
-    uint32_t next_codepoint = char_stream_->peek_codepoint(1);
+  if (current_char == '\\' && !stream_->eof()) {
+    uint32_t next_codepoint = stream_->peek(1);
     if (unicode::is_ascii(next_codepoint)) {
       char next_char = static_cast<char>(next_codepoint);
       if (!core::is_valid_escape_sequence(current_char, next_char)) {
@@ -42,9 +42,9 @@ Lexer::Result<Lexer::Token> Lexer::ascii_token(char current_char,
   }
 
   // consume the current character
-  char_stream_->advance();
+  stream_->advance();
 
-  uint32_t next_codepoint = char_stream_->peek_codepoint();
+  uint32_t next_codepoint = stream_->peek();
   char next_char = unicode::is_ascii(next_codepoint)
                        ? static_cast<char>(next_codepoint)
                        : '\0';

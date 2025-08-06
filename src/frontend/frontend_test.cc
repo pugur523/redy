@@ -20,7 +20,7 @@ TEST(FrontendTest, SimpleCodePipeline) {
   core::FileId id = manager.add_virtual_file("x := 42; y: i32 = 57;");
   const core::File& file = manager.file(id);
 
-  lexer::Lexer lexer(&file);
+  lexer::Lexer lexer(file);
 
   std::vector<base::Token> tokens = lexer.lex_all().unwrap();
   EXPECT_FALSE(tokens.empty());
