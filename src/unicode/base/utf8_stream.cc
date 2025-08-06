@@ -64,7 +64,6 @@ inline void Utf8Stream::save_rewind_state() {
 uint32_t Utf8Stream::peek(std::size_t offset) const {
   DCHECK(data_);
   DCHECK_EQ(status_, Utf8StreamStatus::kValid);
-  DCHECK(!eof());
 
   // fast path: offset 0 with valid cache
   if (offset == 0) [[likely]] {
