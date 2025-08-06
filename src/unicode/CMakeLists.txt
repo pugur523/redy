@@ -13,6 +13,7 @@ set(SOURCES
   
   base/unicode_util.cc
   base/utf8_decode.cc
+  base/utf8_stream.cc
 )
 
 if(ENABLE_X86_ASM)

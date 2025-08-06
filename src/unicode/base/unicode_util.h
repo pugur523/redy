@@ -62,6 +62,40 @@ inline constexpr bool is_ascii_letter(uint32_t c) {
   return (normalized - 'a') <= 25;
 }
 
+// inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
+//   return kUtf8LengthTable[first_byte];
+// }
+
+// implementation without utf8 length table
+inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
+  if (first_byte < 0x80) {
+    return 1;
+  }
+  if ((first_byte >> 5) == 0x06) {
+    return 2;
+  }
+  if ((first_byte >> 4) == 0x0E) {
+    return 3;
+  }
+  if ((first_byte >> 3) == 0x1E) {
+    return 4;
+  }
+  return 1;
+}
+
+inline constexpr uint8_t utf8_codepoint_length(uint32_t c) {
+  if (c <= 0x7F) {  // 0-127
+    return 1;
+  } else if (c <= 0x7FF) {  // 128-2047
+    return 2;
+  } else if (c <= 0xFFFF) {  // 2048-65535
+    return 3;
+  } else if (c <= 0x10FFFF) {  // 65536-1114111
+    return 4;
+  }
+  return 0;
+}
+
 namespace detail {
 
 inline constexpr bool is_ascii_digit(uint32_t c) {
