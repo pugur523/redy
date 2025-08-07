@@ -1,0 +1,6 @@
+[errors]
+file_not_found = "ファイルが見つかりませんでした"
+invalid_token = "ソースコードに無効なトークンが含まれています"
+
+[warnings]
+unused_variable = "未使用の変数が見つかりました"

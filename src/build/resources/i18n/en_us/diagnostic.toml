@@ -1,0 +1,6 @@
+[errors]
+file_not_found = "file not found"
+invalid_token = "the source code contains invalid token"
+
+[warnings]
+unused_variable = "found unused variable"
