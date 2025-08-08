@@ -22,4 +22,25 @@
 #define TARGET_BITS "@TARGET_BITS@"
 #define BUILD_GIT_COMMIT_HASH "@BUILD_GIT_COMMIT_HASH@"
 
+namespace build {
+
+constexpr const char* kProjectName = "@PROJECT_NAME@";
+constexpr const char* kProjectVersion = "@PROJECT_VERSION@";
+constexpr const char* kProjectDescription = "@PROJECT_DESCRIPTION@";
+
+constexpr const char* kBuildName = "@BUILD_NAME@";
+constexpr const char* kBuildVersion = "@BUILD_VERSION@";
+constexpr const char* kBuildDescription = "@BUILD_DESCRIPTION@";
+constexpr const char* kBuildType = "@BUILD_TYPE@";
+constexpr const char* kBuildTime = "@BUILD_TIME@";
+constexpr const char* kBuildPlatform = "@BUILD_PLATFORM@";
+constexpr const char* kBuildArch = "@BUILD_ARCH@";
+constexpr const char* kBuildCompiler = "@BUILD_COMPILER@";
+constexpr const char* kTargetPlatform = "@TARGET_PLATFORM@";
+constexpr const char* kTargetArch = "@TARGET_ARCH@";
+constexpr const char* kTargetBits = "@TARGET_BITS@";
+constexpr const char* kBuildGitCommitHash = "@BUILD_GIT_COMMIT_HASH@";
+
+}  // namespace build
+
 #endif  // BUILD_BUILD_CONFIG_H_
