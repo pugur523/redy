@@ -1,15 +1,52 @@
 # Redy Frontend
 
+
 ## Summary
 
 This directory contains the source code of the redy frontend, which is the most complex part of our project since we currently delegate the backend compilation process to LLVM IR.  
 Here's a high-level overview of the components:
 
-- **lexer**: Lexical analysis — converts source code into a stream of tokens
-- **parser**: Syntax analysis — parses the token stream into an Abstract Syntax Tree (AST)
-- **sema**: Semantic analysis — resolves names and types in the AST and lowers it to HIR
-- **hir**: High-level Intermediate Representation — desugared and semantically analyzed code
-- **mir**: Mid-level Intermediate Representation — SSA-based IR with control-flow graph
+
+## Processors
+
+### Lexer - Lexical Analysis
+Tokenizes source code and output as a `TokenStream`
+If the source code is lexically invalid, it reports source error
+
+### Parser
+Syntax analysis — parses `TokenStream` into an `AstContext`
+
+### AstAnalyzer
+Performs semantic analysis on the `AstContext` to resolve names and types, desugar, and convert it to `HirContext`.
+
+### HirAnalyzer
+Performs semantic analysis on the `HirContext` to optimize and convert it to `MirContext`.
+
+### MirAnalyzer
+Performs semantic analysis on the `MirContext` to check lifetimes and borrowing for safety.
+
+
+## Main Data Structures
+
+### File
+Owns source code content as a UTF-8 encoded string.
+All processors use this interface to get a reference to the code, enabling zero-copy access for memory efficiency.
+
+### Utf8Cursor
+Cursor for utf8 string that provides `peek()`, `advance()`, `rewind()`, etc.
+
+### TokenStream
+Vector of tokens that provides `peek()`, `advance()`, `rewind()`, etc.
+
+### AstContext
+Abstract Syntax Tree - Preserves only syntactic information, not semantic information.
+
+### HirContext
+High-Level Intermediate Representation - Desugared and semantically analyzed code
+
+### MirContext
+Mid-Level Intermediate Representation — SSA-based IR with a control flow graph (CFG), which is more suitable for rigorous analysis.
+
 
 ## Pipeline
 
@@ -17,13 +54,15 @@ Here's a high-level overview of the components:
 
 ```mermaid
 flowchart TD
-    A(Source File) --> B[Lexer::lex_all]
+    A(Source File) --> B[Lexer::tokenize]
     B --> C(TokenStream)
-    C --> D[Parser::parse_all]
+    C --> D[Parser::parse]
     D --> E(AstContext)
-    E --> F[SemanticAnalyzer::sema_all]
-    F --> G(Hir with semantic info)
-    G --> H(Mir with CFG + SSA)
+    E --> F[AstAnalyzer::convert]
+    F --> G(HirContext)
+    G --> H[HirAnalyzer::convert]
+    H --> I(MirContext)
+    I --> J[MirAnalyzer::convert]
 ```
 
 ### Module Dependency Graph
@@ -38,27 +77,33 @@ end
 
 subgraph frontend
     D(base)
-    E(diagnostic) --> D
-    F(lexer)      --> D
-    G(ast)        --> D
-    H(parser)     --> D
-    I(sema)       --> D
-    J(hir)        --> D
-    K(mir)        --> D
+    E(diagnostic)     --> D
+    F(lexer)          --> D
+    G(parser)         --> D
+    H(ast_analyzer)   --> D
+    I(hir_analyzer)   --> D
+    J(mir_analyzer)   --> D
+
+    K(ast)            --> D
+    L(hir)            --> D
+    M(mir)            --> D
 
 
-    H --> G
-    I --> G
+    G --> K
+    H --> K
+    H --> L
+    I --> L
+    I --> M
+    J --> M
 end
 
 frontend --> utilities
 ```
 
 > [!NOTE]
-> **ast**: **A**bstract **S**yntax **T**ree<br/>
-> **sema**: **Sem**antic **A**nalysis<br/>
-> **ir**: **I**ntermediate **R**epresentation<br/>
-> **hir**: **H**igh-level **IR**<br/>
-> **mir**: **M**iddle-level **IR**<br/>
-> **cfg**: **C**ontrol **F**low **G**raph<br/>
-> **ssa**: **S**tatic **S**ingle **A**ssignment<br/>
+> **AST**: **A**bstract **S**yntax **T**ree<br/>
+> **IR**: **I**ntermediate **R**epresentation<br/>
+> **HIR**: **H**igh-level **IR**<br/>
+> **MIR**: **M**iddle-level **IR**<br/>
+> **CFG**: **C**ontrol **F**low **G**raph<br/>
+> **SSA**: **S**tatic **S**ingle **A**ssignment<br/>
