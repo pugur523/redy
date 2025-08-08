@@ -19,7 +19,7 @@
 namespace app {
 
 int handle_arguments(int argc, char** argv) {
-  core::ArgumentParser parser(BUILD_NAME, BUILD_DESCRIPTION);
+  core::ArgumentParser parser(build::kBuildName, build::kBuildDescription);
 
   auto options = core::RuntimeOptions::create();
 

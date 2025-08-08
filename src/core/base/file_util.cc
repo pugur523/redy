@@ -131,6 +131,10 @@ std::string read_file(const char* path) {
   return read_file_impl<std::string>(path);
 }
 
+std::u8string read_file_utf8(const char8_t* path) {
+  return read_file_impl<std::u8string>(reinterpret_cast<const char*>(path));
+}
+
 const std::string& exe_path() {
   static const std::string cached_path = []() -> std::string {
 #if IS_WINDOWS

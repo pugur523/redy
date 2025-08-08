@@ -48,7 +48,7 @@ target_compile_options(${MAIN_EXECUTABLE_NAME} PRIVATE
 target_compile_definitions(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${MAIN_EXECUTABLE_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE core base diagnostic lexer ast parser ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${MAIN_EXECUTABLE_NAME} PRIVATE core base diagnostic lexer ast parser i18n ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${MAIN_EXECUTABLE_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
@@ -62,13 +62,13 @@ endif()
 
 if(ENABLE_RUN_PROGRAM_POST_BUILD)
   set(NEED_RUN TRUE)
-  
+
   if(MINGW_BUILD)
     set(EXE_COMMAND wine $<TARGET_FILE:${MAIN_EXECUTABLE_NAME}>)
   else()
     set(EXE_COMMAND $<TARGET_FILE:${MAIN_EXECUTABLE_NAME}>)
   endif()
-  
+
   if(ENABLE_COVERAGE)
     set(COVERAGE_DIR "${CMAKE_BINARY_DIR}/coverage/${MAIN_EXECUTABLE_NAME}")
     FILE(MAKE_DIRECTORY ${COVERAGE_DIR})
@@ -80,12 +80,12 @@ if(ENABLE_RUN_PROGRAM_POST_BUILD)
       -instr-profile=${COVERAGE_DIR}/merged.profdata
       -format=html
       -output-dir=${COVERAGE_DIR}/html
-  
+
       WORKING_DIRECTORY ${PROJECT_ROOT_DIR}
     )
     set(NEED_RUN FALSE)
   endif()
-  
+
   if(ENABLE_XRAY)
     set(XRAY_OPTIONS "xray_mode=xray-basic:verbosity=1:patch_premain=true")
     set(XRAY_DIR ${CMAKE_BINARY_DIR}/xray/${MAIN_EXECUTABLE_NAME})
@@ -95,7 +95,7 @@ if(ENABLE_RUN_PROGRAM_POST_BUILD)
       COMMENT "Run xray instrumentation and generate function timing report"
       COMMAND rm -f ${XRAY_DIR}/xray-log.${MAIN_EXECUTABLE_NAME}.*
       COMMAND ${CMAKE_COMMAND} -E env XRAY_OPTIONS="${XRAY_OPTIONS}" ${CMAKE_COMMAND} -E time ${EXE_PATH}
-  
+
       COMMAND llvm-xray convert --instr_map=${EXE_PATH} --sort --output-format=yaml --symbolize --demangle --output=${XRAY_DIR}/xray-report.yml ${XRAY_DIR}/xray-log.${MAIN_EXECUTABLE_NAME}.*
       COMMAND llvm-xray convert --instr_map=${EXE_PATH} --sort --output-format=trace_event --symbolize --demangle --output=${XRAY_DIR}/xray_trace.${MAIN_EXECUTABLE_NAME}.json ${XRAY_DIR}/xray-log.${MAIN_EXECUTABLE_NAME}.*
       COMMAND llvm-xray account --instr_map=${EXE_PATH} --sort=count --top=50 --format=text --output=${XRAY_DIR}/xray-summary.txt ${XRAY_DIR}/xray-log.${MAIN_EXECUTABLE_NAME}.*
@@ -103,7 +103,7 @@ if(ENABLE_RUN_PROGRAM_POST_BUILD)
     )
     set(NEED_RUN FALSE)
   endif()
-  
+
   if(NEED_RUN)
     add_custom_command(TARGET ${MAIN_EXECUTABLE_NAME} POST_BUILD
       COMMENT "Run program if it has never been executed."
@@ -111,7 +111,7 @@ if(ENABLE_RUN_PROGRAM_POST_BUILD)
     )
   endif()
 endif()
-  
+
 if(ENABLE_OPTIMIZATION_REPORT)
   add_custom_command(TARGET ${MAIN_EXECUTABLE_NAME} POST_BUILD
     COMMENT "Run opt-viewer to generate optimization report"

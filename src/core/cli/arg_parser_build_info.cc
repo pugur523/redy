@@ -20,9 +20,10 @@ void ArgumentParser::print_version() {
     Installed Directory: {}
     Build Time: {}
     Commit Hash: {}
-)">(BUILD_NAME, BUILD_VERSION, BUILD_TYPE, BUILD_PLATFORM, BUILD_ARCH,
-    TARGET_PLATFORM, TARGET_ARCH, TARGET_BITS, BUILD_COMPILER, exe_dir(),
-    BUILD_TIME, BUILD_GIT_COMMIT_HASH);
+)">(build::kBuildName, build::kBuildVersion, build::kBuildType,
+    build::kBuildPlatform, build::kBuildArch, build::kTargetPlatform,
+    build::kTargetArch, build::kTargetBits, build::kBuildCompiler, exe_dir(),
+    build::kBuildTime, build::kBuildGitCommitHash);
 }
 
 }  // namespace core

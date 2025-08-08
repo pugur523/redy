@@ -30,6 +30,7 @@ using Files = std::vector<std::string>;
 [[nodiscard]] CORE_EXPORT std::vector<std::byte> read_file_bin(
     const char* path);
 [[nodiscard]] CORE_EXPORT std::string read_file(const char* path);
+[[nodiscard]] CORE_EXPORT std::u8string read_file_utf8(const char8_t* path);
 [[nodiscard]] CORE_EXPORT const std::string& exe_path();
 [[nodiscard]] CORE_EXPORT const std::string& exe_dir();
 [[nodiscard]] CORE_EXPORT const std::string& resources_dir();

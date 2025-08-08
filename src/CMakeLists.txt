@@ -259,6 +259,7 @@ endif()
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/core)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/frontend)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/i18n)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/unicode)
 
 if(ENABLE_BUILD_TESTING)

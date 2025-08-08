@@ -31,7 +31,7 @@ target_compile_options(${BENCHMARK_NAME} PRIVATE
 target_compile_definitions(${BENCHMARK_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${BENCHMARK_NAME} PRIVATE core base diagnostic lexer ast ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${BENCHMARK_NAME} PRIVATE core base diagnostic lexer ast i18n ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${BENCHMARK_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
@@ -40,13 +40,13 @@ set_target_properties(${BENCHMARK_NAME} PROPERTIES
 
 if (ENABLE_RUN_BENCHMARK_POST_BUILD)
   set(NEED_RUN TRUE)
-  
+
   if(MINGW_BUILD)
     set(EXE_COMMAND wine $<TARGET_FILE:${BENCHMARK_NAME}>)
   else()
     set(EXE_COMMAND $<TARGET_FILE:${BENCHMARK_NAME}>)
   endif()
-  
+
   if(NEED_RUN AND ENABLE_COVERAGE)
     set(COVERAGE_DIR "${CMAKE_BINARY_DIR}/coverage/${BENCHMARK_NAME}")
     FILE(MAKE_DIRECTORY ${COVERAGE_DIR})
@@ -58,12 +58,12 @@ if (ENABLE_RUN_BENCHMARK_POST_BUILD)
       -instr-profile=${COVERAGE_DIR}/merged.profdata
       -format=html
       -output-dir=${COVERAGE_DIR}/html
-  
+
       WORKING_DIRECTORY ${PROJECT_ROOT_DIR}
     )
     set(NEED_RUN FALSE)
   endif()
-  
+
   if(NEED_RUN)
     add_custom_command(TARGET ${BENCHMARK_NAME} POST_BUILD
       COMMENT "Run benchmarks if it has never been executed."

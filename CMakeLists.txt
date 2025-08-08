@@ -23,7 +23,17 @@ execute_process(
 )
 
 if(NOT UCD_GEN_CONFIG_EXIT_CODE EQUAL 0)
-  message(FATAL_ERROR "Failed to read project config: exit code ${UCD_GEN_CONFIG_EXIT_CODE}")
+  message(FATAL_ERROR "Failed to download or generate ucd data: exit code ${UCD_GEN_CONFIG_EXIT_CODE}")
+endif()
+
+execute_process(
+  COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/src/build/scripts/i18n_gen.py
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  RESULT_VARIABLE I18N_GEN_CONFIG_EXIT_CODE
+)
+
+if(NOT I18N_GEN_CONFIG_EXIT_CODE EQUAL 0)
+  message(FATAL_ERROR "Failed to read and generate i18n data: exit code ${I18N_GEN_CONFIG_EXIT_CODE}")
 endif()
 
 string(REPLACE "\n" ";" PROJECT_CONFIG_LIST "${PROJECT_CONFIG_OUTPUT}")
