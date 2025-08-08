@@ -13,14 +13,13 @@ max_line_length = 80
 
 [*.py]
 indent_size = 4
+max_line_length = 88 # black formatter
 
 [*.md]
 # double whitespace at end of line
 # denotes a line break in Markdown
 trim_trailing_whitespace = false
 
-[*.yml]
+[*.{toml,yml,json}]
+indent_style = space
 indent_size = 2
-
-[Makefile]
-indent_style = tab
