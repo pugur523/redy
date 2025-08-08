@@ -4,9 +4,8 @@
 
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 
-#include <string>
+#include <algorithm>
 #include <utility>
-#include <vector>
 
 #include "core/base/file_manager.h"
 
@@ -14,5 +13,15 @@ namespace diagnostic {
 
 DiagnosticEntry::DiagnosticEntry(Header&& header, Labels&& labels)
     : header_(std::move(header)), labels_(std::move(labels)) {}
+
+DiagnosticEntry::Labels& DiagnosticEntry::sort_labels() {
+  std::sort(labels_.begin(), labels_.end(), [](const Label& a, const Label& b) {
+    if (a.file_id() != b.file_id()) {
+      return a.file_id() < b.file_id();
+    }
+    return a.range().start().line() < b.range().start().line();
+  });
+  return labels_;
+}
 
 }  // namespace diagnostic

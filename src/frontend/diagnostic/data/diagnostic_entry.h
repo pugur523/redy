@@ -5,7 +5,6 @@
 #ifndef FRONTEND_DIAGNOSTIC_DATA_DIAGNOSTIC_ENTRY_H_
 #define FRONTEND_DIAGNOSTIC_DATA_DIAGNOSTIC_ENTRY_H_
 
-#include <string>
 #include <vector>
 
 #include "frontend/diagnostic/base/diagnostic_export.h"
@@ -30,6 +29,8 @@ class DIAGNOSTIC_EXPORT DiagnosticEntry {
 
   inline const Header& header() const { return header_; }
   inline const Labels& labels() const { return labels_; }
+
+  Labels& sort_labels();
 
  private:
   Header header_;

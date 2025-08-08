@@ -5,14 +5,16 @@
 #ifndef FRONTEND_DIAGNOSTIC_DATA_ANNOTATION_H_
 #define FRONTEND_DIAGNOSTIC_DATA_ANNOTATION_H_
 
-#include <string>
+#include <cstdint>
+#include <utility>
 
 #include "frontend/diagnostic/base/diagnostic_export.h"
 #include "frontend/diagnostic/base/style.h"
+#include "i18n/base/data/translation_key.h"
 
 namespace diagnostic {
 
-enum class AnnotationKind : uint8_t {
+enum class AnnotationSeverity : uint8_t {
   kUnknown = 0,
   kNote = 1,
   kSuggestion = 2,
@@ -22,36 +24,46 @@ enum class AnnotationKind : uint8_t {
   kFatal = 6,
 };
 
-inline const char* annotation_kind_to_string(AnnotationKind kind) {
-  using Kind = AnnotationKind;
-  switch (kind) {
-    case Kind::kUnknown: return "unknown";
-    case Kind::kNote: return "note";
-    case Kind::kSuggestion: return "suggestion";
-    case Kind::kHelp: return "help";
-    case Kind::kWarn: return "warn";
-    case Kind::kError: return "error";
-    case Kind::kFatal: return "fatal";
+inline const char* annotation_severity_to_string(AnnotationSeverity severity) {
+  using Severity = AnnotationSeverity;
+  switch (severity) {
+    case Severity::kUnknown: return "unknown";
+    case Severity::kNote: return "note";
+    case Severity::kSuggestion: return "suggestion";
+    case Severity::kHelp: return "help";
+    case Severity::kWarn: return "warn";
+    case Severity::kError: return "error";
+    case Severity::kFatal: return "fatal";
     default: return "invalid";
   }
 }
 
-inline Style annotation_kind_to_style(AnnotationKind kind) {
-  using Kind = AnnotationKind;
-  switch (kind) {
-    case Kind::kUnknown: return Style::kUnknown;
-    case Kind::kNote: return Style::kCyan;
-    case Kind::kSuggestion: return Style::kBrightCyan;
-    case Kind::kHelp: return Style::kBlue;
-    case Kind::kWarn: return Style::kYellow;
-    case Kind::kError: return Style::kRed;
-    case Kind::kFatal: return Style::kMagenta;
+inline Style annotation_severity_to_style(AnnotationSeverity severity) {
+  using Severity = AnnotationSeverity;
+  switch (severity) {
+    case Severity::kUnknown: return Style::kUnknown;
+    case Severity::kNote: return Style::kCyan;
+    case Severity::kSuggestion: return Style::kBrightCyan;
+    case Severity::kHelp: return Style::kBlue;
+    case Severity::kWarn: return Style::kYellow;
+    case Severity::kError: return Style::kRed;
+    case Severity::kFatal: return Style::kMagenta;
   }
 }
 
 class DIAGNOSTIC_EXPORT Annotation {
  public:
-  explicit Annotation(std::string&& message, AnnotationKind kind);
+  constexpr Annotation(AnnotationSeverity severity,
+                       i18n::TranslationKey tr_key,
+                       std::initializer_list<std::string_view> args)
+      : severity_(severity), tr_key_(tr_key), args_count_(args.size()) {
+    std::size_t i = 0;
+    for (const auto& arg : args) {
+      if (i < format_args_.size()) {
+        format_args_[i++] = arg;
+      }
+    }
+  }
 
   ~Annotation() = default;
 
@@ -61,12 +73,17 @@ class DIAGNOSTIC_EXPORT Annotation {
   Annotation(Annotation&&) = default;
   Annotation& operator=(Annotation&&) = default;
 
-  const std::string& message() const { return message_; }
-  AnnotationKind kind() const { return kind_; }
+  inline const i18n::FormatArgs& format_args() const { return format_args_; }
+  inline AnnotationSeverity severity() const { return severity_; }
+  inline i18n::TranslationKey message_tr_key() const { return tr_key_; }
+  inline uint8_t args_count() const { return args_count_; }
+  inline bool should_format() const { return args_count_ > 0; }
 
  private:
-  std::string message_;
-  AnnotationKind kind_;
+  i18n::FormatArgs format_args_{};
+  AnnotationSeverity severity_ = AnnotationSeverity::kUnknown;
+  i18n::TranslationKey tr_key_ = i18n::TranslationKey::kUnknown;
+  uint8_t args_count_ = 0;
 };
 
 }  // namespace diagnostic

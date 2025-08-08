@@ -4,12 +4,4 @@
 
 #include "frontend/diagnostic/data/annotation.h"
 
-#include <string>
-#include <utility>
-
-namespace diagnostic {
-
-Annotation::Annotation(std::string&& message, AnnotationKind kind)
-    : message_(std::move(message)), kind_(kind) {}
-
-}  // namespace diagnostic
+namespace diagnostic {}  // namespace diagnostic

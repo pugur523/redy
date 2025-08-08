@@ -5,15 +5,22 @@
 #ifndef FRONTEND_DIAGNOSTIC_DATA_ENTRY_BUILDER_H_
 #define FRONTEND_DIAGNOSTIC_DATA_ENTRY_BUILDER_H_
 
-#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "core/base/source_range.h"
 #include "frontend/diagnostic/base/diagnostic_export.h"
+#include "frontend/diagnostic/data/annotation.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "frontend/diagnostic/data/header.h"
 #include "frontend/diagnostic/data/label.h"
+#include "i18n/base/data/translation_key.h"
+
+namespace i18n {
+class Translator;
+}
 
 namespace diagnostic {
 
@@ -22,7 +29,7 @@ class DIAGNOSTIC_EXPORT EntryBuilder {
   using Labels = std::vector<Label>;
   using Annotations = std::vector<Annotation>;
 
-  EntryBuilder(Severity severity, DiagnosticId id, std::string&& header_msg);
+  EntryBuilder(Severity severity, DiagnosticId id);
 
   ~EntryBuilder() = default;
 
@@ -32,19 +39,32 @@ class DIAGNOSTIC_EXPORT EntryBuilder {
   EntryBuilder(EntryBuilder&&) = default;
   EntryBuilder& operator=(EntryBuilder&&) = default;
 
-  EntryBuilder& label(core::FileId file_Id,
-                      const core::SourceRange& range,
-                      std::string&& message);
+  inline EntryBuilder& label(
+      core::FileId file_id,
+      std::size_t line,
+      std::size_t column,
+      std::size_t length,
+      i18n::TranslationKey message_tr_key,
+      LabelMarkerType marker_type = LabelMarkerType::kLine,
+      std::initializer_list<std::string_view> args = {}) {
+    Label label(file_id, {line, column, length}, {}, message_tr_key,
+                marker_type, args);
+    labels_.emplace_back(std::move(label));
+    return *this;
+  }
 
-  EntryBuilder& label(core::FileId file_id,
-                      std::size_t line,
-                      std::size_t column,
-                      std::size_t length,
-                      std::string&& message);
+  inline EntryBuilder& annotation(
+      AnnotationSeverity severity,
+      i18n::TranslationKey message_tr_key,
+      std::initializer_list<std::string_view> args = {}) {
+    DCHECK(!labels_.empty());
+    labels_.back().add_annotation(severity, message_tr_key, args);
+    return *this;
+  }
 
-  EntryBuilder& annotation(std::string&& message, AnnotationKind kind);
-
-  DiagnosticEntry build();
+  DiagnosticEntry build() && {
+    return DiagnosticEntry(std::move(header_), std::move(labels_));
+  }
 
  private:
   Header header_;

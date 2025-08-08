@@ -5,20 +5,18 @@
 #ifndef FRONTEND_DIAGNOSTIC_DATA_HEADER_H_
 #define FRONTEND_DIAGNOSTIC_DATA_HEADER_H_
 
-#include <string>
+#include <string_view>
 
-#include "core/base/file_manager.h"
-#include "core/base/source_location.h"
-#include "core/base/source_range.h"
 #include "frontend/diagnostic/base/diagnostic_export.h"
-#include "frontend/diagnostic/data/annotation.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
+#include "i18n/base/data/translation_impl.h"
+#include "i18n/base/data/translation_key.h"
 
 namespace diagnostic {
 
 class DIAGNOSTIC_EXPORT Header {
  public:
-  Header(Severity severity, DiagnosticId diag_id, std::string&& message);
+  Header(Severity severity, DiagnosticId diag_id);
 
   ~Header() = default;
 
@@ -28,12 +26,10 @@ class DIAGNOSTIC_EXPORT Header {
   Header(Header&&) = default;
   Header& operator=(Header&&) = default;
 
-  inline const std::string& message() const { return message_; }
   inline Severity severity() const { return severity_; }
   inline DiagnosticId diag_id() const { return diag_id_; }
 
  private:
-  std::string message_;
   Severity severity_;
   DiagnosticId diag_id_;
 };

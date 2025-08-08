@@ -6,14 +6,20 @@
 #define FRONTEND_DIAGNOSTIC_BASE_DIAGNOSTIC_ENGINE_H_
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "core/base/file_manager.h"
 #include "frontend/base/token/token.h"
 #include "frontend/diagnostic/base/diagnostic_options.h"
+#include "frontend/diagnostic/base/style.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/label.h"
+
+namespace i18n {
+class Translator;
+}
 
 namespace diagnostic {
 
@@ -22,6 +28,7 @@ class DiagnosticEngine {
   using Entries = std::vector<DiagnosticEntry>;
 
   explicit DiagnosticEngine(const core::FileManager* file_manager,
+                            const i18n::Translator* translator,
                             DiagnosticOptions options);
 
   ~DiagnosticEngine() = default;
@@ -53,12 +60,14 @@ class DiagnosticEngine {
                            const char* col_num_str,
                            std::size_t col_num_len,
                            std::string* out_str) const;
-  void format_label(const Label& label,
-                    std::size_t line_number_width,
-                    const char* line_num_str,
-                    std::size_t line_num_len,
-                    std::string* out_str) const;
-  void format(DiagnosticEntry&& entry, std::string* out_str) const;
+  void format_label_body(const Label& label,
+                         std::size_t line_number_width,
+                         std::size_t current_line,
+                         std::string* out_str) const;
+  void format_labels(std::vector<Label>&& sorted_labels,
+                     std::string* out_str) const;
+  void format_header(const Header& header, std::string* out_str) const;
+  void format_one(DiagnosticEntry&& entry, std::string* out_str) const;
   void format(Entries&& entries, std::string* out_str) const;
 
  private:
@@ -66,23 +75,30 @@ class DiagnosticEngine {
     return options_.colorize ? style_to_string(s) : "";
   }
 
+  inline const char* bold() const { return style(Style::kBold); }
+  inline const char* reset() const { return style(Style::kReset); }
+
   // renders a specific source line Rith marker
-  void render_source_line(std::string_view line,
-                          std::size_t column_start,
-                          std::size_t column_end,
-                          const std::string& marker_msg,
-                          std::size_t line_number_width,
-                          std::string* out_str) const;
+  void render_source_line(std::string* out_str,
+                          const Label& label,
+                          std::string_view line,
+                          std::size_t line_number_width) const;
 
   static void indent(std::string* out_str, std::size_t count = 1);
 
-  static std::size_t itoa_to_buffer(int value, char* buffer);
+  template <typename T>
+  static std::size_t itoa_to_buffer(T value,
+                                    char* buffer,
+                                    std::size_t buf_size);
 
   Entries entries_;
   const core::FileManager* file_manager_ = nullptr;
+  const i18n::Translator* translator_ = nullptr;
   DiagnosticOptions options_;
 
   static constexpr const std::size_t kPredictedFormattedStrSize = 512;
+  static constexpr const std::size_t kFormatBufSize = 256;
+  static constexpr const std::size_t kItoaBufSize = 16;
 };
 
 }  // namespace diagnostic

@@ -46,12 +46,12 @@ class DIAGNOSTIC_EXPORT Err {
 };
 
 template <typename T>
-Ok<std::decay_t<T>> make_ok(T&& value) {
+Ok<std::decay_t<T>> create_ok(T&& value) {
   return Ok<std::decay_t<T>>(std::forward<T>(value));
 }
 
 template <typename E>
-Err<std::decay_t<E>> make_err(E&& error) {
+Err<std::decay_t<E>> create_err(E&& error) {
   return Err<std::decay_t<E>>(std::forward<E>(error));
 }
 
@@ -82,7 +82,7 @@ class DIAGNOSTIC_EXPORT Result {
     }
   }
 
-  Result(Result&& other) : is_ok_(other.is_ok_) {
+  Result(Result&& other) noexcept : is_ok_(other.is_ok_) {
     if (is_ok_) {
       new (&storage_.ok_value_) T(std::move(other.storage_.ok_value_));
     } else {
@@ -99,7 +99,7 @@ class DIAGNOSTIC_EXPORT Result {
     return *this;
   }
 
-  Result& operator=(Result&& other) {
+  Result& operator=(Result&& other) noexcept {
     if (this != &other) {
       this->~Result();
       new (this) Result(std::move(other));
@@ -161,7 +161,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto map(F&& f) && {
     using U = std::invoke_result_t<F, T>;
     if (is_ok_) {
-      return make_ok(std::forward<F>(f)(std::move(storage_.ok_value_)));
+      return create_ok(std::forward<F>(f)(std::move(storage_.ok_value_)));
     } else {
       return Result<U, E>(std::move(*this).unwrap_err());
     }
@@ -171,7 +171,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto map(F&& f) const& {
     using U = std::invoke_result_t<F, const T&>;
     if (is_ok_) {
-      return make_ok(std::forward<F>(f)(storage_.ok_value_));
+      return create_ok(std::forward<F>(f)(storage_.ok_value_));
     } else {
       return Result<U, E>(storage_.err_value_);
     }
@@ -181,7 +181,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto map_err(F&& f) && {
     using F_ret_type = std::invoke_result_t<F, E>;
     if (!is_ok_) {
-      return make_err(std::forward<F>(f)(std::move(storage_.ok_value_)));
+      return create_err(std::forward<F>(f)(std::move(storage_.ok_value_)));
     } else {
       return Result<T, F_ret_type>(std::move(*this).unwrap());
     }
@@ -191,7 +191,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto map_err(F&& f) const& {
     using F_ret_type = std::invoke_result_t<F, const E&>;
     if (!is_ok_) {
-      return make_err(std::forward<F>(f)(storage_.err_value_));
+      return create_err(std::forward<F>(f)(storage_.err_value_));
     } else {
       return Result<T, F_ret_type>(storage_.ok_value_);
     }

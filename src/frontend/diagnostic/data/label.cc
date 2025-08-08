@@ -4,20 +4,4 @@
 
 #include "frontend/diagnostic/data/label.h"
 
-#include <string>
-#include <utility>
-
-#include "core/base/file_manager.h"
-
-namespace diagnostic {
-
-Label::Label(core::FileId file_id,
-             const core::SourceRange& range,
-             Annotations&& annotations,
-             std::string&& message)
-    : range_(range),
-      annotations_(std::move(annotations)),
-      message_(std::move(message)),
-      file_id_(file_id) {}
-
-}  // namespace diagnostic
+namespace diagnostic {}  // namespace diagnostic

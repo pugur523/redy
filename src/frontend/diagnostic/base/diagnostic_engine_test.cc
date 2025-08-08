@@ -5,6 +5,7 @@
 #include "frontend/diagnostic/base/diagnostic_engine.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "core/base/file_manager.h"
@@ -17,6 +18,8 @@
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/label.h"
 #include "gtest/gtest.h"
+#include "i18n/base/data/translation_key.h"
+#include "i18n/base/translator.h"
 
 namespace diagnostic {
 
@@ -25,6 +28,8 @@ static core::FileManager file_manager;
 TEST(DiagnosticEngineTest, FormatSingle) {
   std::string source = "x := 42;\ny := ;\n";
   core::FileId fid = file_manager.add_virtual_file(std::move(source));
+
+  i18n::Translator translator;
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
@@ -35,13 +40,20 @@ TEST(DiagnosticEngineTest, FormatSingle) {
       .use_unicode = true,
   };
 
-  DiagnosticEngine engine(&file_manager, options);
+  DiagnosticEngine engine(&file_manager, &translator, options);
 
+  std::string_view expected = "expression";
+  std::string_view before_token = ":=";
+  std::string_view assign_example = "y := 42";
   DiagnosticEntry entry =
-      EntryBuilder(Severity::kError, DiagnosticId::kExpectedExpression,
-                   "expected expression")
-          .label(fid, 2, 6, 1, "expected expression after ':='")
-          .annotation("did you mean `y := 57`?", AnnotationKind::kHelp)
+      std::move(
+          EntryBuilder(Severity::kError, DiagnosticId::kExpectedExpression)
+              .label(fid, 2, 6, 1,
+                     i18n::TranslationKey::kDiagnosticLabelExpectedAfter,
+                     LabelMarkerType::kEmphasis, {expected, before_token})
+              .annotation(AnnotationSeverity::kHelp,
+                          i18n::TranslationKey::kDiagnosticAnnotationDidYouMean,
+                          {assign_example}))
           .build();
 
   engine.push(std::move(entry));
@@ -49,13 +61,14 @@ TEST(DiagnosticEngineTest, FormatSingle) {
   std::string formatted = engine.format_batch();
   engine.clear();
 
-  // DLOG(debug, "format single: \n{}", formatted);
+  // DLOG(debug, "formatted: \n{}", formatted);
 
   constexpr const auto np = std::string::npos;
   EXPECT_NE(formatted.find("expected expression"), np);
-  EXPECT_NE(formatted.find("y := ;"), np);
-  EXPECT_NE(formatted.find('^'), np);
-  EXPECT_NE(formatted.find("expected expression after ':='"), np);
+  EXPECT_NE(formatted.find("y := "), np);
+  EXPECT_NE(formatted.find('~'), np);
+  EXPECT_NE(formatted.find("expected expression after `:=`"), np);
+  EXPECT_NE(formatted.find("did you mean `y := 42`?"), np);
 }
 
 TEST(DiagnosticEngineTest, FormatMultipleLabel) {
@@ -66,6 +79,8 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
   )";
   core::FileId fid = file_manager.add_virtual_file(std::move(source));
 
+  i18n::Translator translator;
+
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
       .colorize = true,
@@ -75,17 +90,28 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
       .use_unicode = true,
   };
 
-  DiagnosticEngine engine(&file_manager, options);
+  DiagnosticEngine engine(&file_manager, &translator, options);
 
+  std::string_view varname = "data";
   DiagnosticEntry entry =
-      EntryBuilder(Severity::kError, DiagnosticId::kMoveAfterBorrow,
-                   "value moved after borrow")
-          .label(fid, 2, 12, 5, "borrow occurs here")
-          .label(fid, 4, 13, 4, "move occurs here")
-          .annotation("`data` was borrowed, but then moved",
-                      AnnotationKind::kNote)
-          .annotation("try cloning `data` if you need to use it after moving",
-                      AnnotationKind::kHelp)
+      std::move(
+          EntryBuilder(Severity::kError,
+                       DiagnosticId::kMovedVariableThatWasStillBorrowed)
+              .label(fid, 2, 12, 5,
+                     i18n::TranslationKey::kDiagnosticLabelBorrowOccursHere,
+                     LabelMarkerType::kLine)
+              .label(fid, 4, 13, 4,
+                     i18n::TranslationKey::kDiagnosticLabelMoveOccursHere,
+                     LabelMarkerType::kEmphasis)
+              .annotation(
+                  AnnotationSeverity::kNote,
+                  i18n::TranslationKey::
+                      kDiagnosticAnnotationMovedVariableThatWasStillBorrowed,
+                  {varname})
+              .annotation(
+                  AnnotationSeverity::kHelp,
+                  i18n::TranslationKey::kDiagnosticAnnotationTryCloningData,
+                  {varname}))
           .build();
 
   engine.push(std::move(entry));
@@ -93,15 +119,19 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
   std::string formatted2 = engine.format_batch();
   engine.clear();
 
-  // DLOG(debug, "format multiple label: \n{}", formatted2);
+  // DLOG(debug, "formatted2:\n{}", formatted2);
 
   constexpr const auto np = std::string::npos;
-  EXPECT_NE(formatted2.find("value moved after borrow"), np);
-  EXPECT_NE(formatted2.find("ref := &data;"), np);
-  EXPECT_NE(formatted2.find("consume(data);"), np);
-  EXPECT_NE(formatted2.find("^~~~"), np);
+  EXPECT_NE(formatted2.find("moved variable that was still borrowed"), np);
+  EXPECT_NE(formatted2.find("ref := "), np);
+  EXPECT_NE(formatted2.find("&data"), np);
+  EXPECT_NE(formatted2.find("consume("), np);
+  EXPECT_NE(formatted2.find("data"), np);
+  EXPECT_NE(formatted2.find("~~~~"), np);
+  EXPECT_NE(formatted2.find("borrow occurs here"), np);
+  EXPECT_NE(formatted2.find("~~~~"), np);
   EXPECT_NE(formatted2.find("move occurs here"), np);
-  EXPECT_NE(formatted2.find("`data` was borrowed, but then moved"), np);
+  EXPECT_NE(formatted2.find("`data` was moved while borrowed"), np);
   EXPECT_NE(formatted2.find("try cloning `data` if you need"), np);
 }
 
@@ -111,6 +141,7 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
     y := ;
   )");
   core::FileId fid = file_manager.add_virtual_file(std::move(source));
+  i18n::Translator translator;
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
@@ -121,13 +152,20 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
       .use_unicode = true,
   };
 
-  DiagnosticEngine engine(&file_manager, options);
+  DiagnosticEngine engine(&file_manager, &translator, options);
 
+  std::string_view expected = "expression";
+  std::string_view before_token = ":=";
+  std::string_view assign_example = "y := 42";
   DiagnosticEntry entry =
-      EntryBuilder(Severity::kError, DiagnosticId::kExpectedExpression,
-                   "expected expression")
-          .label(fid, 1002, 10, 1, "expected expression after ':='")
-          .annotation("did you mean `y := 42`?", AnnotationKind::kHelp)
+      std::move(
+          EntryBuilder(Severity::kError, DiagnosticId::kExpectedExpression)
+              .label(fid, 1002, 10, 1,
+                     i18n::TranslationKey::kDiagnosticLabelExpectedAfter,
+                     LabelMarkerType::kEmphasis, {expected, before_token})
+              .annotation(AnnotationSeverity::kHelp,
+                          i18n::TranslationKey::kDiagnosticAnnotationDidYouMean,
+                          {assign_example}))
           .build();
 
   engine.push(std::move(entry));
@@ -135,13 +173,13 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
   std::string formatted3 = engine.format_batch();
   engine.clear();
 
-  // DLOG(debug, "format very large line number: \n{}", formatted3);
+  // DLOG(debug, "formatted with very large line number: \n{}", formatted3);
 
   constexpr const auto np = std::string::npos;
   EXPECT_NE(formatted3.find("expected expression"), np);
-  EXPECT_NE(formatted3.find("y := ;"), np);
-  EXPECT_NE(formatted3.find('^'), np);
-  EXPECT_NE(formatted3.find("expected expression after ':='"), np);
+  EXPECT_NE(formatted3.find("y := "), np);
+  EXPECT_NE(formatted3.find('~'), np);
+  EXPECT_NE(formatted3.find("expected expression after `:=`"), np);
 }
 
 }  // namespace diagnostic
