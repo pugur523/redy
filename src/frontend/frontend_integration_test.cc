@@ -22,7 +22,7 @@ TEST(FrontendTest, SimpleCodePipeline) {
 
   lexer::Lexer lexer(file);
 
-  std::vector<base::Token> tokens = lexer.lex_all().unwrap();
+  std::vector<base::Token> tokens = lexer.tokenize_all().unwrap();
   EXPECT_FALSE(tokens.empty());
   base::TokenStream stream(std::move(tokens), &file);
   // DLOG(info, "{}", stream.dump());
