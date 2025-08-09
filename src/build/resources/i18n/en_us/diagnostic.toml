@@ -123,3 +123,4 @@ was_not_declared_in_this_scope = "`{}` was not declared in this scope" # variabl
 moved_variable_that_was_still_borrowed = "`{}` was moved while borrowed" # variable
 try_cloning_data = "try cloning `{}` if you need to use it after moving" # variable
 did_you_mean = "did you mean `{}`?" # code
+change_charset_to_utf8_and_try_again = "change charset of the file to utf-8 and try again"

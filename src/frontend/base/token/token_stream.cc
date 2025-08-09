@@ -10,12 +10,14 @@
 
 #include "core/check.h"
 #include "frontend/base/token/token.h"
+#include "unicode/utf8/file.h"
 
 namespace base {
 
-TokenStream::TokenStream(std::vector<Token>&& tokens, const core::File* file)
+TokenStream::TokenStream(std::vector<Token>&& tokens,
+                         const unicode::Utf8File& file)
     : tokens_(std::move(tokens)),
-      file_(file),
+      file_(&file),
       current_token_(&tokens_[0]),
       end_token_(&tokens_.back()) {
   DCHECK(file_);

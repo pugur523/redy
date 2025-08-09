@@ -5,13 +5,15 @@
 #include "frontend/base/token/token.h"
 
 #include "gtest/gtest.h"
+#include "unicode/utf8/file.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace base {
 
 TEST(TokenTest, BasicConstruction) {
-  core::FileManager manager;
-  auto file_id = manager.add_virtual_file("if");
-  const core::File& file = manager.file(file_id);
+  unicode::Utf8FileManager manager;
+  auto file_id = manager.add_virtual_file(u8"if");
+  const unicode::Utf8File& file = manager.file(file_id);
   Token tok(TokenKind::kIf, core::SourceLocation(1, 1), 2);
   EXPECT_EQ(tok.kind(), TokenKind::kIf);
   EXPECT_EQ(tok.lexeme(file), "if");

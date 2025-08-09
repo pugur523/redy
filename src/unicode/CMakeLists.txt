@@ -12,8 +12,6 @@ set(SOURCES
   base/ucd/unicode_data.cc
 
   base/unicode_util.cc
-  base/utf8_decode.cc
-  base/utf8_stream.cc
 
   utf8/cursor.cc
   utf8/decoder.cc

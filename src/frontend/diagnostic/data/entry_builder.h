@@ -40,7 +40,7 @@ class DIAGNOSTIC_EXPORT EntryBuilder {
   EntryBuilder& operator=(EntryBuilder&&) = default;
 
   inline EntryBuilder& label(
-      core::FileId file_id,
+      unicode::Utf8FileId file_id,
       std::size_t line,
       std::size_t column,
       std::size_t length,

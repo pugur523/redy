@@ -10,10 +10,9 @@
 namespace base {
 
 static void keyword_lookup_keyword(benchmark::State& state) {
-  const std::string id = "if";
+  const std::u8string id = u8"if";
   for (auto _ : state) {
-    TokenKind k = lookup_id_or_keyword(id);
-    benchmark::DoNotOptimize(k);
+    benchmark::DoNotOptimize(lookup_id_or_keyword(id));
   }
 
   state.SetBytesProcessed(id.size() * sizeof(char) * state.iterations());

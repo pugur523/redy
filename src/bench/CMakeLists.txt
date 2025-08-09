@@ -12,7 +12,8 @@ set(SOURCES
   # ${PROJECT_SOURCE_DIR}/core/base/file_util_bench.cc
   # ${PROJECT_SOURCE_DIR}/core/base/string_util_bench.cc
 
-  ${PROJECT_SOURCE_DIR}/unicode/base/utf8_stream_bench.cc
+  ${PROJECT_SOURCE_DIR}/unicode/utf8/cursor_bench.cc
+  ${PROJECT_SOURCE_DIR}/unicode/utf8/decoder_bench.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_bench.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_bench.cc

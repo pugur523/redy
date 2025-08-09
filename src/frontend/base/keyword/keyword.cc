@@ -16,7 +16,7 @@ namespace base {
 
 namespace {
 
-constexpr std::size_t calc_word_hash(std::string_view word) {
+constexpr std::size_t calc_word_hash(std::u8string_view word) {
   if (word.empty()) {
     return 0;
   }
@@ -29,13 +29,13 @@ constexpr std::size_t calc_word_hash(std::string_view word) {
 }
 
 struct KeywordEntry {
-  const char* keyword_lexeme;
+  const char8_t* keyword_lexeme;
   std::size_t length;
   TokenKind token_kind;
 
-  constexpr KeywordEntry(const char* kw, TokenKind kind)
+  constexpr KeywordEntry(const char8_t* kw, TokenKind kind)
       : keyword_lexeme(kw),
-        length(std::char_traits<char>::length(kw)),
+        length(std::char_traits<char8_t>::length(kw)),
         token_kind(kind) {}
 
   constexpr KeywordEntry()
@@ -49,64 +49,64 @@ consteval std::array<KeywordEntry, 128> create_keyword_table() {
 
   constexpr KeywordEntry keywords[] = {
       // # primitive types
-      {"i8", TokenKind::kType},
-      {"i16", TokenKind::kType},
-      {"i32", TokenKind::kType},
-      {"i64", TokenKind::kType},
-      {"i128", TokenKind::kType},
-      {"isize", TokenKind::kType},
-      {"u8", TokenKind::kType},
-      {"u16", TokenKind::kType},
-      {"u32", TokenKind::kType},
-      {"u64", TokenKind::kType},
-      {"u128", TokenKind::kType},
-      {"usize", TokenKind::kType},
-      {"f32", TokenKind::kType},
-      {"f64", TokenKind::kType},
-      {"void", TokenKind::kType},
-      {"bool", TokenKind::kType},
-      {"char", TokenKind::kType},
-      {"byte", TokenKind::kType},
+      {u8"i8", TokenKind::kType},
+      {u8"i16", TokenKind::kType},
+      {u8"i32", TokenKind::kType},
+      {u8"i64", TokenKind::kType},
+      {u8"i128", TokenKind::kType},
+      {u8"isize", TokenKind::kType},
+      {u8"u8", TokenKind::kType},
+      {u8"u16", TokenKind::kType},
+      {u8"u32", TokenKind::kType},
+      {u8"u64", TokenKind::kType},
+      {u8"u128", TokenKind::kType},
+      {u8"usize", TokenKind::kType},
+      {u8"f32", TokenKind::kType},
+      {u8"f64", TokenKind::kType},
+      {u8"void", TokenKind::kType},
+      {u8"bool", TokenKind::kType},
+      {u8"char", TokenKind::kType},
+      {u8"byte", TokenKind::kType},
 
       // # qualified keywords
 
       // ## control flow
-      {"if", TokenKind::kIf},
-      {"else", TokenKind::kElse},
-      {"loop", TokenKind::kLoop},
-      {"while", TokenKind::kWhile},
-      {"for", TokenKind::kFor},
-      {"break", TokenKind::kBreak},
-      {"continue", TokenKind::kContinue},
-      {"ret", TokenKind::kReturn},
-      {"match", TokenKind::kMatch},
+      {u8"if", TokenKind::kIf},
+      {u8"else", TokenKind::kElse},
+      {u8"loop", TokenKind::kLoop},
+      {u8"while", TokenKind::kWhile},
+      {u8"for", TokenKind::kFor},
+      {u8"break", TokenKind::kBreak},
+      {u8"continue", TokenKind::kContinue},
+      {u8"ret", TokenKind::kReturn},
+      {u8"match", TokenKind::kMatch},
 
       // ## declaration
-      {"mut", TokenKind::kMutable},
-      {"fn", TokenKind::kFunction},
-      {"struct", TokenKind::kStruct},
-      {"enum", TokenKind::kEnumeration},
-      {"trait", TokenKind::kTrait},
-      {"impl", TokenKind::kImplementation},
-      {"union", TokenKind::kUnion},
-      {"redirect", TokenKind::kRedirect},
-      {"const", TokenKind::kConstant},
-      {"extern", TokenKind::kExtern},
-      {"static", TokenKind::kStatic},
-      {"thread_local", TokenKind::kThreadLocal},
+      {u8"mut", TokenKind::kMutable},
+      {u8"fn", TokenKind::kFunction},
+      {u8"struct", TokenKind::kStruct},
+      {u8"enum", TokenKind::kEnumeration},
+      {u8"trait", TokenKind::kTrait},
+      {u8"impl", TokenKind::kImplementation},
+      {u8"union", TokenKind::kUnion},
+      {u8"redirect", TokenKind::kRedirect},
+      {u8"const", TokenKind::kConstant},
+      {u8"extern", TokenKind::kExtern},
+      {u8"static", TokenKind::kStatic},
+      {u8"thread_local", TokenKind::kThreadLocal},
 
-      {"unsafe", TokenKind::kUnsafe},
-      {"fast", TokenKind::kFast},
-      {"default", TokenKind::kDefault},
-      {"deprecated", TokenKind::kDeprecated},
-      {"pub", TokenKind::kPublic},
+      {u8"unsafe", TokenKind::kUnsafe},
+      {u8"fast", TokenKind::kFast},
+      {u8"default", TokenKind::kDefault},
+      {u8"deprecated", TokenKind::kDeprecated},
+      {u8"pub", TokenKind::kPublic},
 
-      {"as", TokenKind::kAs},
-      {"this", TokenKind::kThis},
+      {u8"as", TokenKind::kAs},
+      {u8"this", TokenKind::kThis},
 
       // ## literals
-      {"true", TokenKind::kTrue},
-      {"false", TokenKind::kFalse},
+      {u8"true", TokenKind::kTrue},
+      {u8"false", TokenKind::kFalse},
   };
 
   for (const auto& kw : keywords) {
@@ -119,12 +119,12 @@ consteval std::array<KeywordEntry, 128> create_keyword_table() {
 
 constexpr auto kKeywordTable = create_keyword_table();
 
-inline bool fast_equals(std::string_view word, const KeywordEntry& entry) {
+inline bool fast_equals(std::u8string_view word, const KeywordEntry& entry) {
   return word.length() == entry.length &&
          std::memcmp(word.data(), entry.keyword_lexeme, entry.length) == 0;
 }
 
-TokenKind fast_lookup(std::string_view word) {
+TokenKind fast_lookup(std::u8string_view word) {
   const std::size_t len = word.length();
   const char first = word[0];
 
@@ -160,40 +160,40 @@ TokenKind fast_lookup(std::string_view word) {
     case 3:
       switch (first) {
         case 'm':
-          if (word == "mut") {
+          if (word == u8"mut") {
             return TokenKind::kMutable;
           }
           break;
         case 'f':
-          if (word == "for") {
+          if (word == u8"for") {
             return TokenKind::kFor;
           }
-          if (word == "f32") {
+          if (word == u8"f32") {
             return TokenKind::kType;
           }
-          if (word == "f64") {
+          if (word == u8"f64") {
             return TokenKind::kType;
           }
           break;
         case 'i':
-          if (word == "i16") {
+          if (word == u8"i16") {
             return TokenKind::kType;
           }
-          if (word == "i32") {
+          if (word == u8"i32") {
             return TokenKind::kType;
           }
-          if (word == "i64") {
+          if (word == u8"i64") {
             return TokenKind::kType;
           }
           break;
         case 'u':
-          if (word == "u16") {
+          if (word == u8"u16") {
             return TokenKind::kType;
           }
-          if (word == "u32") {
+          if (word == u8"u32") {
             return TokenKind::kType;
           }
-          if (word == "u64") {
+          if (word == u8"u64") {
             return TokenKind::kType;
           }
           break;
@@ -203,58 +203,58 @@ TokenKind fast_lookup(std::string_view word) {
     case 4:
       switch (first) {
         case 'e':
-          if (word == "else") {
+          if (word == u8"else") {
             return TokenKind::kElse;
           }
-          if (word == "enum") {
+          if (word == u8"enum") {
             return TokenKind::kEnumeration;
           }
           break;
         case 't':
-          if (word == "true") {
+          if (word == u8"true") {
             return TokenKind::kTrue;
           }
-          if (word == "this") {
+          if (word == u8"this") {
             return TokenKind::kThis;
           }
           break;
         case 'v':
-          if (word == "void") {
+          if (word == u8"void") {
             return TokenKind::kType;
           }
           break;
         case 'b':
-          if (word == "bool") {
+          if (word == u8"bool") {
             return TokenKind::kType;
           }
-          if (word == "byte") {
+          if (word == u8"byte") {
             return TokenKind::kType;
           }
           break;
         case 'c':
-          if (word == "char") {
+          if (word == u8"char") {
             return TokenKind::kType;
           }
           break;
         case 'f':
-          if (word == "fast") {
+          if (word == u8"fast") {
             return TokenKind::kFast;
           }
           break;
         case 'l':
-          if (word == "loop") {
+          if (word == u8"loop") {
             return TokenKind::kLoop;
           }
         case 'i':
-          if (word == "i128") {
+          if (word == u8"i128") {
             return TokenKind::kType;
           }
-          if (word == "impl") {
+          if (word == u8"impl") {
             return TokenKind::kImplementation;
           }
           break;
         case 'u':
-          if (word == "u128") {
+          if (word == u8"u128") {
             return TokenKind::kType;
           }
           break;
@@ -264,41 +264,41 @@ TokenKind fast_lookup(std::string_view word) {
     case 5:
       switch (first) {
         case 'w':
-          if (word == "while") {
+          if (word == u8"while") {
             return TokenKind::kWhile;
           }
           break;
         case 'b':
-          if (word == "break") {
+          if (word == u8"break") {
             return TokenKind::kBreak;
           }
           break;
         case 'f':
-          if (word == "false") {
+          if (word == u8"false") {
             return TokenKind::kFalse;
           }
           break;
         case 'c':
-          if (word == "const") {
+          if (word == u8"const") {
             return TokenKind::kConstant;
           }
         case 't':
-          if (word == "trait") {
+          if (word == u8"trait") {
             return TokenKind::kTrait;
           }
         case 'm':
-          if (word == "match") {
+          if (word == u8"match") {
             return TokenKind::kMatch;
           }
         case 'i':
-          if (word == "isize") {
+          if (word == u8"isize") {
             return TokenKind::kType;
           }
         case 'u':
-          if (word == "union") {
+          if (word == u8"union") {
             return TokenKind::kUnion;
           }
-          if (word == "usize") {
+          if (word == u8"usize") {
             return TokenKind::kType;
           }
       }
@@ -310,7 +310,7 @@ TokenKind fast_lookup(std::string_view word) {
 
 }  // namespace
 
-TokenKind lookup_id_or_keyword(std::string_view word) {
+TokenKind lookup_id_or_keyword(std::u8string_view word) {
   if (word.empty()) [[unlikely]] {
     return TokenKind::kIdentifier;
   }
@@ -332,12 +332,12 @@ TokenKind lookup_id_or_keyword(std::string_view word) {
   return TokenKind::kIdentifier;
 }
 
-TokenKind lookup_id_or_keyword(const std::string& full_source,
+TokenKind lookup_id_or_keyword(std::u8string_view full_source,
                                std::size_t start,
                                std::size_t length) {
   DCHECK_LE(start + length, full_source.length());
   return lookup_id_or_keyword(
-      std::string_view(full_source.data() + start, length));
+      std::u8string_view(full_source.data() + start, length));
 }
 
 }  // namespace base

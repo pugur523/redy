@@ -22,12 +22,12 @@ namespace ast {
 
 namespace {
 
-static core::FileManager file_manager;
+static unicode::Utf8FileManager file_manager;
 
 Token make_dummy_token(std::string&& lexeme = "dummy",
                        TokenKind kind = TokenKind::kIdentifier) {
   std::size_t len = lexeme.length();
-  core::FileId id = file_manager.add_virtual_file(std::move(lexeme));
+  unicode::Utf8FileId id = file_manager.add_virtual_file(std::move(lexeme));
   return Token(kind, core::SourceLocation(1, 1, id), len);
 }
 

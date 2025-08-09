@@ -6,25 +6,41 @@
 #include <utility>
 #include <vector>
 
-#include "core/base/file_util.h"
 #include "core/base/logger.h"
 #include "frontend/base/token/token_stream.h"
+#include "frontend/diagnostic/base/diagnostic_engine.h"
 #include "frontend/lexer/lexer.h"
 #include "gtest/gtest.h"
+#include "i18n/base/translator.h"
 #include "testing/test_util.h"
+#include "unicode/utf8/file_manager.h"
 
-TEST(FrontendTest, SimpleCodePipeline) {
-  core::FileManager manager;
+namespace {
 
-  // core::FileId id = manager.add_file(file_path);
-  core::FileId id = manager.add_virtual_file("x := 42; y: i32 = 57;");
-  const core::File& file = manager.file(id);
+void verify_compile_pipeline(std::u8string&& src) {
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId id = manager.add_virtual_file(std::move(src));
+  const unicode::Utf8File& file = manager.file(id);
+  i18n::Translator translator;
+  diagnostic::DiagnosticOptions options;
+  diagnostic::DiagnosticEngine engine(&manager, &translator, options);
 
-  lexer::Lexer lexer(file);
+  lexer::Lexer lexer;
 
-  std::vector<base::Token> tokens = lexer.tokenize_all().unwrap();
+  lexer::Lexer::InitResult init_result = lexer.init(file);
+  if (init_result.is_err()) {
+    engine.push(std::move(init_result).unwrap_err());
+  }
+
+  lexer::Lexer::Results<base::Token> tokenize_result = lexer.tokenize_all();
+  if (tokenize_result.is_err()) {
+    for (auto&& e : std::move(tokenize_result).unwrap_err()) {
+      engine.push(std::move(e).convert_to_entry());
+    }
+  }
+  std::vector<base::Token> tokens = std::move(tokenize_result).unwrap();
   EXPECT_FALSE(tokens.empty());
-  base::TokenStream stream(std::move(tokens), &file);
+  base::TokenStream stream(std::move(tokens), file);
   // DLOG(info, "{}", stream.dump());
 
   // parser::Parser parser(std::move(stream));
@@ -38,10 +54,22 @@ TEST(FrontendTest, SimpleCodePipeline) {
   // core::write_file(
   //     core::join_path(test_dir(),
   //     "frontend_simple_code_pipeline.ast").c_str(), program_node->dump());
+
+  EXPECT_TRUE(engine.entries().empty());
+  if (!engine.entries().empty()) {
+    const std::string formatted_diagnostics = engine.format_batch_and_clear();
+    DLOG(info, "\n{}", formatted_diagnostics);
+  }
+}
+
+}  // namespace
+
+TEST(FrontendTest, SimpleCodePipeline) {
+  verify_compile_pipeline(u8"x := 42; y: i32 = 57;");
 }
 
 // TEST(FrontendTest, HelloWorldFunctionPipeline) {
-//   core::FileManager manager;
+//   unicode::Utf8FileManager manager;
 //   std::string source = R"(
 //         fn main() -> i32 {
 //             world_str := "world"
@@ -52,7 +80,7 @@ TEST(FrontendTest, SimpleCodePipeline) {
 //             ret 0
 //         }
 //     )";
-//   core::FileId id = manager.add_virtual_file(std::move(source));
+//   unicode::Utf8FileId id = manager.add_virtual_file(std::move(source));
 //   lexer::Lexer lexer(&manager, id);
 //
 //   auto tokens = lexer.lex_all().unwrap();

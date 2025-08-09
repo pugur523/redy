@@ -15,7 +15,7 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/core/base/vec_test.cc
   ${PROJECT_SOURCE_DIR}/core/diagnostics/system_info_test.cc
 
-  ${PROJECT_SOURCE_DIR}/unicode/base/utf8_stream_test.cc
+  ${PROJECT_SOURCE_DIR}/unicode/utf8/cursor_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc

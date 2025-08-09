@@ -7,7 +7,7 @@
 
 namespace lexer {
 
-Lexer::Result<Lexer::Token> Lexer::unicode_token(uint32_t current_codepoint,
+Lexer::Result<Lexer::Token> Lexer::unicode_token(char32_t current_codepoint,
                                                  std::size_t start,
                                                  std::size_t line,
                                                  std::size_t col) {
@@ -21,9 +21,8 @@ Lexer::Result<Lexer::Token> Lexer::unicode_token(uint32_t current_codepoint,
     return literal_numeric();
   }
 
-  return Result<Token>(diagnostic::make_err(LexError::make(
-      diagnostic::DiagnosticId::kUnrecognizedCharacter, start, line, col,
-      "non-ascii character in operator/punctuation context")));
+  return err<Token>(Error::create(
+      start, line, col, diagnostic::DiagnosticId::kUnrecognizedCharacter));
 }
 
 }  // namespace lexer

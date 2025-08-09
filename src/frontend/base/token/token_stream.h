@@ -12,12 +12,14 @@
 #include "frontend/base/base_export.h"
 #include "frontend/base/token/token.h"
 #include "frontend/base/token/token_kind.h"
+#include "unicode/utf8/file.h"
 
 namespace base {
 
 class BASE_EXPORT TokenStream {
  public:
-  explicit TokenStream(std::vector<Token>&& tokens, const core::File* file);
+  explicit TokenStream(std::vector<Token>&& tokens,
+                       const unicode::Utf8File& file);
 
   ~TokenStream() = default;
 
@@ -34,7 +36,7 @@ class BASE_EXPORT TokenStream {
   inline const Token& advance();
   inline bool match(TokenKind expected_kind);
 
-  inline const core::File* file() const { return file_; }
+  inline const unicode::Utf8File& file() const { return *file_; }
 
   inline constexpr void rewind(std::size_t pos) {
     DCHECK_LE(pos, tokens_.size()) << "rewind range is invalid";
@@ -64,7 +66,7 @@ class BASE_EXPORT TokenStream {
 
  private:
   std::vector<Token> tokens_;
-  const core::File* file_ = nullptr;
+  const unicode::Utf8File* file_ = nullptr;
   const Token* current_token_ = nullptr;
   const Token* end_token_ = nullptr;
   std::size_t pos_ = 0;

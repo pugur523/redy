@@ -43,7 +43,7 @@ namespace diagnostic {
 //    = note: `data` was moved while borrowed
 //    = help: try cloning `data` if you need to use it after moving
 
-DiagnosticEngine::DiagnosticEngine(const core::FileManager* file_manager,
+DiagnosticEngine::DiagnosticEngine(const unicode::Utf8FileManager* file_manager,
                                    const i18n::Translator* translator,
                                    DiagnosticOptions options)
     : file_manager_(file_manager), translator_(translator), options_(options) {
@@ -62,7 +62,7 @@ std::string DiagnosticEngine::pop_and_format() {
   return result;
 }
 
-std::string DiagnosticEngine::format_batch() {
+std::string DiagnosticEngine::format_batch_and_clear() {
   Entries local;
   entries_.swap(local);
 
@@ -105,8 +105,8 @@ void DiagnosticEngine::format_label_header(const Label& label,
                                            const char* col_num_str,
                                            std::size_t col_num_len,
                                            std::string* out_str) const {
-  const core::File& file = file_manager_->file(label.file_id());
-  const std::string& file_name = file.file_name();
+  const unicode::Utf8File& file = file_manager_->file(label.file_id());
+  const std::string_view file_name = file.file_name();
 
   out_str->append(line_number_width, ' ');
   out_str->append("-> ");
@@ -137,7 +137,7 @@ void DiagnosticEngine::format_label_body(const Label& label,
                                          std::size_t line_number_width,
                                          std::size_t current_line,
                                          std::string* out_str) const {
-  const core::File& file = file_manager_->file(label.file_id());
+  const unicode::Utf8File& file = file_manager_->file(label.file_id());
   const core::SourceLocation& loc = label.range().start();
   const std::size_t label_line = loc.line();
 
@@ -222,7 +222,7 @@ void DiagnosticEngine::format_labels(std::vector<Label>&& sorted_labels,
   // buffer for current line and column numbers within the loop
   char current_line_buf[kItoaBufSize];
   char current_col_buf[kItoaBufSize];
-  core::FileId last_file_id = core::kInvalidFileId;
+  unicode::Utf8FileId last_file_id = core::kInvalidFileId;
 
   for (const auto& label_group : label_groups) {
     // file id is the same but separated by group:

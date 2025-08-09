@@ -5,7 +5,7 @@
 #ifndef FRONTEND_BASE_KEYWORD_KEYWORD_H_
 #define FRONTEND_BASE_KEYWORD_KEYWORD_H_
 
-#include <string>
+#include <string_view>
 
 #include "frontend/base/base_export.h"
 #include "frontend/base/token/token_kind.h"
@@ -20,9 +20,9 @@ inline bool is_literal(TokenKind kind) {
   return kind >= TokenKind::kLiteralsBegin && kind <= TokenKind::kLiteralsEnd;
 }
 
-BASE_EXPORT TokenKind lookup_id_or_keyword(std::string_view word);
+BASE_EXPORT TokenKind lookup_id_or_keyword(std::u8string_view word);
 
-BASE_EXPORT TokenKind lookup_id_or_keyword(const std::string& full_source,
+BASE_EXPORT TokenKind lookup_id_or_keyword(std::u8string_view full_source,
                                            std::size_t start,
                                            std::size_t length);
 

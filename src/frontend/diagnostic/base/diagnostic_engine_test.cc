@@ -23,11 +23,11 @@
 
 namespace diagnostic {
 
-static core::FileManager file_manager;
+static unicode::Utf8FileManager file_manager;
 
 TEST(DiagnosticEngineTest, FormatSingle) {
-  std::string source = "x := 42;\ny := ;\n";
-  core::FileId fid = file_manager.add_virtual_file(std::move(source));
+  std::u8string source = u8"x := 42;\ny := ;\n";
+  unicode::Utf8FileId fid = file_manager.add_virtual_file(std::move(source));
 
   i18n::Translator translator;
 
@@ -58,7 +58,7 @@ TEST(DiagnosticEngineTest, FormatSingle) {
 
   engine.push(std::move(entry));
 
-  std::string formatted = engine.format_batch();
+  std::string formatted = engine.format_batch_and_clear();
   engine.clear();
 
   // DLOG(debug, "formatted: \n{}", formatted);
@@ -72,12 +72,13 @@ TEST(DiagnosticEngineTest, FormatSingle) {
 }
 
 TEST(DiagnosticEngineTest, FormatMultipleLabel) {
-  std::string source = R"(
+  std::u8string source =
+      u8R"(
     ref := &data;
     println#("{}", ref);
     consume(data);
   )";
-  core::FileId fid = file_manager.add_virtual_file(std::move(source));
+  unicode::Utf8FileId fid = file_manager.add_virtual_file(std::move(source));
 
   i18n::Translator translator;
 
@@ -116,7 +117,7 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
 
   engine.push(std::move(entry));
 
-  std::string formatted2 = engine.format_batch();
+  std::string formatted2 = engine.format_batch_and_clear();
   engine.clear();
 
   // DLOG(debug, "formatted2:\n{}", formatted2);
@@ -136,11 +137,12 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
 }
 
 TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
-  std::string prefix(1000, '\n');
-  std::string source = prefix.append(R"(
+  std::u8string prefix(1000, '\n');
+  std::u8string source = prefix.append(
+      u8R"(
     y := ;
   )");
-  core::FileId fid = file_manager.add_virtual_file(std::move(source));
+  unicode::Utf8FileId fid = file_manager.add_virtual_file(std::move(source));
   i18n::Translator translator;
 
   DiagnosticOptions options{
@@ -170,7 +172,7 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
 
   engine.push(std::move(entry));
 
-  std::string formatted3 = engine.format_batch();
+  std::string formatted3 = engine.format_batch_and_clear();
   engine.clear();
 
   // DLOG(debug, "formatted with very large line number: \n{}", formatted3);

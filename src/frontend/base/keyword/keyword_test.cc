@@ -10,10 +10,12 @@
 namespace base {
 
 TEST(KeywordTest, LookupKeyword) {
-  EXPECT_EQ(lookup_id_or_keyword("if"), TokenKind::kIf);
-  EXPECT_EQ(lookup_id_or_keyword("else"), TokenKind::kElse);
-  EXPECT_EQ(lookup_id_or_keyword("while"), TokenKind::kWhile);
-  EXPECT_EQ(lookup_id_or_keyword("custom_id"), TokenKind::kIdentifier);
+  EXPECT_EQ(lookup_id_or_keyword(u8"if"), TokenKind::kIf);
+  EXPECT_EQ(lookup_id_or_keyword(u8"else"), TokenKind::kElse);
+  EXPECT_EQ(lookup_id_or_keyword(u8"while"), TokenKind::kWhile);
+  EXPECT_EQ(lookup_id_or_keyword(u8"custom_id"), TokenKind::kIdentifier);
+  EXPECT_EQ(lookup_id_or_keyword(u8"i32"), TokenKind::kType);
+  EXPECT_EQ(lookup_id_or_keyword(u8"infer"), TokenKind::kIdentifier);
 }
 
 }  // namespace base

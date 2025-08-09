@@ -10,12 +10,12 @@
 #include <utility>
 #include <vector>
 
-#include "core/base/file_manager.h"
 #include "frontend/base/token/token.h"
 #include "frontend/diagnostic/base/diagnostic_options.h"
 #include "frontend/diagnostic/base/style.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/label.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace i18n {
 class Translator;
@@ -27,7 +27,7 @@ class DiagnosticEngine {
  public:
   using Entries = std::vector<DiagnosticEntry>;
 
-  explicit DiagnosticEngine(const core::FileManager* file_manager,
+  explicit DiagnosticEngine(const unicode::Utf8FileManager* file_manager,
                             const i18n::Translator* translator,
                             DiagnosticOptions options);
 
@@ -45,10 +45,16 @@ class DiagnosticEngine {
     entries_.push_back(std::move(entry));
   }
 
+  inline void push(Entries&& entries) {
+    for (auto&& entry : entries) {
+      push(std::move(entry));
+    }
+  }
+
   inline void clear() { entries_.clear(); }
 
   std::string pop_and_format();
-  std::string format_batch();
+  std::string format_batch_and_clear();
 
   void format_annotation(const Annotation& annotation,
                          std::size_t line_number_width,
@@ -92,7 +98,7 @@ class DiagnosticEngine {
                                     std::size_t buf_size);
 
   Entries entries_;
-  const core::FileManager* file_manager_ = nullptr;
+  const unicode::Utf8FileManager* file_manager_ = nullptr;
   const i18n::Translator* translator_ = nullptr;
   DiagnosticOptions options_;
 

@@ -96,7 +96,7 @@ inline constexpr uint8_t utf8_codepoint_length(char32_t c) {
 
 inline bool is_valid_continuation_sequence(const uint8_t* bytes, uint8_t len) {
   // check all continuation bytes at once using simd where possible
-  uint32_t mask = 0;
+  char32_t mask = 0;
   for (uint8_t i = 1; i < len; ++i) {
     mask |= (bytes[i] & 0xC0) ^ 0x80;
   }
@@ -104,8 +104,8 @@ inline bool is_valid_continuation_sequence(const uint8_t* bytes, uint8_t len) {
 }
 
 inline bool is_valid_codepoint(char32_t cp, uint8_t len) {
-  constexpr uint32_t kMinValues[5] = {0, 0, 0x80, 0x800, 0x10000};
-  constexpr uint32_t kMaxValues[5] = {0, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+  constexpr char32_t kMinValues[5] = {0, 0, 0x80, 0x800, 0x10000};
+  constexpr char32_t kMaxValues[5] = {0, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
   return cp >= kMinValues[len] && cp <= kMaxValues[len] &&
          !(cp >= 0xD800 && cp <= 0xDFFF);  // no surrogates
 }

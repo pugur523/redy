@@ -22,77 +22,77 @@ struct NumericMeta {
 }  // namespace
 
 Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
-  const std::size_t start = stream_->position();
-  const std::size_t line = stream_->line();
-  const std::size_t col = stream_->column();
+  const std::size_t start = cursor_.position();
+  const std::size_t line = cursor_.line();
+  const std::size_t col = cursor_.column();
 
   NumericMeta meta;
 
-  const char32_t ch0 = stream_->peek();
-  const char32_t ch1 = stream_->peek(1);
+  const char32_t ch0 = cursor_.peek();
+  const char32_t ch1 = cursor_.peek_at(1);
 
   // base prefixes (0x, 0b, 0o)
-  if (ch0 == U'0') {
-    if (ch1 == U'x' || ch1 == U'X') {
+  if (ch0 == '0') {
+    if (ch1 == 'x' || ch1 == 'X') {
       // hex
       meta.is_base_prefixed = true;
-      stream_->advance();  // consume '0'
-      stream_->advance();  // consume 'x'
+      cursor_.next();  // consume '0'
+      cursor_.next();  // consume 'x'
 
       // consume hex digits
-      while (core::is_ascii_hex_digit(stream_->peek())) {
+      while (core::is_ascii_hex_digit(cursor_.peek())) {
         meta.has_digit = true;
-        stream_->advance();
+        cursor_.next();
       }
 
-    } else if (ch1 == U'b' || ch1 == U'B') {
+    } else if (ch1 == 'b' || ch1 == 'B') {
       // binary
       meta.is_base_prefixed = true;
-      stream_->advance();  // consume '0'
-      stream_->advance();  // consume 'b'
+      cursor_.next();  // consume '0'
+      cursor_.next();  // consume 'b'
 
       // consume binary digits
       while (true) {
-        const char32_t c = stream_->peek();
+        const char32_t c = cursor_.peek();
         if (core::is_ascii_binary_digit(c)) {
           meta.has_digit = true;
-          stream_->advance();
+          cursor_.next();
         } else {
           break;
         }
       }
 
       // check for invalid binary digits (2-9)
-      if (core::is_ascii_digit(stream_->peek()) &&
-          !core::is_ascii_binary_digit(stream_->peek())) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                           start, line, col, "invalid binary literal")));
+      if (core::is_ascii_digit(cursor_.peek()) &&
+          !core::is_ascii_binary_digit(cursor_.peek())) {
+        return err<Token>(
+            Error::create(start, line, col,
+                          diagnostic::DiagnosticId::kInvalidNumericLiteral));
       }
 
-    } else if (ch1 == U'o' || ch1 == U'O') {
+    } else if (ch1 == 'o' || ch1 == 'O') {
       // octal
       meta.is_base_prefixed = true;
-      stream_->advance();  // consume '0'
-      stream_->advance();  // consume 'o'
+      cursor_.next();  // consume '0'
+      cursor_.next();  // consume 'o'
 
       // consume octal digits
       while (true) {
-        const char32_t c = stream_->peek();
+        const char32_t c = cursor_.peek();
         if (core::is_ascii_octal_digit(c)) {
           meta.has_digit = true;
-          stream_->advance();
+          cursor_.next();
         } else {
           break;
         }
       }
 
       // check for invalid octal digits (8-9)
-      if (core::is_ascii_digit(stream_->peek()) &&
-          !core::is_ascii_octal_digit(stream_->peek())) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                           start, line, col, "invalid octal literal")));
+      if (core::is_ascii_digit(cursor_.peek()) &&
+          !core::is_ascii_octal_digit(cursor_.peek())) {
+        return err<Token>(
+            Error::create(start, line, col,
+                          diagnostic::DiagnosticId::kInvalidNumericLiteral));
       }
     }
   }
@@ -100,70 +100,67 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
   // handle decimal numbers (if not base-prefixed)
   if (!meta.is_base_prefixed) {
     // consume initial digits
-    while (core::is_ascii_digit(stream_->peek())) {
+    while (core::is_ascii_digit(cursor_.peek())) {
       meta.has_digit = true;
-      stream_->advance();
+      cursor_.next();
     }
 
     // handle decimal point
-    if (stream_->peek() == U'.' && core::is_ascii_digit(stream_->peek(1))) {
+    if (cursor_.peek() == '.' && core::is_ascii_digit(cursor_.peek_at(1))) {
       meta.seen_dot = true;
-      stream_->advance();  // consume '.'
+      cursor_.next();  // consume '.'
 
       // consume fractional digits
-      while (core::is_ascii_digit(stream_->peek())) {
+      while (core::is_ascii_digit(cursor_.peek())) {
         meta.has_digit = true;
-        stream_->advance();
+        cursor_.next();
       }
     }
 
     // handle scientific notation
-    if ((stream_->peek() == U'e' || stream_->peek() == U'E') &&
-        meta.has_digit) {
+    if ((cursor_.peek() == 'e' || cursor_.peek() == 'E') && meta.has_digit) {
       meta.seen_exponent = true;
-      stream_->advance();  // consume 'e'
+      cursor_.next();  // consume 'e'
 
       // optional sign
-      if (stream_->peek() == U'+' || stream_->peek() == U'-') {
-        stream_->advance();
+      if (cursor_.peek() == '+' || cursor_.peek() == '-') {
+        cursor_.next();
       }
 
       // must have digits after exponent
       bool has_exp_digits = false;
-      while (core::is_ascii_digit(stream_->peek())) {
+      while (core::is_ascii_digit(cursor_.peek())) {
         has_exp_digits = true;
-        stream_->advance();
+        cursor_.next();
       }
 
       if (!has_exp_digits) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                           start, line, col, "invalid scientific notation")));
+        return err<Token>(
+            Error::create(start, line, col,
+                          diagnostic::DiagnosticId::kInvalidNumericLiteral));
       }
     }
   }
 
   // check if we actually found any valid digits
   if (!meta.has_digit) {
-    return Result<Token>(diagnostic::make_err(
-        LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral, start,
-                       line, col, "invalid numeric literal")));
+    return err<Token>(Error::create(
+        start, line, col, diagnostic::DiagnosticId::kInvalidNumericLiteral));
   }
 
   // handle optional suffix
-  if (core::is_ascii_alphabet(stream_->peek())) {
-    const char32_t suffix = stream_->peek();
-    if (suffix == U'f' || suffix == U'd' || suffix == U'L') {
-      stream_->advance();
+  if (core::is_ascii_alphabet(cursor_.peek())) {
+    const char32_t suffix = cursor_.peek();
+    if (suffix == 'f' || suffix == 'd' || suffix == 'L') {
+      cursor_.next();
     } else {
       // invalid suffix
-      return Result<Token>(diagnostic::make_err(
-          LexError::make(diagnostic::DiagnosticId::kInvalidNumericLiteral,
-                         start, line, col, "invalid numeric literal suffix")));
+      return err<Token>(Error::create(
+          start, line, col, diagnostic::DiagnosticId::kInvalidNumericLiteral));
     }
   }
 
-  return make_token(TokenKind::kLiteralNumeric, start, line, col);
+  return create_token(TokenKind::kLiteralNumeric, start, line, col);
 }
 
 }  // namespace lexer

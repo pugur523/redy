@@ -10,21 +10,22 @@
 
 #include "frontend/base/token/token.h"
 #include "gtest/gtest.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace base {
 
 TEST(TokenStreamTest, BasicNextAndPeek) {
   std::vector<Token> tokens;
-  core::FileManager manager;
-  core::FileId file_id = manager.add_virtual_file("x + 42");
-  const core::File& file = manager.file(file_id);
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId file_id = manager.add_virtual_file(u8"x + 42");
+  const unicode::Utf8File& file = manager.file(file_id);
 
   tokens.emplace_back(TokenKind::kIdentifier, 1, 1, 1);
   tokens.emplace_back(TokenKind::kPlus, 1, 3, 1);
   tokens.emplace_back(TokenKind::kLiteralNumeric, 1, 5, 2);
   tokens.emplace_back(TokenKind::kEof, 1, 7, 0);
 
-  TokenStream stream(std::move(tokens), &file);
+  TokenStream stream(std::move(tokens), file);
 
   EXPECT_EQ(stream.peek().kind(), TokenKind::kIdentifier);
   EXPECT_EQ(stream.peek().lexeme(file), "x");
@@ -41,15 +42,15 @@ TEST(TokenStreamTest, BasicNextAndPeek) {
 
 TEST(TokenStreamTest, RewindWorks) {
   std::vector<Token> tokens;
-  core::FileManager manager;
-  core::FileId file_id = manager.add_virtual_file("foo 1");
-  const core::File& file = manager.file(file_id);
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId file_id = manager.add_virtual_file(u8"foo 1");
+  const unicode::Utf8File& file = manager.file(file_id);
 
   tokens.emplace_back(TokenKind::kIdentifier, 1, 1, 3);
   tokens.emplace_back(TokenKind::kLiteralNumeric, 1, 5, 1);
   tokens.emplace_back(TokenKind::kEof, 1, 6, 0);
 
-  TokenStream stream(std::move(tokens), &file);
+  TokenStream stream(std::move(tokens), file);
 
   stream.advance();  // foo
   std::size_t save_pos = stream.position();

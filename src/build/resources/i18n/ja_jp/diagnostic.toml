@@ -17,7 +17,7 @@ unterminated_character_literal = "閉じられていない単一文字リテラ�
 unterminated_block_comment = "閉じられていない複数行コメント"
 unrecognized_character = "認識されない文字"
 invalid_escape_sequence = "無効なエスケープシーケンス"
-invalid_utf_sequence = "無効なUTFシーケンス"
+invalid_utf_sequence = "無効なutfシーケンス"
 invalid_numeric_literal = "無効な数値リテラル"
 unexpected_end_of_file = "予期しないのファイル終端"
 
@@ -119,7 +119,8 @@ move_occurs_here = "ここでムーブが発生"
 borrow_exits_scope_here = "ここで借用がスコープを抜けます"
 
 [annotation]
-was_not_declared_in_this_scope = "`{}` はこのスコープで宣言されていません"           # variable
-moved_variable_that_was_still_borrowed = "借用されている間に `{}` がムーブされました" # variable
-try_cloning_data = "ムーブ後に使用する必要がある場合、`{}` をクローンしてみてください"            # variable
-did_you_mean = "`{}`を意図していましたか?"                                    # code
+was_not_declared_in_this_scope = "`{}` はこのスコープで宣言されていません"              # variable
+moved_variable_that_was_still_borrowed = "借用されている間に `{}` がムーブされました"    # variable
+try_cloning_data = "ムーブ後に使用する必要がある場合、`{}` をクローンしてみてください"               # variable
+did_you_mean = "`{}`を意図していましたか?"                                       # code
+change_charset_to_utf8_and_try_again = "ファイルの文字コードをutf-8に変更してからやり直してみてください"

@@ -35,26 +35,7 @@ class UNICODE_EXPORT Utf8Cursor {
   // returns 0 if valid or byte index of the invalid byte
   std::size_t init(const Utf8File& file);
 
-  inline char32_t peek() const {
-    DCHECK_EQ(status_, Status::kValid);
-    if (peek_cache_.valid) [[likely]] {
-      return peek_cache_.codepoint;
-    }
-
-    if (eof()) [[unlikely]] {
-      return 0;
-    } else [[likely]] {
-      const auto& content = file_->content();
-      const char8_t* const ptr = content.data() + cursor_state_.position;
-      const char8_t* const end = content.data() + content.size();
-
-      const auto [codepoint, next_ptr] = decoder_.next_codepoint(ptr, end);
-      peek_cache_ = {codepoint, static_cast<std::uint8_t>(next_ptr - ptr),
-                     true};
-      return codepoint;
-    }
-  }
-
+  char32_t peek() const;
   char32_t peek_at(std::size_t offset) const;
   char32_t next();
   bool consume(char32_t code);
@@ -62,6 +43,7 @@ class UNICODE_EXPORT Utf8Cursor {
   inline std::size_t line() const;
   inline std::size_t column() const;
   inline bool eof() const;
+  inline const Utf8File& file() const;
   inline Status status() const;
 
  private:
@@ -94,6 +76,25 @@ class UNICODE_EXPORT Utf8Cursor {
   Status status_ = Status::kNotInitialized;
 };
 
+inline char32_t Utf8Cursor::peek() const {
+  DCHECK_EQ(status_, Status::kValid);
+  if (peek_cache_.valid) [[likely]] {
+    return peek_cache_.codepoint;
+  }
+
+  if (eof()) [[unlikely]] {
+    return 0;
+  } else [[likely]] {
+    const std::u8string_view content = file_->content_u8();
+    const char8_t* const ptr = content.data() + cursor_state_.position;
+    const char8_t* const end = content.data() + content.size();
+
+    const auto [codepoint, next_ptr] = decoder_.next_codepoint(ptr, end);
+    peek_cache_ = {codepoint, static_cast<std::uint8_t>(next_ptr - ptr), true};
+    return codepoint;
+  }
+}
+
 inline std::size_t Utf8Cursor::position() const {
   return cursor_state_.position;
 }
@@ -108,6 +109,10 @@ inline std::size_t Utf8Cursor::column() const {
 
 inline bool Utf8Cursor::eof() const {
   return cursor_state_.position >= file_->content().size();
+}
+
+inline const Utf8File& Utf8Cursor::file() const {
+  return *file_;
 }
 
 inline Utf8Cursor::Status Utf8Cursor::status() const {

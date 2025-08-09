@@ -18,6 +18,7 @@
 #include "core/check.h"
 #include "frontend/base/base_export.h"
 #include "frontend/base/token/token_kind.h"
+#include "unicode/utf8/file.h"
 
 namespace base {
 
@@ -53,21 +54,29 @@ class BASE_EXPORT Token {
   inline std::size_t length() const { return range_.length(); }
   inline TokenKind kind() const { return kind_; }
 
-  inline const std::string_view lexeme(const core::File& file) const {
-    return std::string_view(
-        file.line(range_.start().line()).data() + range_.start().column() - 1,
-        range_.length());
+  inline const std::u8string_view lexeme_u8(
+      const unicode::Utf8File& file) const {
+    return std::u8string_view(file.line_u8(range_.start().line()).data() +
+                                  range_.start().column() - 1,
+                              range_.length());
   }
 
-  inline void dump(const core::File& file,
+  inline const std::string_view lexeme(const unicode::Utf8File& file) const {
+    std::u8string_view lexeme_view = lexeme_u8(file);
+    return std::string_view(reinterpret_cast<const char*>(lexeme_view.data()),
+                            lexeme_view.size());
+  }
+
+  inline void dump(const unicode::Utf8File& file,
                    char* buf,
                    std::size_t buf_size) const {
     char* cursor = buf;
     core::write_format(cursor, buf + buf_size, "{} ({})",
-                       token_kind_to_string(kind_), lexeme(file));
+                       token_kind_to_string(kind_),
+                       std::string_view(lexeme(file)));
   }
 
-  inline void dump_detailed(const core::File& file,
+  inline void dump_detailed(const unicode::Utf8File& file,
                             char* buf,
                             std::size_t buf_size) {
     char* cursor = buf;
@@ -80,13 +89,13 @@ class BASE_EXPORT Token {
                        range_.start().line(), range_.start().column());
   }
 
-  inline std::string dump(const core::File& file) {
+  inline std::string dump(const unicode::Utf8File& file) {
     char buf[512];
     dump(file, buf, 512);
     return std::string(buf);
   }
 
-  inline std::string dump_detailed(const core::File& file) {
+  inline std::string dump_detailed(const unicode::Utf8File& file) {
     char buf[2048];
     dump_detailed(file, buf, 2048);
     return std::string(buf);

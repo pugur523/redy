@@ -29,22 +29,21 @@ Lexer::Result<Lexer::Token> Lexer::ascii_token(char current_char,
     return literal_char();
   }
 
-  if (current_char == '\\' && !stream_->eof()) {
-    uint32_t next_codepoint = stream_->peek(1);
+  if (current_char == '\\' && !cursor_.eof()) {
+    char32_t next_codepoint = cursor_.peek_at(1);
     if (unicode::is_ascii(next_codepoint)) {
       char next_char = static_cast<char>(next_codepoint);
       if (!core::is_valid_escape_sequence(current_char, next_char)) {
-        return Result<Token>(diagnostic::make_err(
-            LexError::make(diagnostic::DiagnosticId::kInvalidEscapeSequence,
-                           start, line, col, "invalid escape sequence")));
+        return err<Token>(Error::create(
+            start, line, col, diagnostic::DiagId::kInvalidEscapeSequence));
       }
     }
   }
 
   // consume the current character
-  stream_->advance();
+  cursor_.next();
 
-  uint32_t next_codepoint = stream_->peek();
+  char32_t next_codepoint = cursor_.peek();
   char next_char = unicode::is_ascii(next_codepoint)
                        ? static_cast<char>(next_codepoint)
                        : '\0';

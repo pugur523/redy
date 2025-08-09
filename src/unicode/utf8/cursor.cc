@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "core/check.h"
-#include "unicode/base/utf8_decode.h"
 
 #if ENABLE_AVX2
 #include <immintrin.h>
@@ -42,7 +41,7 @@ char32_t Utf8Cursor::peek_at(std::size_t offset) const {
   DCHECK_EQ(status_, Status::kValid);
 
   const std::size_t target_pos = cursor_state_.position + offset;
-  const auto& content = file_->content();
+  const std::u8string_view content = file_->content_u8();
   DCHECK_LT(target_pos, content.size())
       << "peek target position is out of range";
 
@@ -99,7 +98,7 @@ std::size_t Utf8Cursor::validate_utf8() const {
 #if ENABLE_AVX2
 
 std::size_t Utf8Cursor::validate_utf8_avx2() const {
-  const auto& content = file_->content();
+  const std::u8string_view content = file_->content_u8();
   const std::size_t total_size = content.size();
   if (total_size == 0) {
     return 0;  // empty file is valid
@@ -153,7 +152,7 @@ std::size_t Utf8Cursor::validate_utf8_avx2() const {
 #endif
 
 std::size_t Utf8Cursor::validate_utf8_scalar(std::size_t start_pos) const {
-  const auto& content = file_->content();
+  const std::u8string_view content = file_->content_u8();
   const std::size_t total_size = content.size();
   if (total_size == 0 || start_pos >= total_size) {
     return 0;  // empty or nothing to validate

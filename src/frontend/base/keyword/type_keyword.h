@@ -13,7 +13,7 @@ namespace base {
 
 enum class TypeKeyword : uint8_t {
   kUnknown = 0,
-  kAuto = 1,
+  kInfer = 1,
   kI8 = 2,
   kI16 = 3,
   kI32 = 4,
@@ -37,7 +37,7 @@ enum class TypeKeyword : uint8_t {
 inline const char* type_keyword_to_string(TypeKeyword keyword) {
   switch (keyword) {
     case TypeKeyword::kUnknown: return "unknown";
-    case TypeKeyword::kAuto: return "auto";
+    case TypeKeyword::kInfer: return "infer";
     case TypeKeyword::kI8: return "i8";
     case TypeKeyword::kI16: return "i16";
     case TypeKeyword::kI32: return "i32";

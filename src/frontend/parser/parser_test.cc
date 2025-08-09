@@ -20,8 +20,9 @@ namespace ast {
 
 namespace {
 
-std::unique_ptr<parser::Parser> make_parser(std::vector<base::Token>&& tokens,
-                                            const core::FileManager* manager) {
+std::unique_ptr<parser::Parser> make_parser(
+    std::vector<base::Token>&& tokens,
+    const unicode::Utf8FileManager* manager) {
   base::TokenStream stream(std::move(tokens), manager);
   return std::make_unique<parser::Parser>(std::move(stream));
 }
@@ -30,8 +31,8 @@ std::unique_ptr<parser::Parser> make_parser(std::vector<base::Token>&& tokens,
 
 TEST(ParserTest, ParseLiteral) {
   std::vector<base::Token> tokens;
-  core::FileManager manager;
-  core::FileId file_id = manager.add_virtual_file("42;");
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId file_id = manager.add_virtual_file("42;");
 
   tokens.emplace_back(base::TokenKind::kLiteralNumeric, file_id, 1, 1, 2);
   tokens.emplace_back(base::TokenKind::kSemicolon, file_id, 1, 3, 1);
@@ -49,8 +50,8 @@ TEST(ParserTest, ParseLiteral) {
 
 TEST(ParserTest, ParseError) {
   std::vector<base::Token> tokens;
-  core::FileManager manager;
-  core::FileId file_id =
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId file_id =
       manager.add_virtual_file("x := unknown_identifier unknown_identifier2;");
 
   tokens.emplace_back(base::TokenKind::kIdentifier, file_id, 1, 1, 1);
@@ -66,8 +67,8 @@ TEST(ParserTest, ParseError) {
 
 TEST(ParserTest, ParseSimpleVariableDeclaration) {
   std::vector<base::Token> tokens;
-  core::FileManager manager;
-  core::FileId file_id = manager.add_virtual_file("x := 42;");
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId file_id = manager.add_virtual_file("x := 42;");
 
   tokens.emplace_back(base::TokenKind::kIdentifier, file_id, 1, 1, 1);
   tokens.emplace_back(base::TokenKind::kAssign, file_id, 1, 3, 2);

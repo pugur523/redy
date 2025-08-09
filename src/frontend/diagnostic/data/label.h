@@ -16,6 +16,7 @@
 #include "frontend/diagnostic/base/diagnostic_export.h"
 #include "frontend/diagnostic/data/annotation.h"
 #include "i18n/base/data/translation_key.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace i18n {
 class Translator;
@@ -61,7 +62,7 @@ class DIAGNOSTIC_EXPORT Label {
  public:
   using Annotations = std::vector<Annotation>;
 
-  constexpr Label(core::FileId file_id,
+  constexpr Label(unicode::Utf8FileId file_id,
                   const core::SourceRange& range,
                   Annotations&& annotations,
                   i18n::TranslationKey message_tr_key,
@@ -99,7 +100,7 @@ class DIAGNOSTIC_EXPORT Label {
   inline const i18n::FormatArgs& format_args() const { return format_args_; }
   inline const core::SourceRange& range() const { return range_; }
   inline const Annotations& annotations() const { return annotations_; }
-  inline core::FileId file_id() const { return file_id_; }
+  inline unicode::Utf8FileId file_id() const { return file_id_; }
   inline i18n::TranslationKey message_tr_key() const { return message_tr_key_; }
   inline LabelMarkerType marker_type() const { return marker_type_; }
   inline uint8_t args_count() const { return args_count_; }
@@ -109,7 +110,7 @@ class DIAGNOSTIC_EXPORT Label {
   i18n::FormatArgs format_args_{};
   core::SourceRange range_;
   Annotations annotations_;
-  core::FileId file_id_ = core::kInvalidFileId;
+  unicode::Utf8FileId file_id_ = core::kInvalidFileId;
   i18n::TranslationKey message_tr_key_ = i18n::TranslationKey::kUnknown;
   LabelMarkerType marker_type_ = LabelMarkerType::kUnknown;
   uint8_t args_count_ = 0;

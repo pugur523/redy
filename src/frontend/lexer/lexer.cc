@@ -4,43 +4,60 @@
 
 #include "frontend/lexer/lexer.h"
 
-#include <charconv>
-#include <limits>
-#include <string>
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 #include <vector>
 
 #include "frontend/base/keyword/keyword.h"
 #include "frontend/base/token/token.h"
+#include "frontend/diagnostic/data/annotation.h"
+#include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
+#include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/result.h"
+#include "i18n/base/data/translation_key.h"
 #include "unicode/base/unicode_util.h"
+#include "unicode/utf8/file.h"
 
 namespace lexer {
 
-Lexer::Lexer(const core::File& file)
-    : stream_(std::make_unique<unicode::Utf8Stream>()) {
-  DCHECK(stream_);
-  [[maybe_unused]] std::size_t result = stream_->init(file);
-  DCHECK(stream_->valid());
-  DCHECK_EQ(result, 0);
+Lexer::Lexer(Mode mode) : mode_(mode) {}
+
+Lexer::InitResult Lexer::init(const unicode::Utf8File& file) {
+  std::size_t result = cursor_.init(file);
+
+  if (result == 0) {
+    return diagnostic::Result<std::size_t, diagnostic::DiagnosticEntry>(
+        diagnostic::create_ok(result));
+  } else {
+    return diagnostic::Result<
+        std::size_t, diagnostic::DiagnosticEntry>(diagnostic::create_err(
+        std::move(
+            diagnostic::EntryBuilder(diagnostic::Severity::kFatal,
+                                     diagnostic::DiagId::kInvalidUtfSequence)
+                .annotation(
+                    diagnostic::AnnotationSeverity::kHelp,
+                    i18n::TranslationKey::
+                        kDiagnosticAnnotationChangeCharsetToUtf8AndTryAgain))
+            .build()));
+  }
 }
 
 Lexer::Result<Lexer::Token> Lexer::next_token() {
   skip_whitespace();
-  if (stream_->eof()) {
-    return Result<Token>(diagnostic::make_ok(
-        Token(TokenKind::kEof, stream_->line(), stream_->column(), 0)));
+  if (cursor_.eof()) {
+    return Result<Token>(diagnostic::create_ok(
+        Token(TokenKind::kEof, cursor_.line(), cursor_.column(), 0)));
   }
-  const uint32_t current_codepoint = stream_->peek();
-  const std::size_t line = stream_->line();
-  const std::size_t col = stream_->column();
-  const std::size_t start = stream_->position();
+  const char32_t current_codepoint = cursor_.peek();
+  const std::size_t line = cursor_.line();
+  const std::size_t col = cursor_.column();
+  const std::size_t start = cursor_.position();
 
   if (unicode::is_eof(current_codepoint)) {
-    return Result<Token>(diagnostic::make_err(
-        LexError::make(diagnostic::DiagnosticId::kUnexpectedEndOfFile, line,
-                       col, 0, "unexpected eof")));
+    return err<Token>(Error::create(
+        line, col, 0, diagnostic::DiagnosticId::kUnexpectedEndOfFile));
   }
 
   // for ascii characters (most common case)
@@ -52,11 +69,11 @@ Lexer::Result<Lexer::Token> Lexer::next_token() {
   return unicode_token(current_codepoint, start, line, col);
 }
 
-Lexer::Results<Lexer::Token> Lexer::lex_all(bool strict) {
+Lexer::Results<Lexer::Token> Lexer::tokenize_all(bool strict) {
   std::vector<Token> tokens;
   tokens.reserve(kPredictedTokensCount);
 
-  std::vector<LexError> errors;
+  std::vector<Error> errors;
 
   while (true) {
     Result<Token> result = next_token();
@@ -76,16 +93,16 @@ Lexer::Results<Lexer::Token> Lexer::lex_all(bool strict) {
   }
 
   if (!errors.empty()) {
-    return Results<Token>(diagnostic::make_err(std::move(errors)));
+    return Results<Token>(diagnostic::create_err(std::move(errors)));
   }
 
-  return Results<Token>(diagnostic::make_ok(std::move(tokens)));
+  return Results<Token>(diagnostic::create_ok(std::move(tokens)));
 }
 
 void Lexer::skip_whitespace() {
-  while (!stream_->eof()) {
-    if (unicode::is_unicode_whitespace(stream_->peek())) {
-      stream_->advance();
+  while (!cursor_.eof()) {
+    if (unicode::is_unicode_whitespace(cursor_.peek())) {
+      cursor_.next();
     } else {
       break;
     }
@@ -93,17 +110,17 @@ void Lexer::skip_whitespace() {
 }
 
 Lexer::Result<Lexer::Token> Lexer::identifier_or_keyword() {
-  const std::size_t start = stream_->position();
-  const std::size_t line = stream_->line();
-  const std::size_t col = stream_->column();
+  const std::size_t start = cursor_.position();
+  const std::size_t line = cursor_.line();
+  const std::size_t col = cursor_.column();
 
-  while (unicode::is_xid_continue(stream_->peek())) {
-    stream_->advance();
+  while (unicode::is_xid_continue(cursor_.peek())) {
+    cursor_.next();
   }
 
-  TokenKind kind = base::lookup_id_or_keyword(stream_->file().source(), start,
-                                              stream_->position() - start);
-  return make_token(kind, start, line, col);
+  TokenKind kind = base::lookup_id_or_keyword(
+      cursor_.file().content_u8(), start, cursor_.position() - start);
+  return create_token(kind, start, line, col);
 }
 
 }  // namespace lexer

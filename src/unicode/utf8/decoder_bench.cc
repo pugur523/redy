@@ -16,7 +16,7 @@ std::string generate_ascii(size_t n) {
 }
 
 std::string generate_two_byte(size_t n) {
-  // U+00A9 COPYRIGHT SIGN (0xC2 0xA9)
+  // u+00A9 copyright sign (0xC2 0xA9)
   std::string s;
   s.reserve(n * 2);
   for (size_t i = 0; i < n; ++i) {
@@ -27,7 +27,7 @@ std::string generate_two_byte(size_t n) {
 }
 
 std::string generate_three_byte(size_t n) {
-  // U+65E5 '日' (0xE6 0x97 0xA5)
+  // u+65E5 '日' (0xE6 0x97 0xA5)
   std::string s;
   s.reserve(n * 3);
   for (size_t i = 0; i < n; ++i) {
@@ -39,7 +39,7 @@ std::string generate_three_byte(size_t n) {
 }
 
 std::string generate_four_byte(size_t n) {
-  // U+1F600 😀 (0xF0 0x9F 0x98 0x80)
+  // u+1F600 😀 (0xF0 0x9F 0x98 0x80)
   std::string s;
   s.reserve(n * 4);
   for (size_t i = 0; i < n; ++i) {
