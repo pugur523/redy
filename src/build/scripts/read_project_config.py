@@ -17,13 +17,13 @@ def load_project_metadata(file_path: str) -> dict[str, Any]:
             data = tomllib.load(f)
             return data["project"]
     except FileNotFoundError:
-        print(f"Error: Config file not found: {file_path}", file=sys.stderr)
+        print(f"error: config file not found: {file_path}", file=sys.stderr)
         sys.exit(1)
     except KeyError:
-        print(f"Error: Missing [project] section in {file_path}", file=sys.stderr)
+        print(f"error: missing [project] section in {file_path}", file=sys.stderr)
         sys.exit(2)
     except tomllib.TOMLDecodeError as e:
-        print(f"Error: Failed to parse TOML: {e}", file=sys.stderr)
+        print(f"error: failed to parse toml: {e}", file=sys.stderr)
         sys.exit(3)
 
 

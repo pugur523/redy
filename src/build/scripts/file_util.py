@@ -48,12 +48,11 @@ def flatten_if_single_dir(path: str):
     if len(items) == 1:
         sole_item = os.path.join(path, items[0])
         if os.path.isdir(sole_item):
-            # Move contents of sole_item into path
+            # move contents of sole_item into path
             for subitem in os.listdir(sole_item):
                 src = os.path.join(sole_item, subitem)
                 dst = os.path.join(path, subitem)
                 shutil.move(src, dst)
-            # Remove now-empty directory
             os.rmdir(sole_item)
 
 

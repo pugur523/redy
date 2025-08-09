@@ -20,10 +20,6 @@ def get_filename_from_url_or_header(url: str, headers: dict) -> str:
     return os.path.basename(urlparse(url).path)
 
 
-def ensure_file_path(dest_dir: str, filename: str) -> str:
-    return os.path.join(dest_dir, filename)
-
-
 def is_supported_archive(filename: str) -> bool:
     exts = [".zip", ".tar", ".tar.gz", ".tgz", ".tar.bz2", ".tar.xz"]
     return any(filename.endswith(ext) for ext in exts)
@@ -48,7 +44,7 @@ def download(
     post_extract: Optional[Callable[[str], None]] = None,
 ) -> str:
     """
-    Downloads a file and optionally extracts it.
+    downloads a file and optionally extracts it.
 
     :param dest_dir: Directory to save the file or extract to
     :param download_url: URL to download
@@ -65,7 +61,7 @@ def download(
 
     if not filename:
         filename = get_filename_from_url_or_header(download_url, dict(resp.headers))
-    file_path = ensure_file_path(dest_dir, filename)
+    file_path = os.path.join(dest_dir, filename)
 
     with open(file_path, "wb") as f:
         for chunk in resp.iter_content(chunk_size=8192):

@@ -444,7 +444,7 @@ def main(argv):
     if "--" in argv:
         split_index = argv.index("--")
         known_args = argv[:split_index]
-        extra_args_list = argv[split_index + 1:]
+        extra_args_list = argv[split_index + 1 :]
     else:
         known_args = argv
         extra_args_list = []
@@ -454,7 +454,7 @@ def main(argv):
     args = parser.parse_args(known_args)
 
     if extra_args_list:
-        args.extra_args += (",".join(extra_args_list))
+        args.extra_args += ",".join(extra_args_list)
 
     if args.clang_format:
         run_clang_format(project_root_dir)

@@ -56,7 +56,11 @@ def run_clang_format(root_dir, exclude_dirs=[]):
             continue
 
         for filename in filenames:
-            if filename.endswith(".cc") or filename.endswith(".h"):
+            if (
+                filename.endswith(".cc")
+                or filename.endswith(".h")
+                or filename.endswith(".c")
+            ):
                 file_path = os.path.join(dirpath, filename)
                 print("start clang-format for ", file_path)
                 result = run_command(

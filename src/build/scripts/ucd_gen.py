@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Copyright 2025 pugur
+# This source code is licensed under the Apache License, Version 2.0
+# which can be found in the LICENSE file.
+
 import urllib.request
 import os
 
@@ -9,26 +13,32 @@ from build_util import (
 )
 
 ucd_raw_dir = os.path.join(project_resources_dir, "ucd_raw")
-ucd_generated_dir = os.path.join(os.path.join(project_src_dir, "unicode", "base", "ucd"))
+ucd_generated_dir = os.path.join(
+    os.path.join(project_src_dir, "unicode", "base", "ucd")
+)
 source_path = os.path.join(ucd_generated_dir, "unicode_data.cc")
 
 kBaseUrl = "https://www.unicode.org/Public/UCD/latest/ucd/"
 kFiles = {
     "DerivedCoreProperties.txt": ["XID_Start", "XID_Continue"],
     "PropList.txt": ["White_Space"],
-    "UnicodeData.txt": ["General_Category"],  # for Nd (decimal numbers), Lu/Ll/Lt (letters)
+    "UnicodeData.txt": [
+        "General_Category"
+    ],  # for Nd (decimal numbers), Lu/Ll/Lt (letters)
 }
 
-def download_file(file_name, dest_path):
+
+def download_ucd_file(file_name, dest_path):
     url = kBaseUrl + file_name
     print(f"Downloading {url}")
     os.makedirs(ucd_raw_dir, exist_ok=True)
     urllib.request.urlretrieve(url, dest_path)
 
+
 def parse_prop_list(file_path, target_properties):
     """Parse PropList.txt or DerivedCoreProperties.txt format"""
     properties_data = {prop: [] for prop in target_properties}
-    
+
     with open(file_path, encoding="utf-8") as f:
         for line in f:
             line = line.split("#")[0].strip()
@@ -37,14 +47,15 @@ def parse_prop_list(file_path, target_properties):
             range_part, prop = [s.strip() for s in line.split(";", 1)]
             if prop not in target_properties:
                 continue
-            
+
             if ".." in range_part:
                 start, end = [int(x, 16) for x in range_part.split("..")]
             else:
                 start = end = int(range_part, 16)
             properties_data[prop].append((start, end))
-    
+
     return {prop: compress_ranges(ranges) for prop, ranges in properties_data.items()}
+
 
 def parse_unicode_data(file_path):
     categories_data = {
@@ -55,7 +66,7 @@ def parse_unicode_data(file_path):
         "Lm": [],  # modifier letters
         "Lo": [],  # other letters
     }
-    
+
     with open(file_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -64,14 +75,15 @@ def parse_unicode_data(file_path):
             fields = line.split(";")
             if len(fields) < 3:
                 continue
-            
+
             codepoint = int(fields[0], 16)
             category = fields[2]
-            
+
             if category in categories_data:
                 categories_data[category].append((codepoint, codepoint))
-    
+
     return {cat: compress_ranges(ranges) for cat, ranges in categories_data.items()}
+
 
 def compress_ranges(ranges):
     if not ranges:
@@ -86,19 +98,24 @@ def compress_ranges(ranges):
             compressed.append((start, end))
     return compressed
 
+
 def emit_range_array(varname, ranges):
     lines = [f"constexpr UnicodeRange {varname}[] = {{"]
     for start, end in ranges:
         lines.append(f"  {{ 0x{start:04X}, 0x{end:04X} }},")
     lines.append("};")
-    lines.append(f"constexpr std::size_t {varname}Count = sizeof({varname}) / sizeof(UnicodeRange);")
+    lines.append(
+        f"constexpr std::size_t {varname}Count = sizeof({varname}) / sizeof(UnicodeRange);"
+    )
     return "\n".join(lines)
+
 
 def generate_cc(all_data):
     os.makedirs(ucd_generated_dir, exist_ok=True)
 
     with open(source_path, "w", encoding="utf-8") as cc:
-        cc.write(f"""\
+        cc.write(
+            f"""\
 // Copyright 2025 pugur
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
@@ -129,18 +146,20 @@ namespace unicode {{
 {emit_range_array("kOtherLetter", all_data["Lo"])}
 
 }}  // namespace unicode
-""")
+"""
+        )
+
 
 def download_ucd_raw_if_not_exists(file):
     path = os.path.join(ucd_raw_dir, file)
     if not os.path.exists(path):
-        download_file(file, path)
+        download_ucd_file(file, path)
     return path
-  
+
 
 def main():
     all_data = {}
-    
+
     # download and parse DerivedCoreProperties.txt
     derived_path = download_ucd_raw_if_not_exists("DerivedCoreProperties.txt")
     derived_data = parse_prop_list(derived_path, ["XID_Start", "XID_Continue"])
@@ -150,14 +169,15 @@ def main():
     prop_path = download_ucd_raw_if_not_exists("PropList.txt")
     prop_data = parse_prop_list(prop_path, ["White_Space"])
     all_data.update(prop_data)
-    
+
     # download and parse UnicodeData.txt
     unicode_path = download_ucd_raw_if_not_exists("UnicodeData.txt")
     unicode_data = parse_unicode_data(unicode_path)
     all_data.update(unicode_data)
-    
+
     generate_cc(all_data)
     print("Done: generated unicode_data.h / unicode_data.cc")
+
 
 if __name__ == "__main__":
     main()
