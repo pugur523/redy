@@ -23,7 +23,7 @@ set(SOURCES
 
   ${PROJECT_SOURCE_DIR}/frontend/diagnostic/base/diagnostic_engine_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/lexer/lexer_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/processor/lexer/lexer_test.cc
 
   # ${PROJECT_SOURCE_DIR}/frontend/ast/base/node_test.cc
 

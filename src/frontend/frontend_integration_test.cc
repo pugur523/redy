@@ -9,7 +9,7 @@
 #include "core/base/logger.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/diagnostic/base/diagnostic_engine.h"
-#include "frontend/lexer/lexer.h"
+#include "frontend/processor/lexer/lexer.h"
 #include "gtest/gtest.h"
 #include "i18n/base/translator.h"
 #include "testing/test_util.h"
@@ -32,7 +32,7 @@ void verify_compile_pipeline(std::u8string&& src) {
     engine.push(std::move(init_result).unwrap_err());
   }
 
-  lexer::Lexer::Results<base::Token> tokenize_result = lexer.tokenize_all();
+  lexer::Lexer::Results<base::Token> tokenize_result = lexer.tokenize();
   if (tokenize_result.is_err()) {
     for (auto&& e : std::move(tokenize_result).unwrap_err()) {
       engine.push(std::move(e).convert_to_entry());

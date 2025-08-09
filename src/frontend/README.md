@@ -9,7 +9,7 @@ Here's a high-level overview of the components:
 
 ## Processors
 
-### Lexer - Lexical Analysis
+### Lexer
 Tokenizes source code and output as a `TokenStream`
 If the source code is lexically invalid, it reports source error
 
