@@ -23,34 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
 
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          virtualenvs-path: ~/.venv
-
-      - name: Install Python dependencies
-        run: |
-          poetry config virtualenvs.create true
-          poetry install
-
-          # verify installation
-          poetry --version
-          poetry show --tree
-          poetry env info
-        shell: bash
-
       - name: Run cpplint
         run: |
-          poetry run python -m cpplint --exclude=./src/third_party --exclude=./out --exclude=./.venv --recursive --config=CPPLINT.cfg .
+          pip install cpplint
+          python -m cpplint --exclude=./src/third_party --exclude=./out --exclude=./.venv --recursive --config=CPPLINT.cfg .
         shell: bash
 
   build:
