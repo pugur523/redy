@@ -185,7 +185,7 @@ def main():
     seconds = int(total_sec % 60)
 
     print(
-        f"done: generated unicode_data.h / unicode_data.cc in {minutes} min {seconds} sec."
+        f"done: generated unicode_data.cc in {minutes} min {seconds} sec."
     )
 
 

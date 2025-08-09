@@ -32,6 +32,7 @@ struct CORE_EXPORT RuntimeOptions {
 
   // options
   std::string config_file = "redy_config.toml";
+  std::string sub_command = "compile";
   bool verbose = false;
   BuildType build_type = BuildType::kDebug;
 

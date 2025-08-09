@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "frontend/diagnostic/base/style.h"
+#include "core/base/style_util.h"
 #include "i18n/base/data/translation_key.h"
 
 namespace diagnostic {
@@ -21,41 +21,6 @@ namespace diagnostic {
 //   kMirAnalyze = 5,
 //   kCodegen = 6,
 // };
-
-enum class Severity : uint8_t {
-  kUnknown = 0,
-  kFatal = 1,
-  kError = 2,
-  kWarn = 3,
-  kInfo = 4,
-  kDebug = 5,
-  kTrace = 6,
-};
-
-inline i18n::TranslationKey severity_to_tr_key(Severity severity) {
-  using Tk = i18n::TranslationKey;
-  switch (severity) {
-    case Severity::kUnknown: return Tk::kDiagnosticUnknown;
-    case Severity::kTrace: return Tk::kDiagnosticSeverityTrace;
-    case Severity::kDebug: return Tk::kDiagnosticSeverityDebug;
-    case Severity::kInfo: return Tk::kDiagnosticSeverityInfo;
-    case Severity::kWarn: return Tk::kDiagnosticSeverityWarn;
-    case Severity::kError: return Tk::kDiagnosticSeverityError;
-    case Severity::kFatal: return Tk::kDiagnosticSeverityFatal;
-  }
-}
-
-inline Style severity_to_style(Severity severity) {
-  switch (severity) {
-    case Severity::kUnknown: return Style::kUnknown;
-    case Severity::kFatal: return Style::kMagenta;
-    case Severity::kError: return Style::kRed;
-    case Severity::kWarn: return Style::kYellow;
-    case Severity::kInfo: return Style::kGreen;
-    case Severity::kDebug: return Style::kCyan;
-    case Severity::kTrace: return Style::kGray;
-  }
-}
 
 enum class DiagnosticId : uint8_t {
   kUnknown = 0,
@@ -164,7 +129,7 @@ enum class DiagnosticId : uint8_t {
   kIneffectiveAssignment = 91,
 };
 
-inline i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
+inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
   using Id = DiagnosticId;
   using TranslationKey = i18n::TranslationKey;
   switch (id) {
@@ -368,11 +333,13 @@ inline i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
   }
 }
 
+enum class Severity : uint8_t;
+
 // 6-character code: [prefix][digit][digit][digit][digit]\0
 inline constexpr void diagnostic_id_to_code(DiagnosticId id,
                                             Severity severity,
                                             char out_buf[6]) {
-  constexpr char kSeverityPrefix[] = {'u', 'f', 'e', 'w', 'i', 'd', 't'};
+  constexpr char kSeverityPrefix[] = {'?', 'f', 'e', 'w', 'i', 'd', 't'};
   out_buf[0] = kSeverityPrefix[static_cast<uint8_t>(severity)];
 
   uint16_t code = static_cast<uint16_t>(id);

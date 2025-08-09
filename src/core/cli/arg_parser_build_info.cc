@@ -10,7 +10,7 @@
 namespace core {
 
 // static
-void ArgumentParser::print_version() {
+void ArgParser::print_version() {
   core::glog.info<R"(
     {} version {} ({})
     Build Platform: {} - {}

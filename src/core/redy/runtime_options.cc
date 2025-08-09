@@ -27,6 +27,8 @@ std::string RuntimeOptions::to_string(std::size_t padding_size) {
   const char* type_str = build_type_to_string(build_type);
   result.append("build type: ").append(type_str).push_back('\n');
 
+  result.append("sub command: ").append(sub_command).push_back('\n');
+
   return result;
 }
 

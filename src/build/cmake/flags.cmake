@@ -213,7 +213,7 @@ macro(setup_common_flags)
   else()
     list(APPEND PROJECT_COMPILE_DEFINITIONS ENABLE_AVX2=0)
   endif()
-  
+
   if(ENABLE_X86_ASM)
     enable_language(ASM_NASM)
     list(APPEND PROJECT_COMPILE_DEFINITIONS ENABLE_X86_ASM=1)

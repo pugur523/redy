@@ -8,8 +8,8 @@ set(MODULE_OBJECTS_NAME "lexer_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  lexer.cc 
-  
+  lexer.cc
+
   ascii.cc
   other.cc
   unicode.cc

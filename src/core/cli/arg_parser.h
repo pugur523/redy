@@ -40,16 +40,16 @@ enum class ParseResult : uint8_t {
   kMaxValue = kErrorPositionalTooMany,
 };
 
-class CORE_EXPORT ArgumentParser {
+class CORE_EXPORT ArgParser {
  public:
-  explicit ArgumentParser(const std::string& program_name,
-                          const std::string& description = "");
-  ~ArgumentParser();
+  explicit ArgParser(const std::string& program_name,
+                     const std::string& description = "");
+  ~ArgParser();
 
-  ArgumentParser(const ArgumentParser&) = delete;
-  ArgumentParser& operator=(const ArgumentParser&) = delete;
-  ArgumentParser(ArgumentParser&&) = default;
-  ArgumentParser& operator=(ArgumentParser&&) = default;
+  ArgParser(const ArgParser&) = delete;
+  ArgParser& operator=(const ArgParser&) = delete;
+  ArgParser(ArgParser&&) = default;
+  ArgParser& operator=(ArgParser&&) = default;
 
   // flag / option / list / positional adders
 
@@ -110,12 +110,7 @@ class CORE_EXPORT ArgumentParser {
                        const std::string& name,
                        const std::string& description,
                        bool required,
-                       const std::optional<T>& default_value) {
-    auto arg = std::make_unique<ArgType<T>>(storage, name, description,
-                                            required, default_value);
-    options_[name] = std::move(arg);
-    option_order_.push_back(name);
-  }
+                       const std::optional<T>& default_value);
 
   std::string resolve_alias(const std::string& name) const;
   void print_warn(const std::string& message) const;
@@ -133,6 +128,18 @@ class CORE_EXPORT ArgumentParser {
   std::vector<std::string> positional_names_;
   std::vector<std::string> positional_descriptions_;
 };
+
+template <template <typename> typename ArgType, typename T>
+void ArgParser::add_option_impl(T* storage,
+                                const std::string& name,
+                                const std::string& description,
+                                bool required,
+                                const std::optional<T>& default_value) {
+  auto arg = std::make_unique<ArgType<T>>(storage, name, description, required,
+                                          default_value);
+  options_[name] = std::move(arg);
+  option_order_.push_back(name);
+}
 
 }  // namespace core
 

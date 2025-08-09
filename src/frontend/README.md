@@ -3,7 +3,7 @@
 
 ## Summary
 
-This directory contains the source code of the redy frontend, which is the most complex part of our project since we currently delegate the backend compilation process to LLVM IR.  
+This directory contains the source code of the redy frontend, which is the most complex part of our project since we currently delegate the backend compilation process to LLVM IR.
 Here's a high-level overview of the components:
 
 

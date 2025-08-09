@@ -2,6 +2,9 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
+// clang-format off
+// NOLINTBEGIN
+
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
 
@@ -42,5 +45,8 @@ constexpr const char* kTargetBits = "@TARGET_BITS@";
 constexpr const char* kBuildGitCommitHash = "@BUILD_GIT_COMMIT_HASH@";
 
 }  // namespace build
+
+// NOLINTEND
+// clang-format on
 
 #endif  // BUILD_BUILD_CONFIG_H_

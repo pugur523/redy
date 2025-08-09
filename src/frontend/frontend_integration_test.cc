@@ -8,7 +8,7 @@
 
 #include "core/base/logger.h"
 #include "frontend/base/token/token_stream.h"
-#include "frontend/diagnostic/base/diagnostic_engine.h"
+#include "frontend/diagnostic/engine/diagnostic_engine.h"
 #include "frontend/processor/lexer/lexer.h"
 #include "gtest/gtest.h"
 #include "i18n/base/translator.h"

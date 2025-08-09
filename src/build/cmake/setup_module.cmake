@@ -20,7 +20,7 @@ function(setup_module module_name objects_name)
       $<$<COMPILE_LANGUAGE:CXX>:${ARG_C_CXX_COMPILE_OPTIONS}>
     )
   endif()
-  
+
   if(ARG_NASM_COMPILE_OPTIONS)
     target_compile_options(${objects_name} PRIVATE $<$<COMPILE_LANGUAGE:ASM_NASM>:${ARG_NASM_COMPILE_OPTIONS}>)
   endif()
@@ -66,7 +66,7 @@ function(setup_module module_name objects_name)
       $<$<COMPILE_LANGUAGE:CXX>:${ARG_C_CXX_COMPILE_OPTIONS}>
     )
   endif()
-  
+
   if(ARG_NASM_COMPILE_OPTIONS)
     target_compile_options(${module_name} PRIVATE $<$<COMPILE_LANGUAGE:ASM_NASM>:${ARG_NASM_COMPILE_OPTIONS}>)
   endif()

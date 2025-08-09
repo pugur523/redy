@@ -13,7 +13,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/base_node.h"
 #include "frontend/data/ast/nodes/node_util.h"
-#include "frontend/diagnostic/base/diagnostic_engine.h"
+#include "frontend/diagnostic/engine/diagnostic_engine.h"
 #include "gtest/gtest.h"
 
 namespace ast {

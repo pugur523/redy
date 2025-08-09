@@ -8,7 +8,7 @@ set(MODULE_OBJECTS_NAME "diagnostic_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  base/diagnostic_engine.cc
+  engine/diagnostic_engine.cc
 
   data/annotation.cc
   data/diagnostic_entry.cc
@@ -17,6 +17,11 @@ set(SOURCES
   data/label.cc
 
   data/error/source_error.cc
+
+  engine/diagnostic_engine.cc
+  engine/format/annotation.cc
+  engine/format/header.cc
+  engine/format/label.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

@@ -21,7 +21,7 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/diagnostic/base/diagnostic_engine_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/diagnostic/engine/diagnostic_engine_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/processor/lexer/lexer_test.cc
 

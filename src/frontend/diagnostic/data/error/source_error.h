@@ -13,6 +13,7 @@
 #include "frontend/diagnostic/base/diagnostic_export.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
+#include "frontend/diagnostic/data/severity.h"
 
 namespace diagnostic {
 

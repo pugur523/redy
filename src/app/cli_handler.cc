@@ -18,16 +18,9 @@
 
 namespace app {
 
-int handle_arguments(int argc, char** argv) {
-  core::ArgumentParser parser(build::kBuildName, build::kBuildDescription);
+namespace {
 
-  auto options = core::RuntimeOptions::create();
-
-  bool debug = false;
-  bool release = false;
-  bool rel_w_deb_info = false;
-  bool min_size_rel = false;
-
+void setup_options(core::ArgParser& parser, core::RuntimeOptions* options) {
   // runtime overridable options
   parser.add_option(&options->config_file, "config",
                     "relative config file path to use", false,
@@ -38,6 +31,26 @@ int handle_arguments(int argc, char** argv) {
                   "use verbose mode for debugging or some other reasons", false,
                   {options->verbose});
   parser.add_alias("V", "verbose");
+
+  parser.add_alias("mr", "min_size_rel");
+
+  parser.add_positional(&options->sub_command, "sub_command",
+                        "specify what to do", false);
+}
+
+}  // namespace
+
+int handle_arguments(int argc, char** argv) {
+  core::ArgParser parser(build::kBuildName, build::kBuildDescription);
+
+  auto options = core::RuntimeOptions::create();
+
+  setup_options(parser, options.get());
+
+  bool debug = false;
+  bool release = false;
+  bool rel_w_deb_info = false;
+  bool min_size_rel = false;
 
   // debug
   parser.add_flag(&debug, "debug", "use debug config for building", false,
@@ -59,7 +72,6 @@ int handle_arguments(int argc, char** argv) {
   parser.add_flag(&min_size_rel, "min_size_rel",
                   "use minimum-size-release config for building", false,
                   {min_size_rel});
-  parser.add_alias("mr", "min_size_rel");
 
   auto result = parser.parse(argc, argv);
   if (result != core::ParseResult::kSuccess) {

@@ -1,2 +1,4 @@
-/*.h
+/language_id.h
+/translation_impl.h
+/translation_key.h
 /.checksum

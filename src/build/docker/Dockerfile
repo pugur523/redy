@@ -40,7 +40,7 @@ RUN git clone https://aur.archlinux.org/yay.git /tmp/yay \
     && yay -S --noconfirm libc++-with-libunwind
 
 USER root
-    
+
 RUN pacman -Scc --noconfirm \
     && rm -rf /tmp/yay
 

@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "core/base/style_util.h"
 #include "frontend/diagnostic/base/diagnostic_export.h"
-#include "frontend/diagnostic/base/style.h"
 #include "i18n/base/data/translation_key.h"
 
 namespace diagnostic {
@@ -38,16 +38,16 @@ inline const char* annotation_severity_to_string(AnnotationSeverity severity) {
   }
 }
 
-inline Style annotation_severity_to_style(AnnotationSeverity severity) {
+inline core::Colour annotation_severity_to_colour(AnnotationSeverity severity) {
   using Severity = AnnotationSeverity;
   switch (severity) {
-    case Severity::kUnknown: return Style::kUnknown;
-    case Severity::kNote: return Style::kCyan;
-    case Severity::kSuggestion: return Style::kBrightCyan;
-    case Severity::kHelp: return Style::kBlue;
-    case Severity::kWarn: return Style::kYellow;
-    case Severity::kError: return Style::kRed;
-    case Severity::kFatal: return Style::kMagenta;
+    case Severity::kUnknown: return core::Colour::kDefault;
+    case Severity::kNote: return core::Colour::kCyan;
+    case Severity::kSuggestion: return core::Colour::kBrightCyan;
+    case Severity::kHelp: return core::Colour::kBlue;
+    case Severity::kWarn: return core::Colour::kYellow;
+    case Severity::kError: return core::Colour::kRed;
+    case Severity::kFatal: return core::Colour::kMagenta;
   }
 }
 

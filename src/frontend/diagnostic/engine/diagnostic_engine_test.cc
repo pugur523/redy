@@ -2,7 +2,7 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "frontend/diagnostic/base/diagnostic_engine.h"
+#include "frontend/diagnostic/engine/diagnostic_engine.h"
 
 #include <string>
 #include <string_view>
@@ -17,6 +17,7 @@
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/label.h"
+#include "frontend/diagnostic/data/severity.h"
 #include "gtest/gtest.h"
 #include "i18n/base/data/translation_key.h"
 #include "i18n/base/translator.h"
@@ -33,7 +34,7 @@ TEST(DiagnosticEngineTest, FormatSingle) {
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
-      .colorize = true,
+      .colourise = true,
       .show_notes = true,
       .show_help = true,
       .show_source_snippet = true,
@@ -84,7 +85,7 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
-      .colorize = true,
+      .colourise = true,
       .show_notes = true,
       .show_help = true,
       .show_source_snippet = true,
@@ -147,7 +148,7 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
-      .colorize = true,
+      .colourise = true,
       .show_notes = true,
       .show_help = true,
       .show_source_snippet = true,

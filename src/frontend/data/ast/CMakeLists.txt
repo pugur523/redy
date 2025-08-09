@@ -8,7 +8,7 @@ set(MODULE_OBJECTS_NAME "ast_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  ast.cc 
+  ast.cc
   # base/base_node.cc
 
   # nodes/assignment_node.cc

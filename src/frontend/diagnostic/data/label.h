@@ -13,6 +13,7 @@
 #include "core/base/file_manager.h"
 #include "core/base/source_location.h"
 #include "core/base/source_range.h"
+#include "core/base/style_util.h"
 #include "frontend/diagnostic/base/diagnostic_export.h"
 #include "frontend/diagnostic/data/annotation.h"
 #include "i18n/base/data/translation_key.h"
@@ -46,15 +47,16 @@ inline constexpr char label_maker_type_to_char(LabelMarkerType marker) {
   }
 }
 
-inline constexpr Style label_marker_type_to_style(LabelMarkerType marker) {
+inline constexpr core::Colour label_marker_type_to_colour(
+    LabelMarkerType marker) {
   switch (marker) {
-    case LabelMarkerType::kUnknown: return Style::kGray;
-    case LabelMarkerType::kLine: return Style::kBlue;
-    case LabelMarkerType::kCircle: return Style::kBrightRed;
-    case LabelMarkerType::kEqual: return Style::kCyan;
-    case LabelMarkerType::kEmphasis: return Style::kRed;
-    case LabelMarkerType::kCodeAddition: return Style::kBrightGreen;
-    case LabelMarkerType::kCodeRemoval: return Style::kBrightCyan;
+    case LabelMarkerType::kUnknown: return core::Colour::kGray;
+    case LabelMarkerType::kLine: return core::Colour::kBlue;
+    case LabelMarkerType::kCircle: return core::Colour::kBrightRed;
+    case LabelMarkerType::kEqual: return core::Colour::kCyan;
+    case LabelMarkerType::kEmphasis: return core::Colour::kRed;
+    case LabelMarkerType::kCodeAddition: return core::Colour::kBrightGreen;
+    case LabelMarkerType::kCodeRemoval: return core::Colour::kBrightCyan;
   }
 }
 
