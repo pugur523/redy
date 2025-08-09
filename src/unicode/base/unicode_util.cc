@@ -8,7 +8,7 @@ namespace unicode::detail {
 
 #if ENABLE_AVX2
 
-bool is_ascii_letters_bulk_avx2(const uint32_t* codepoints,
+bool is_ascii_letters_bulk_avx2(const char32_t* codepoints,
                                 bool* results,
                                 std::size_t count) {
   // process 8 element unit
@@ -64,7 +64,7 @@ bool is_ascii_letters_bulk_avx2(const uint32_t* codepoints,
   return true;
 }
 
-bool is_ascii_digits_bulk_avx2(const uint32_t* codepoints,
+bool is_ascii_digits_bulk_avx2(const char32_t* codepoints,
                                bool* results,
                                std::size_t count) {
   const std::size_t simd_count = count & ~7;

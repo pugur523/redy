@@ -20,7 +20,7 @@ namespace unicode {
 
 UNICODE_EXPORT constexpr bool is_in_ranges(const UnicodeRange* ranges,
                                            std::size_t count,
-                                           uint32_t codepoint) {
+                                           char32_t codepoint) {
   if (count == 0) [[unlikely]] {
     return false;
   }
@@ -45,23 +45,24 @@ UNICODE_EXPORT constexpr bool is_in_ranges(const UnicodeRange* ranges,
   return false;
 }
 
-inline constexpr bool is_ascii(uint32_t codepoint) {
+inline constexpr bool is_ascii(char32_t codepoint) {
   return codepoint <= 0x7F;
 }
 
-inline constexpr bool is_eof(uint32_t codepoint) {
+inline constexpr bool is_eof(char32_t codepoint) {
   return codepoint == 0;
 }
 
-inline constexpr bool is_ascii_letter(uint32_t c) {
+inline constexpr bool is_ascii_letter(char32_t c) {
   // A-Z: 0x41-0x5A, a-z: 0x61-0x7A
 
   // the difference between uppercase and lowercase is only 0x20, so use bitwise
   // OR to normalize to lowercase
-  uint32_t normalized = c | 0x20;
+  char32_t normalized = c | 0x20;
   return (normalized - 'a') <= 25;
 }
 
+// this will cause segmentation fault
 // inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
 //   return kUtf8LengthTable[first_byte];
 // }
@@ -70,20 +71,17 @@ inline constexpr bool is_ascii_letter(uint32_t c) {
 inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
   if (first_byte < 0x80) {
     return 1;
-  }
-  if ((first_byte >> 5) == 0x06) {
+  } else if ((first_byte >> 5) == 0x06) {
     return 2;
-  }
-  if ((first_byte >> 4) == 0x0E) {
+  } else if ((first_byte >> 4) == 0x0E) {
     return 3;
-  }
-  if ((first_byte >> 3) == 0x1E) {
+  } else if ((first_byte >> 3) == 0x1E) {
     return 4;
   }
   return 1;
 }
 
-inline constexpr uint8_t utf8_codepoint_length(uint32_t c) {
+inline constexpr uint8_t utf8_codepoint_length(char32_t c) {
   if (c <= 0x7F) {  // 0-127
     return 1;
   } else if (c <= 0x7FF) {  // 128-2047
@@ -96,13 +94,29 @@ inline constexpr uint8_t utf8_codepoint_length(uint32_t c) {
   return 0;
 }
 
+inline bool is_valid_continuation_sequence(const uint8_t* bytes, uint8_t len) {
+  // check all continuation bytes at once using simd where possible
+  uint32_t mask = 0;
+  for (uint8_t i = 1; i < len; ++i) {
+    mask |= (bytes[i] & 0xC0) ^ 0x80;
+  }
+  return mask == 0;
+}
+
+inline bool is_valid_codepoint(char32_t cp, uint8_t len) {
+  constexpr uint32_t kMinValues[5] = {0, 0, 0x80, 0x800, 0x10000};
+  constexpr uint32_t kMaxValues[5] = {0, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+  return cp >= kMinValues[len] && cp <= kMaxValues[len] &&
+         !(cp >= 0xD800 && cp <= 0xDFFF);  // no surrogates
+}
+
 namespace detail {
 
-inline constexpr bool is_ascii_digit(uint32_t c) {
+inline constexpr bool is_ascii_digit(char32_t c) {
   return (c - '0') <= 9;
 }
 
-inline constexpr bool is_ascii_alnum(uint32_t c) {
+inline constexpr bool is_ascii_alnum(char32_t c) {
   return is_ascii_letter(c) || is_ascii_digit(c);
 }
 
@@ -115,7 +129,7 @@ struct AsciiTable {
     }
   }
 
-  constexpr bool operator[](uint32_t c) const { return c < 128 && table[c]; }
+  constexpr bool operator[](char32_t c) const { return c < 128 && table[c]; }
 };
 
 inline constexpr bool generate_letter(int i) {
@@ -145,20 +159,20 @@ constexpr auto kAsciiIdStartTable = AsciiTable<generate_id_start>{};
 constexpr auto kAsciiIdContinueTable = AsciiTable<generate_id_continue>{};
 
 #if ENABLE_AVX2
-bool is_ascii_letters_bulk_avx2(const uint32_t* codepoints,
+bool is_ascii_letters_bulk_avx2(const char32_t* codepoints,
                                 bool* results,
                                 std::size_t count);
-bool is_ascii_digits_bulk_avx2(const uint32_t* codepoints,
+bool is_ascii_digits_bulk_avx2(const char32_t* codepoints,
                                bool* results,
                                std::size_t count);
 #endif  // ENABLE_AVX2
 
 #if ENABLE_AVX2 && ENABLE_X86_ASM
 extern "C" {
-bool is_ascii_letters_bulk_avx2_x86(const uint32_t* codepoints,
+bool is_ascii_letters_bulk_avx2_x86(const char32_t* codepoints,
                                     bool* results,
                                     std::size_t count);
-bool is_ascii_digits_bulk_avx2_x86(const uint32_t* codepoints,
+bool is_ascii_digits_bulk_avx2_x86(const char32_t* codepoints,
                                    bool* results,
                                    std::size_t count);
 }
@@ -167,14 +181,14 @@ bool is_ascii_digits_bulk_avx2_x86(const uint32_t* codepoints,
 #if ENABLE_X86_ASM
 extern "C" {
 // in unicode_util.asm
-bool is_ascii_letter_x86(uint32_t codepoint);
-bool is_ascii_digit_x86(uint32_t codepoint);
-bool is_ascii_alnum_x86(uint32_t codepoint);
+bool is_ascii_letter_x86(char32_t codepoint);
+bool is_ascii_digit_x86(char32_t codepoint);
+bool is_ascii_alnum_x86(char32_t codepoint);
 
-void is_ascii_letters_bulk_x86(const uint32_t* codepoints,
+void is_ascii_letters_bulk_x86(const char32_t* codepoints,
                                bool* results,
                                std::size_t count);
-void is_ascii_digits_bulk_x86(const uint32_t* codepoints,
+void is_ascii_digits_bulk_x86(const char32_t* codepoints,
                               bool* results,
                               std::size_t count);
 
@@ -183,7 +197,7 @@ void is_ascii_digits_bulk_x86(const uint32_t* codepoints,
 
 }  // namespace detail
 
-inline constexpr bool is_xid_start(uint32_t codepoint) {
+inline constexpr bool is_xid_start(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
 #if ENABLE_X86_ASM
     return detail::is_ascii_letter_x86(codepoint) || codepoint == '_';
@@ -194,7 +208,7 @@ inline constexpr bool is_xid_start(uint32_t codepoint) {
   return is_in_ranges(kXIDStart, kXIDStartCount, codepoint);
 }
 
-inline constexpr bool is_xid_continue(uint32_t codepoint) {
+inline constexpr bool is_xid_continue(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
 #if ENABLE_X86_ASM
     return detail::is_ascii_alnum_x86(codepoint) || codepoint == '_';
@@ -205,7 +219,7 @@ inline constexpr bool is_xid_continue(uint32_t codepoint) {
   return is_in_ranges(kXIDContinue, kXIDContinueCount, codepoint);
 }
 
-inline constexpr bool is_unicode_whitespace(uint32_t codepoint) {
+inline constexpr bool is_unicode_whitespace(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     // bitwise whitespace detection:
     // {' ', '\t', '\n', '\r', '\f', '\v'}
@@ -218,7 +232,7 @@ inline constexpr bool is_unicode_whitespace(uint32_t codepoint) {
   return is_in_ranges(kWhiteSpace, kWhiteSpaceCount, codepoint);
 }
 
-inline constexpr bool is_decimal_number(uint32_t codepoint) {
+inline constexpr bool is_decimal_number(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
 #if ENABLE_X86_ASM
     return detail::is_ascii_digit_x86(codepoint);
@@ -229,21 +243,21 @@ inline constexpr bool is_decimal_number(uint32_t codepoint) {
   return is_in_ranges(kDecimalNumber, kDecimalNumberCount, codepoint);
 }
 
-inline constexpr bool is_uppercase_letter(uint32_t codepoint) {
+inline constexpr bool is_uppercase_letter(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     return (codepoint - 'A') <= 25;
   }
   return is_in_ranges(kUppercaseLetter, kUppercaseLetterCount, codepoint);
 }
 
-inline constexpr bool is_lowercase_letter(uint32_t codepoint) {
+inline constexpr bool is_lowercase_letter(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     return (codepoint - 'a') <= 25;
   }
   return is_in_ranges(kLowercaseLetter, kLowercaseLetterCount, codepoint);
 }
 
-inline constexpr bool is_titlecase_letter(uint32_t codepoint) {
+inline constexpr bool is_titlecase_letter(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     // ascii has no title case letters
     return false;
@@ -251,7 +265,7 @@ inline constexpr bool is_titlecase_letter(uint32_t codepoint) {
   return is_in_ranges(kTitlecaseLetter, kTitlecaseLetterCount, codepoint);
 }
 
-inline constexpr bool is_modifier_letter(uint32_t codepoint) {
+inline constexpr bool is_modifier_letter(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     // ascii has no modifier letters
     return false;
@@ -259,7 +273,7 @@ inline constexpr bool is_modifier_letter(uint32_t codepoint) {
   return is_in_ranges(kModifierLetter, kModifierLetterCount, codepoint);
 }
 
-inline constexpr bool is_other_letter(uint32_t codepoint) {
+inline constexpr bool is_other_letter(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     // ascii has no other letters
     return false;
@@ -267,7 +281,7 @@ inline constexpr bool is_other_letter(uint32_t codepoint) {
   return is_in_ranges(kOtherLetter, kOtherLetterCount, codepoint);
 }
 
-inline constexpr bool is_letter(uint32_t codepoint) {
+inline constexpr bool is_letter(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
 #if ENABLE_X86_ASM
     return detail::is_ascii_letter_x86(codepoint);
@@ -281,7 +295,7 @@ inline constexpr bool is_letter(uint32_t codepoint) {
          is_other_letter(codepoint);
 }
 
-inline constexpr bool is_alphanumeric(uint32_t codepoint) {
+inline constexpr bool is_alphanumeric(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
 #if ENABLE_X86_ASM
     return detail::is_ascii_alnum_x86(codepoint);
@@ -293,7 +307,7 @@ inline constexpr bool is_alphanumeric(uint32_t codepoint) {
 }
 
 #if ENABLE_AVX2 || ENABLE_X86_ASM
-inline bool is_letters_bulk(const uint32_t* codepoints,
+inline bool is_letters_bulk(const char32_t* codepoints,
                             bool* results,
                             std::size_t count) {
 #if ENABLE_AVX2 && ENABLE_X86_ASM
@@ -307,7 +321,7 @@ inline bool is_letters_bulk(const uint32_t* codepoints,
 #endif
 }
 
-inline bool is_digits_bulk(const uint32_t* codepoints,
+inline bool is_digits_bulk(const char32_t* codepoints,
                            bool* results,
                            std::size_t count) {
 #if ENABLE_AVX2 && ENABLE_X86_ASM

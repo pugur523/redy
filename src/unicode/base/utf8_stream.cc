@@ -102,7 +102,6 @@ uint32_t Utf8Stream::peek(std::size_t offset) const {
 std::size_t Utf8Stream::advance() {
   DCHECK(data_);
   DCHECK_EQ(status_, Utf8StreamStatus::kValid);
-  DCHECK(!eof());
 
   uint32_t cp;
   std::size_t len;
