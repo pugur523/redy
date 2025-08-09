@@ -66,7 +66,8 @@ TEST(LexerTest, LexSimpleCode) {
 }
 
 TEST(LexerTest, HelloWorldFunction) {
-  std::u8string source = u8R"(
+  std::u8string source =
+      u8R"(
         fn main() -> i32 {
             world_str := "world";
             x: i32 = 42;
