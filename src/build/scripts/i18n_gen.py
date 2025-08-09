@@ -8,6 +8,7 @@ import hashlib
 import os
 import re
 import sys
+import time
 import tomllib
 from typing import Dict, Any, Set
 
@@ -375,6 +376,7 @@ consteval TranslationKey to_translation_key() {{
 
 
 def main():
+    start_time = time.time()
     cache_file = os.path.join(i18n_generated_dir, ".checksum")
     current_toml_hash = calculate_dir_hash(i18n_data_dir, ".toml")
     current_cc_hash_before_gen = calculate_dir_hash(i18n_generated_dir, ".h")
@@ -424,7 +426,12 @@ def main():
         else 0
     )
 
-    print(f"done: parsed and generated i18n data")
+    end_time = time.time()
+    total_sec = end_time - start_time
+    minutes = int(total_sec // 60)
+    seconds = int(total_sec % 60)
+
+    print(f"done: parsed and generated i18n data in {minutes} min {seconds} sec.")
     print(f"  languages: {len(data)}")
     print(f"  translation keys: {len(data[default_lang_name])}")
     print(f"  total string entries: {total_strings}")

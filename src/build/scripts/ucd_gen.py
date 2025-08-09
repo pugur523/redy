@@ -4,8 +4,9 @@
 # This source code is licensed under the Apache License, Version 2.0
 # which can be found in the LICENSE file.
 
-import urllib.request
 import os
+import time
+import urllib.request
 
 from build_util import (
     project_src_dir,
@@ -158,6 +159,7 @@ def download_ucd_raw_if_not_exists(file):
 
 
 def main():
+    start_time = time.time()
     all_data = {}
 
     # download and parse DerivedCoreProperties.txt
@@ -176,7 +178,15 @@ def main():
     all_data.update(unicode_data)
 
     generate_cc(all_data)
-    print("Done: generated unicode_data.h / unicode_data.cc")
+
+    end_time = time.time()
+    total_sec = end_time - start_time
+    minutes = int(total_sec // 60)
+    seconds = int(total_sec % 60)
+
+    print(
+        f"done: generated unicode_data.h / unicode_data.cc in {minutes} min {seconds} sec."
+    )
 
 
 if __name__ == "__main__":
