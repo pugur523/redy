@@ -32,7 +32,7 @@ void token_stream_advance(benchmark::State& state) {
 
   for (auto _ : state) {
     while (!stream.eof()) {
-      const Token& token = stream.advance();
+      const Token& token = stream.next();
       benchmark::DoNotOptimize(token.kind());
     }
     stream.rewind(0);
@@ -61,7 +61,7 @@ static void token_stream_peak(benchmark::State& state) {
     for (std::size_t i = 0; i < tokens_size; ++i) {
       const Token& token = stream.peek();
       benchmark::DoNotOptimize(token.kind());
-      stream.advance();
+      stream.next();
     }
     stream.rewind(0);
   }

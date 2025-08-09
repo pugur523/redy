@@ -33,34 +33,16 @@ class BASE_EXPORT TokenStream {
 
   inline const Token& peek(std::size_t offset = 0) const;
   inline const Token& previous() const;
-  inline const Token& advance();
+  inline const Token& next();
   inline bool match(TokenKind expected_kind);
-
-  inline const unicode::Utf8File& file() const { return *file_; }
-
-  inline constexpr void rewind(std::size_t pos) {
-    DCHECK_LE(pos, tokens_.size()) << "rewind range is invalid";
-    pos_ = pos;
-    current_token_ = &tokens_[pos_];
-  }
-
-  inline constexpr bool check(TokenKind expected_kind) const {
-    return current_token_->kind() == expected_kind;
-  }
-
+  inline constexpr void rewind(std::size_t pos);
+  inline constexpr bool check(TokenKind expected_kind) const;
   inline constexpr bool check(TokenKind expected_kind,
-                              std::size_t offset) const {
-    DCHECK_LT(pos_ + offset, size());
-    return peek(offset).kind() == expected_kind;
-  }
-
-  inline constexpr bool eof() const {
-    return current_token_->kind() == TokenKind::kEof;
-  }
-
-  inline constexpr std::size_t position() const { return pos_; }
-
-  inline constexpr std::size_t size() const { return tokens_.size(); }
+                              std::size_t offset) const;
+  inline constexpr bool eof() const;
+  inline constexpr std::size_t position() const;
+  inline constexpr std::size_t size() const;
+  inline const unicode::Utf8File& file() const;
 
   std::string dump() const;
 
@@ -83,7 +65,7 @@ inline const Token& TokenStream::previous() const {
   return tokens_[pos_ - 1];
 }
 
-inline const Token& TokenStream::advance() {
+inline const Token& TokenStream::next() {
   DCHECK_NE(current_token_, end_token_) << "reached eof token unexpectedly";
   pos_++;
   current_token_ = &tokens_[pos_];
@@ -93,10 +75,42 @@ inline const Token& TokenStream::advance() {
 inline bool TokenStream::match(TokenKind expected_kind) {
   DCHECK_NE(current_token_, end_token_) << "reached eof token unexpectedly";
   if (peek().kind() == expected_kind) [[likely]] {
-    advance();
+    next();
     return true;
   }
   return false;
+}
+
+inline constexpr void TokenStream::rewind(std::size_t pos) {
+  DCHECK_LE(pos, tokens_.size()) << "rewind range is invalid";
+  pos_ = pos;
+  current_token_ = &tokens_[pos_];
+}
+
+inline constexpr bool TokenStream::check(TokenKind expected_kind) const {
+  return current_token_->kind() == expected_kind;
+}
+
+inline constexpr bool TokenStream::check(TokenKind expected_kind,
+                                         std::size_t offset) const {
+  DCHECK_LT(pos_ + offset, size());
+  return peek(offset).kind() == expected_kind;
+}
+
+inline constexpr bool TokenStream::eof() const {
+  return current_token_->kind() == TokenKind::kEof;
+}
+
+inline constexpr std::size_t TokenStream::position() const {
+  return pos_;
+}
+
+inline constexpr std::size_t TokenStream::size() const {
+  return tokens_.size();
+}
+
+inline const unicode::Utf8File& TokenStream::file() const {
+  return *file_;
 }
 
 }  // namespace base

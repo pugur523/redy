@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "core/base/file_util.h"
+#include "core/base/string_util.h"
 #include "core/check.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 
@@ -17,6 +18,7 @@ void Utf8File::init(std::u8string&& file_name, std::u8string&& content) {
 
   file_name_ = std::move(file_name);
   content_ = std::move(content);
+  line_ends_ = core::index_newlines(core::to_string_view(content_));
   status_ = Status::kInitialized;
 }
 

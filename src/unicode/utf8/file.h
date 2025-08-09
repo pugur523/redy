@@ -65,20 +65,17 @@ class UNICODE_EXPORT Utf8File {
 
   inline std::string_view file_name() const {
     std::u8string_view view = file_name_u8();
-    return std::string_view(reinterpret_cast<const char*>(view.data()),
-                            view.size());
+    return core::to_string_view(view);
   }
 
   inline std::string_view content() const {
     std::u8string_view view = content_u8();
-    return std::string_view(reinterpret_cast<const char*>(view.data()),
-                            view.size());
+    return core::to_string_view(view);
   }
 
   inline std::string_view line(std::size_t line_no) const {
     std::u8string_view view = line_u8(line_no);
-    return std::string_view(reinterpret_cast<const char*>(view.data()),
-                            view.size());
+    return core::to_string_view(view);
   }
 
   inline std::size_t line_count() const {

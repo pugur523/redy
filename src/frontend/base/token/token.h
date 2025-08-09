@@ -63,8 +63,7 @@ class BASE_EXPORT Token {
 
   inline const std::string_view lexeme(const unicode::Utf8File& file) const {
     std::u8string_view lexeme_view = lexeme_u8(file);
-    return std::string_view(reinterpret_cast<const char*>(lexeme_view.data()),
-                            lexeme_view.size());
+    return core::to_string_view(lexeme_view);
   }
 
   inline void dump(const unicode::Utf8File& file,

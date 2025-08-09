@@ -30,13 +30,13 @@ TEST(TokenStreamTest, BasicNextAndPeek) {
   EXPECT_EQ(stream.peek().kind(), TokenKind::kIdentifier);
   EXPECT_EQ(stream.peek().lexeme(file), "x");
 
-  EXPECT_EQ(stream.advance().kind(), TokenKind::kPlus);
+  EXPECT_EQ(stream.next().kind(), TokenKind::kPlus);
   EXPECT_EQ(stream.peek().kind(), TokenKind::kPlus);
 
-  EXPECT_EQ(stream.advance().kind(), TokenKind::kLiteralNumeric);
+  EXPECT_EQ(stream.next().kind(), TokenKind::kLiteralNumeric);
   EXPECT_EQ(stream.peek().lexeme(file), "42");
 
-  EXPECT_EQ(stream.advance().kind(), TokenKind::kEof);
+  EXPECT_EQ(stream.next().kind(), TokenKind::kEof);
   EXPECT_TRUE(stream.eof());
 }
 
@@ -52,9 +52,9 @@ TEST(TokenStreamTest, RewindWorks) {
 
   TokenStream stream(std::move(tokens), file);
 
-  stream.advance();  // foo
+  stream.next();  // foo
   std::size_t save_pos = stream.position();
-  stream.advance();  // 1
+  stream.next();  // 1
   EXPECT_EQ(stream.peek().kind(), TokenKind::kEof);
 
   stream.rewind(save_pos);

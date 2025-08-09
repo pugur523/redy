@@ -153,6 +153,10 @@ CORE_EXPORT void to_upper(std::string* input);
 [[nodiscard]] CORE_EXPORT std::size_t utf8_char_length(unsigned char lead);
 [[nodiscard]] CORE_EXPORT std::string utf8_truncate(const std::string& input,
                                                     std::size_t max_chars);
+[[nodiscard]] inline std::string_view to_string_view(std::u8string_view view) {
+  return std::string_view(reinterpret_cast<const char*>(view.data()),
+                          view.size());
+}
 [[nodiscard]] CORE_EXPORT std::queue<std::string> split_string(
     const std::string& input,
     const std::string& delimiter);
