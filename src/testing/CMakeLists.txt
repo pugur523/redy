@@ -44,7 +44,7 @@ target_compile_options(${TEST_NAME} PRIVATE
 target_compile_definitions(${TEST_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${TEST_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${TEST_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${TEST_NAME} PRIVATE core base diagnostic lexer ast parser i18n ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${TEST_NAME} PRIVATE core base diagnostic lexer ast parser i18n unicode ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
 
 set_target_properties(${TEST_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

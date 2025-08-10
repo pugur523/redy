@@ -33,10 +33,10 @@ Owns source code content as a UTF-8 encoded string.
 All processors use this interface to get a reference to the code, enabling zero-copy access for memory efficiency.
 
 ### Utf8Cursor
-Cursor for utf8 string that provides `peek()`, `advance()`, `rewind()`, etc.
+Cursor for utf8 string that provides `peek()`, `next()`, `rewind()`, etc.
 
 ### TokenStream
-Vector of tokens that provides `peek()`, `advance()`, `rewind()`, etc.
+Vector of tokens that provides `peek()`, `next()`, `rewind()`, etc.
 
 ### AstContext
 Abstract Syntax Tree - Preserves only syntactic information, not semantic information.
