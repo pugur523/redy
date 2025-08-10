@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "core/base/logger.h"
 #include "core/location.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"

@@ -6,7 +6,6 @@
 #define CORE_BASE_SOURCE_RANGE_H_
 
 #include "core/base/core_export.h"
-#include "core/base/file_manager.h"
 #include "core/base/source_location.h"
 
 namespace core {

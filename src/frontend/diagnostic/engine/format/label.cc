@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "core/base/style_builder.h"
+#include "core/cli/ansi/style_builder.h"
 #include "frontend/diagnostic/engine/diagnostic_engine.h"
 #include "i18n/base/translator.h"
 

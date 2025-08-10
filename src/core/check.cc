@@ -23,16 +23,12 @@ CheckFailureStream::CheckFailureStream(const char* type,
       message_(message) {}
 
 std::ostream& CheckFailureStream::stream() {
-  has_output_ = true;
-  glog.fatal<"{} failed: \"{}\" at {}:{}\n{}\n">(type_, condition_, file_,
+  glog.error<"{} failed: \"{}\" at {}:{}\n{}\n">(type_, condition_, file_,
                                                  line_, message_);
   return std::cerr;
 }
 
 CheckFailureStream::~CheckFailureStream() {
-  if (has_output_) {
-    std::cerr << std::flush;
-  }
   std::terminate();
 }
 

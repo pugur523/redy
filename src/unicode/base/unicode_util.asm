@@ -102,7 +102,7 @@ is_ascii_alnum_x86:
 ; parameters:
 ;   rdi - const char32_t* codepoints
 ;   rsi - bool* results
-;   rdx - size_t count
+;   rdx - std::size_t count
 ; returns: void
 is_ascii_letters_bulk_x86:
     test    rdx, rdx        ; check if count == 0
@@ -158,7 +158,7 @@ is_ascii_letters_bulk_x86:
 ; parameters:
 ;   rdi - const char32_t* codepoints
 ;   rsi - bool* results
-;   rdx - size_t count
+;   rdx - std::size_t count
 ; returns: void
 is_ascii_digits_bulk_x86:
     test    rdx, rdx

@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "core/base/style_util.h"
+#include "core/cli/ansi/style_util.h"
 #include "i18n/base/data/translation_key.h"
 
 namespace diagnostic {

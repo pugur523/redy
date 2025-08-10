@@ -12,7 +12,7 @@ global is_ascii_digits_bulk_avx2_x86
 ; parameters:
 ;   rdi - const char32_t* codepoints
 ;   rsi - bool* results
-;   rdx - size_t count
+;   rdx - std::size_t count
 ; returns: bool (always true in rax)
 is_ascii_letters_bulk_avx2_x86:
     test    rdx, rdx
@@ -146,7 +146,7 @@ is_ascii_letters_bulk_avx2_x86:
 ; parameters:
 ;   rdi - const char32_t* codepoints
 ;   rsi - bool* results
-;   rdx - size_t count
+;   rdx - std::size_t count
 ; returns: bool (always true in rax)
 is_ascii_digits_bulk_avx2_x86:
     test    rdx, rdx

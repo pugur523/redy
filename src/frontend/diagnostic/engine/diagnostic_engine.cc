@@ -11,8 +11,8 @@
 
 #include "core/base/file_manager.h"
 #include "core/base/logger.h"
-#include "core/base/style_builder.h"
-#include "core/base/style_util.h"
+#include "core/cli/ansi/style_builder.h"
+#include "core/cli/ansi/style_util.h"
 #include "frontend/diagnostic/data/annotation.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "frontend/diagnostic/data/label.h"

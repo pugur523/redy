@@ -10,6 +10,9 @@
 
 #include "build/build_config.h"
 #include "core/base/logger.h"
+#include "core/cli/ansi/progress_bar.h"
+#include "core/cli/ansi/style_builder.h"
+#include "core/cli/ansi/style_util.h"
 #include "core/cli/arg_parser.h"
 #include "core/diagnostics/stack_trace.h"
 #include "core/location.h"
@@ -91,8 +94,20 @@ int handle_arguments(int argc, char** argv) {
   }
 
   if (options->verbose) {
-    core::glog.info<"parsed arguments:\n  {}">(options->to_string(2));
+    core::glog.raw<"parsed arguments:\n  {}">(options->to_string(2));
   }
+
+  core::ProgressBar bar(30);
+  core::StyleBuilder s;
+  s.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightCyan);
+
+  constexpr const char* kProgressStr = "Compile Progress(demo)";
+  for (int i = 0; i <= 10000; ++i) {
+    core::glog.raw<"\r{}">(
+        bar.update(i / 10000.0, s.build(kProgressStr) + " "));
+    std::this_thread::sleep_for(std::chrono::microseconds(10));
+  }
+  core::glog.raw<"\r{}\n">(bar.finish(s.build("Completed!")));
 
   return 0;
 }

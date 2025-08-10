@@ -80,7 +80,6 @@ class CORE_EXPORT CheckFailureStream {
   int line_;
   const char* condition_;
   const char* message_;
-  bool has_output_ = false;
 };
 
 template <typename L, typename R>

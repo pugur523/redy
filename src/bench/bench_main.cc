@@ -15,8 +15,6 @@ int main(int argc, char** argv) {
   core::register_stack_trace_handler();
   core::register_glog();
 
-  // core::glog.info<"test\n">();
-
   benchmark ::MaybeReenterWithoutASLR(argc, argv);
   char arg0_default[] = "benchmark";
   char* args_default = reinterpret_cast<char*>(arg0_default);

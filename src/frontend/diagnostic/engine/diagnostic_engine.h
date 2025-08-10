@@ -117,7 +117,7 @@ inline std::size_t DiagnosticEngine::itoa_to_buffer(T value,
                                                     std::size_t buf_size) {
   static_assert(std::is_integral_v<T>, "itoa_to_buffer only supports integers");
   auto [ptr, ec] = std::to_chars(buffer, buffer + buf_size, value);
-  DCHECK_NE(ec, std::errc{});
+  DCHECK_EQ(ec, std::errc{});
   return static_cast<std::size_t>(ptr - buffer);
 }
 

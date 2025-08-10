@@ -11,19 +11,19 @@ namespace core {
 
 // static
 void ArgParser::print_version() {
-  core::glog.info<R"(
-    {} version {} ({})
-    Build Platform: {} - {}
-    Target Platform: {} - {}
-    Target Bits: {}
-    Build Compiler: {}
-    Installed Directory: {}
-    Build Time: {}
-    Commit Hash: {}
-)">(build::kBuildName, build::kBuildVersion, build::kBuildType,
-    build::kBuildPlatform, build::kBuildArch, build::kTargetPlatform,
-    build::kTargetArch, build::kTargetBits, build::kBuildCompiler, exe_dir(),
-    build::kBuildTime, build::kBuildGitCommitHash);
+  core::glog.raw<
+      "{} version {} ({})\n"
+      "Build Platform: {} - {}\n"
+      "Target Platform: {} - {}\n"
+      "Target Bits: {}\n"
+      "Build Compiler: {}\n"
+      "Installed Directory: {}\n"
+      "Build Time: {}\n"
+      "Commit Hash: {}\n">(
+      build::kBuildName, build::kBuildVersion, build::kBuildType,
+      build::kBuildPlatform, build::kBuildArch, build::kTargetPlatform,
+      build::kTargetArch, build::kTargetBits, build::kBuildCompiler, exe_dir(),
+      build::kBuildTime, build::kBuildGitCommitHash);
 }
 
 }  // namespace core

@@ -2,52 +2,15 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "core/base/style_builder.h"
+#include "core/cli/ansi/style_builder.h"
 
 #include <charconv>
 #include <string>
 #include <string_view>
 
-#include "build/build_flag.h"
-
-#if IS_WINDOWS
-#include <io.h>
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
 namespace core {
 
 namespace {
-
-constexpr const char* kResetCode = "\033[0m";
-constexpr const char* kFgRgbPrefix = "\033[38;2;";
-constexpr const char* kBgRgbPrefix = "\033[48;2;";
-constexpr const char kRgbSuffix = 'm';
-constexpr const char kSemicolon = ';';
-
-constexpr const std::size_t kStyleCodeLength = 4;
-constexpr const std::size_t kResetCodeLength = kStyleCodeLength;
-constexpr const std::size_t kRgbCodeLength = 20;
-
-inline constexpr std::array<const char*, 8> kStyleCodes = {
-    "\033[1m", "\033[2m", "\033[3m", "\033[4m",
-    "\033[5m", "\033[7m", "\033[8m", "\033[9m",
-};
-
-inline constexpr std::array<const char*, 16> kColourCodes = {
-    "\033[30m", "\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m",
-    "\033[36m", "\033[37m", "\033[90m", "\033[91m", "\033[92m", "\033[93m",
-    "\033[94m", "\033[95m", "\033[96m", "\033[97m",
-};
-
-inline constexpr std::array<const char*, 16> kBgColourCodes = {
-    "\033[40m",  "\033[41m",  "\033[42m",  "\033[43m",
-    "\033[44m",  "\033[45m",  "\033[46m",  "\033[47m",
-    "\033[100m", "\033[101m", "\033[102m", "\033[103m",
-    "\033[104m", "\033[105m", "\033[106m", "\033[107m",
-};
 
 // used for 0~255 only
 inline char* uint8_to_chars(char* buffer, uint8_t value) {
@@ -95,31 +58,6 @@ void append_rgb_sequence(std::string* result,
 }
 
 }  // namespace
-
-const bool can_use_ansi_sequence = [] {
-#if IS_WINDOWS
-  // check if GetStdHandle() returns terminal handle
-  HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-  if (hOut == INVALID_HANDLE_VALUE) {
-    return false;
-  }
-
-  DWORD dwMode = 0;
-  if (!GetConsoleMode(hOut, &dwMode)) {
-    return false;
-  }
-
-  // enable virtual terminal processing
-  dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-  if (!SetConsoleMode(hOut, dwMode)) {
-    // cannot use ansi sequence if fail to enable virtual terminal
-    return false;
-  }
-  return true;
-#else
-  return isatty(STDOUT_FILENO);
-#endif
-}();
 
 std::string StyleBuilder::build(std::string_view text) const {
   std::string result;

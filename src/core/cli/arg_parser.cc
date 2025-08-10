@@ -14,8 +14,8 @@
 #include "core/base/file_util.h"
 #include "core/base/logger.h"
 #include "core/base/string_util.h"
-#include "core/base/style_builder.h"
-#include "core/base/style_util.h"
+#include "core/cli/ansi/style_builder.h"
+#include "core/cli/ansi/style_util.h"
 
 namespace core {
 
@@ -253,7 +253,7 @@ void ArgParser::print_help() const {
   strong_style.style(Style::kBold).rgb(255, 100, 32);
   category_style.style(Style::kBoldUnderline);
   arg_style.style(Style::kBold).colour(Colour::kBrightCyan);
-  desc_style.style(Style::kBoldItalic);
+  desc_style.style(Style::kBold).colour(Colour::kBrightMagenta);
 
   std::string help_str = desc_style.build(description_);
   help_str.append("\n\n");
@@ -400,7 +400,7 @@ void ArgParser::print_help() const {
     help_str.push_back('\n');
     help_str.append(options_str);
   }
-  core::glog.info<"{}">(help_str);
+  core::glog.raw<"{}">(help_str);
 }
 
 }  // namespace core

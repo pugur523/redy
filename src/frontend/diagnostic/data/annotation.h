@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <utility>
 
-#include "core/base/style_util.h"
+#include "core/cli/ansi/style_util.h"
 #include "frontend/diagnostic/base/diagnostic_export.h"
 #include "i18n/base/data/translation_key.h"
 

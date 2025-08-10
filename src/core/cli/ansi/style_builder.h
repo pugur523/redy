@@ -2,18 +2,51 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef CORE_BASE_STYLE_BUILDER_H_
-#define CORE_BASE_STYLE_BUILDER_H_
+#ifndef CORE_CLI_ANSI_STYLE_BUILDER_H_
+#define CORE_CLI_ANSI_STYLE_BUILDER_H_
 
 #include <string>
 #include <string_view>
 
 #include "core/base/core_export.h"
-#include "core/base/style_util.h"
+#include "core/cli/ansi/style_util.h"
 
 namespace core {
 
-extern const bool can_use_ansi_sequence;
+inline constexpr Style operator|(Style a, Style b) {
+  return static_cast<Style>(static_cast<uint16_t>(a) |
+                            static_cast<uint16_t>(b));
+}
+
+inline constexpr Style operator&(Style a, Style b) {
+  return static_cast<Style>(static_cast<uint16_t>(a) &
+                            static_cast<uint16_t>(b));
+}
+
+inline constexpr Style operator^(Style a, Style b) {
+  return static_cast<Style>(static_cast<uint16_t>(a) ^
+                            static_cast<uint16_t>(b));
+}
+
+inline constexpr Style operator~(Style a) {
+  return static_cast<Style>(~static_cast<uint16_t>(a));
+}
+
+inline constexpr Style& operator|=(Style& a, Style b) {
+  return a = a | b;
+}
+
+inline constexpr Style& operator&=(Style& a, Style b) {
+  return a = a & b;
+}
+
+inline constexpr Style& operator^=(Style& a, Style b) {
+  return a = a ^ b;
+}
+
+inline constexpr bool has_style(Style styles, Style style) {
+  return (styles & style) != Style::kDefault;
+}
 
 class CORE_EXPORT StyleBuilder {
  public:
@@ -105,8 +138,8 @@ class CORE_EXPORT StyleBuilder {
   }
 
  private:
-  inline constexpr void update_should_build_cache() {
-    if (!can_use_ansi_sequence) {
+  inline void update_should_build_cache() {
+    if (!can_use_ansi_escape_sequence()) {
       should_build_ = false;
       return;
     }
@@ -128,7 +161,7 @@ class CORE_EXPORT StyleBuilder {
       should_build_ = true;
       return;
     } else if (bg_ != BgColour::kDefault) {
-      should_build_ = false;
+      should_build_ = true;
       return;
     }
   }
@@ -147,4 +180,4 @@ class CORE_EXPORT StyleBuilder {
 
 }  // namespace core
 
-#endif  // CORE_BASE_STYLE_BUILDER_H_
+#endif  // CORE_CLI_ANSI_STYLE_BUILDER_H_

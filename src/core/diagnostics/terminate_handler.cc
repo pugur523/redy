@@ -12,10 +12,11 @@
 namespace core {
 
 void terminate_handler() {
-  core::glog.fatal<
+  core::glog.error<
       "program terminated unexpectedly\n"
       "stack trace (most recent call last):\n{}\n">(
       stack_trace_from_current_context());
+  core::glog.stop_worker();
   std::exit(EXIT_FAILURE);
 }
 
