@@ -5,7 +5,6 @@
 #include "core/cli/arg_parser.h"
 
 #include <iomanip>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <unordered_map>

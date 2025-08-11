@@ -34,7 +34,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -73,7 +72,8 @@ T read_file_impl(const char* path) {
   int fd = open(path, O_RDONLY);
 #endif
   if (fd < 0) {
-    glog.error<"failed to open file: {} ({})\n">(path, std::strerror(errno));
+    glog.error_ref<"failed to open file: {} ({})\n">(path,
+                                                     std::strerror(errno));
     return {};
   }
 
@@ -85,7 +85,9 @@ T read_file_impl(const char* path) {
   if (fstat(fd, &st) != 0)  // NOLINT
 #endif
   {
-    glog.error<"failed to stat file: {} ({})\n">(path, std::strerror(errno));
+    glog.error_ref<"failed to stat file: {} ({})\n">(path,
+                                                     std::strerror(errno));
+    glog.flush();
 #if IS_WINDOWS
     _close(fd);
 #else
@@ -241,7 +243,8 @@ Files list_files(const std::string& path) {
   HANDLE hFind = FindFirstFileA(search_path.c_str(), &find_data);
 
   if (hFind == INVALID_HANDLE_VALUE) {
-    glog.error<"cannot open the directory {}\n">(path);
+    glog.error_ref<"cannot open the directory {}\n">(path);
+    glog.flush();
     return files;
   }
 
@@ -440,8 +443,9 @@ int write_file(const char* path, const std::string& content) {
 #endif
 
   if (fd < 0) {
-    glog.error<"failed to open file for writing {} ({})\n">(
+    glog.error_ref<"failed to open file for writing {} ({})\n">(
         path, std::strerror(errno));
+    glog.flush();
     return -1;
   }
 
@@ -457,8 +461,9 @@ int write_file(const char* path, const std::string& content) {
     ssize_t bytes = write(fd, data + total_written, size - total_written);
 #endif
     if (bytes <= 0) {
-      glog.error<"failed to write to the file {} ({})\n">(path,
-                                                          std::strerror(errno));
+      glog.error_ref<"failed to write to the file {} ({})\n">(
+          path, std::strerror(errno));
+      glog.flush();
 #if IS_WINDOWS
       _close(fd);
 #else
@@ -489,8 +494,9 @@ int write_binary_to_file(const void* binary_data,
 
   FILE* fp = fopen(output_path.c_str(), "wb");
   if (!fp) {
-    glog.error<"failed to open file for writing: {} ({})\n">(
+    glog.error_ref<"failed to open file for writing: {} ({})\n">(
         output_path, std::strerror(errno));
+    glog.flush();
     return 2;
   }
 
@@ -499,9 +505,10 @@ int write_binary_to_file(const void* binary_data,
   fclose(fp);
 
   if (written != binary_size) {
-    glog.error<
+    glog.error_ref<
         "failed to write all data to the file: {} (written {} / {}):\n{}">(
         output_path, written, binary_size, std::strerror(errno));
+    glog.flush();
     return 1;
   }
 
@@ -730,15 +737,17 @@ std::vector<std::size_t> index_newlines_with_avx2(std::string_view content) {
 TempFile::TempFile(const std::string& prefix, const std::string& content) {
   path_ = temp_path(prefix);
   if (create_file(path_.c_str()) != 0) {
-    glog.error<"failed to create the temp file: {} ({})\n">(
+    glog.error_ref<"failed to create the temp file: {} ({})\n">(
         path_, std::strerror(errno));
+    glog.flush();
     valid_ = false;
     return;
   }
   if (!content.empty()) {
     if (write_file(path_.c_str(), content) != 0) {
-      glog.error<"failed to write to the temp file: {} ({})\n">(
+      glog.error_ref<"failed to write to the temp file: {} ({})\n">(
           path_, std::strerror(errno));
+      glog.flush();
       valid_ = false;
     }
   }
@@ -747,8 +756,9 @@ TempFile::TempFile(const std::string& prefix, const std::string& content) {
 TempFile::~TempFile() {
   if (valid_) {
     if (remove_file(path_.c_str()) != 0) {
-      glog.error<"failed to remove the temp file: {} ({})\n">(
+      glog.error_ref<"failed to remove the temp file: {} ({})\n">(
           path_, std::strerror(errno));
+      glog.flush();
     }
   }
 }
@@ -756,8 +766,9 @@ TempFile::~TempFile() {
 TempDir::TempDir(const std::string& prefix) {
   path_ = temp_path(prefix);
   if (create_directory(path_.c_str()) != 0) {
-    glog.error<"failed to create the temp directory: {} ({})\n">(
+    glog.error_ref<"failed to create the temp directory: {} ({})\n">(
         path_, std::strerror(errno));
+    glog.flush();
     valid_ = false;
   }
 }
@@ -765,8 +776,9 @@ TempDir::TempDir(const std::string& prefix) {
 TempDir::~TempDir() {
   if (valid_) {
     if (remove_directory(path_.c_str()) != 0) {
-      glog.error<"failed to remove the temp directory: {} ({})\n">(
+      glog.error_ref<"failed to remove the temp directory: {} ({})\n">(
           path_, std::strerror(errno));
+      glog.flush();
     }
   }
 }

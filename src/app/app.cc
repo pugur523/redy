@@ -19,7 +19,7 @@ int start(int argc, char** argv) {
 
   const std::size_t dropped = core::glog.dropped_count();
   if (dropped > 0) {
-    core::glog.warn<"logging dropped count {}\n">(dropped);
+    core::glog.warn_ref<"logging dropped count {}\n">(dropped);
   }
 
   return 0;

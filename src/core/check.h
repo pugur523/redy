@@ -5,7 +5,6 @@
 #ifndef CORE_CHECK_H_
 #define CORE_CHECK_H_
 
-#include <iostream>
 #include <sstream>
 
 #include "build/build_flag.h"

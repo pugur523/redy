@@ -9,7 +9,7 @@
 #include <array>
 #include <cmath>
 #include <initializer_list>
-#include <iostream>
+#include <string>
 #include <type_traits>
 
 namespace core {
@@ -164,17 +164,16 @@ class Vec {
     return !(*this == other);
   }
 
-  // output
-  friend std::ostream& operator<<(std::ostream& os, const Vec& v) {
-    os << "[";
+  std::string to_string() const {
+    std::string result = "[";
     for (std::size_t i = 0; i < kDimNumber; ++i) {
-      if (i > 0) {
-        os << ", ";
+      if (i > 0) [[likely]] {
+        result.append(", ");
       }
-      os << v[i];
+      result.append(std::to_string(i));
     }
-    os << "]";
-    return os;
+    result.append("]");
+    return result;
   }
 
  private:

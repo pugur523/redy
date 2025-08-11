@@ -25,7 +25,11 @@ struct CORE_EXPORT RuntimeOptions {
   RuntimeOptions& operator=(RuntimeOptions&&) = default;
 
   std::string to_string(std::size_t padding_size = 0);
-  inline void print_all() { core::glog.raw<"{}\n">(to_string()); }
+  inline void print_all() {
+    std::string str = to_string();
+    core::glog.raw_ref<"{}\n">(str);
+    core::glog.flush();
+  }
   inline static std::unique_ptr<RuntimeOptions> create() {
     return std::unique_ptr<RuntimeOptions>(new RuntimeOptions());
   }

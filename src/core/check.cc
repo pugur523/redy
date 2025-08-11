@@ -23,8 +23,8 @@ CheckFailureStream::CheckFailureStream(const char* type,
       message_(message) {}
 
 std::ostream& CheckFailureStream::stream() {
-  glog.error<"{} failed: \"{}\" at {}:{}\n{}\n">(type_, condition_, file_,
-                                                 line_, message_);
+  glog.error_ref<"{} failed: \"{}\" at {}:{}\n{}\n">(type_, condition_, file_,
+                                                     line_, message_);
   return std::cerr;
 }
 

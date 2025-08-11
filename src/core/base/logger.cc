@@ -21,12 +21,12 @@ namespace core {
 femtolog::Logger& glog = femtolog::Logger::global_logger();
 
 void register_glog() {
-  femtolog::FemtologOptions options;
-  options.spsc_queue_size = 1024 * 4;              // 4KiB
-  options.backend_format_buffer_size = 1024 * 2;   // 2KiB
-  options.backend_dequeue_buffer_size = 1024 * 2;  // 2KiB
-  options.backend_worker_cpu_affinity = 5;  // pin backend thread to core 5
-  glog.init();
+  femtolog::FemtologOptions options{
+      .spsc_queue_size = 1024 * 2,              // 2KiB
+      .backend_format_buffer_size = 1024 * 2,   // 2KiB
+      .backend_dequeue_buffer_size = 1024 * 2,  // 2KiB
+  };
+  glog.init(options);
   glog.register_sink<femtolog::StdoutSink<>>();
   glog.register_sink<femtolog::FileSink>();
   glog.start_worker();

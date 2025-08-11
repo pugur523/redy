@@ -4,7 +4,6 @@
 
 #include "app/cli_handler.h"
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -94,7 +93,9 @@ int handle_arguments(int argc, char** argv) {
   }
 
   if (options->verbose) {
-    core::glog.raw<"parsed arguments:\n  {}">(options->to_string(2));
+    std::string opts_str = options->to_string(2);
+    core::glog.raw_ref<"parsed arguments:\n  {}">(opts_str);
+    core::glog.flush();
   }
 
   core::StyleBuilder ing;
@@ -104,7 +105,9 @@ int handle_arguments(int argc, char** argv) {
   core::StyleBuilder ed;
   ed.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightGreen);
   for (int i = 0; i <= 100; ++i) {
-    core::glog.raw<"\r{}">(bar.update(i / 100.0));
+    const std::string progress = bar.update(i / 100.0);
+    core::glog.raw_ref<"\r{}">(progress);
+    core::glog.flush();
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
   core::glog.raw<"\r{}\n">(bar.finish(ed.build("Completed!") + "   : demo.ry"));

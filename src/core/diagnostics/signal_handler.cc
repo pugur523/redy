@@ -5,7 +5,7 @@
 #include "core/diagnostics/signal_handler.h"
 
 #include <csignal>
-#include <iostream>
+#include <string>
 #include <thread>
 
 #include "build/build_flag.h"
@@ -65,12 +65,15 @@ void signal_handler(int signal_number) {
     // ensure non-zero id for better performance characteristics
     return static_cast<uint32_t>(hash_val) | 1;
   }();
-  core::glog.error<
+  std::string stack_trace = stack_trace_from_current_context();
+  core::glog.error_ref<
       "aborted at {} \n"
       "({} in unix time)\n"
-      "{} received by PID {} (TID {})\n{}">(
-      std::ctime(&now), now, signal_to_string(signal_number), get_pid(),
-      cached_tid, stack_trace_from_current_context());
+      "{} received by PID {} (TID {})\n{}">(std::ctime(&now), now,
+                                            signal_to_string(signal_number),
+                                            get_pid(), cached_tid, stack_trace);
+  core::glog.flush();
+  core::glog.stop_worker();
   std::exit(EXIT_FAILURE);
 }
 

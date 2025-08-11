@@ -4,7 +4,7 @@
 
 #include "core/diagnostics/terminate_handler.h"
 
-#include <iostream>
+#include <string>
 
 #include "core/base/logger.h"
 #include "core/diagnostics/stack_trace.h"
@@ -12,10 +12,11 @@
 namespace core {
 
 void terminate_handler() {
-  core::glog.error<
+  std::string stack_trace = stack_trace_from_current_context();
+  core::glog.error_ref<
       "program terminated unexpectedly\n"
-      "stack trace (most recent call last):\n{}\n">(
-      stack_trace_from_current_context());
+      "stack trace (most recent call last):\n{}\n">(stack_trace);
+  core::glog.flush();
   core::glog.stop_worker();
   std::exit(EXIT_FAILURE);
 }
