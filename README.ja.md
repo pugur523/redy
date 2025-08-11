@@ -36,7 +36,7 @@
 
 **redy** は、高いパフォーマンスと堅牢なメモリ安全性の両立を目指す新しいプログラミング言語です。
 
-豊富な計算資源がある時代に忘れられがちな、計算量の削減、メモリ効率の向上、コンパイル後のバイナリサイズの最小化など、**真のパフォーマンス**を重視しています。
+豊富な計算資源がある現代では軽視されがちな、計算量の削減、メモリ効率の向上、キャッシュヒット率の向上、コンパイル後バイナリサイズの最小化など、**真のパフォーマンス最大化**を重視していて、安全性と引き換えに実行速度の面で妥協することは絶対にありません。
 
 ---
 
@@ -140,7 +140,7 @@ fn main() -> i32 {
 }
 ```
 
-もっと詳しい[**ドキュメント**](https://pugur523.github.io/redy_doc/)も用意しています。日本語にも対応しているので、興味があれば見てみてください！
+もっと詳しい[**ドキュメントサイト**](https://pugur523.github.io/redy_doc/)も用意しています。日本語にも対応しているので、興味があれば見てみてください！
 
 ---
 
@@ -149,7 +149,7 @@ fn main() -> i32 {
 <details close>
 <summary>
   <h3>
-    フェーズ1: C++で最低限動作するバージョン(Minimum Viable Product/MVPって呼ぶらしい)を作成
+    フェーズ1: C++で最低限動作するバージョンを作成
   </h3>
 </summary>
 
@@ -159,7 +159,7 @@ fn main() -> i32 {
       - [x] 複数ファイルの管理システム
       - [x] UTF-8ファイルカーソル（peek、nextなどを提供）
 
-  - [x] **診断機能**
+  - [x] **Diagnostic - エラー診断**
       - [x] コード
       - [x] 重大度
       - [x] エントリ
@@ -167,27 +167,27 @@ fn main() -> i32 {
           - [x] ラベル
               - [x] ボディ
               - [x] アノテーション
-      - [x] 診断エンジン
+      - [x] エラー診断エンジン
           - [x] フォーマッタ
               - [x] ヘッダーフォーマッタ
               - [x] ラベルフォーマッタ
                   - [x] ソース行のレンダリング
               - [x] アノテーションフォーマッタ
 
-  - [x] **国際化**
+  - [x] **Internationalization - 多言語サポート**
       - [x] i18nコード生成器（tomlの言語ファイルから）
           - [x] メモリ効率のための重複削減
       - [x] トランスレータ
           - [x] フォーマットサポート
 
-  - [x] **基盤**
+  - [x] **base - 全体で共有されるモジュール**
       - [x] アリーナ（データ指向な構造の設計に便利）
       - [x] トークン定義
       - [x] キーワード定義
       - [x] 演算子定義
       - [x] トークンストリーム（`peek`、`next`などを提供）
 
-  - [x] **字句解析器 (Lexer)**
+  - [x] **Lexer - 字句解析**
       - [x] 識別子
           - [x] UAX #31 - ユニコード識別子のルールを使用
       - [x] キーワード
@@ -198,7 +198,7 @@ fn main() -> i32 {
       - [x] 演算子
       - [x] 区切り文字
 
-  - [ ] **抽象構文木 (AST)**
+  - [ ] **AST - 抽象構文木**
       - [x] コンテキスト（`Base::Arena`を使用するデータ指向な構造）
       - [ ] ノード
           - [ ] 式
@@ -241,30 +241,30 @@ fn main() -> i32 {
               - [ ] 列挙型
               - [ ] 共用体
 
-  - [ ] **構文解析器 (Parser)**
+  - [ ] **Parser - 構文解析**
       - [ ] 式の解析
-      - [ ] ステートメントの解析
+      - [ ] 文の解析
 
-  - [ ] **AST解析器 (AST-Analyzer)**
+  - [ ] **AST-Analyzer - AST解析**
       - [ ] シンボル解決
       - [ ] 型解決
       - [ ] Desugar
 
-  - [ ] **HIR (High-level Intermediate Representation)**
+  - [ ] **HIR - 抽象度高めの中間表現**
       - [ ] コンテキスト（`Base::Arena`を使用するデータ指向な構造）
 
-  - [ ] **HIR解析器 (HIR-Analyzer)**
+  - [ ] **HIR-Analyzer - HIR解析**
       - [ ] HIRの最適化
 
-  - [ ] **MIR (Mid-level Intermediate Representation)**
+  - [ ] **MIR - 抽象度少し低めの中間表現**
       - [ ] コンテキスト（`Base::Arena`を使用するデータ指向な構造）
 
-  - [ ] **MIR解析器 (MIR-Analyzer)**
+  - [ ] **MIR-Analyzer - MIR解析**
       - [ ] 借用チェッカー (Borrow Checker)
       - [ ] ライフタイムチェッカー
       - [ ] MIRの最適化
 
-  - [ ] **コード生成 (Codegen)**
+  - [ ] **Codegen - LLVMに渡すコードの生成**
       - [ ] MIRをLLVM-IRに変換
 
   - [ ] **redyで標準ライブラリの最初のバージョンを作成**
@@ -294,8 +294,8 @@ fn main() -> i32 {
 
 # ❤️ クレジット
 
-  - **[femtolog](http://github.com/pugur523/femtolog)**: 超高速なロギングライブラリ。
-  - **[zlib](https://github.com/madler/zlib)**: ログとビルドキャッシュの圧縮に使用。
-  - **[GoogleTest (gtest)](https://github.com/google/googletest)**: プロジェクト全体の主要な単体テストフレームワーク。
-  - **[Google Benchmark](https://github.com/google/benchmark)**: マイクロベンチマークフレームワークとして使用。
-  - **[toml11](https://github.com/ToruNiina/toml11)**: TOML形式の設定ファイルの解析と出力に使用。
+  - **[femtolog](http://github.com/pugur523/femtolog)**: 超高速なロギングライブラリ
+  - **[zlib](https://github.com/madler/zlib)**: ログとビルドキャッシュの圧縮に使用
+  - **[GoogleTest (gtest)](https://github.com/google/googletest)**: プロジェクト全体で使用しているユニットテストフレームワーク。
+  - **[Google Benchmark](https://github.com/google/benchmark)**: マイクロベンチマークフレームワークとして使用
+  - **[toml11](https://github.com/ToruNiina/toml11)**: TOML形式の設定ファイルの解析と出力に使用
