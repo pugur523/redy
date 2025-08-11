@@ -11,6 +11,7 @@
 
 #include "core/cli/ansi/style_builder.h"
 #include "core/cli/ansi/style_util.h"
+#include "core/cli/console.h"
 
 namespace core {
 

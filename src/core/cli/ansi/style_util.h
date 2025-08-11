@@ -32,13 +32,6 @@ enum class Style : uint8_t {
   kDefault = kReset,
 };
 
-bool check_ansi_sequence_available();
-
-inline bool can_use_ansi_escape_sequence() {
-  static const bool result = check_ansi_sequence_available();
-  return result;
-}
-
 // foreground colours
 enum class Colour : uint8_t {
   kBlack = 0,
