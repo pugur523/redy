@@ -290,12 +290,12 @@ fn main() -> i32 {
 
 # 🪪 ライセンス
 
-**redy**は[Apache 2.0 License](https://www.google.com/search?q=LICENSE)のもとでライセンスされています
+**redy**は[Apache 2.0 License](LICENSE)のもとでライセンスされています
 
 
 # ❤️ クレジット
 
-  - **[femtolog](http://github.com/pugur523/femtolog.git)**: 超高速なロギングライブラリ。
+  - **[femtolog](http://github.com/pugur523/femtolog)**: 超高速なロギングライブラリ。
   - **[zlib](https://github.com/madler/zlib)**: ログとビルドキャッシュの圧縮に使用。
   - **[GoogleTest (gtest)](https://github.com/google/googletest)**: プロジェクト全体の主要な単体テストフレームワーク。
   - **[Google Benchmark](https://github.com/google/benchmark)**: マイクロベンチマークフレームワークとして使用。

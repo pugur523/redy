@@ -293,7 +293,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
 
 # ❤️ Credits
 
-  - **[femtolog](http://github.com/pugur523/femtolog.git)**: An extremely fast logging library.
+  - **[femtolog](http://github.com/pugur523/femtolog)**: An extremely fast logging library.
   - **[zlib](https://github.com/madler/zlib)**: Used for compressing logs and build caches.
   - **[GoogleTest (gtest)](https://github.com/google/googletest)**: The primary unit testing framework.
   - **[Google Benchmark](https://github.com/google/benchmark)**: Used for micro-benchmarking.
