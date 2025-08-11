@@ -172,7 +172,7 @@ class I18N_EXPORT Translator {
     DCHECK(false);
 
     // 4. final fallback - return key name as string for debugging
-    // This should never happen in properly configured translations
+    // this should never happen in properly configured translations
     return "<?>";
   }
 

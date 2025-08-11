@@ -11,7 +11,6 @@ import sys
 
 from code_util import run_cpplint, run_clang_format
 from concurrent.futures import ThreadPoolExecutor
-from tabulate import tabulate
 from time import time
 from build_util import (
     build_platform_dir,
@@ -170,6 +169,29 @@ def select_best_toolchain(build_os, target_os):
     return os.path.join(toolchains_dir, (toolchain_name + ".cmake"))
 
 
+def print_table(headers, rows):
+    if not headers or not rows:
+        return
+
+    col_widths = [len(header) for header in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            if i < len(col_widths):
+                col_widths[i] = max(col_widths[i], len(str(cell)))
+
+    header_line = " | ".join(
+        f"{header:<{width}}" for header, width in zip(headers, col_widths)
+    )
+    print(header_line)
+    print("-" * len(header_line))
+
+    for row in rows:
+        row_line = " | ".join(
+            f"{str(cell):<{width}}" for cell, width in zip(row, col_widths)
+        )
+        print(row_line)
+
+
 def build_with_all_option_combinations(
     target_platforms,
     archs,
@@ -284,17 +306,17 @@ def build_with_all_option_combinations(
         row = build_single_combination(platform, arch, build_type, opt_values)
         results.append(row)
         if fail_fast and row[-1] != "✅":
-            print(tabulate(results, headers=headers, tablefmt="grid"))
+            print_table(headers, results)
             return 1
 
     print("\nbuild result: \n")
-    print(tabulate(results, headers=headers, tablefmt="grid"))
+    print_table(headers, results)
 
     ret = 0
     failures = [r for r in results if r[-1] != "✅"]
     if failures:
         print(f"\n{len(failures)} / {len(results)} combinations failed.")
-        print(tabulate(failures, headers=headers, tablefmt="grid"))
+        print_table(headers, failures)
         ret = 1
 
     total_sec = time() - start_time
@@ -559,11 +581,15 @@ def main(argv):
 
     if successful_configs:
         print("\nsuccessful builds:")
-        print(tabulate(successful_configs, headers="keys", tablefmt="grid"))
+        headers = list(successful_configs[0].keys())
+        rows = [list(config.values()) for config in successful_configs]
+        print_table(headers, rows)
 
     if failed_configs:
         print("\nfailed builds:")
-        print(tabulate(failed_configs, headers="keys", tablefmt="grid"))
+        headers = list(failed_configs[0].keys())
+        rows = [list(config.values()) for config in failed_configs]
+        print_table(headers, rows)
         failed_counts = len(failed_configs)
         return failed_counts
 

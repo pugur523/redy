@@ -42,7 +42,7 @@ void token_stream_advance(benchmark::State& state) {
 }
 BENCHMARK(token_stream_advance);
 
-static void token_stream_peak(benchmark::State& state) {
+void token_stream_peek(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId file_id =
       manager.add_virtual_file(std::u8string(1000, '3'));
@@ -68,7 +68,7 @@ static void token_stream_peak(benchmark::State& state) {
 
   state.SetBytesProcessed(1000 * sizeof(char) * state.iterations());
 }
-BENCHMARK(token_stream_peak);
+BENCHMARK(token_stream_peek);
 
 }  // namespace
 

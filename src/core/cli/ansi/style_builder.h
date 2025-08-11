@@ -10,6 +10,7 @@
 
 #include "core/base/core_export.h"
 #include "core/cli/ansi/style_util.h"
+#include "core/cli/console.h"
 
 namespace core {
 
@@ -144,26 +145,9 @@ class CORE_EXPORT StyleBuilder {
       return;
     }
 
-    if (styles_ != Style::kDefault) {
-      should_build_ = true;
-      return;
-    }
-
-    if (use_fg_rgb_) {
-      should_build_ = true;
-      return;
-    } else if (fg_ != Colour::kDefault) {
-      should_build_ = true;
-      return;
-    }
-
-    if (use_bg_rgb_) {
-      should_build_ = true;
-      return;
-    } else if (bg_ != BgColour::kDefault) {
-      should_build_ = true;
-      return;
-    }
+    should_build_ = styles_ != Style::kDefault || use_fg_rgb_ ||
+                    fg_ != Colour::kDefault || use_bg_rgb_ ||
+                    bg_ != BgColour::kDefault;
   }
 
   Style styles_ = Style::kDefault;

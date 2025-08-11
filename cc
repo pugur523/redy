@@ -18,7 +18,6 @@ else
   remain_args="--build_mode=all"
 fi
 
-
 if [ "$action" = "build" ]; then
   ${build_scripts_dir}/build.py $remain_args
 elif [ "$action" = "run" ]; then
@@ -35,4 +34,3 @@ else
 fi
 
 exit 0
-

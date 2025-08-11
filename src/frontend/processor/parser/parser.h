@@ -78,7 +78,7 @@ class PARSER_EXPORT Parser {
   inline const base::Token& peek(std::size_t offset = 0) const {
     return stream_.peek(offset);
   }
-  // TODO: use return value of `stream_.advance()`
+  // TODO: use return value of `stream_.next()`
   inline void advance() { stream_.advance(); }
   inline const base::Token& previous() const { return stream_.previous(); }
 

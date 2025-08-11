@@ -39,7 +39,7 @@ extern const std::size_t kModifierLetterCount;
 extern const UnicodeRange kOtherLetter[];  // Lo
 extern const std::size_t kOtherLetterCount;
 
-static constexpr uint8_t kUtf8LengthTable[256] = {
+constexpr const uint8_t kUtf8LengthTable[256] = {
     // 0x00-0x7f: 1 byte
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

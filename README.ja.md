@@ -292,7 +292,6 @@ fn main() -> i32 {
 
 **redy**は[Apache 2.0 License](LICENSE)のもとでライセンスされています
 
-
 # ❤️ クレジット
 
   - **[femtolog](http://github.com/pugur523/femtolog)**: 超高速なロギングライブラリ。

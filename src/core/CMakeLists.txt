@@ -19,9 +19,9 @@ set(SOURCES
   base/string_util.cc
   cli/ansi/progress_bar.cc
   cli/ansi/style_builder.cc
-  cli/ansi/style_util.cc
   cli/arg_parser.cc
   cli/arg_parser_build_info.cc
+  cli/console.cc
   diagnostics/signal_handler.cc
   diagnostics/stack_trace_entry.cc
   diagnostics/stack_trace.cc
