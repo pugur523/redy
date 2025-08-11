@@ -36,7 +36,7 @@
 
 **redy** is a new programming language to achieve both high performance and robust memory safety.
 
-It emphasizes performance in all aspects, from reducing computation and memory usage to minimizing the size of compiled binaries, which is often overlooked in an era of abundant computing resources.
+It emphasizes performance in all aspects, including reducing computation, memory usage, and improving the cache hit rate, as well as minimizing the size of compiled binaries, which is often overlooked in an era of abundant computing resources.
 
 ---
 
