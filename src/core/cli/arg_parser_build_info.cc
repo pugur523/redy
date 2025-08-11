@@ -11,7 +11,7 @@ namespace core {
 
 // static
 void ArgParser::print_version() {
-  core::glog.raw<
+  core::glog.raw_ref<
       "{} version {} ({})\n"
       "Build Platform: {} - {}\n"
       "Target Platform: {} - {}\n"
@@ -24,6 +24,7 @@ void ArgParser::print_version() {
       build::kBuildPlatform, build::kBuildArch, build::kTargetPlatform,
       build::kTargetArch, build::kTargetBits, build::kBuildCompiler, exe_dir(),
       build::kBuildTime, build::kBuildGitCommitHash);
+  core::glog.flush();
 }
 
 }  // namespace core

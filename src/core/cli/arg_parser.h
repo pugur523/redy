@@ -113,8 +113,8 @@ class CORE_EXPORT ArgParser {
                        const std::optional<T>& default_value);
 
   std::string resolve_alias(const std::string& name) const;
-  void print_warn(const std::string& message) const;
-  void print_error(const std::string& message) const;
+  inline void print_warn(const std::string& message) const;
+  inline void print_error(const std::string& message) const;
 
   std::unordered_map<std::string, std::unique_ptr<OptionBase>> options_;
   std::unordered_map<std::string, std::string> aliases_;

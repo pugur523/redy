@@ -59,8 +59,6 @@ void register_console() {
 #if IS_WINDOWS
   SetConsoleCP(CP_UTF8);
   SetConsoleOutputCP(CP_UTF8);
-#else
-  std::locale::global(std::locale(""));
 #endif
 }
 

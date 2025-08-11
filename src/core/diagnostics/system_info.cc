@@ -55,7 +55,7 @@ RTL_OSVERSIONINFOW get_windows_version_info() {
 
 SystemInfo::SystemInfo() {
   if (!init()) {
-    glog.error<"failed to get the system information\n">();
+    glog.error_ref<"failed to get the system information\n">();
   }
 }
 
@@ -181,7 +181,7 @@ uint64_t SystemInfo::ram_usage_raw() const {
   memory_status.dwLength = sizeof(MEMORYSTATUSEX);
 
   if (!GlobalMemoryStatusEx(&memory_status)) {
-    glog.error<"failed to get the ram usage\n">();
+    glog.error_ref<"failed to get the ram usage\n">();
     return 0;
   }
   return static_cast<uint64_t>(memory_status.ullTotalPhys -
@@ -192,7 +192,7 @@ uint64_t SystemInfo::ram_usage_raw() const {
   if (sysinfo(&mem_info) == 0) {
     used = mem_info.totalram - mem_info.freeram;
   } else {
-    glog.error<"failed to get the ram usage\n">();
+    glog.error_ref<"failed to get the ram usage\n">();
   }
   return used;
 #elif IS_MAC
@@ -202,7 +202,7 @@ uint64_t SystemInfo::ram_usage_raw() const {
       host_statistics64(mach_host_self(), HOST_VM_INFO64,
                         reinterpret_cast<host_info64_t>(&vm_stat), &count);
   if (kr != KERN_SUCCESS) {
-    glog.error<"failed to get the ram usage\n">();
+    glog.error_ref<"failed to get the ram usage\n">();
     return 0;
   }
 

@@ -233,15 +233,17 @@ ParseResult ArgParser::parse(int argc, char** argv) {
   return ParseResult::kSuccess;
 }
 
-void ArgParser::print_warn(const std::string& message) const {
-  glog.warn<"{}\n">(message);
+inline void ArgParser::print_warn(const std::string& message) const {
+  glog.warn_ref<"{}\n">(message);
+  glog.flush();
 }
 
-void ArgParser::print_error(const std::string& message) const {
-  glog.error<
+inline void ArgParser::print_error(const std::string& message) const {
+  glog.error_ref<
       "{}\n"
       "use '-h' or '--help' "
       "to show the help message\n">(message);
+  glog.flush();
 }
 
 void ArgParser::print_help() const {
@@ -400,7 +402,8 @@ void ArgParser::print_help() const {
     help_str.push_back('\n');
     help_str.append(options_str);
   }
-  core::glog.raw<"{}">(help_str);
+  core::glog.raw_ref<"{}">(help_str);
+  core::glog.flush();
 }
 
 }  // namespace core

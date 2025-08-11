@@ -79,10 +79,10 @@ T read_file_impl(const char* path) {
 
 #if IS_WINDOWS
   struct _stat64i32 st;
-  if (_fstat(fd, &st) != 0)
+  if (_fstat(fd, &st) != 0)  // NOLINT
 #else
   struct stat st;
-  if (fstat(fd, &st) != 0)
+  if (fstat(fd, &st) != 0)  // NOLINT
 #endif
   {
     glog.error<"failed to stat file: {} ({})\n">(path, std::strerror(errno));
@@ -258,7 +258,8 @@ Files list_files(const std::string& path) {
 #else
   DIR* dir = opendir(path.c_str());
   if (!dir) {
-    glog.error<"cannot open the directory {}\n">(path);
+    glog.error_ref<"cannot open the directory {}\n">(path);
+    glog.flush();
     return files;
   }
 
@@ -377,7 +378,8 @@ int create_directories(const char* path) {
 
     if (!dir.empty() && !dir_exists(dir.c_str())) {
       if (create_directory(dir.c_str()) != 0) {
-        glog.error<"failed to create the directory {}\n">(dir);
+        glog.error_ref<"failed to create the directory {}\n">(dir);
+        glog.flush();
         ++result;
       }
     }
@@ -479,8 +481,9 @@ int write_binary_to_file(const void* binary_data,
                          std::size_t binary_size,
                          const std::string& output_path) {
   if (!binary_data || binary_size == 0) {
-    glog.error<"invalid data or size (null or zero) for file: {}\n">(
+    glog.error_ref<"invalid data or size (null or zero) for file: {}\n">(
         output_path);
+    glog.flush();
     return 4;
   }
 

@@ -65,7 +65,7 @@ void signal_handler(int signal_number) {
     // ensure non-zero id for better performance characteristics
     return static_cast<uint32_t>(hash_val) | 1;
   }();
-  core::glog.fatal<
+  core::glog.error<
       "aborted at {} \n"
       "({} in unix time)\n"
       "{} received by PID {} (TID {})\n{}">(

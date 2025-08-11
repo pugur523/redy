@@ -103,9 +103,9 @@ int handle_arguments(int argc, char** argv) {
 
   core::StyleBuilder ed;
   ed.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightGreen);
-  for (int i = 0; i <= 10000; ++i) {
-    core::glog.raw<"\r{}">(bar.update(i / 10000.0));
-    std::this_thread::sleep_for(std::chrono::microseconds(10));
+  for (int i = 0; i <= 100; ++i) {
+    core::glog.raw<"\r{}">(bar.update(i / 100.0));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
   core::glog.raw<"\r{}\n">(bar.finish(ed.build("Completed!") + "   : demo.ry"));
 
