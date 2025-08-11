@@ -121,4 +121,3 @@ std::string StyleBuilder::build(std::string_view text) const {
 }
 
 }  // namespace core
-

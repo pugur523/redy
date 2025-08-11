@@ -14,7 +14,9 @@
 
 namespace core {
 
-std::string ProgressBar::update(double progress, const std::string& prefix) {
+std::string ProgressBar::update(double progress,
+                                const std::string& prefix,
+                                bool remove_line) {
   using duration = std::chrono::duration<double>;
 
   progress = std::clamp(progress, 0.0, 1.0);
@@ -44,20 +46,23 @@ std::string ProgressBar::update(double progress, const std::string& prefix) {
   // prefix: [ progress_bar ] n% (elapsed: 1:23 eta: 4:56)
   if (enable_color_ && can_use_ansi_escape_sequence()) {
     constexpr const char* kFormatStr =
-        "\033[2K\r{:<50} {}[ {} ]{} {:>6.2f}%    "
+        "{}\r{:<50} {}[ {} ]{} {:>6.2f}%    "
         "({}elapsed: {}{} | {}eta: {}{})";
-    return std::format(kFormatStr, prefix, colour_str(Colour::kBrightGreen),
-                       bar, style_str(Style::kReset), progress * 100.0,
+    return std::format(kFormatStr, remove_line ? "\033[2K" : "", prefix,
+                       colour_str(Colour::kBrightGreen), bar,
+                       style_str(Style::kReset), progress * 100.0,
                        colour_str(Colour::kBrightMagenta),
                        format_time(elapsed_sec), style_str(Style::kReset),
-                       colour_str(Colour::kBrightCyan), format_time(eta_sec),
+                       colour_str(Colour::kBrightCyan),
+                       progress == 1.0 ? "--:--" : format_time(eta_sec),
                        style_str(Style::kReset));
   } else {
     constexpr const char* kFormatStr =
         "({:<40} [ {} ] {:>6.2f}%    "
         "(elapsed: {} | eta: {})";
     return std::format(kFormatStr, prefix, bar, progress * 100.0,
-                       format_time(elapsed_sec), format_time(eta_sec));
+                       format_time(elapsed_sec),
+                       progress == 1.0 ? "--:--" : format_time(eta_sec));
   }
 }
 

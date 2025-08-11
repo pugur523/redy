@@ -32,11 +32,12 @@ class CORE_EXPORT ProgressBar {
 
   // update progress in the range from 0 to 1
   [[nodiscard]] std::string update(double progress,
-                                   const std::string& prefix = "");
+                                   const std::string& prefix = "",
+                                   bool remove_line = false);
 
   [[nodiscard]] inline std::string finish(
       const std::string& msg = "Completed") {
-    return update(1.0, msg);
+    return update(1.0, msg, true);
   }
 
  private:

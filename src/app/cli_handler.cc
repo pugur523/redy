@@ -98,16 +98,17 @@ int handle_arguments(int argc, char** argv) {
   }
 
   core::ProgressBar bar(30);
-  core::StyleBuilder s;
-  s.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightCyan);
+  core::StyleBuilder ing;
+  ing.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightBlue);
+  core::StyleBuilder ed;
+  ed.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightGreen);
 
-  constexpr const char* kProgressStr = "Compile Progress(demo)";
   for (int i = 0; i <= 10000; ++i) {
     core::glog.raw<"\r{}">(
-        bar.update(i / 10000.0, s.build(kProgressStr) + " "));
+        bar.update(i / 10000.0, ing.build("Compiling...") + " : demo.ry"));
     std::this_thread::sleep_for(std::chrono::microseconds(10));
   }
-  core::glog.raw<"\r{}\n">(bar.finish(s.build("Completed!")));
+  core::glog.raw<"\r{}\n">(bar.finish(ed.build("Completed!") + "   : demo.ry"));
 
   return 0;
 }

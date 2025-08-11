@@ -95,7 +95,6 @@ is_ascii_letters_bulk_avx2_x86:
     add r10, r9
     mov [r13 + r10], al
 
-
     inc     r9
     jmp     .convert_simd
 

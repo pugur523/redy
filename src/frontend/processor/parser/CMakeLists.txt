@@ -49,4 +49,3 @@ setup_module(${MODULE_NAME} ${MODULE_OBJECTS_NAME}
 if(ENABLE_VERBOSE)
   describe_target(${MODULE_NAME})
 endif()
-
