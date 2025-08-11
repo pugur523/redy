@@ -73,23 +73,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: ${{ env.POETRY_VERSION }}
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          virtualenvs-path: ~/.venv
-
-      - name: Install Python dependencies
+      - name: Install uv and Python dependencies
+        uses: astral-sh/setup-uv@v6
         run: |
-          poetry config virtualenvs.create true
-          poetry install
-
-          # verify installation
-          poetry --version
-          poetry show --tree
-          poetry env info
+          uv sync
         shell: bash
 
       - name: Cache LLVM
@@ -175,7 +162,7 @@ jobs:
             eval "$(vswhere.exe -latest -products \* -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath | sed 's|.*|"&/VC/Auxiliary/Build/vcvarsall.bat" x64|')"
           fi
 
-          poetry run python -u src/build/scripts/build.py $BUILD_ARGS --extra_args="$EXTRA_ARGS"
+          uv run python -u src/build/scripts/build.py $BUILD_ARGS --extra_args="$EXTRA_ARGS"
         shell: bash
 
       - name: Upload artifacts
@@ -197,9 +184,6 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install Poetry
-        run: pipx install poetry
-
       - uses: actions/download-artifact@v4
         with:
           pattern: builds-*-${{ inputs.build_mode }}
@@ -209,4 +193,4 @@ jobs:
       - name: Generate summary
         run: |
           [ -d "./artifacts" ] && (tree ./artifacts || ls -la ./artifacts) || echo "No artifacts found"
-          poetry run python .github/workflows/scripts/summarize.py artifacts >> $GITHUB_STEP_SUMMARY
+          python .github/workflows/scripts/summarize.py artifacts >> $GITHUB_STEP_SUMMARY
