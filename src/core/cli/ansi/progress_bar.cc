@@ -58,7 +58,7 @@ std::string ProgressBar::update(double progress,
                        style_str(Style::kReset));
   } else {
     constexpr const char* kFormatStr =
-        "({:<40} [ {} ] {:>6.2f}%    "
+        "{:<40} [ {} ] {:>6.2f}%    "
         "(elapsed: {} | eta: {})";
     return std::format(kFormatStr, prefix, bar, progress * 100.0,
                        format_time(elapsed_sec),
