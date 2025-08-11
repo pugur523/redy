@@ -14,9 +14,9 @@
 
 namespace core {
 
-std::string ProgressBar::update(double progress,
-                                const std::string& prefix,
-                                bool remove_line) {
+std::string ProgressBar::update_impl(double progress,
+                                     const std::string& prefix,
+                                     bool remove_line) {
   using duration = std::chrono::duration<double>;
 
   progress = std::clamp(progress, 0.0, 1.0);

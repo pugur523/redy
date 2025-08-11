@@ -97,15 +97,14 @@ int handle_arguments(int argc, char** argv) {
     core::glog.raw<"parsed arguments:\n  {}">(options->to_string(2));
   }
 
-  core::ProgressBar bar(30);
   core::StyleBuilder ing;
   ing.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightBlue);
+  core::ProgressBar bar(30, ing.build("Compiling...") + " : demo.ry");
+
   core::StyleBuilder ed;
   ed.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightGreen);
-
   for (int i = 0; i <= 10000; ++i) {
-    core::glog.raw<"\r{}">(
-        bar.update(i / 10000.0, ing.build("Compiling...") + " : demo.ry"));
+    core::glog.raw<"\r{}">(bar.update(i / 10000.0));
     std::this_thread::sleep_for(std::chrono::microseconds(10));
   }
   core::glog.raw<"\r{}\n">(bar.finish(ed.build("Completed!") + "   : demo.ry"));
