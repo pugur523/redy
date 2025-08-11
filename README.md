@@ -140,6 +140,8 @@ fn main() -> i32 {
 }
 ```
 
+There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), so please take a look if you are interested.
+
 ---
 
 # 🚀 Roadmap to First Stable Release
