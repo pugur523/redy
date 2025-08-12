@@ -1,31 +1,18 @@
-<p align="center">
+<div align="center">
   <img src="src/build/resources/assets/logo_1080.png" width="192" alt="redy">
-</p>
-<h1 align="center">redy</h1>
+  <h1>redy</h1>
 
-<p align="center">
   A new programming language that prioritizes performance and memory safety.
-</p>
 
-<p align="center">
-  <a href="https://github.com/pugur523/redy/actions/workflows/ci.yml">
-    <img src="https://github.com/pugur523/redy/actions/workflows/ci.yml/badge.svg" alt="CI">
-  </a>
-  <a href="https://github.com/pugur523/redy/issues">
-    <img src="https://img.shields.io/github/issues/pugur523/redy.svg" alt="GitHub Issues">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-Apache%20License%20Version%202.0-yellow" alt="License">
-  </a>
-  <a href="https://llvm.org/docs/index.html">
-    <img src="https://img.shields.io/badge/LLVM-20-green?logo=llvm" alt="LLVM Version">
-  </a>
-</p>
-<p align="left">
-  <a href="README.ja.md">
-    <img src="https://img.shields.io/badge/日本語の説明はこちら-blue" alt="Japanese README">
-  </a>
-</p>
+  [![CI](https://github.com/pugur523/redy/actions/workflows/ci.yml/badge.svg)](https://github.com/pugur523/redy/actions/workflows/ci.yml)
+  [![Issues](https://img.shields.io/github/issues/pugur523/redy.svg)](https://github.com/pugur523/redy/issues)
+  [![License](https://img.shields.io/badge/License-Apache%20License%20Version%202.0-red)](LICENSE)<br/>
+  [![C](https://img.shields.io/badge/C-blue?logo=c)](https://www.c-language.org/)
+  [![C++](https://img.shields.io/badge/C++-blue?logo=cplusplus)](https://isocpp.org/)
+  [![LLVM](https://img.shields.io/badge/LLVM-20-emerald?logo=llvm)](https://llvm.org/docs/index.html)
+  [![Document](https://img.shields.io/badge/Document-purple?logo=materialformkdocs)](https://pugur523.github.io/redy_doc/)
+  [![日本語版](https://img.shields.io/badge/日本語版-blue)](README.ja.md)
+</div>
 
 > [!NOTE]
 > This project is a work in progress and cannot yet compile a **Hello World** program.
