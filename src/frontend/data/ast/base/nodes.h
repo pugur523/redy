@@ -2,8 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_AST_BASE_NODES_H_
-#define FRONTEND_AST_BASE_NODES_H_
+#ifndef FRONTEND_DATA_AST_BASE_NODES_H_
+#define FRONTEND_DATA_AST_BASE_NODES_H_
 
 #include <cstddef>
 #include <limits>
@@ -229,4 +229,4 @@ struct ModuleDeclarationNode {
 
 }  // namespace ast
 
-#endif  // FRONTEND_AST_BASE_NODES_H_
+#endif  // FRONTEND_DATA_AST_BASE_NODES_H_

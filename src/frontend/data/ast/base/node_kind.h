@@ -2,11 +2,12 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_DATA_AST_BASE_NODES_H_
-#define FRONTEND_DATA_AST_BASE_NODES_H_
+#ifndef FRONTEND_DATA_AST_BASE_NODE_KIND_H_
+#define FRONTEND_DATA_AST_BASE_NODE_KIND_H_
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 
 #include "frontend/base/keyword/type_keyword.h"
 #include "frontend/data/ast/base/ast_export.h"
@@ -15,6 +16,7 @@
 namespace ast {
 
 using TokenId = std::size_t;
+
 constexpr const TokenId kInvalidTokenId = std::numeric_limits<TokenId>::max();
 
 enum class TypeKind : uint8_t {
@@ -40,32 +42,6 @@ enum class TypeKind : uint8_t {
   kByte = 19,
   kUserDefined = 20,
 };
-
-// inline constexpr const char* type_kind_to_string(TypeKind kind) {
-//   switch (kind) {
-//     case TypeKind::kUnknown: return "unknown";
-//     case TypeKind::kAuto: return "auto";
-//     case TypeKind::kI8: return "i8";
-//     case TypeKind::kI16: return "i16";
-//     case TypeKind::kI32: return "i32";
-//     case TypeKind::kI64: return "i64";
-//     case TypeKind::kI128: return "i128";
-//     case TypeKind::kIsize: return "isize";
-//     case TypeKind::kU8: return "u8";
-//     case TypeKind::kU16: return "u16";
-//     case TypeKind::kU32: return "u32";
-//     case TypeKind::kU64: return "u64";
-//     case TypeKind::kU128: return "u128";
-//     case TypeKind::kF32: return "f32";
-//     case TypeKind::kF64: return "f64";
-//     case TypeKind::kVoid: return "void";
-//     case TypeKind::kBool: return "bool";
-//     case TypeKind::kChar: return "char";
-//     case TypeKind::kByte: return "byte";
-//     case TypeKind::kUserDefined: return "user defined";
-//     default: DCHECK(false); return "invalid";
-//   }
-// }
 
 enum class ExpressionKind : uint8_t {
   kUnknown = 0,
@@ -129,20 +105,6 @@ enum class BlockDeclarationKind : uint8_t {
   kModule = 5,       // mod foo
 };
 
-// struct AssignStmtData {
-//   NodeId left_hand_side;
-//   NodeId right_hand_side;
-// };
-//
-// struct ConstAssignStmtData {
-//   NodeId left_hand_side;
-//   NodeId right_hand_side;
-// };
-//
-// struct ExpressionStmtData {
-//   NodeId expression;
-// };
-
 }  // namespace ast
 
-#endif  // FRONTEND_DATA_AST_BASE_NODES_H_
+#endif  // FRONTEND_DATA_AST_BASE_NODE_KIND_H_

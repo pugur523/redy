@@ -30,12 +30,13 @@ struct TestLexer {
     auto result = lexer.tokenize_next();
     EXPECT_TRUE(result.is_ok());
     if (result.is_err()) {
-      const unicode::Utf8Cursor& cursor = lexer.cursor();
-      int diag_id = static_cast<int>(result.unwrap_err().diag_id);
-      std::cerr << "diag id: " << diag_id << '\n'
-                << "pos: " << cursor.position() << '\n'
-                << "line: " << cursor.line() << '\n'
-                << "column: " << cursor.column() << '\n';
+      // const unicode::Utf8Cursor& cursor = lexer.cursor();
+      // int diag_id = static_cast<int>(result.unwrap_err().diag_id);
+
+      // std::cerr << "diag id: " << diag_id << '\n'
+      //           << "pos: " << cursor.position() << '\n'
+      //           << "line: " << cursor.line() << '\n'
+      //           << "column: " << cursor.column() << '\n';
     }
     return std::move(result).unwrap();
   }
@@ -44,12 +45,12 @@ struct TestLexer {
     auto result = lexer.tokenize_next();
     EXPECT_TRUE(result.is_err());
     if (result.is_ok()) {
-      auto token = std::move(result).unwrap();
-      const unicode::Utf8Cursor& cursor = lexer.cursor();
-      std::cerr << "lexeme: " << token.lexeme(manager.file(id_)) << '\n'
-                << "pos: " << cursor.position() << '\n'
-                << "line: " << cursor.line() << '\n'
-                << "column: " << cursor.column() << '\n';
+      // auto token = std::move(result).unwrap();
+      // const unicode::Utf8Cursor& cursor = lexer.cursor();
+      // std::cerr << "lexeme: " << token.lexeme(manager.file(id_)) << '\n'
+      //           << "pos: " << cursor.position() << '\n'
+      //           << "line: " << cursor.line() << '\n'
+      //           << "column: " << cursor.column() << '\n';
     } else {
       EXPECT_EQ(std::move(result).unwrap_err().diag_id, diag_id);
     }

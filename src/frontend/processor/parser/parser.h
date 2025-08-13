@@ -2,14 +2,18 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_PROCESSOR_PARSER_PARSER_H__H_
-#define FRONTEND_PROCESSOR_PARSER_PARSER_H__H_
+#ifndef FRONTEND_PROCESSOR_PARSER_PARSER_H_
+#define FRONTEND_PROCESSOR_PARSER_PARSER_H_
+
+#include <memory>
+#include <vector>
 
 #include "frontend/base/token/token_stream.h"
 #include "frontend/data/ast/context.h"
 #include "frontend/diagnostic/data/error/source_error.h"
 #include "frontend/diagnostic/data/result.h"
 #include "frontend/processor/parser/base/parser_export.h"
+
 namespace parser {
 
 class PARSER_EXPORT Parser {
@@ -55,4 +59,4 @@ class PARSER_EXPORT Parser {
 
 }  // namespace parser
 
-#endif  // FRONTEND_PROCESSOR_PARSER_PARSER_H__H_
+#endif  // FRONTEND_PROCESSOR_PARSER_PARSER_H_
