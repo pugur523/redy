@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
@@ -15,198 +16,247 @@ namespace lexer {
 
 namespace {
 
-void verify_ok(std::u8string&& source,
-               base::TokenKind expected_kind,
-               uint32_t n = 4) {
+struct TestLexer {
   unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(std::move(source));
   Lexer lexer;
-  const auto _ = lexer.init(manager.file(id));
 
-  for (uint32_t i = 0; i < n; ++i) {
-    auto result = lexer.next_token();
-    ASSERT_TRUE(result.is_ok());
-    EXPECT_EQ(result.unwrap().kind(), expected_kind);
+  explicit TestLexer(std::u8string source,
+                     Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
+    id_ = manager.add_virtual_file(std::move(source));
+    const auto _ = lexer.init(manager.file(id_), mode);
   }
 
-  base::Token eof = lexer.next_token().unwrap();
-  EXPECT_EQ(eof.kind(), base::TokenKind::kEof);
+  base::Token next() {
+    auto result = lexer.next_token();
+    EXPECT_TRUE(result.is_ok());
+    if (result.is_err()) {
+      const unicode::Utf8Cursor& cursor = lexer.cursor();
+      int diag_id = static_cast<int>(result.unwrap_err().diag_id);
+      std::cerr << "diag id: " << diag_id << '\n'
+                << "pos: " << cursor.position() << '\n'
+                << "line: " << cursor.line() << '\n'
+                << "column: " << cursor.column() << '\n';
+    }
+    return std::move(result).unwrap();
+  }
+
+  void expect_error_next(diagnostic::DiagnosticId diag_id) {
+    auto result = lexer.next_token();
+    EXPECT_TRUE(result.is_err());
+    if (result.is_ok()) {
+      auto token = std::move(result).unwrap();
+      const unicode::Utf8Cursor& cursor = lexer.cursor();
+      std::cerr << "lexeme: " << token.lexeme(manager.file(id_)) << '\n'
+                << "pos: " << cursor.position() << '\n'
+                << "line: " << cursor.line() << '\n'
+                << "column: " << cursor.column() << '\n';
+    } else {
+      EXPECT_EQ(std::move(result).unwrap_err().diag_id, diag_id);
+    }
+  }
+
+ private:
+  unicode::Utf8FileId id_;
+};
+
+void expect_tokens(std::u8string source,
+                   std::vector<base::TokenKind>&& expected_kinds,
+                   Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
+  TestLexer test_lexer(std::move(source), mode);
+
+  for (base::TokenKind expected : expected_kinds) {
+    EXPECT_EQ(test_lexer.next().kind(), expected);
+  }
+
+  EXPECT_EQ(test_lexer.next().kind(), base::TokenKind::kEof);
 }
 
-void verify_error(std::u8string&& source,
-                  diagnostic::DiagnosticId expected_error_id) {
-  unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(std::move(source));
-  Lexer lexer;
-  const auto _ = lexer.init(manager.file(id));
-  auto token_or_err = lexer.next_token();
-  ASSERT_TRUE(token_or_err.is_err())
-      << base::token_kind_to_string(token_or_err.unwrap().kind());
-  EXPECT_EQ(token_or_err.unwrap_err().diag_id, expected_error_id);
+void expect_error(std::u8string source,
+                  diagnostic::DiagnosticId expected_error) {
+  TestLexer test_lexer(std::move(source));
+  test_lexer.expect_error_next(expected_error);
+}
+
+void expect_repeated_token(std::u8string source,
+                           base::TokenKind expected_kind,
+                           uint32_t count,
+                           Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
+  TestLexer test_lexer(std::move(source), mode);
+
+  for (uint32_t i = 0; i < count; ++i) {
+    EXPECT_EQ(test_lexer.next().kind(), expected_kind);
+  }
+
+  EXPECT_EQ(test_lexer.next().kind(), base::TokenKind::kEof);
+}
+
+void validate_token_properties(std::u8string source,
+                               Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
+  TestLexer test_lexer(std::move(source), mode);
+  const unicode::Utf8File& file = test_lexer.manager.file(
+      test_lexer.manager.add_virtual_file(std::u8string(source)));
+
+  while (true) {
+    const base::Token token = test_lexer.next();
+
+    EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
+    EXPECT_GT(token.start().line(), 0);
+    EXPECT_GT(token.start().column(), 0);
+    EXPECT_NE(token.kind(), base::TokenKind::kUnknown);
+
+    if (token.kind() == base::TokenKind::kEof) {
+      EXPECT_TRUE(token.lexeme(file).empty());
+      break;
+    } else {
+      EXPECT_FALSE(token.lexeme(file).empty());
+    }
+  }
 }
 
 }  // namespace
 
 TEST(LexerTest, LexSimpleCode) {
-  unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(u8"x := 42;");
-  Lexer lexer;
-  const auto _ = lexer.init(manager.file(id));
-
-  base::Token t1 = lexer.next_token().unwrap();
-  base::Token t2 = lexer.next_token().unwrap();
-  base::Token t3 = lexer.next_token().unwrap();
-  base::Token t4 = lexer.next_token().unwrap();
-  base::Token t5 = lexer.next_token().unwrap();
-  EXPECT_EQ(t1.kind(), base::TokenKind::kIdentifier);
-  EXPECT_EQ(t2.kind(), base::TokenKind::kAssign);
-  EXPECT_EQ(t3.kind(), base::TokenKind::kLiteralNumeric);
-  EXPECT_EQ(t4.kind(), base::TokenKind::kSemicolon);
-  EXPECT_EQ(t5.kind(), base::TokenKind::kEof);
+  expect_tokens(
+      u8"x := 42;",
+      {base::TokenKind::kIdentifier, base::TokenKind::kColonEqual,
+       base::TokenKind::kLiteralNumeric, base::TokenKind::kSemicolon});
 }
 
 TEST(LexerTest, HelloWorldFunction) {
   std::u8string source =
       u8R"(
-        fn main() -> i32 {
-            world_str := "world";
-            x: i32 = 42;
-            println#("hello {}", world_str);
-            println#("answer to the ultimate question of life, the universe, and everything is {}.", x);
-            ret 0;
-        }
-    )";
-  unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(std::move(source));
-  const unicode::Utf8File& file = manager.file(id);
-  Lexer lexer;
-  const auto _ = lexer.init(manager.file(id));
-
-  while (true) {
-    base::Token token = lexer.next_token().unwrap();
-
-    EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
-
-    EXPECT_GT(token.start().line(), 0);
-    EXPECT_GT(token.start().column(), 0);
-
-    EXPECT_NE(token.kind(), base::TokenKind::kUnknown);
-
-    if (token.kind() == base::TokenKind::kEof) {
-      EXPECT_TRUE(token.lexeme(file).empty());
-      break;
-    } else {
-      EXPECT_FALSE(token.lexeme(file).empty());
+    fn main() -> i32 {
+        world_str := "world";
+        x: i32 = 42;
+        println#("hello {}", world_str);
+        println#("answer to the ultimate question of life, the universe, and everything is {}.", x);
+        ret 0;
     }
-  }
+  )";
+  validate_token_properties(std::move(source));
 }
 
 TEST(LexerTest, HelloWorldWithUnicodeCharacters) {
   std::u8string source =
       u8R"(
-      fn メイン() -> i32 {
-        ワールド := "ワールド";
-        println#("ハロー{}", ワールド);
-        ret 0;
-      }
-    )";
-  unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(std::move(source));
-  const unicode::Utf8File& file = manager.file(id);
-  Lexer lexer;
-  const auto _ = lexer.init(manager.file(id));
-
-  while (true) {
-    base::Token token = lexer.next_token().unwrap();
-
-    EXPECT_FALSE(std::string(token_kind_to_string(token.kind())).empty());
-
-    EXPECT_GT(token.start().line(), 0);
-    EXPECT_GT(token.start().column(), 0);
-
-    EXPECT_NE(token.kind(), base::TokenKind::kUnknown);
-
-    if (token.kind() == base::TokenKind::kEof) {
-      EXPECT_TRUE(token.lexeme(file).empty());
-      break;
-    } else {
-      EXPECT_FALSE(token.lexeme(file).empty());
+    fn メイン() -> i32 {
+      ワールド := "ワールド";
+      println#("ハロー{}", ワールド);
+      ret 0;
     }
-  }
+  )";
+  validate_token_properties(std::move(source));
 }
 
 TEST(LexerTest, UnicodeCharacter) {
-  verify_ok(u8"α 中　", base::TokenKind::kIdentifier, 2);
+  expect_repeated_token(u8"α 中　", base::TokenKind::kIdentifier, 2);
 }
 
-TEST(LexerErrorTest, UnterminatedStringLiteral) {
-  verify_error(u8R"("hello)",
+// lexer mode tests
+TEST(LexerModeTest, InlineCommentIgnore) {
+  // ignore inline comment in code analysis mode
+  expect_tokens(u8"// comment\nx",
+                {base::TokenKind::kNewline, base::TokenKind::kIdentifier},
+                Lexer::Mode::kCodeAnalysis);
+}
+
+TEST(LexerModeTest, InlineCommentStore) {
+  // store inline comment in format mode
+  expect_tokens(u8"// comment\nx",
+                {base::TokenKind::kInlineComment, base::TokenKind::kNewline,
+                 base::TokenKind::kIdentifier},
+                Lexer::Mode::kFormat);
+}
+
+TEST(LexerModeTest, BlockCommentIgnore) {
+  // ignore block comment in code analysis mode
+  expect_tokens(u8"/* comment */ x", {base::TokenKind::kIdentifier},
+                Lexer::Mode::kCodeAnalysis);
+}
+
+TEST(LexerModeTest, BlockCommentStore) {
+  // store block comment in format mode
+  expect_tokens(u8"/* comment */ x",
+                {base::TokenKind::kBlockComment, base::TokenKind::kWhitespace,
+                 base::TokenKind::kIdentifier},
+                Lexer::Mode::kFormat);
+}
+
+TEST(LexerModeTest, DocumentationCommentIgnore) {
+  // ignore doc comment in code analysis mode
+  expect_tokens(u8"//@ doc\nx",
+                {base::TokenKind::kNewline, base::TokenKind::kIdentifier},
+                Lexer::Mode::kCodeAnalysis);
+}
+
+TEST(LexerModeTest, DocumentationCommentStore) {
+  // store doc comment in document generation mode
+  expect_tokens(u8"//@ doc\nx",
+                {base::TokenKind::kDocumentationComment,
+                 base::TokenKind::kNewline, base::TokenKind::kIdentifier},
+                Lexer::Mode::kDocumentGen);
+}
+
+TEST(LexerModeTest, WhitespaceAndNewlineInFormat) {
+  // unicode whitespaces: U+2003 EM SPACE, U+2028 LINE SEPARATOR
+  std::u8string src = u8"x\u2003y\u2028z";
+
+  expect_tokens(std::move(src),
+                {
+                    base::TokenKind::kIdentifier,  // x
+                    base::TokenKind::kWhitespace,  // EM SPACE
+                    base::TokenKind::kIdentifier,  // y
+                    base::TokenKind::kNewline,     // LINE SEPARATOR
+                    base::TokenKind::kIdentifier   // z
+                },
+                Lexer::Mode::kFormat);
+}
+
+// error tests
+TEST(LexerErrorTest, UnterminatedLiterals) {
+  expect_error(u8R"("hello)",
                diagnostic::DiagnosticId::kUnterminatedStringLiteral);
-}
-
-TEST(LexerErrorTest, UnterminatedCharacterLiteral) {
-  verify_error(u8R"('x)",
+  expect_error(u8R"('x)",
                diagnostic::DiagnosticId::kUnterminatedCharacterLiteral);
-}
-
-TEST(LexerErrorTest, UnterminatedBlockComment) {
-  verify_error(u8"/* unterminated",
+  expect_error(u8"/* unterminated",
                diagnostic::DiagnosticId::kUnterminatedBlockComment);
 }
 
-TEST(LexerErrorTest, UnexpectedEof) {
-  std::u8string source;
-  source.push_back('\0');
-  verify_error(std::move(source),
+TEST(LexerErrorTest, UnexpectedCharacters) {
+  expect_error(u8"¿", diagnostic::DiagnosticId::kUnrecognizedCharacter);
+  expect_error(u8"☄", diagnostic::DiagnosticId::kUnrecognizedCharacter);
+  expect_error(u8"🚀", diagnostic::DiagnosticId::kUnrecognizedCharacter);
+
+  // control character
+  std::u8string control_char;
+  control_char.push_back('\x01');
+  expect_error(std::move(control_char),
+               diagnostic::DiagnosticId::kUnrecognizedCharacter);
+
+  // null character
+  std::u8string null_char;
+  null_char.push_back('\0');
+  expect_error(std::move(null_char),
                diagnostic::DiagnosticId::kUnexpectedEndOfFile);
 }
 
-TEST(LexerErrorTest, UnrecognizedCharacter) {
-  verify_error(u8"¿", diagnostic::DiagnosticId::kUnrecognizedCharacter);
-}
-
-TEST(LexerErrorTest, UnrecognizedUnicodeCharacter) {
-  verify_error(u8"☄", diagnostic::DiagnosticId::kUnrecognizedCharacter);
-  verify_error(u8"🚀", diagnostic::DiagnosticId::kUnrecognizedCharacter);
-  verify_error(u8"☺", diagnostic::DiagnosticId::kUnrecognizedCharacter);
-}
-
-TEST(LexerErrorTest, UnrecognizedControlCharacter) {
-  std::u8string source;
-  source.push_back('\x01');
-  verify_error(std::move(source),
-               diagnostic::DiagnosticId::kUnrecognizedCharacter);
-}
-
 TEST(LexerErrorTest, InvalidEscapeSequence) {
-  verify_error(u8R"("bad \q escape")",
+  expect_error(u8R"("bad \q escape")",
                diagnostic::DiagnosticId::kInvalidEscapeSequence);
 }
 
-// numeric literal error tests
-TEST(LexerErrorTest, EmptyHexLiteral) {
-  verify_error(u8"0x", diagnostic::DiagnosticId::kInvalidNumericLiteral);
-}
-
-TEST(LexerErrorTest, EmptyBinaryLiteral) {
-  verify_error(u8"0b", diagnostic::DiagnosticId::kInvalidNumericLiteral);
-}
-
-TEST(LexerErrorTest, EmptyOctalLiteral) {
-  verify_error(u8"0o", diagnostic::DiagnosticId::kInvalidNumericLiteral);
-}
-
-TEST(LexerErrorTest, InvalidNumericSuffix) {
-  verify_error(u8"42xyz", diagnostic::DiagnosticId::kInvalidNumericLiteral);
+TEST(LexerErrorTest, InvalidNumericLiterals) {
+  expect_error(u8"0x", diagnostic::DiagnosticId::kInvalidNumericLiteral);
+  expect_error(u8"0b", diagnostic::DiagnosticId::kInvalidNumericLiteral);
+  expect_error(u8"0o", diagnostic::DiagnosticId::kInvalidNumericLiteral);
+  expect_error(u8"42xyz", diagnostic::DiagnosticId::kInvalidNumericLiteral);
 }
 
 // edge cases
-TEST(LexerTest, ZeroWithDifferentBases) {
-  verify_ok(u8"0 0x0 0b0 0o0", base::TokenKind::kLiteralNumeric);
-}
-
-TEST(LexerTest, kFloatingPointEdgeCases) {
-  verify_ok(u8"0.0 1e0 1E0 1e+0 1e-0", base::TokenKind::kLiteralNumeric, 5);
+TEST(LexerTest, NumericLiteralEdgeCases) {
+  expect_repeated_token(u8"0 0x0 0b0 0o0", base::TokenKind::kLiteralNumeric, 4);
+  expect_repeated_token(u8"0.0 1e0 1E0 1e+0 1e-0",
+                        base::TokenKind::kLiteralNumeric, 5);
 }
 
 }  // namespace lexer

@@ -7,6 +7,7 @@
 import os
 import time
 import urllib.request
+import hashlib
 
 from build_util import (
     project_src_dir,
@@ -18,6 +19,7 @@ ucd_generated_dir = os.path.join(
     os.path.join(project_src_dir, "unicode", "base", "ucd")
 )
 source_path = os.path.join(ucd_generated_dir, "unicode_data.cc")
+checksum_path = os.path.join(ucd_raw_dir, ".checksum")
 
 kBaseUrl = "https://www.unicode.org/Public/UCD/latest/ucd/"
 kFiles = {
@@ -27,6 +29,38 @@ kFiles = {
         "General_Category"
     ],  # for Nd (decimal numbers), Lu/Ll/Lt (letters)
 }
+
+
+def calculate_checksum(file_paths):
+    sha256 = hashlib.sha256()
+    for path in file_paths:
+        with open(path, "rb") as f:
+            while chunk := f.read(4096):
+                sha256.update(chunk)
+    return sha256.hexdigest()
+
+
+def get_file_checksum(file_path):
+    sha256 = hashlib.sha256()
+    with open(file_path, "rb") as f:
+          while chunk := f.read(4096):
+                sha256.update(chunk)
+    return sha256.hexdigest()
+
+
+def should_skip_generation(raw_files):
+    if not os.path.exists(source_path) or not os.path.exists(checksum_path):
+        return False
+
+    try:
+        with open(checksum_path, "r", encoding="utf-8") as f:
+            saved_checksum = f.read().strip()
+        current_cc_checksum = get_file_checksum(source_path)
+        current_raw_checksum = calculate_checksum(raw_files)
+
+        return saved_checksum == f"{current_cc_checksum}\n{current_raw_checksum}"
+    except (IOError, FileNotFoundError):
+        return False
 
 
 def download_ucd_file(file_name, dest_path):
@@ -121,6 +155,9 @@ def generate_cc(all_data):
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
+// clang-format off
+// NOLINTBEGIN
+
 #include "unicode/base/ucd/unicode_data.h"
 
 namespace unicode {{
@@ -146,6 +183,9 @@ namespace unicode {{
 
 {emit_range_array("kOtherLetter", all_data["Lo"])}
 
+// NOLINTEND
+// clang-format on
+
 }}  // namespace unicode
 """
         )
@@ -162,18 +202,22 @@ def main():
     start_time = time.time()
     all_data = {}
 
-    # download and parse DerivedCoreProperties.txt
+    # download batch
     derived_path = download_ucd_raw_if_not_exists("DerivedCoreProperties.txt")
+    prop_path = download_ucd_raw_if_not_exists("PropList.txt")
+    unicode_path = download_ucd_raw_if_not_exists("UnicodeData.txt")
+
+    raw_files = [derived_path, prop_path, unicode_path]
+    if should_skip_generation(raw_files):
+        print("checksums match. skipping code generation.")
+        return
+
     derived_data = parse_prop_list(derived_path, ["XID_Start", "XID_Continue"])
     all_data.update(derived_data)
 
-    # download and parse PropList.txt
-    prop_path = download_ucd_raw_if_not_exists("PropList.txt")
     prop_data = parse_prop_list(prop_path, ["White_Space"])
     all_data.update(prop_data)
 
-    # download and parse UnicodeData.txt
-    unicode_path = download_ucd_raw_if_not_exists("UnicodeData.txt")
     unicode_data = parse_unicode_data(unicode_path)
     all_data.update(unicode_data)
 
@@ -183,6 +227,12 @@ def main():
     total_sec = end_time - start_time
     minutes = int(total_sec // 60)
     seconds = int(total_sec % 60)
+
+    # save checksums after successful generation
+    with open(checksum_path, "w", encoding="utf-8") as f:
+        cc_checksum = get_file_checksum(source_path)
+        raw_checksum = calculate_checksum(raw_files)
+        f.write(f"{cc_checksum}\n{raw_checksum}")
 
     print(
         f"done: generated unicode_data.cc in {minutes} min {seconds} sec."

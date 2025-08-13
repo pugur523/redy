@@ -211,6 +211,7 @@ def generate_lang_ids_header(languages: list):
 // which can be found in the LICENSE file.
 
 // clang-format off
+// NOLINTBEGIN
 
 #ifndef I18N_BASE_DATA_LANGUAGE_ID_H_
 #define I18N_BASE_DATA_LANGUAGE_ID_H_
@@ -227,6 +228,7 @@ constexpr std::size_t kDefaultLanguageIndex =
 
 }}  // namespace i18n
 
+// NOLINTEND
 // clang-format on
 
 #endif  // I18N_BASE_DATA_LANGUAGE_ID_H_
@@ -258,6 +260,7 @@ def generate_translation_keys_header(keys: list):
 // which can be found in the LICENSE file.
 
 // clang-format off
+// NOLINTBEGIN
 
 #ifndef I18N_BASE_DATA_TRANSLATION_KEY_H_
 #define I18N_BASE_DATA_TRANSLATION_KEY_H_
@@ -275,6 +278,7 @@ constexpr std::size_t kTranslationKeyCount = {keys_count};
 
 }}  // namespace i18n
 
+// NOLINTEND
 // clang-format on
 
 #endif  // I18N_BASE_DATA_TRANSLATION_KEY_H_

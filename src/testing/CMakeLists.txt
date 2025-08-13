@@ -15,6 +15,8 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/core/base/vec_test.cc
   ${PROJECT_SOURCE_DIR}/core/diagnostics/system_info_test.cc
 
+  ${PROJECT_SOURCE_DIR}/i18n/base/translator_test.cc
+
   ${PROJECT_SOURCE_DIR}/unicode/utf8/cursor_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
@@ -29,9 +31,7 @@ set(SOURCES
 
   # ${PROJECT_SOURCE_DIR}/frontend/parser/parser_test.cc
 
-  ${PROJECT_SOURCE_DIR}/frontend/frontend_integration_test.cc
-
-  ${PROJECT_SOURCE_DIR}/i18n/base/translator_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/pipeline/frontend_integration_test.cc
 )
 
 add_executable(${TEST_NAME} ${SOURCES})

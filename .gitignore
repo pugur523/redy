@@ -65,7 +65,7 @@ Cargo.lock
 
 # Python
 dist/
-build/
+/build
 *.pyc
 
 # Docs

@@ -21,6 +21,20 @@ Lexer::Result<Lexer::Token> Lexer::unicode_token(char32_t current_codepoint,
     return literal_numeric();
   }
 
+  // note that `is_unicode_newline` must be evaluated before
+  // `is_unicode_whitespace`, since it will return true even for newlines
+  if (unicode::is_unicode_newline(current_codepoint)) {
+    cursor_.next();
+    return create_token(TokenKind::kNewline, start, line, col);
+  } else if (unicode::is_unicode_whitespace(current_codepoint)) {
+    DCHECK(should_include_whitespace());
+    while (!cursor_.eof() && !unicode::is_unicode_newline(cursor_.peek()) &&
+           unicode::is_unicode_whitespace(cursor_.peek())) {
+      cursor_.next();
+    }
+    return create_token(TokenKind::kWhitespace, start, line, col);
+  }
+
   return err<Token>(Error::create(
       start, line, col, diagnostic::DiagnosticId::kUnrecognizedCharacter));
 }

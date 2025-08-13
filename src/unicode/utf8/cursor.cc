@@ -42,8 +42,12 @@ char32_t Utf8Cursor::peek_at(std::size_t offset) const {
 
   const std::size_t target_pos = cursor_state_.position + offset;
   const std::u8string_view content = file_->content_u8();
+
   DCHECK_LT(target_pos, content.size())
       << "peek target position is out of range";
+  // if (target_pos >= content.size()) {
+  //   return '\0';
+  // }
 
   const char8_t* const ptr = content.data() + target_pos;
   const char8_t* const end = content.data() + content.size();
@@ -68,7 +72,7 @@ char32_t Utf8Cursor::next() {
     ++cursor_state_.column;
   }
 
-  return codepoint;
+  return peek();
 }
 
 bool Utf8Cursor::consume(char32_t code) {

@@ -32,6 +32,14 @@ class DIAGNOSTIC_EXPORT Ok {
   T value_;
 };
 
+// no payload to return; kept for api symmetry
+template <>
+class DIAGNOSTIC_EXPORT Ok<void> {
+ public:
+  Ok() = default;
+  inline void into_ok() && noexcept {}
+};
+
 template <typename E>
 class DIAGNOSTIC_EXPORT Err {
  public:
@@ -48,6 +56,10 @@ class DIAGNOSTIC_EXPORT Err {
 template <typename T>
 Ok<std::decay_t<T>> create_ok(T&& value) {
   return Ok<std::decay_t<T>>(std::forward<T>(value));
+}
+
+inline Ok<void> create_ok() {
+  return Ok<void>();
 }
 
 template <typename E>
@@ -88,7 +100,6 @@ class DIAGNOSTIC_EXPORT Result {
     } else {
       new (&storage_.err_value_) E(std::move(other.storage_.err_value_));
     }
-    other.is_ok_ = false;
   }
 
   Result& operator=(const Result& other) {
@@ -181,7 +192,7 @@ class DIAGNOSTIC_EXPORT Result {
   auto map_err(F&& f) && {
     using F_ret_type = std::invoke_result_t<F, E>;
     if (!is_ok_) {
-      return create_err(std::forward<F>(f)(std::move(storage_.ok_value_)));
+      return create_err(std::forward<F>(f)(std::move(storage_.err_value_)));
     } else {
       return Result<T, F_ret_type>(std::move(*this).unwrap());
     }
@@ -234,6 +245,150 @@ class DIAGNOSTIC_EXPORT Result {
   };
 
   Storage storage_;
+  bool is_ok_ : 1;
+};
+
+template <typename E>
+class DIAGNOSTIC_EXPORT Result<void, E> {
+ public:
+  // construct ok (no payload)
+  explicit Result(Ok<void>&&) : is_ok_(true) {}
+
+  // construct err
+  explicit Result(Err<E>&& err_value) : is_ok_(false) {
+    new (&storage_.err_value_) E(std::move(err_value).into_err());
+  }
+
+  ~Result() {
+    if (!is_ok_) {
+      storage_.err_value_.~E();
+    }
+  }
+
+  Result(const Result& other) : is_ok_(other.is_ok_) {
+    if (!is_ok_) {
+      new (&storage_.err_value_) E(other.storage_.err_value_);
+    }
+  }
+
+  Result(Result&& other) noexcept : is_ok_(other.is_ok_) {
+    if (!is_ok_) {
+      new (&storage_.err_value_) E(std::move(other.storage_.err_value_));
+    }
+    // keep other's active member unchanged; both destructors will handle their
+    // own states
+  }
+
+  Result& operator=(const Result& other) {
+    if (this != &other) {
+      this->~Result();
+      new (this) Result(other);
+    }
+    return *this;
+  }
+
+  Result& operator=(Result&& other) noexcept {
+    if (this != &other) {
+      this->~Result();
+      new (this) Result(std::move(other));
+    }
+    return *this;
+  }
+
+  // state queries
+  inline bool is_ok() const { return is_ok_; }
+  inline bool is_err() const { return !is_ok_; }
+
+  // unwrap ok (no payload) – no-op with check
+  void unwrap() && { DCHECK(is_ok_); }
+  void expect(const std::string& msg) const& {
+    DCHECK(is_ok_) << msg << ": " << storage_.err_value_;
+  }
+
+  // unwrap error
+  const E& unwrap_err() const& {
+    DCHECK(!is_ok_);
+    return storage_.err_value_;
+  }
+  E unwrap_err() && {
+    DCHECK(!is_ok_);
+    return std::move(storage_.err_value_);
+  }
+
+  // map: void -> U by invoking f() only on ok
+  template <typename F>
+  auto map(F&& f) && {
+    using U = std::invoke_result_t<F>;
+    if (is_ok_) {
+      return create_ok(std::forward<F>(f)());
+    } else {
+      return Result<U, E>(Err<E>(std::move(storage_.err_value_)));
+    }
+  }
+  template <typename F>
+  auto map(F&& f) const& {
+    using U = std::invoke_result_t<F>;
+    if (is_ok_) {
+      return create_ok(std::forward<F>(f)());
+    } else {
+      return Result<U, E>(Err<E>(storage_.err_value_));
+    }
+  }
+
+  // map_err: transform error only
+  template <typename F>
+  auto map_err(F&& f) && {
+    using E2 = std::invoke_result_t<F, E>;
+    if (!is_ok_) {
+      return create_err(std::forward<F>(f)(std::move(storage_.err_value_)));
+    } else {
+      return Result<void, E2>(create_ok());
+    }
+  }
+  template <typename F>
+  auto map_err(F&& f) const& {
+    using E2 = std::invoke_result_t<F, const E&>;
+    if (!is_ok_) {
+      return create_err(std::forward<F>(f)(storage_.err_value_));
+    } else {
+      return Result<void, E2>(create_ok());
+    }
+  }
+
+  // and_then: chain to next result when ok; f: () -> Result<*, E>
+  template <typename F>
+  auto and_then(F&& f) && {
+    using NextResult = std::invoke_result_t<F>;
+    static_assert(std::is_same_v<typename NextResult::ErrorType, E>,
+                  "error types must match for and_then");
+    if (is_ok_) {
+      return std::forward<F>(f)();
+    } else {
+      return NextResult(Err<E>(std::move(storage_.err_value_)));
+    }
+  }
+  template <typename F>
+  auto and_then(F&& f) const& {
+    using NextResult = std::invoke_result_t<F>;
+    static_assert(std::is_same_v<typename NextResult::ErrorType, E>,
+                  "error types must match for and_then");
+    if (is_ok_) {
+      return std::forward<F>(f)();
+    } else {
+      return NextResult(Err<E>(storage_.err_value_));
+    }
+  }
+
+  using ValueType = void;
+  using ErrorType = E;
+
+ private:
+  union Storage {
+    char dummy_;
+    E err_value_;
+    Storage() {}
+    ~Storage() {}
+  } storage_;
   bool is_ok_ : 1;
 };
 

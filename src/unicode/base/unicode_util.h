@@ -232,6 +232,20 @@ inline constexpr bool is_unicode_whitespace(char32_t codepoint) {
   return is_in_ranges(kWhiteSpace, kWhiteSpaceCount, codepoint);
 }
 
+inline constexpr bool is_unicode_newline(char32_t codepoint) {
+  if (is_ascii(codepoint)) [[likely]] {
+    // bitwise newline detection:
+    // LF: 0x0A, VT: 0x0B, FF: 0x0C, CR: 0x0D
+    constexpr uint64_t ascii_newline_mask =
+        (1ull << 0x0A) | (1ull << 0x0B) | (1ull << 0x0C) | (1ull << 0x0D);
+    return codepoint <= 0x0D && (ascii_newline_mask & (1ull << codepoint));
+  }
+
+  // unicode newlines
+  // NEL: 0x0085, LS: 0x2028, PS: 0x2029
+  return codepoint == 0x0085 || codepoint == 0x2028 || codepoint == 0x2029;
+}
+
 inline constexpr bool is_decimal_number(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
 #if ENABLE_X86_ASM

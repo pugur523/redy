@@ -31,25 +31,27 @@ class LEXER_EXPORT Lexer {
 
   // depends on how much information to store in the output token stream.
   enum class Mode : uint8_t {
-    // only essential tokens that syntactically or semantically significant
+    // only essential tokens including newline that syntactically or
+    // semantically significant
+    // newlines are significant to interpret non-semicolon codes
     kCodeAnalysis = 0,
 
-    // all tokens, including all whitespace, comments, and newlines to check
-    // coding style, correct format, and reconstruct the original source code.
-    kFormat = 1,
-
     // essential tokens and all documentation comments
-    // non-documentation comments and most whitespace are discarded.
-    kDocumentGen = 2,
+    // non-documentation comments and most whitespaces are discarded.
+    kDocumentGen = 1,
+
+    // all tokens, including all whitespaces and comments to check
+    // coding style, correct format, and reconstruct the original source code.
+    kFormat = 2,
   };
 
   enum class Status : uint8_t {
     kNotInitialized = 0,
-    kReadyToLex = 1,
-    kLexCompleted = 2,
+    kReadyToTokenize = 1,
+    kTokenizeCompleted = 2,
   };
 
-  explicit Lexer(Mode mode = Mode::kCodeAnalysis);
+  Lexer();
   ~Lexer() = default;
 
   Lexer(const Lexer&) = delete;
@@ -58,14 +60,19 @@ class LEXER_EXPORT Lexer {
   Lexer(Lexer&&) = default;
   Lexer& operator=(Lexer&&) = default;
 
-  [[nodiscard]] InitResult init(const unicode::Utf8File& file);
+  [[nodiscard]] InitResult init(const unicode::Utf8File& file,
+                                Mode mode = Mode::kCodeAnalysis);
 
   [[nodiscard]] Result<Token> next_token();
 
   [[nodiscard]] Results<Token> tokenize(bool strict = false);
 
+  inline const unicode::Utf8Cursor& cursor() const { return cursor_; }
+
  private:
   void skip_whitespace();
+  Result<void> skip_comments();
+  Result<void> skip_trivia();
 
   Result<Token> identifier_or_keyword();
   Result<Token> literal_numeric();
@@ -104,10 +111,23 @@ class LEXER_EXPORT Lexer {
     return Result<T>(diagnostic::create_err(error));
   }
 
+  inline bool should_include_whitespace() const {
+    return mode_ == Mode::kFormat;
+  }
+
+  inline bool should_include_normal_comments() const {
+    return mode_ == Mode::kFormat;
+  }
+
+  inline bool should_include_documentation_comments() const {
+    return mode_ == Mode::kDocumentGen;
+  }
+
   unicode::Utf8Cursor cursor_;
   Mode mode_ = Mode::kCodeAnalysis;
 
-  static constexpr const std::size_t kPredictedTokensCount = 1024;
+  // heuristic
+  static constexpr const std::size_t kPredictedTokensCountPerLine = 5;
 };
 
 }  // namespace lexer

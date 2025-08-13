@@ -3,6 +3,7 @@
 // which can be found in the LICENSE file.
 
 #include "frontend/processor/lexer/lexer.h"
+#include "unicode/base/unicode_util.h"
 
 namespace lexer {
 
@@ -26,6 +27,7 @@ Lexer::Result<Lexer::Token> Lexer::other_token(char current_char,
     case '$': return create_token(TokenKind::kDollar, start, line, col);
     case '?': return create_token(TokenKind::kQuestion, start, line, col);
     case '~': return create_token(TokenKind::kTilde, start, line, col);
+    case '\n': return create_token(TokenKind::kNewline, start, line, col);
     case '%':  // % or %=
       if (next_char == '=') {
         cursor_.next();
@@ -97,12 +99,20 @@ Lexer::Result<Lexer::Token> Lexer::other_token(char current_char,
       }
     case '/':  // /, //, /*, /=
       if (next_char == '/') {
-        cursor_.next();  // consume second '/'
+        const char third_cp = cursor_.next();  // consume second '/'
+        TokenKind comment_kind;
+        if (third_cp == '@') {
+          // doc comment
+          comment_kind = TokenKind::kDocumentationComment;
+        } else {
+          // normal comment
+          comment_kind = TokenKind::kInlineComment;
+        }
         // read until end of file or line
-        while (!cursor_.eof() && cursor_.peek() != '\n') {
+        while (!cursor_.eof() && !unicode::is_unicode_newline(cursor_.peek())) {
           cursor_.next();
         }
-        return create_token(TokenKind::kInlineComment, start, line, col);
+        return create_token(comment_kind, start, line, col);
       } else if (next_char == '*') {
         cursor_.next();  // consume '*'
         while (!cursor_.eof()) {
@@ -171,7 +181,7 @@ Lexer::Result<Lexer::Token> Lexer::other_token(char current_char,
         return create_token(TokenKind::kColonColon, start, line, col);
       } else if (next_char == '=') {
         cursor_.next();
-        return create_token(TokenKind::kAssign, start, line, col);
+        return create_token(TokenKind::kColonEqual, start, line, col);
       } else {
         return create_token(TokenKind::kColon, start, line, col);
       }
@@ -182,6 +192,20 @@ Lexer::Result<Lexer::Token> Lexer::other_token(char current_char,
       } else {
         return create_token(TokenKind::kDot, start, line, col);
       }
+    case '\r':  // \r\n
+      if (next_char == '\n') {
+        cursor_.next();
+      }
+      return create_token(TokenKind::kNewline, start, line, col);
+    case ' ':
+      // consume a block of whitespace that begins with an ascii space
+      // note that the second and subsequent characters may not necessarily be
+      // ascii spaces
+      while (!cursor_.eof() && unicode::is_unicode_whitespace(cursor_.peek()) &&
+             !unicode::is_unicode_newline(cursor_.peek())) {
+        cursor_.next();
+      }
+      return create_token(TokenKind::kWhitespace, start, line, col);
 
     default:
       return err<Token>(Error::create(
