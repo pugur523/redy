@@ -565,7 +565,7 @@ def main(argv):
                 target_arch=target_arch,
                 build_type=build_type,
                 do_clang_tidy=args.clang_tidy,
-                build_async=args.build_async,
+                build_async=True,
                 install=args.install,
                 package=args.package,
                 verbose=args.verbose,
