@@ -254,7 +254,10 @@ TEST(LexerErrorTest, InvalidNumericLiterals) {
 
 // edge cases
 TEST(LexerTest, NumericLiteralEdgeCases) {
-  expect_repeated_token(u8"0 0x0 0b0 0o0", base::TokenKind::kLiteralDecimal, 4);
+  expect_tokens(
+      u8"0 0x0 0b0 0o0",
+      {base::TokenKind::kLiteralDecimal, base::TokenKind::kLiteralHexadecimal,
+       base::TokenKind::kLiteralBinary, base::TokenKind::kLiteralOctal});
   expect_repeated_token(u8"0.0 1e0 1E0 1e+0 1e-0",
                         base::TokenKind::kLiteralDecimal, 5);
 }
