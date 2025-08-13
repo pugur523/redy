@@ -81,7 +81,7 @@ jobs:
         shell: bash
 
       - name: Cache LLVM (Windows)
-        id: cache-llvm
+        id: cache-llvm-windows
         if: matrix.os == 'windows-latest'
         uses: actions/cache@v4
         with:
@@ -99,7 +99,7 @@ jobs:
           key: llvm-mingw-${{ matrix.llvm_mingw_tag }}
 
       - name: Cache CMake build tree
-        id: cache-cmake
+        id: cache-cmake-build-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -109,7 +109,7 @@ jobs:
             cmake-build-${{ matrix.os }}-${{ matrix.target_platform }}-
 
       - name: Install LLVM (Windows)
-        if: matrix.os == 'windows-latest' && steps.cache-llvm.outputs.cache-hit != 'true'
+        if: matrix.os == 'windows-latest' && steps.cache-llvm-windows.outputs.cache-hit != 'true'
         uses: KyleMayes/install-llvm-action@v2.0.7
         with:
           version: ${{ matrix.llvm_version }}
@@ -149,7 +149,7 @@ jobs:
                 # for tool in clang clang++ clang-tidy clang-format llvm-ar llvm-ranlib llvm-nm llvm-objcopy llvm-objdump llvm-strip FileCheck; do
                 #   sudo update-alternatives --install /usr/bin/$tool $tool /usr/bin/$tool-${{ matrix.llvm_version }} 100
                 # done
-              elif [ "${{ matrix.target_platform }}" = "mingw" ]; then
+              elif [ "${{ matrix.target_platform }}" = "mingw" ] && [ ${{ steps.cache-llvm-mingw.outputs.cache-hit }} != 'true' ]; then
                 source ./src/build/scripts/install_llvm_mingw.sh "${{ matrix.llvm_mingw_tag }}"
                 echo "LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> $GITHUB_ENV
               fi
@@ -159,8 +159,7 @@ jobs:
               ;;
             macos-latest)
               brew update
-              brew install --quiet llvm@${{ matrix.llvm_version }} lld@${{ matrix.llvm_version }}
-              brew install --quiet nasm cmake
+              brew install --quiet llvm@${{ matrix.llvm_version }} lld@${{ matrix.llvm_version }} nasm cmake
               echo "$(brew --prefix llvm@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
               echo "$(brew --prefix lld@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
               ;;
