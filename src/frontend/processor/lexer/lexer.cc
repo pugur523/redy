@@ -30,11 +30,9 @@ Lexer::InitResult Lexer::init(const unicode::Utf8File& file, Mode mode) {
   std::size_t result = cursor_.init(file);
 
   if (result == 0) {
-    return diagnostic::Result<std::size_t, diagnostic::DiagnosticEntry>(
-        diagnostic::create_ok(result));
+    return InitResult(diagnostic::create_ok());
   } else {
-    return diagnostic::Result<
-        std::size_t, diagnostic::DiagnosticEntry>(diagnostic::create_err(
+    return InitResult(diagnostic::create_err(
         std::move(
             diagnostic::EntryBuilder(diagnostic::Severity::kFatal,
                                      diagnostic::DiagId::kInvalidUtfSequence)
@@ -46,7 +44,38 @@ Lexer::InitResult Lexer::init(const unicode::Utf8File& file, Mode mode) {
   }
 }
 
-Lexer::Result<Lexer::Token> Lexer::next_token() {
+Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
+  std::vector<Token> tokens;
+  tokens.reserve(cursor_.file().line_count() * kPredictedTokensCountPerLine);
+
+  std::vector<Error> errors;
+
+  while (true) {
+    Result<Token> result = tokenize_next();
+    if (result.is_err()) {
+      errors.push_back(result.unwrap_err());
+      if (strict) {
+        break;
+      }
+    } else {
+      Token token = std::move(result).unwrap();
+      TokenKind kind = token.kind();
+      tokens.push_back(std::move(token));
+
+      if (kind == TokenKind::kEof) {
+        break;
+      }
+    }
+  }
+
+  if (!errors.empty()) {
+    return Results<Token>(diagnostic::create_err(std::move(errors)));
+  }
+
+  return Results<Token>(diagnostic::create_ok(std::move(tokens)));
+}
+
+Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
   const auto r = skip_trivia();
   if (r.is_err()) {
     return Result<Lexer::Token>(
@@ -75,37 +104,6 @@ Lexer::Result<Lexer::Token> Lexer::next_token() {
 
   // unicode-specific handling
   return unicode_token(current_codepoint, start, line, col);
-}
-
-Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
-  std::vector<Token> tokens;
-  tokens.reserve(cursor_.file().line_count() * kPredictedTokensCountPerLine);
-
-  std::vector<Error> errors;
-
-  while (true) {
-    Result<Token> result = next_token();
-    if (result.is_err()) {
-      errors.push_back(result.unwrap_err());
-      if (strict) {
-        break;
-      }
-    } else {
-      Token token = std::move(result).unwrap();
-      TokenKind kind = token.kind();
-      tokens.push_back(std::move(token));
-
-      if (kind == TokenKind::kEof) {
-        break;
-      }
-    }
-  }
-
-  if (!errors.empty()) {
-    return Results<Token>(diagnostic::create_err(std::move(errors)));
-  }
-
-  return Results<Token>(diagnostic::create_ok(std::move(tokens)));
 }
 
 void Lexer::skip_whitespace() {

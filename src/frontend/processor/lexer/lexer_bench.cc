@@ -24,7 +24,7 @@ void lexer_loop(benchmark::State& state) {
 
   for (auto _ : state) {
     while (true) {
-      base::Token token = lexer.next_token().unwrap();
+      base::Token token = lexer.tokenize_next().unwrap();
       if (token.kind() == base::TokenKind::kEof) {
         break;
       }

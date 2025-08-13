@@ -26,8 +26,7 @@ class LEXER_EXPORT Lexer {
   using Result = diagnostic::Result<T, Error>;
   template <typename T>
   using Results = diagnostic::Result<std::vector<T>, std::vector<Error>>;
-  using InitResult =
-      diagnostic::Result<std::size_t, diagnostic::DiagnosticEntry>;
+  using InitResult = diagnostic::Result<void, diagnostic::DiagnosticEntry>;
 
   // depends on how much information to store in the output token stream.
   enum class Mode : uint8_t {
@@ -63,9 +62,9 @@ class LEXER_EXPORT Lexer {
   [[nodiscard]] InitResult init(const unicode::Utf8File& file,
                                 Mode mode = Mode::kCodeAnalysis);
 
-  [[nodiscard]] Result<Token> next_token();
-
   [[nodiscard]] Results<Token> tokenize(bool strict = false);
+
+  [[nodiscard]] Result<Token> tokenize_next();
 
   inline const unicode::Utf8Cursor& cursor() const { return cursor_; }
 

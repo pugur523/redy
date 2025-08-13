@@ -27,7 +27,7 @@ struct TestLexer {
   }
 
   base::Token next() {
-    auto result = lexer.next_token();
+    auto result = lexer.tokenize_next();
     EXPECT_TRUE(result.is_ok());
     if (result.is_err()) {
       const unicode::Utf8Cursor& cursor = lexer.cursor();
@@ -41,7 +41,7 @@ struct TestLexer {
   }
 
   void expect_error_next(diagnostic::DiagnosticId diag_id) {
-    auto result = lexer.next_token();
+    auto result = lexer.tokenize_next();
     EXPECT_TRUE(result.is_err());
     if (result.is_ok()) {
       auto token = std::move(result).unwrap();
