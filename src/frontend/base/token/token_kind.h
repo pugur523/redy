@@ -61,101 +61,109 @@ enum class TokenKind : uint8_t {
   kKeywordsEnd = kAs,
 
   // # literals
-  kLiteralNumeric = 31,  // 42
-  kLiteralStr = 32,      // "string"
-  kLiteralChar = 33,     // 'c'
-  kTrue = 34,            // true
-  kFalse = 35,           // false
-  kLiteralsBegin = kLiteralNumeric,
+  kLiteralDecimal = 31,      // 42
+  kLiteralBinary = 32,       // 0b01010
+  kLiteralOctal = 33,        // 0o755
+  kLiteralHexadecimal = 34,  // 0xffffff
+  kLiteralStr = 35,          // "string"
+  kLiteralChar = 36,         // 'c'
+  kTrue = 37,                // true
+  kFalse = 38,               // false
+  kLiteralsBegin = kLiteralDecimal,
   kLiteralsEnd = kFalse,
 
   // # operators
 
   // ## unary
-  kPlusPlus = 36,    // ++
-  kMinusMinus = 37,  // --
-  kBang = 38,        // !
-  kTilde = 39,       // ~
+  kPlusPlus = 39,    // ++
+  kMinusMinus = 40,  // --
+  kBang = 41,        // !
+  kTilde = 42,       // ~
 
   // ## exponentiation
-  kStarStar = 40,  // **
+  kStarStar = 43,  // **
 
   // ## multiplicative
-  kStar = 41,     // *
-  kSlash = 42,    // /
-  kPercent = 43,  // %
+  kStar = 44,     // *
+  kSlash = 45,    // /
+  kPercent = 46,  // %
 
   // ## additive
-  kPlus = 44,   // +
-  kMinus = 45,  // -
+  kPlus = 47,   // +
+  kMinus = 48,  // -
 
   // ## bitwise shift
-  kLtLt = 46,  // <<
-  kGtGt = 47,  // >>
+  kLtLt = 49,  // <<
+  kGtGt = 50,  // >>
 
   // ## comparisons
-  kThreeWay = 48,  // <=>
+  kThreeWay = 51,  // <=>
 
-  kLt = 49,  // <
-  kGt = 50,  // >
-  kLe = 51,  // <=
-  kGe = 52,  // >=
+  kLt = 52,  // <
+  kGt = 53,  // >
+  kLe = 54,  // <=
+  kGe = 55,  // >=
 
-  kEqEq = 53,      // ==
-  kNotEqual = 54,  // !=
+  kEqEq = 56,      // ==
+  kNotEqual = 57,  // !=
 
   // ## bitwise
-  kAnd = 55,       // &
-  kCaret = 56,     // ^
-  kPipe = 57,      // |
-  kAndAnd = 58,    // &&
-  kPipePipe = 59,  // ||
+  kAnd = 58,       // &
+  kCaret = 59,     // ^
+  kPipe = 60,      // |
+  kAndAnd = 61,    // &&
+  kPipePipe = 62,  // ||
 
   // ## assignment
-  kAssign = 60,  // :=
-  kEqual = 61,   // =
+  kColonEqual = 63,  // :=
+  kEqual = 64,       // =
 
   // ## compound assignment
-  kPlusEq = 62,     // +=
-  kMinusEq = 63,    // -=
-  kStarEq = 64,     // *=
-  kSlashEq = 65,    // /=
-  kPercentEq = 66,  // %=
-  kAndEq = 67,      // &=
-  kPipeEq = 68,     // |=
-  kCaretEq = 69,    // ^=
-  kLtLtEq = 70,     // <<=
-  kGtGtEq = 71,     // >>=
+  kPlusEq = 65,     // +=
+  kMinusEq = 66,    // -=
+  kStarEq = 67,     // *=
+  kSlashEq = 68,    // /=
+  kPercentEq = 69,  // %=
+  kAndEq = 70,      // &=
+  kPipeEq = 71,     // |=
+  kCaretEq = 72,    // ^=
+  kLtLtEq = 73,     // <<=
+  kGtGtEq = 74,     // >>=
   kOperatorsBegin = kPlusPlus,
   kOperatorsEnd = kGtGtEq,
 
   // # delimiters
-  kArrow = 72,         // ->
-  kColon = 73,         // :
-  kColonColon = 74,    // ::
-  kSemicolon = 75,     // ;
-  kComma = 76,         // ,
-  kDot = 77,           // .
-  kDotDot = 78,        // ..
-  kLeftParen = 79,     // (
-  kRightParen = 80,    // )
-  kLeftBrace = 81,     // {
-  kRightBrace = 82,    // }
-  kLeftBracket = 83,   // [
-  kRightBracket = 84,  // ]
-  kAt = 85,            // @
-  kHash = 86,          // #
-  kDollar = 87,        // $
-  kQuestion = 88,      // ?
+  kArrow = 75,         // ->
+  kColon = 76,         // :
+  kColonColon = 77,    // ::
+  kSemicolon = 78,     // ;
+  kComma = 79,         // ,
+  kDot = 80,           // .
+  kDotDot = 81,        // ..
+  kLeftParen = 82,     // (
+  kRightParen = 83,    // )
+  kLeftBrace = 84,     // {
+  kRightBrace = 85,    // }
+  kLeftBracket = 86,   // [
+  kRightBracket = 87,  // ]
+  kAt = 88,            // @
+  kHash = 89,          // #
+  kDollar = 90,        // $
+  kQuestion = 91,      // ?
   kDelimitersBegin = kArrow,
   kDelimitersEnd = kQuestion,
 
+  // # whitespace
+  kWhitespace = 92,  // includes unicode whitespaces
+  kNewline = 93,     // includes unicode newlines
+  //
   // # comment
-  kInlineComment = 89,
-  kBlockComment = 90,
+  kInlineComment = 94,         // // inline comment
+  kBlockComment = 95,          // /* block comment */
+  kDocumentationComment = 96,  // /// documetation comment
 
   // # eof
-  kEof = 91,
+  kEof = 97,  // \0
 };
 
 inline constexpr const char* token_kind_to_string(TokenKind kind) {
@@ -198,7 +206,10 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kThis: return "this";
     case TokenKind::kAs: return "as";
 
-    case TokenKind::kLiteralNumeric: return "literal numeric";
+    case TokenKind::kLiteralDecimal: return "literal decimal";
+    case TokenKind::kLiteralBinary: return "literal binary";
+    case TokenKind::kLiteralOctal: return "literal octal";
+    case TokenKind::kLiteralHexadecimal: return "literal hexadecimal";
     case TokenKind::kLiteralStr: return "literal string";
     case TokenKind::kLiteralChar: return "literal char";
     case TokenKind::kTrue: return "true";
@@ -237,7 +248,7 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kAndAnd: return "double and";
     case TokenKind::kPipePipe: return "double pipe";
 
-    case TokenKind::kAssign: return "assign";
+    case TokenKind::kColonEqual: return "assign";
     case TokenKind::kEqual: return "equal";
 
     case TokenKind::kPlusEq: return "plus equal";
@@ -269,8 +280,12 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kDollar: return "dollar";
     case TokenKind::kQuestion: return "question";
 
+    case TokenKind::kWhitespace: return "whitespace";
+    case TokenKind::kNewline: return "newline";
+
     case TokenKind::kInlineComment: return "inline comment";
     case TokenKind::kBlockComment: return "block comment";
+    case TokenKind::kDocumentationComment: return "documentation comment";
 
     case TokenKind::kEof: return "eof";
   }

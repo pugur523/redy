@@ -24,15 +24,15 @@ class BASE_EXPORT Arena {
   Arena(Arena&&) = default;
   Arena& operator=(Arena&&) = default;
 
-  Id alloc(const T& value) {
+  inline constexpr Id alloc(const T& value) {
     data_.emplace_back(value);
     return Id{static_cast<uint32_t>(data_.size() - 1)};
   }
 
-  T& operator[](Id id) { return data_[id]; }
-  const T& operator[](Id id) const { return data_[id]; }
+  inline constexpr T& operator[](Id id) { return data_[id]; }
+  inline constexpr const T& operator[](Id id) const { return data_[id]; }
 
-  const std::vector<T>& data() const { return data_; }
+  inline constexpr const std::vector<T>& data() const { return data_; }
 
  private:
   std::vector<T> data_;

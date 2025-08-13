@@ -119,7 +119,7 @@ TEST(LexerTest, LexSimpleCode) {
   expect_tokens(
       u8"x := 42;",
       {base::TokenKind::kIdentifier, base::TokenKind::kColonEqual,
-       base::TokenKind::kLiteralNumeric, base::TokenKind::kSemicolon});
+       base::TokenKind::kLiteralDecimal, base::TokenKind::kSemicolon});
 }
 
 TEST(LexerTest, HelloWorldFunction) {
@@ -254,9 +254,9 @@ TEST(LexerErrorTest, InvalidNumericLiterals) {
 
 // edge cases
 TEST(LexerTest, NumericLiteralEdgeCases) {
-  expect_repeated_token(u8"0 0x0 0b0 0o0", base::TokenKind::kLiteralNumeric, 4);
+  expect_repeated_token(u8"0 0x0 0b0 0o0", base::TokenKind::kLiteralDecimal, 4);
   expect_repeated_token(u8"0.0 1e0 1E0 1e+0 1e-0",
-                        base::TokenKind::kLiteralNumeric, 5);
+                        base::TokenKind::kLiteralDecimal, 5);
 }
 
 }  // namespace lexer
