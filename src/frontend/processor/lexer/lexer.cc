@@ -81,7 +81,7 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
 Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
   DCHECK_NE(status_, Status::kNotInitialized);
   DCHECK_NE(status_, Status::kTokenizeCompleted);
-  const auto r = skip_trivia();
+  auto r = skip_trivia();
   if (r.is_err()) {
     status_ = Status::kErrorOccured;
     return Result<Lexer::Token>(
