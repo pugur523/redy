@@ -47,7 +47,8 @@ class LEXER_EXPORT Lexer {
   enum class Status : uint8_t {
     kNotInitialized = 0,
     kReadyToTokenize = 1,
-    kTokenizeCompleted = 2,
+    kErrorOccured = 2,
+    kTokenizeCompleted = 3,
   };
 
   Lexer();
@@ -107,6 +108,7 @@ class LEXER_EXPORT Lexer {
 
   template <typename T>
   inline Result<T> err(Error&& error) {
+    status_ = Status::kErrorOccured;
     return Result<T>(diagnostic::create_err(error));
   }
 
@@ -124,6 +126,7 @@ class LEXER_EXPORT Lexer {
 
   unicode::Utf8Cursor cursor_;
   Mode mode_ = Mode::kCodeAnalysis;
+  Status status_ = Status::kNotInitialized;
 
   // heuristic
   static constexpr const std::size_t kPredictedTokensCountPerLine = 5;

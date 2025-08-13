@@ -25,11 +25,13 @@ namespace lexer {
 Lexer::Lexer() = default;
 
 Lexer::InitResult Lexer::init(const unicode::Utf8File& file, Mode mode) {
+  DCHECK_EQ(status_, Status::kNotInitialized);
   mode_ = mode;
 
   std::size_t result = cursor_.init(file);
 
   if (result == 0) {
+    status_ = Status::kReadyToTokenize;
     return InitResult(diagnostic::create_ok());
   } else {
     return InitResult(diagnostic::create_err(
@@ -45,6 +47,7 @@ Lexer::InitResult Lexer::init(const unicode::Utf8File& file, Mode mode) {
 }
 
 Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
+  DCHECK_EQ(status_, Status::kReadyToTokenize);
   std::vector<Token> tokens;
   tokens.reserve(cursor_.file().line_count() * kPredictedTokensCountPerLine);
 
@@ -52,17 +55,17 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
 
   while (true) {
     Result<Token> result = tokenize_next();
-    if (result.is_err()) {
-      errors.push_back(result.unwrap_err());
-      if (strict) {
-        break;
-      }
-    } else {
+    if (result.is_ok()) [[likely]] {
       Token token = std::move(result).unwrap();
-      TokenKind kind = token.kind();
+      const TokenKind kind = token.kind();
       tokens.push_back(std::move(token));
 
       if (kind == TokenKind::kEof) {
+        break;
+      }
+    } else {
+      errors.push_back(result.unwrap_err());
+      if (strict) {
         break;
       }
     }
@@ -76,13 +79,17 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
 }
 
 Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
+  DCHECK_NE(status_, Status::kNotInitialized);
+  DCHECK_NE(status_, Status::kTokenizeCompleted);
   const auto r = skip_trivia();
   if (r.is_err()) {
+    status_ = Status::kErrorOccured;
     return Result<Lexer::Token>(
         diagnostic::create_err(std::move(r).unwrap_err()));
   }
 
   if (cursor_.eof()) {
+    status_ = Status::kTokenizeCompleted;
     return Result<Token>(diagnostic::create_ok(
         Token(TokenKind::kEof, cursor_.line(), cursor_.column(), 0)));
   }
@@ -93,6 +100,7 @@ Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
   const std::size_t start = cursor_.position();
 
   if (unicode::is_eof(current_codepoint)) {
+    status_ = Status::kErrorOccured;
     return err<Token>(Error::create(
         line, col, 0, diagnostic::DiagnosticId::kUnexpectedEndOfFile));
   }

@@ -34,6 +34,7 @@ Lexer::Result<Lexer::Token> Lexer::ascii_token(char current_char,
     if (unicode::is_ascii(next_codepoint)) {
       const char next_char = static_cast<char>(next_codepoint);
       if (!core::is_valid_escape_sequence(current_char, next_char)) {
+        status_ = Status::kErrorOccured;
         return err<Token>(Error::create(
             start, line, col, diagnostic::DiagId::kInvalidEscapeSequence));
       }
