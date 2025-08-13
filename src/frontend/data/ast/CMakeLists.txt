@@ -9,7 +9,6 @@ message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
   ast.cc
-  # base/base_node.cc
 
   # nodes/assignment_node.cc
   # nodes/binary_op_node.cc

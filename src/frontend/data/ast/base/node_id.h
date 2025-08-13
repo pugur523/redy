@@ -6,13 +6,18 @@
 #define FRONTEND_DATA_AST_BASE_NODE_ID_H_
 
 #include <cstdint>
+#include <limits>
 
 namespace ast {
 
-template <typename T>
-struct NodeId {
-  uint32_t index;
-};
+using NodeId = std::size_t;
+
+constexpr const NodeId kInvalidNodeId = std::numeric_limits<NodeId>::max();
+
+// template <typename T>
+// struct NodeId {
+//   std::size_t id = std::numeric_limits<std::size_t>::max();
+// };
 
 }  // namespace ast
 
