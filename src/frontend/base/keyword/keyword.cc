@@ -49,24 +49,25 @@ consteval std::array<KeywordEntry, 128> create_keyword_table() {
 
   constexpr KeywordEntry keywords[] = {
       // # primitive types
-      {u8"i8", TokenKind::kType},
-      {u8"i16", TokenKind::kType},
-      {u8"i32", TokenKind::kType},
-      {u8"i64", TokenKind::kType},
-      {u8"i128", TokenKind::kType},
-      {u8"isize", TokenKind::kType},
-      {u8"u8", TokenKind::kType},
-      {u8"u16", TokenKind::kType},
-      {u8"u32", TokenKind::kType},
-      {u8"u64", TokenKind::kType},
-      {u8"u128", TokenKind::kType},
-      {u8"usize", TokenKind::kType},
-      {u8"f32", TokenKind::kType},
-      {u8"f64", TokenKind::kType},
-      {u8"void", TokenKind::kType},
-      {u8"bool", TokenKind::kType},
-      {u8"char", TokenKind::kType},
-      {u8"byte", TokenKind::kType},
+      {u8"i8", TokenKind::kI8},
+      {u8"i16", TokenKind::kI16},
+      {u8"i32", TokenKind::kI32},
+      {u8"i64", TokenKind::kI64},
+      {u8"i128", TokenKind::kI128},
+      {u8"isize", TokenKind::kIsize},
+      {u8"u8", TokenKind::kU8},
+      {u8"u16", TokenKind::kU16},
+      {u8"u32", TokenKind::kU32},
+      {u8"u64", TokenKind::kU64},
+      {u8"u128", TokenKind::kU128},
+      {u8"usize", TokenKind::kUsize},
+      {u8"f32", TokenKind::kF32},
+      {u8"f64", TokenKind::kF64},
+      {u8"void", TokenKind::kVoid},
+      {u8"byte", TokenKind::kByte},
+      {u8"bool", TokenKind::kBool},
+      {u8"char", TokenKind::kChar},
+      {u8"str", TokenKind::kStr},
 
       // # qualified keywords
 
@@ -82,22 +83,23 @@ consteval std::array<KeywordEntry, 128> create_keyword_table() {
       {u8"match", TokenKind::kMatch},
 
       // ## declaration
-      {u8"mut", TokenKind::kMutable},
       {u8"fn", TokenKind::kFunction},
       {u8"struct", TokenKind::kStruct},
       {u8"enum", TokenKind::kEnumeration},
       {u8"trait", TokenKind::kTrait},
       {u8"impl", TokenKind::kImplementation},
       {u8"union", TokenKind::kUnion},
+      {u8"module", TokenKind::kModule},
       {u8"redirect", TokenKind::kRedirect},
+      {u8"unsafe", TokenKind::kUnsafe},
+      {u8"fast", TokenKind::kFast},
+
+      // ## attribute
+      {u8"mut", TokenKind::kMutable},
       {u8"const", TokenKind::kConstant},
       {u8"extern", TokenKind::kExtern},
       {u8"static", TokenKind::kStatic},
       {u8"thread_local", TokenKind::kThreadLocal},
-
-      {u8"unsafe", TokenKind::kUnsafe},
-      {u8"fast", TokenKind::kFast},
-      {u8"default", TokenKind::kDefault},
       {u8"deprecated", TokenKind::kDeprecated},
       {u8"pub", TokenKind::kPublic},
 
@@ -124,202 +126,11 @@ inline bool fast_equals(std::u8string_view word, const KeywordEntry& entry) {
          std::memcmp(word.data(), entry.keyword_lexeme, entry.length) == 0;
 }
 
-TokenKind fast_lookup(std::u8string_view word) {
-  const std::size_t len = word.length();
-  const char first = word[0];
-
-  switch (len) {
-    case 2:
-      switch (first) {
-        case 'i':
-          if (word[1] == 'f') {
-            return TokenKind::kIf;
-          }
-          if (word[1] == '8') {
-            return TokenKind::kType;
-          }
-          break;
-        case 'f':
-          if (word[1] == 'n') {
-            return TokenKind::kFunction;
-          }
-          break;
-        case 'a':
-          if (word[1] == 's') {
-            return TokenKind::kAs;
-          }
-          break;
-        case 'u':
-          if (word[1] == '8') {
-            return TokenKind::kType;
-          }
-          break;
-      }
-      break;
-
-    case 3:
-      switch (first) {
-        case 'm':
-          if (word == u8"mut") {
-            return TokenKind::kMutable;
-          }
-          break;
-        case 'f':
-          if (word == u8"for") {
-            return TokenKind::kFor;
-          }
-          if (word == u8"f32") {
-            return TokenKind::kType;
-          }
-          if (word == u8"f64") {
-            return TokenKind::kType;
-          }
-          break;
-        case 'i':
-          if (word == u8"i16") {
-            return TokenKind::kType;
-          }
-          if (word == u8"i32") {
-            return TokenKind::kType;
-          }
-          if (word == u8"i64") {
-            return TokenKind::kType;
-          }
-          break;
-        case 'u':
-          if (word == u8"u16") {
-            return TokenKind::kType;
-          }
-          if (word == u8"u32") {
-            return TokenKind::kType;
-          }
-          if (word == u8"u64") {
-            return TokenKind::kType;
-          }
-          break;
-      }
-      break;
-
-    case 4:
-      switch (first) {
-        case 'e':
-          if (word == u8"else") {
-            return TokenKind::kElse;
-          }
-          if (word == u8"enum") {
-            return TokenKind::kEnumeration;
-          }
-          break;
-        case 't':
-          if (word == u8"true") {
-            return TokenKind::kTrue;
-          }
-          if (word == u8"this") {
-            return TokenKind::kThis;
-          }
-          break;
-        case 'v':
-          if (word == u8"void") {
-            return TokenKind::kType;
-          }
-          break;
-        case 'b':
-          if (word == u8"bool") {
-            return TokenKind::kType;
-          }
-          if (word == u8"byte") {
-            return TokenKind::kType;
-          }
-          break;
-        case 'c':
-          if (word == u8"char") {
-            return TokenKind::kType;
-          }
-          break;
-        case 'f':
-          if (word == u8"fast") {
-            return TokenKind::kFast;
-          }
-          break;
-        case 'l':
-          if (word == u8"loop") {
-            return TokenKind::kLoop;
-          }
-        case 'i':
-          if (word == u8"i128") {
-            return TokenKind::kType;
-          }
-          if (word == u8"impl") {
-            return TokenKind::kImplementation;
-          }
-          break;
-        case 'u':
-          if (word == u8"u128") {
-            return TokenKind::kType;
-          }
-          break;
-      }
-      break;
-
-    case 5:
-      switch (first) {
-        case 'w':
-          if (word == u8"while") {
-            return TokenKind::kWhile;
-          }
-          break;
-        case 'b':
-          if (word == u8"break") {
-            return TokenKind::kBreak;
-          }
-          break;
-        case 'f':
-          if (word == u8"false") {
-            return TokenKind::kFalse;
-          }
-          break;
-        case 'c':
-          if (word == u8"const") {
-            return TokenKind::kConstant;
-          }
-        case 't':
-          if (word == u8"trait") {
-            return TokenKind::kTrait;
-          }
-        case 'm':
-          if (word == u8"match") {
-            return TokenKind::kMatch;
-          }
-        case 'i':
-          if (word == u8"isize") {
-            return TokenKind::kType;
-          }
-        case 'u':
-          if (word == u8"union") {
-            return TokenKind::kUnion;
-          }
-          if (word == u8"usize") {
-            return TokenKind::kType;
-          }
-      }
-      break;
-  }
-
-  return TokenKind::kIdentifier;
-}
-
 }  // namespace
 
 TokenKind lookup_id_or_keyword(std::u8string_view word) {
   if (word.empty()) [[unlikely]] {
     return TokenKind::kIdentifier;
-  }
-
-  if (word.length() <= 5) [[likely]] {
-    TokenKind result = fast_lookup(word);
-    if (result != TokenKind::kIdentifier) {
-      return result;
-    }
   }
 
   const std::size_t index = calc_word_hash(word);

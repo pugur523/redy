@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <limits>
 
-#include "frontend/base/keyword/type_keyword.h"
 #include "frontend/data/ast/base/ast_export.h"
 #include "frontend/data/ast/base/node_id.h"
 
@@ -19,28 +18,18 @@ using TokenId = std::size_t;
 
 constexpr const TokenId kInvalidTokenId = std::numeric_limits<TokenId>::max();
 
-enum class TypeKind : uint8_t {
+struct NodeHeader {
+  TokenId token_begin = kInvalidTokenId;
+  TokenId token_end = kInvalidTokenId;
+};
+
+enum class StatementKind : uint8_t {
   kUnknown = 0,
-  kAuto = 1,
-  kI8 = 2,
-  kI16 = 3,
-  kI32 = 4,
-  kI64 = 5,
-  kI128 = 6,
-  kIsize = 7,
-  kU8 = 8,
-  kU16 = 9,
-  kU32 = 10,
-  kU64 = 11,
-  kU128 = 12,
-  kUsize = 13,
-  kF32 = 14,
-  kF64 = 15,
-  kVoid = 16,
-  kBool = 17,
-  kChar = 18,
-  kByte = 19,
-  kUserDefined = 20,
+
+  kAssign = 1,      // x := 42
+  kAttribute = 2,   // #[heap_only]
+  kRedirect = 3,    // redirect some_func -> other_func
+  kExpression = 4,  // expression node as statement
 };
 
 enum class ExpressionKind : uint8_t {
@@ -80,29 +69,16 @@ enum class ExpressionKind : uint8_t {
   kClosure = 30,     // (a: i32, b: i32) { ret a + b }
 };
 
-struct NodeHeader {
-  TokenId token_begin = kInvalidTokenId;
-  TokenId token_end = kInvalidTokenId;
-};
-
-enum class StatementKind : uint8_t {
-  kUnknown = 0,
-
-  kAssign = 1,       // x := 42
-  kConstAssign = 2,  // const x := 57
-  kAttribute = 3,    // #[heap_only]
-  kRedirect = 4,     // redirect some_func -> other_func
-  kExpression = 5,   // expression node as statement
-};
-
 enum class BlockDeclarationKind : uint8_t {
   kUnknown = 0,
 
-  kFunction = 1,     // fn lucky_number() -> i32 { ret 42 }
-  kStruct = 2,       // struct Vec<T: type, D: u64> { T data[D] }
-  kEnumeration = 3,  // enum Result<T: type, E: type> { ok(T), err(E), }
-  kUnion = 4,        // union Bar { i: i32, u: u32 }
-  kModule = 5,       // mod foo
+  kFunction = 1,        // fn lucky_number() -> i32 { ret 42 }
+  kStruct = 2,          // struct Vec<T: type, D: u64> { T data[D] }
+  kEnumeration = 3,     // enum Result<T: type, E: type> { ok(T), err(E), }
+  kTrait = 4,           // trait to_string(&this) -> String
+  kImplementation = 5,  // impl to_string(&this) { ret format#("n: {}", n) }
+  kUnion = 6,           // union Bar { i: i32, u: u32 }
+  kModule = 7,          // mod foo
 };
 
 }  // namespace ast

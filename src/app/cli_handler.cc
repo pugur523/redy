@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "build/build_config.h"
+#include "build/project_config.h"
 #include "core/base/logger.h"
 #include "core/cli/ansi/progress_bar.h"
 #include "core/cli/ansi/style_builder.h"

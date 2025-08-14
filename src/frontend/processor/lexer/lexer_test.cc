@@ -11,6 +11,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "gtest/gtest.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace lexer {
 
@@ -94,8 +95,9 @@ void expect_repeated_token(std::u8string source,
 void validate_token_properties(std::u8string source,
                                Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
   TestLexer test_lexer(std::move(source), mode);
-  const unicode::Utf8File& file = test_lexer.manager.file(
-      test_lexer.manager.add_virtual_file(std::u8string(source)));
+  const unicode::Utf8FileId id =
+      test_lexer.manager.add_virtual_file(std::u8string(source));
+  const unicode::Utf8File& file = test_lexer.manager.file(id);
 
   while (true) {
     const base::Token token = test_lexer.next();
@@ -130,8 +132,8 @@ TEST(LexerTest, HelloWorldFunction) {
         world_str := "world";
         x: i32 = 42;
         println#("hello {}", world_str);
-        println#("answer to the ultimate question of life, the universe, and everything is {}.", x);
-        ret 0;
+        println#("answer to the ultimate question of life, the universe, and
+        everything is {}.", x); ret 0;
     }
   )";
   validate_token_properties(std::move(source));

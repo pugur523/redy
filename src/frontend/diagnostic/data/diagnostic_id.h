@@ -40,93 +40,82 @@ enum class DiagnosticId : uint8_t {
 
   // parser
   kInvalidToken = 10,
-  kUnexpectedToken = 11,
   kMissingToken = 12,
-  kExpectedSemicolon = 13,
-  kExpectedIdentifier = 14,
-  kExpectedType = 15,
-  kExpectedLeftParen = 16,
-  kExpectedRightParen = 17,
-  kExpectedLeftBrace = 18,
-  kExpectedRightBrace = 19,
-  kExpectedLeftBracket = 20,
-  kExpectedRBracket = 21,
-  kExpectedExpression = 22,
-  kExpectedReturnExpression = 23,
-  kExpectedBlock = 24,
-  kUnexpectedKeyword = 25,
-  kMalformedDeclaration = 26,
-  kDuplicateParameterName = 27,
-  kParameterCountMismatch = 28,
-  kInvalidFunctionCall = 29,
-  kInvalidAssignmentTarget = 30,
-  kInvalidGenericArguments = 31,
-  kBreakOutsideLoop = 32,
-  kContinueOutsideLoop = 33,
-  kInvalidPattern = 34,
-  kInvalidSyntax = 35,  // fallback
+  kUnexpectedToken = 13,
+  kExpectedButFound = 14,
+  kUnexpectedKeyword = 15,
+  kMalformedDeclaration = 16,
+  kDuplicateParameterName = 17,
+  kParameterCountMismatch = 18,
+  kInvalidFunctionCall = 19,
+  kInvalidAssignmentTarget = 20,
+  kInvalidGenericArguments = 21,
+  kBreakOutsideLoop = 22,
+  kContinueOutsideLoop = 23,
+  kInvalidPattern = 24,
+  kInvalidSyntax = 25,  // fallback
 
   // ast analyze (symbol, type)
-  kUndefinedSymbol = 36,
-  kUndefinedVariable = 37,
-  kUndefinedFunction = 38,
-  kUndefinedType = 39,
-  kCallArgumentMismatch = 40,
-  kReturnTypeMismatch = 41,
-  kNonCallableExpression = 42,
-  kInvalidOperatorOperands = 43,
-  kMemberNotFound = 44,
-  kAccessPrivateMember = 45,
-  kImmutableBindingChanged = 46,
-  kConstAssignment = 47,
-  kTypeMismatch = 48,
-  kTypeAnnotationRequired = 49,
-  kNonIterableExpression = 50,
-  kInfiniteLoopLiteral = 51,
-  kFunctionSignatureMismatch = 52,
-  kRedeclaration = 53,
-  kConflictingDeclaration = 54,
-  kConflictingTraitImplementation = 55,
-  kMissingTraitBound = 56,
-  kVariableNotInitialized = 57,
-  kMisplacedAttribute = 58,
-  kRecursiveTypeDefinition = 59,
-  kCyclicDependency = 60,
-  kNumericLiteralOutOfRange = 61,
+  kUndefinedSymbol = 26,
+  kUndefinedVariable = 27,
+  kUndefinedFunction = 28,
+  kUndefinedType = 29,
+  kCallArgumentMismatch = 30,
+  kReturnTypeMismatch = 31,
+  kNonCallableExpression = 32,
+  kInvalidOperatorOperands = 33,
+  kMemberNotFound = 34,
+  kAccessPrivateMember = 35,
+  kImmutableBindingChanged = 36,
+  kConstAssignment = 37,
+  kTypeMismatch = 38,
+  kTypeAnnotationRequired = 39,
+  kNonIterableExpression = 40,
+  kInfiniteLoopLiteral = 41,
+  kFunctionSignatureMismatch = 42,
+  kRedeclaration = 43,
+  kConflictingDeclaration = 44,
+  kConflictingTraitImplementation = 45,
+  kMissingTraitBound = 46,
+  kVariableNotInitialized = 47,
+  kMisplacedAttribute = 48,
+  kRecursiveTypeDefinition = 49,
+  kCyclicDependency = 50,
+  kNumericLiteralOutOfRange = 51,
 
   // hir / mir analyze (lifetime infer/ borrow checker)
-  kDanglingReference = 62,
-  kUnusedLifetimeParameter = 63,
-  kUnusedBorrow = 64,
-  kLifetimeConflict = 65,
-  kLifetimeAnnotationRequired = 66,
-  kReturnedBorrowDoesNotLiveLongEnough = 67,
-  kMovedVariableThatWasStillBorrowed = 68,
-  kBorrowAfterMove = 69,
-  kUseAfterMove = 70,
-  kMultipleMutableBorrow = 71,
-  kMutableAlias = 72,
-  kImmutableBorrowIntoMutable = 73,
+  kDanglingReference = 52,
+  kUnusedLifetimeParameter = 53,
+  kUnusedBorrow = 54,
+  kLifetimeConflict = 55,
+  kLifetimeAnnotationRequired = 56,
+  kReturnedBorrowDoesNotLiveLongEnough = 57,
+  kMovedVariableThatWasStillBorrowed = 58,
+  kBorrowAfterMove = 59,
+  kUseAfterMove = 60,
+  kMultipleMutableBorrow = 61,
+  kMutableAlias = 62,
+  kImmutableBorrowIntoMutable = 63,
 
   // warning
-  kUnusedVariable = 74,
-  kUnusedFunction = 75,
-  kUnreachableCode = 76,
-  kImplicitConversion = 77,
-  kMissingReturnStatement = 78,
-  kDeprecatedFeature = 79,
-  kDeprecatedApiUsage = 80,
-  kAmbiguousCall = 81,
-  kUnnecessaryCopy = 82,
-  kShadowingVariable = 83,
-  kNumericDivisionByZero = 84,
-  kAlwaysTrueCondition = 85,
-  kAlwaysFalseCondition = 86,
-  kMissingDefaultCase = 87,
-  kInefficientLoop = 88,
-  kRedundantCast = 89,
-  kEmptyLoopBody = 90,
-  kIneffectiveAssignment = 91,
+  kUnusedVariable = 64,
+  kUnusedFunction = 65,
+  kUnreachableCode = 66,
+  kImplicitConversion = 67,
+  kMissingReturnStatement = 68,
+  kDeprecatedFeature = 69,
+  kDeprecatedApiUsage = 70,
+  kAmbiguousCall = 71,
+  kUnnecessaryCopy = 72,
+  kShadowingVariable = 73,
+  kNumericDivisionByZero = 74,
+  kAlwaysTrueCondition = 75,
+  kAlwaysFalseCondition = 76,
+  kMissingDefaultCase = 77,
+  kInefficientLoop = 78,
+  kRedundantCast = 79,
+  kEmptyLoopBody = 80,
+  kIneffectiveAssignment = 81,
 };
 
 inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
@@ -159,34 +148,12 @@ inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
     // parser
     case Id::kInvalidToken:
       return TranslationKey::kDiagnosticParserInvalidToken;
-    case Id::kUnexpectedToken:
-      return TranslationKey::kDiagnosticParserUnexpectedToken;
     case Id::kMissingToken:
       return TranslationKey::kDiagnosticParserMissingToken;
-    case Id::kExpectedSemicolon:
-      return TranslationKey::kDiagnosticParserExpectedSemicolon;
-    case Id::kExpectedIdentifier:
-      return TranslationKey::kDiagnosticParserExpectedIdentifier;
-    case Id::kExpectedType:
-      return TranslationKey::kDiagnosticParserExpectedType;
-    case Id::kExpectedLeftParen:
-      return TranslationKey::kDiagnosticParserExpectedLeftParen;
-    case Id::kExpectedRightParen:
-      return TranslationKey::kDiagnosticParserExpectedRightParen;
-    case Id::kExpectedLeftBrace:
-      return TranslationKey::kDiagnosticParserExpectedLeftBrace;
-    case Id::kExpectedRightBrace:
-      return TranslationKey::kDiagnosticParserExpectedRightBrace;
-    case Id::kExpectedLeftBracket:
-      return TranslationKey::kDiagnosticParserExpectedLeftBracket;
-    case Id::kExpectedRBracket:
-      return TranslationKey::kDiagnosticParserExpectedRightBracket;
-    case Id::kExpectedExpression:
-      return TranslationKey::kDiagnosticParserExpectedExpression;
-    case Id::kExpectedReturnExpression:
-      return TranslationKey::kDiagnosticParserExpectedReturnExpression;
-    case Id::kExpectedBlock:
-      return TranslationKey::kDiagnosticParserExpectedBlock;
+    case Id::kUnexpectedToken:
+      return TranslationKey::kDiagnosticParserUnexpectedToken;
+    case Id::kExpectedButFound:
+      return TranslationKey::kDiagnosticParserExpectedButFound;
     case Id::kUnexpectedKeyword:
       return TranslationKey::kDiagnosticParserUnexpectedKeyword;
     case Id::kMalformedDeclaration:

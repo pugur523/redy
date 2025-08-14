@@ -8,162 +8,182 @@
 #include <cstdint>
 
 #include "core/check.h"
+#include "i18n/base/data/translation_key.h"
 
 namespace base {
 
 // NOTE: when adding a new token kind, add it here and to
-// `token_kind_to_string()`, and also to `keyword/*.[cc|h]` and
-// `operator/*.[cc|h]` if neccessary.
+// `token_kind_to_string()`, `token_kind_to_tr_key()`,
+// `//src/build/resources/i18n/*/term.toml`, and base/*/*.[h|cc] if neccessary
 enum class TokenKind : uint8_t {
   kUnknown = 0,
 
   kIdentifier = 1,
 
   // # keywords
-  kType = 2,  // primitive types (e.g., i32, char, bool, byte)
+  // ## primitive types
+  kI8 = 2,
+  kI16 = 3,
+  kI32 = 4,
+  kI64 = 5,
+  kI128 = 6,
+  kIsize = 7,
+  kU8 = 8,
+  kU16 = 9,
+  kU32 = 10,
+  kU64 = 11,
+  kU128 = 12,
+  kUsize = 13,
+  kF32 = 14,
+  kF64 = 15,
+  kVoid = 16,
+  kByte = 17,
+  kBool = 18,
+  kChar = 19,
+  kStr = 20,
 
   // ## control flow keywords
-  kIf = 3,        // if
-  kElse = 4,      // else
-  kLoop = 5,      // loop
-  kWhile = 6,     // while
-  kFor = 7,       // for
-  kBreak = 8,     // break
-  kContinue = 9,  // continue
-  kReturn = 10,   // ret
-  kMatch = 11,    // match
+  kIf = 21,        // if
+  kElse = 22,      // else
+  kLoop = 23,      // loop
+  kWhile = 24,     // while
+  kFor = 25,       // for
+  kBreak = 26,     // break
+  kContinue = 27,  // continue
+  kReturn = 28,    // ret
+  kMatch = 29,     // match
 
   // ## declaration keywords
-  kMutable = 12,         // mut
-  kFunction = 13,        // fn
-  kStruct = 14,          // struct
-  kEnumeration = 15,     // enum
-  kTrait = 16,           // trait
-  kImplementation = 17,  // impl
-  kUnion = 18,           // union
-  kRedirect = 19,        // redirect
-  kConstant = 20,        // const
-  kExtern = 21,          // extern
-  kStatic = 22,          // static
-  kThreadLocal = 23,     // thread_local
+  kFunction = 30,        // fn
+  kStruct = 31,          // struct
+  kEnumeration = 32,     // enum
+  kTrait = 33,           // trait
+  kImplementation = 34,  // impl
+  kUnion = 35,           // union
+  kModule = 36,          // mod
+  kRedirect = 37,        // redirect
+  kUnsafe = 38,          // unsafe
+  kFast = 39,            // fast
 
   // ## attribute keywords
-  kUnsafe = 24,      // unsafe
-  kFast = 25,        // fast
-  kDefault = 26,     // default
-  kDeprecated = 27,  // deprecated
-  kPublic = 28,      // pub
+  kMutable = 40,      // mut
+  kConstant = 41,     // const
+  kExtern = 42,       // extern
+  kStatic = 43,       // static
+  kThreadLocal = 44,  // thread_local
+  kDeprecated = 45,   // deprecated
+  kPublic = 46,       // pub
 
   // ## modifier keywords
-  kThis = 29,  // this
-  kAs = 30,    // as
-  kKeywordsBegin = kType,
+  kThis = 47,  // this
+  kAs = 48,    // as
+  kKeywordsBegin = kI8,
   kKeywordsEnd = kAs,
 
   // # literals
-  kLiteralDecimal = 31,      // 42
-  kLiteralBinary = 32,       // 0b01010
-  kLiteralOctal = 33,        // 0o755
-  kLiteralHexadecimal = 34,  // 0xffffff
-  kLiteralStr = 35,          // "string"
-  kLiteralChar = 36,         // 'c'
-  kTrue = 37,                // true
-  kFalse = 38,               // false
+  kLiteralDecimal = 49,      // 42
+  kLiteralBinary = 50,       // 0b01010
+  kLiteralOctal = 51,        // 0o755
+  kLiteralHexadecimal = 52,  // 0xffffff
+  kLiteralStr = 53,          // "string"
+  kLiteralChar = 54,         // 'c'
+  kTrue = 55,                // true
+  kFalse = 56,               // false
   kLiteralsBegin = kLiteralDecimal,
   kLiteralsEnd = kFalse,
 
   // # operators
 
   // ## unary
-  kPlusPlus = 39,    // ++
-  kMinusMinus = 40,  // --
-  kBang = 41,        // !
-  kTilde = 42,       // ~
+  kPlusPlus = 57,    // ++
+  kMinusMinus = 58,  // --
+  kBang = 59,        // !
+  kTilde = 60,       // ~
 
   // ## exponentiation
-  kStarStar = 43,  // **
+  kStarStar = 61,  // **
 
   // ## multiplicative
-  kStar = 44,     // *
-  kSlash = 45,    // /
-  kPercent = 46,  // %
+  kStar = 62,     // *
+  kSlash = 63,    // /
+  kPercent = 64,  // %
 
   // ## additive
-  kPlus = 47,   // +
-  kMinus = 48,  // -
+  kPlus = 65,   // +
+  kMinus = 66,  // -
 
   // ## bitwise shift
-  kLtLt = 49,  // <<
-  kGtGt = 50,  // >>
+  kLtLt = 67,  // <<
+  kGtGt = 68,  // >>
 
   // ## comparisons
-  kThreeWay = 51,  // <=>
+  kThreeWay = 69,  // <=>
 
-  kLt = 52,  // <
-  kGt = 53,  // >
-  kLe = 54,  // <=
-  kGe = 55,  // >=
+  kLt = 70,  // <
+  kGt = 71,  // >
+  kLe = 72,  // <=
+  kGe = 73,  // >=
 
-  kEqEq = 56,      // ==
-  kNotEqual = 57,  // !=
+  kEqEq = 74,      // ==
+  kNotEqual = 75,  // !=
 
   // ## bitwise
-  kAnd = 58,       // &
-  kCaret = 59,     // ^
-  kPipe = 60,      // |
-  kAndAnd = 61,    // &&
-  kPipePipe = 62,  // ||
+  kAnd = 76,       // &
+  kCaret = 77,     // ^
+  kPipe = 78,      // |
+  kAndAnd = 79,    // &&
+  kPipePipe = 80,  // ||
 
   // ## assignment
-  kColonEqual = 63,  // :=
-  kEqual = 64,       // =
+  kColonEqual = 81,  // :=
+  kEqual = 82,       // =
 
   // ## compound assignment
-  kPlusEq = 65,     // +=
-  kMinusEq = 66,    // -=
-  kStarEq = 67,     // *=
-  kSlashEq = 68,    // /=
-  kPercentEq = 69,  // %=
-  kAndEq = 70,      // &=
-  kPipeEq = 71,     // |=
-  kCaretEq = 72,    // ^=
-  kLtLtEq = 73,     // <<=
-  kGtGtEq = 74,     // >>=
+  kPlusEq = 83,     // +=
+  kMinusEq = 84,    // -=
+  kStarEq = 85,     // *=
+  kSlashEq = 86,    // /=
+  kPercentEq = 87,  // %=
+  kAndEq = 88,      // &=
+  kPipeEq = 89,     // |=
+  kCaretEq = 90,    // ^=
+  kLtLtEq = 91,     // <<=
+  kGtGtEq = 92,     // >>=
   kOperatorsBegin = kPlusPlus,
   kOperatorsEnd = kGtGtEq,
 
   // # delimiters
-  kArrow = 75,         // ->
-  kColon = 76,         // :
-  kColonColon = 77,    // ::
-  kSemicolon = 78,     // ;
-  kComma = 79,         // ,
-  kDot = 80,           // .
-  kDotDot = 81,        // ..
-  kLeftParen = 82,     // (
-  kRightParen = 83,    // )
-  kLeftBrace = 84,     // {
-  kRightBrace = 85,    // }
-  kLeftBracket = 86,   // [
-  kRightBracket = 87,  // ]
-  kAt = 88,            // @
-  kHash = 89,          // #
-  kDollar = 90,        // $
-  kQuestion = 91,      // ?
+  kArrow = 93,          // ->
+  kColon = 94,          // :
+  kColonColon = 95,     // ::
+  kSemicolon = 96,      // ;
+  kComma = 97,          // ,
+  kDot = 98,            // .
+  kDotDot = 99,         // ..
+  kLeftParen = 100,     // (
+  kRightParen = 101,    // )
+  kLeftBrace = 102,     // {
+  kRightBrace = 103,    // }
+  kLeftBracket = 104,   // [
+  kRightBracket = 105,  // ]
+  kAt = 106,            // @
+  kHash = 107,          // #
+  kDollar = 108,        // $
+  kQuestion = 109,      // ?
   kDelimitersBegin = kArrow,
   kDelimitersEnd = kQuestion,
 
   // # whitespace
-  kWhitespace = 92,  // includes unicode whitespaces
-  kNewline = 93,     // includes unicode newlines
+  kWhitespace = 110,  // includes unicode whitespaces
+  kNewline = 111,     // includes unicode newlines
   //
   // # comment
-  kInlineComment = 94,         // // inline comment
-  kBlockComment = 95,          // /* block comment */
-  kDocumentationComment = 96,  // /// documetation comment
+  kInlineComment = 112,         // // inline comment
+  kBlockComment = 113,          // /* block comment */
+  kDocumentationComment = 114,  // /// documetation comment
 
   // # eof
-  kEof = 97,  // \0
+  kEof = 115,  // \0
 };
 
 inline constexpr const char* token_kind_to_string(TokenKind kind) {
@@ -172,7 +192,26 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kUnknown: return "unknown";
 
     case TokenKind::kIdentifier: return "identifier";
-    case TokenKind::kType: return "type";
+
+    case TokenKind::kI8: return "i8";
+    case TokenKind::kI16: return "i16";
+    case TokenKind::kI32: return "i32";
+    case TokenKind::kI64: return "i64";
+    case TokenKind::kI128: return "i128";
+    case TokenKind::kIsize: return "isize";
+    case TokenKind::kU8: return "u8";
+    case TokenKind::kU16: return "u16";
+    case TokenKind::kU32: return "u32";
+    case TokenKind::kU64: return "u64";
+    case TokenKind::kU128: return "u128";
+    case TokenKind::kUsize: return "usize";
+    case TokenKind::kF32: return "f32";
+    case TokenKind::kF64: return "f64";
+    case TokenKind::kVoid: return "void";
+    case TokenKind::kByte: return "byte";
+    case TokenKind::kBool: return "bool";
+    case TokenKind::kChar: return "char";
+    case TokenKind::kStr: return "str";
 
     case TokenKind::kIf: return "if";
     case TokenKind::kElse: return "else";
@@ -184,22 +223,22 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kReturn: return "return";
     case TokenKind::kMatch: return "match";
 
-    case TokenKind::kMutable: return "mutable";
     case TokenKind::kFunction: return "function";
     case TokenKind::kStruct: return "struct";
     case TokenKind::kEnumeration: return "enumeration";
     case TokenKind::kTrait: return "trait";
     case TokenKind::kImplementation: return "implementation";
-    case TokenKind::kRedirect: return "redirect";
     case TokenKind::kUnion: return "union";
+    case TokenKind::kModule: return "module";
+    case TokenKind::kRedirect: return "redirect";
+    case TokenKind::kUnsafe: return "unsafe";
+    case TokenKind::kFast: return "fast";
+
+    case TokenKind::kMutable: return "mutable";
     case TokenKind::kConstant: return "constant";
     case TokenKind::kExtern: return "extern";
     case TokenKind::kStatic: return "static";
     case TokenKind::kThreadLocal: return "thread local";
-
-    case TokenKind::kUnsafe: return "unsafe";
-    case TokenKind::kFast: return "fast";
-    case TokenKind::kDefault: return "default";
     case TokenKind::kDeprecated: return "deprecated";
     case TokenKind::kPublic: return "public";
 
@@ -288,6 +327,192 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kDocumentationComment: return "documentation comment";
 
     case TokenKind::kEof: return "eof";
+  }
+}
+
+inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
+  switch (kind) {
+    case TokenKind::kUnknown:
+      return i18n::TranslationKey::kTermTokenKindUnknown;
+
+    case TokenKind::kIdentifier:
+      return i18n::TranslationKey::kTermTokenKindIdentifier;
+
+    case TokenKind::kI8: return i18n::TranslationKey::kTermTokenKindI8;
+    case TokenKind::kI16: return i18n::TranslationKey::kTermTokenKindI16;
+    case TokenKind::kI32: return i18n::TranslationKey::kTermTokenKindI32;
+    case TokenKind::kI64: return i18n::TranslationKey::kTermTokenKindI64;
+    case TokenKind::kI128: return i18n::TranslationKey::kTermTokenKindI128;
+    case TokenKind::kIsize: return i18n::TranslationKey::kTermTokenKindIsize;
+    case TokenKind::kU8: return i18n::TranslationKey::kTermTokenKindU8;
+    case TokenKind::kU16: return i18n::TranslationKey::kTermTokenKindU16;
+    case TokenKind::kU32: return i18n::TranslationKey::kTermTokenKindU32;
+    case TokenKind::kU64: return i18n::TranslationKey::kTermTokenKindU64;
+    case TokenKind::kU128: return i18n::TranslationKey::kTermTokenKindU128;
+    case TokenKind::kUsize: return i18n::TranslationKey::kTermTokenKindUsize;
+    case TokenKind::kF32: return i18n::TranslationKey::kTermTokenKindF32;
+    case TokenKind::kF64: return i18n::TranslationKey::kTermTokenKindF64;
+    case TokenKind::kVoid: return i18n::TranslationKey::kTermTokenKindVoid;
+    case TokenKind::kByte: return i18n::TranslationKey::kTermTokenKindByte;
+    case TokenKind::kBool: return i18n::TranslationKey::kTermTokenKindBool;
+    case TokenKind::kChar: return i18n::TranslationKey::kTermTokenKindChar;
+    case TokenKind::kStr: return i18n::TranslationKey::kTermTokenKindStr;
+
+    case TokenKind::kIf: return i18n::TranslationKey::kTermTokenKindIf;
+    case TokenKind::kElse: return i18n::TranslationKey::kTermTokenKindElse;
+    case TokenKind::kLoop: return i18n::TranslationKey::kTermTokenKindLoop;
+    case TokenKind::kWhile: return i18n::TranslationKey::kTermTokenKindWhile;
+    case TokenKind::kFor: return i18n::TranslationKey::kTermTokenKindFor;
+    case TokenKind::kBreak: return i18n::TranslationKey::kTermTokenKindBreak;
+    case TokenKind::kContinue:
+      return i18n::TranslationKey::kTermTokenKindContinue;
+    case TokenKind::kReturn: return i18n::TranslationKey::kTermTokenKindReturn;
+    case TokenKind::kMatch: return i18n::TranslationKey::kTermTokenKindMatch;
+
+    case TokenKind::kFunction:
+      return i18n::TranslationKey::kTermTokenKindFunction;
+    case TokenKind::kStruct: return i18n::TranslationKey::kTermTokenKindStruct;
+    case TokenKind::kEnumeration:
+      return i18n::TranslationKey::kTermTokenKindEnumeration;
+    case TokenKind::kTrait: return i18n::TranslationKey::kTermTokenKindTrait;
+    case TokenKind::kImplementation:
+      return i18n::TranslationKey::kTermTokenKindImplementation;
+    case TokenKind::kUnion: return i18n::TranslationKey::kTermTokenKindUnion;
+    case TokenKind::kModule: return i18n::TranslationKey::kTermTokenKindModule;
+    case TokenKind::kRedirect:
+      return i18n::TranslationKey::kTermTokenKindRedirect;
+    case TokenKind::kUnsafe: return i18n::TranslationKey::kTermTokenKindUnsafe;
+    case TokenKind::kFast: return i18n::TranslationKey::kTermTokenKindFast;
+
+    case TokenKind::kMutable:
+      return i18n::TranslationKey::kTermTokenKindMutable;
+    case TokenKind::kConstant:
+      return i18n::TranslationKey::kTermTokenKindConstant;
+    case TokenKind::kExtern: return i18n::TranslationKey::kTermTokenKindExtern;
+    case TokenKind::kStatic: return i18n::TranslationKey::kTermTokenKindStatic;
+    case TokenKind::kThreadLocal:
+      return i18n::TranslationKey::kTermTokenKindThreadLocal;
+    case TokenKind::kDeprecated:
+      return i18n::TranslationKey::kTermTokenKindDeprecated;
+    case TokenKind::kPublic: return i18n::TranslationKey::kTermTokenKindPublic;
+
+    case TokenKind::kThis: return i18n::TranslationKey::kTermTokenKindThis;
+    case TokenKind::kAs: return i18n::TranslationKey::kTermTokenKindAs;
+
+    case TokenKind::kLiteralDecimal:
+      return i18n::TranslationKey::kTermTokenKindLiteralDecimal;
+    case TokenKind::kLiteralBinary:
+      return i18n::TranslationKey::kTermTokenKindLiteralBinary;
+    case TokenKind::kLiteralOctal:
+      return i18n::TranslationKey::kTermTokenKindLiteralOctal;
+    case TokenKind::kLiteralHexadecimal:
+      return i18n::TranslationKey::kTermTokenKindLiteralHexadecimal;
+    case TokenKind::kLiteralStr:
+      return i18n::TranslationKey::kTermTokenKindLiteralStr;
+    case TokenKind::kLiteralChar:
+      return i18n::TranslationKey::kTermTokenKindLiteralChar;
+    case TokenKind::kTrue: return i18n::TranslationKey::kTermTokenKindTrue;
+    case TokenKind::kFalse: return i18n::TranslationKey::kTermTokenKindFalse;
+
+    case TokenKind::kPlusPlus:
+      return i18n::TranslationKey::kTermTokenKindPlusPlus;
+    case TokenKind::kMinusMinus:
+      return i18n::TranslationKey::kTermTokenKindMinusMinus;
+    case TokenKind::kBang: return i18n::TranslationKey::kTermTokenKindBang;
+    case TokenKind::kTilde: return i18n::TranslationKey::kTermTokenKindTilde;
+
+    case TokenKind::kStarStar:
+      return i18n::TranslationKey::kTermTokenKindStarStar;
+
+    case TokenKind::kStar: return i18n::TranslationKey::kTermTokenKindStar;
+    case TokenKind::kSlash: return i18n::TranslationKey::kTermTokenKindSlash;
+    case TokenKind::kPercent:
+      return i18n::TranslationKey::kTermTokenKindPercent;
+
+    case TokenKind::kPlus: return i18n::TranslationKey::kTermTokenKindPlus;
+    case TokenKind::kMinus: return i18n::TranslationKey::kTermTokenKindMinus;
+
+    case TokenKind::kLtLt: return i18n::TranslationKey::kTermTokenKindLtLt;
+    case TokenKind::kGtGt: return i18n::TranslationKey::kTermTokenKindGtGt;
+
+    case TokenKind::kThreeWay:
+      return i18n::TranslationKey::kTermTokenKindThreeWay;
+
+    case TokenKind::kLt: return i18n::TranslationKey::kTermTokenKindLt;
+    case TokenKind::kGt: return i18n::TranslationKey::kTermTokenKindGt;
+    case TokenKind::kLe: return i18n::TranslationKey::kTermTokenKindLe;
+    case TokenKind::kGe: return i18n::TranslationKey::kTermTokenKindGe;
+
+    case TokenKind::kEqEq: return i18n::TranslationKey::kTermTokenKindEqEq;
+    case TokenKind::kNotEqual:
+      return i18n::TranslationKey::kTermTokenKindNotEqual;
+
+    case TokenKind::kAnd: return i18n::TranslationKey::kTermTokenKindAnd;
+    case TokenKind::kCaret: return i18n::TranslationKey::kTermTokenKindCaret;
+    case TokenKind::kPipe: return i18n::TranslationKey::kTermTokenKindPipe;
+    case TokenKind::kAndAnd: return i18n::TranslationKey::kTermTokenKindAndAnd;
+    case TokenKind::kPipePipe:
+      return i18n::TranslationKey::kTermTokenKindPipePipe;
+
+    case TokenKind::kColonEqual:
+      return i18n::TranslationKey::kTermTokenKindColonEqual;
+    case TokenKind::kEqual: return i18n::TranslationKey::kTermTokenKindEqual;
+
+    case TokenKind::kPlusEq: return i18n::TranslationKey::kTermTokenKindPlusEq;
+    case TokenKind::kMinusEq:
+      return i18n::TranslationKey::kTermTokenKindMinusEq;
+    case TokenKind::kStarEq: return i18n::TranslationKey::kTermTokenKindStarEq;
+    case TokenKind::kSlashEq:
+      return i18n::TranslationKey::kTermTokenKindSlashEq;
+    case TokenKind::kPercentEq:
+      return i18n::TranslationKey::kTermTokenKindPercentEq;
+    case TokenKind::kAndEq: return i18n::TranslationKey::kTermTokenKindAndEq;
+    case TokenKind::kPipeEq: return i18n::TranslationKey::kTermTokenKindPipeEq;
+    case TokenKind::kCaretEq:
+      return i18n::TranslationKey::kTermTokenKindCaretEq;
+    case TokenKind::kLtLtEq: return i18n::TranslationKey::kTermTokenKindLtLtEq;
+    case TokenKind::kGtGtEq: return i18n::TranslationKey::kTermTokenKindGtGtEq;
+
+    case TokenKind::kArrow: return i18n::TranslationKey::kTermTokenKindArrow;
+    case TokenKind::kColon: return i18n::TranslationKey::kTermTokenKindColon;
+    case TokenKind::kColonColon:
+      return i18n::TranslationKey::kTermTokenKindColonColon;
+    case TokenKind::kSemicolon:
+      return i18n::TranslationKey::kTermTokenKindSemicolon;
+    case TokenKind::kComma: return i18n::TranslationKey::kTermTokenKindComma;
+    case TokenKind::kDot: return i18n::TranslationKey::kTermTokenKindDot;
+    case TokenKind::kDotDot: return i18n::TranslationKey::kTermTokenKindDotDot;
+    case TokenKind::kLeftParen:
+      return i18n::TranslationKey::kTermTokenKindLeftParen;
+    case TokenKind::kRightParen:
+      return i18n::TranslationKey::kTermTokenKindRightParen;
+    case TokenKind::kLeftBrace:
+      return i18n::TranslationKey::kTermTokenKindLeftBrace;
+    case TokenKind::kRightBrace:
+      return i18n::TranslationKey::kTermTokenKindRightBrace;
+    case TokenKind::kLeftBracket:
+      return i18n::TranslationKey::kTermTokenKindLeftBracket;
+    case TokenKind::kRightBracket:
+      return i18n::TranslationKey::kTermTokenKindRightBracket;
+    case TokenKind::kAt: return i18n::TranslationKey::kTermTokenKindAt;
+    case TokenKind::kHash: return i18n::TranslationKey::kTermTokenKindHash;
+    case TokenKind::kDollar: return i18n::TranslationKey::kTermTokenKindDollar;
+    case TokenKind::kQuestion:
+      return i18n::TranslationKey::kTermTokenKindQuestion;
+
+    case TokenKind::kWhitespace:
+      return i18n::TranslationKey::kTermTokenKindWhitespace;
+    case TokenKind::kNewline:
+      return i18n::TranslationKey::kTermTokenKindNewline;
+
+    case TokenKind::kInlineComment:
+      return i18n::TranslationKey::kTermTokenKindInlineComment;
+    case TokenKind::kBlockComment:
+      return i18n::TranslationKey::kTermTokenKindBlockComment;
+    case TokenKind::kDocumentationComment:
+      return i18n::TranslationKey::kTermTokenKindDocumentationComment;
+
+    case TokenKind::kEof: return i18n::TranslationKey::kTermTokenKindEof;
   }
 }
 

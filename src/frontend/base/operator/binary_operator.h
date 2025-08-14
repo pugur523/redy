@@ -95,7 +95,7 @@ inline BinaryOperator token_kind_to_binary_op(TokenKind kind) {
     case TokenKind::kAndAnd: return BinaryOperator::kLogicalAnd;
     case TokenKind::kPipePipe: return BinaryOperator::kLogicalOr;
 
-    case TokenKind::kAssign: return BinaryOperator::kDeclarationAssign;
+    case TokenKind::kColonEqual: return BinaryOperator::kDeclarationAssign;
     case TokenKind::kEqual: return BinaryOperator::kStandardAssign;
 
     case TokenKind::kPlusEq: return BinaryOperator::kAddAssign;

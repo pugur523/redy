@@ -9,6 +9,7 @@
 #include <limits>
 #include <string_view>
 
+#include "frontend/base/keyword/type.h"
 #include "frontend/base/literal/literal.h"
 #include "frontend/base/operator/binary_operator.h"
 #include "frontend/base/operator/unary_operator.h"
@@ -24,14 +25,25 @@ struct NodeRange {
 };
 
 struct TypeReferenceNode {
-  TypeKind type_kind = TypeKind::kAuto;
+  std::string_view type_name = "";
+  base::TypeKind type_kind = base::TypeKind::kAuto;
 };
 
-// struct ParameterNode {
-//   std::string_view name = "";
-//   NodeId type_path = kInvalidNodeId;
-// };
-//
+struct BuiltinAttribute {
+  bool is_mutable : 1 = false;
+  bool is_const : 1 = false;
+  bool is_extern : 1 = false;
+  bool is_static : 1 = false;
+  bool is_thread_local : 1 = false;
+  bool is_deprecated : 1 = false;
+  bool is_public : 1 = false;
+};
+
+// keep `Attribute` as a 1 byte or cast it to a 2 byte type such as uint16_t
+inline bool has_any_builtin_attribute(BuiltinAttribute attribute) {
+  return *reinterpret_cast<uint8_t*>(&attribute) != 0;
+}
+
 // struct FieldInitializerNode {
 //   std::string_view name = "";
 //   NodeId value = kInvalidNodeId;
@@ -178,11 +190,7 @@ struct ClosureExpressionNode {
 struct AssignStatementNode {
   NodeId target = kInvalidNodeId;
   NodeId value = kInvalidNodeId;
-};
-
-struct ConstAssignStatementNode {
-  NodeId target = kInvalidNodeId;
-  NodeId value = kInvalidNodeId;
+  BuiltinAttribute attribute;
 };
 
 struct AttributeStatementNode {
@@ -205,26 +213,50 @@ struct FunctionDeclarationNode {
   NodeRange parameters_range;
   NodeId return_type = kInvalidNodeId;
   NodeId body = kInvalidNodeId;
+  BuiltinAttribute attribute;
 };
 
 struct StructDeclarationNode {
   std::string_view name = "";
   NodeRange fields_range;
+  BuiltinAttribute attribute;
 };
 
 struct EnumerationDeclarationNode {
   std::string_view name = "";
   NodeRange variants_range;
+  BuiltinAttribute attribute;
+};
+
+struct TraitDeclarationNode {
+  std::string_view name = "";
+  NodeRange function_declare_range;
+  BuiltinAttribute attribute;
+};
+
+struct ImplementationDeclarationNode {
+  std::string_view name = "";
+  NodeRange function_definition_range;
+  BuiltinAttribute attribute;
 };
 
 struct UnionDeclarationNode {
   std::string_view name = "";
   NodeRange fields_range;
+  BuiltinAttribute attribute;
 };
 
 struct ModuleDeclarationNode {
   std::string_view name = "";
   NodeRange module_nodes_range;
+  BuiltinAttribute attribute;
+};
+
+// chore
+
+struct ParameterNode {
+  std::string_view name = "";
+  NodeId type = kInvalidNodeId;
 };
 
 }  // namespace ast

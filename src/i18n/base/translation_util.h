@@ -53,6 +53,8 @@ consteval bool str_equal() {
 // //src/build/resources/i18n/*/*.toml
 constexpr const std::size_t kMaxFormatArgsCount = 3;
 
+enum class TranslationKey : uint8_t;
+
 using FormatArgs = std::array<std::string_view, kMaxFormatArgsCount>;
 
 }  // namespace i18n

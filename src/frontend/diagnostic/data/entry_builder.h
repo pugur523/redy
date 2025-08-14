@@ -53,6 +53,17 @@ class DIAGNOSTIC_EXPORT EntryBuilder {
     return *this;
   }
 
+  inline EntryBuilder& label(
+      unicode::Utf8FileId file_id,
+      const core::SourceRange& range,
+      i18n::TranslationKey message_tr_key,
+      LabelMarkerType marker_type = LabelMarkerType::kLine,
+      std::initializer_list<std::string_view> args = {}) {
+    Label label(file_id, range, {}, message_tr_key, marker_type, args);
+    labels_.emplace_back(std::move(label));
+    return *this;
+  }
+
   inline EntryBuilder& annotation(
       AnnotationSeverity severity,
       i18n::TranslationKey message_tr_key,

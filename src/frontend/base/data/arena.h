@@ -6,6 +6,7 @@
 #define FRONTEND_BASE_DATA_ARENA_H_
 
 #include <cstddef>
+#include <utility>
 #include <vector>
 
 #include "frontend/base/base_export.h"
@@ -24,10 +25,13 @@ class BASE_EXPORT Arena {
   Arena(Arena&&) = default;
   Arena& operator=(Arena&&) = default;
 
-  inline constexpr Id alloc(const T& value) {
-    data_.emplace_back(value);
+  inline constexpr Id alloc(T&& value) {
+    data_.emplace_back(std::move(value));
     return Id{static_cast<uint32_t>(data_.size() - 1)};
   }
+
+  inline constexpr void reserve(std::size_t n) { data_.reserve(n); }
+  inline constexpr void resize(std::size_t n) { data_.resize(n); }
 
   inline constexpr T& operator[](Id id) { return data_[id]; }
   inline constexpr const T& operator[](Id id) const { return data_[id]; }

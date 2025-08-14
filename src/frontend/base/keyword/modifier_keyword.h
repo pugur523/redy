@@ -17,7 +17,7 @@ enum class ModifierKeyword : uint8_t {
   kAs = 2,    // as
 };
 
-inline ModifierKeyword token_kind_to_declaration_keyword(TokenKind kind) {
+inline ModifierKeyword token_kind_to_modifier_keyword(TokenKind kind) {
   switch (kind) {
     case TokenKind::kThis: return ModifierKeyword::kThis;
     case TokenKind::kAs: return ModifierKeyword::kAs;
@@ -25,11 +25,11 @@ inline ModifierKeyword token_kind_to_declaration_keyword(TokenKind kind) {
   }
 }
 
-inline bool token_kind_is_declaration_keyword(TokenKind kind) {
-  return token_kind_to_declaration_keyword(kind) != ModifierKeyword::kUnknown;
+inline bool token_kind_is_modifier_keyword(TokenKind kind) {
+  return token_kind_to_modifier_keyword(kind) != ModifierKeyword::kUnknown;
 }
 
-inline const char* declaration_keyword_to_string(ModifierKeyword keyword) {
+inline const char* modifier_keyword_to_string(ModifierKeyword keyword) {
   switch (keyword) {
     case ModifierKeyword::kThis: return "this";
     case ModifierKeyword::kAs: return "as";

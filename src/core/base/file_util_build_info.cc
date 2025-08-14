@@ -6,8 +6,8 @@
 #include <random>
 #include <string>
 
-#include "build/build_config.h"
 #include "build/build_flag.h"
+#include "build/project_config.h"
 #include "core/base/file_util.h"
 
 namespace core {

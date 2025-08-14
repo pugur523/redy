@@ -24,7 +24,7 @@ unexpected_end_of_file = "予期しないのファイル終端"
 [parser]
 invalid_token = "無効なトークン"
 missing_token = "不足したトークン"
-unexpected_token = "予期しないトークン"
+unexpected_token = "予期しないトークン: {}"
 expected_but_found = "{}を予期しましたが、{}が見つかりました"
 unexpected_keyword = "予期しないキーワード"
 malformed_declaration = "不正な形式の宣言"

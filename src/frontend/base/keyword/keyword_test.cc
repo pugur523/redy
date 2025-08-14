@@ -14,7 +14,7 @@ TEST(KeywordTest, LookupKeyword) {
   EXPECT_EQ(lookup_id_or_keyword(u8"else"), TokenKind::kElse);
   EXPECT_EQ(lookup_id_or_keyword(u8"while"), TokenKind::kWhile);
   EXPECT_EQ(lookup_id_or_keyword(u8"custom_id"), TokenKind::kIdentifier);
-  EXPECT_EQ(lookup_id_or_keyword(u8"i32"), TokenKind::kType);
+  EXPECT_EQ(lookup_id_or_keyword(u8"i32"), TokenKind::kI32);
   EXPECT_EQ(lookup_id_or_keyword(u8"infer"), TokenKind::kIdentifier);
 }
 

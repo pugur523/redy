@@ -2,7 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#include "build/build_config.h"
+#include "build/build_time_info.h"
+#include "build/project_config.h"
 #include "core/base/file_util.h"
 #include "core/base/logger.h"
 #include "core/cli/arg_parser.h"

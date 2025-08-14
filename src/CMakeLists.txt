@@ -59,6 +59,9 @@ string(TOLOWER ${CMAKE_SYSTEM_NAME} lower_os_name)
 set(TARGET_ARCH_NAME ${lower_arch} CACHE STRING "target architecture name in lower case")
 set(TARGET_OS_NAME ${lower_os_name} CACHE STRING "target os name in lower case")
 
+set(CMAKE_SYSTEM_NAME ${TARGET_OS_NAME})
+set(CMAKE_SYSTEM_PROCESSOR ${TARGET_ARCH_NAME})
+
 string(TOLOWER ${CMAKE_HOST_SYSTEM_PROCESSOR} HOST_ARCH_NAME)
 string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} HOST_OS_NAME)
 

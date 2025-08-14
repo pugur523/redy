@@ -12,11 +12,11 @@
 
 namespace base {
 
-inline bool is_keyword(TokenKind kind) {
+inline bool token_kind_is_keyword(TokenKind kind) {
   return kind >= TokenKind::kKeywordsBegin && kind <= TokenKind::kKeywordsEnd;
 }
 
-inline bool is_literal(TokenKind kind) {
+inline bool token_kind_is_literal(TokenKind kind) {
   return kind >= TokenKind::kLiteralsBegin && kind <= TokenKind::kLiteralsEnd;
 }
 

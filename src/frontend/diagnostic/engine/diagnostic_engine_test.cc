@@ -48,7 +48,7 @@ TEST(DiagnosticEngineTest, FormatSingle) {
   std::string_view assign_example = "y := 42";
   DiagnosticEntry entry =
       std::move(
-          EntryBuilder(Severity::kError, DiagnosticId::kExpectedExpression)
+          EntryBuilder(Severity::kError, DiagnosticId::kExpectedButFound)
               .label(fid, 2, 6, 1,
                      i18n::TranslationKey::kDiagnosticLabelExpectedAfter,
                      LabelMarkerType::kEmphasis, {expected, before_token})
@@ -162,7 +162,7 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
   std::string_view assign_example = "y := 42";
   DiagnosticEntry entry =
       std::move(
-          EntryBuilder(Severity::kError, DiagnosticId::kExpectedExpression)
+          EntryBuilder(Severity::kError, DiagnosticId::kExpectedButFound)
               .label(fid, 1002, 10, 1,
                      i18n::TranslationKey::kDiagnosticLabelExpectedAfter,
                      LabelMarkerType::kEmphasis, {expected, before_token})

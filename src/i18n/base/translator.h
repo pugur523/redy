@@ -199,10 +199,10 @@ class I18N_EXPORT Translator {
   }
 
   template <std::size_t N, typename... Args>
-  static void vformat_to_helper(char* out_buf,
-                                std::string_view fmt,
-                                const FormatArgs& args,
-                                Args&&... current_args) {
+  void vformat_to_helper(char* out_buf,
+                         std::string_view fmt,
+                         const FormatArgs& args,
+                         Args&&... current_args) const {
     if constexpr (N > 0) {
       vformat_to_helper<N - 1>(out_buf, fmt, args,
                                std::forward<Args>(current_args)...,
@@ -210,7 +210,7 @@ class I18N_EXPORT Translator {
     } else {
       std::vformat_to(
           out_buf, fmt,
-          std::make_format_args(std::forward<Args>(current_args)...));
+          std::make_format_args((std::forward<Args>(current_args))...));
     }
   }
 

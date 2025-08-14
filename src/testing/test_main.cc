@@ -20,7 +20,6 @@ int run_tests() {
 
 }  // namespace
 
-[[clang::xray_always_instrument]]
 int main() {
   core::register_stack_trace_handler();
   core::register_terminate_handler();

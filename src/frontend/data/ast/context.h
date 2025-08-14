@@ -35,8 +35,8 @@ class AST_EXPORT Context {
   inline base::Arena<T>& arena();
 
   template <typename T>
-  inline NodeId alloc(const T& value) {
-    return arena<T>().alloc(value);
+  inline NodeId alloc(T&& value) {
+    return arena<T>().alloc(std::move(value));
   }
 
   template <typename T>
@@ -48,8 +48,6 @@ class AST_EXPORT Context {
   Context() = default;
 
   base::Arena<NodeHeader> node_headers_;
-
-  base::Arena<TypeReferenceNode> type_reference_nodes_;
 
   base::Arena<LiteralExpressionNode> literal_expression_nodes_;
   base::Arena<PathExpressionNode> path_expression_nodes_;
@@ -83,7 +81,6 @@ class AST_EXPORT Context {
   base::Arena<ClosureExpressionNode> closure_expression_nodes_;
 
   base::Arena<AssignStatementNode> assign_statement_nodes_;
-  base::Arena<ConstAssignStatementNode> const_assign_statement_nodes_;
   base::Arena<AttributeStatementNode> attribute_statement_nodes_;
   base::Arena<RedirectStatementNode> redirect_statement_nodes_;
 
@@ -92,17 +89,16 @@ class AST_EXPORT Context {
   base::Arena<EnumerationDeclarationNode> enumeration_declaration_nodes_;
   base::Arena<UnionDeclarationNode> union_declaration_nodes_;
   base::Arena<ModuleDeclarationNode> module_declaration_nodes_;
+
+  // chore
+  base::Arena<TypeReferenceNode> type_reference_nodes_;
+  base::Arena<ParameterNode> parameter_nodes_;
 };
 
 // arena<T>() specializations
 template <>
 inline base::Arena<NodeHeader>& Context::arena<NodeHeader>() {
   return node_headers_;
-}
-
-template <>
-inline base::Arena<TypeReferenceNode>& Context::arena<TypeReferenceNode>() {
-  return type_reference_nodes_;
 }
 
 template <>
@@ -242,11 +238,6 @@ inline base::Arena<AssignStatementNode>& Context::arena<AssignStatementNode>() {
   return assign_statement_nodes_;
 }
 template <>
-inline base::Arena<ConstAssignStatementNode>&
-Context::arena<ConstAssignStatementNode>() {
-  return const_assign_statement_nodes_;
-}
-template <>
 inline base::Arena<AttributeStatementNode>&
 Context::arena<AttributeStatementNode>() {
   return attribute_statement_nodes_;
@@ -280,6 +271,15 @@ template <>
 inline base::Arena<ModuleDeclarationNode>&
 Context::arena<ModuleDeclarationNode>() {
   return module_declaration_nodes_;
+}
+
+template <>
+inline base::Arena<TypeReferenceNode>& Context::arena<TypeReferenceNode>() {
+  return type_reference_nodes_;
+}
+template <>
+inline base::Arena<ParameterNode>& Context::arena<ParameterNode>() {
+  return parameter_nodes_;
 }
 
 }  // namespace ast

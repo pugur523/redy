@@ -2,7 +2,7 @@
 name = "redy"
 main_executable_name = "redy"
 version = "0.1.0"
-description = "official compiler of the brand-new programming language - redy"
+description = "compiler of the redy programming language"
 homepage = "https://pugur523.github.io/redy_doc/"
 c_version = "17"
 cxx_version = "20"

@@ -8,7 +8,6 @@
 #include "core/diagnostics/stack_trace.h"
 #include "core/diagnostics/terminate_handler.h"
 
-[[clang::xray_always_instrument]]
 int main(int argc, char** argv) {
   core::register_signal_handlers();
   core::register_terminate_handler();

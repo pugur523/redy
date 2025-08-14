@@ -8,8 +8,15 @@ set(MODULE_OBJECTS_NAME "parser_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  dummy.cc
-  # parser.cc
+  # dummy.cc
+  parser.cc
+
+  declaration.cc
+
+  declaration/function.cc
+
+  chore/parameter.cc
+  chore/type_reference.cc
 
   # parse/assignment.cc
   # parse/expression.cc

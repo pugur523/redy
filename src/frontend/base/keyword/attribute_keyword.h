@@ -13,18 +13,22 @@ namespace base {
 
 enum class AttributeKeyword : uint8_t {
   kUnknown = 0,
-  kUnsafe = 1,      // unsafe
-  kFast = 2,        // fast
-  kDefault = 3,     // default
-  kDeprecated = 4,  // deprecated
-  kPublic = 5,      // pub
+  kMutable = 1,      // mut
+  kConstant = 2,     // const
+  kExtern = 3,       // extern
+  kStatic = 4,       // static
+  kThreadLocal = 5,  // thread_local
+  kDeprecated = 6,   // deprecated
+  kPublic = 7,       // pub
 };
 
 inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
   switch (kind) {
-    case TokenKind::kUnsafe: return AttributeKeyword::kUnsafe;
-    case TokenKind::kFast: return AttributeKeyword::kFast;
-    case TokenKind::kDefault: return AttributeKeyword::kDefault;
+    case TokenKind::kMutable: return AttributeKeyword::kMutable;
+    case TokenKind::kConstant: return AttributeKeyword::kConstant;
+    case TokenKind::kExtern: return AttributeKeyword::kExtern;
+    case TokenKind::kStatic: return AttributeKeyword::kStatic;
+    case TokenKind::kThreadLocal: return AttributeKeyword::kThreadLocal;
     case TokenKind::kDeprecated: return AttributeKeyword::kDeprecated;
     case TokenKind::kPublic: return AttributeKeyword::kPublic;
     default: return AttributeKeyword::kUnknown;
@@ -38,8 +42,11 @@ inline bool token_kind_is_attribute_keyword(TokenKind kind) {
 inline const char* attribute_keyword_to_string(AttributeKeyword keyword) {
   switch (keyword) {
     case AttributeKeyword::kUnknown: return "unknown";
-    case AttributeKeyword::kFast: return "fast";
-    case AttributeKeyword::kDefault: return "default";
+    case AttributeKeyword::kMutable: return "mutable";
+    case AttributeKeyword::kConstant: return "constant";
+    case AttributeKeyword::kExtern: return "extern";
+    case AttributeKeyword::kStatic: return "static";
+    case AttributeKeyword::kThreadLocal: return "thread local";
     case AttributeKeyword::kDeprecated: return "deprecated";
     case AttributeKeyword::kPublic: return "public";
     default: return "invalid";
