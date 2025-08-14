@@ -46,9 +46,11 @@ void Parser::init_context() {
   context_ = ast::Context::create();
   DCHECK(context_);
 
-  // TODO: hotpath heuristic allocations
+  // TODO: hot path heuristic allocations
   context_->arena<ast::FunctionDeclarationNode>().reserve(32);
   context_->arena<ast::AssignStatementNode>().reserve(128);
+  context_->arena<ast::TypeReferenceNode>().reserve(64);
+  context_->arena<ast::ParameterNode>().reserve(256);
 }
 
 Parser::Results Parser::parse_all(bool strict) {
