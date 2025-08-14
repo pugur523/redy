@@ -3,7 +3,6 @@
 # which can be found in the LICENSE file.
 
 set(CMAKE_SYSTEM_NAME Linux)
-set(CMAKE_SYSTEM_PROCESSOR x86_64)
 
 # Prefer versioned LLVM tools if available
 find_program(CLANG_PATH NAMES clang-20 clang REQUIRED)

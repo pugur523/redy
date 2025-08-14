@@ -23,21 +23,10 @@ unexpected_end_of_file = "予期しないのファイル終端"
 
 [parser]
 invalid_token = "無効なトークン"
-unexpected_token = "予期しないトークン"
 missing_token = "不足したトークン"
-expected_semicolon = "セミコロンが期待されていました"
-expected_identifier = "識別子が期待されていました"
-expected_type = "型が期待されていました"
-expected_left_paren = "左括弧が期待されていました"
-expected_right_paren = "右括弧が期待されていました"
-expected_left_brace = "左波括弧が期待されていました"
-expected_right_brace = "右波括弧が期待されていました"
-expected_left_bracket = "左角括弧が期待されていました"
-expected_right_bracket = "右括弧が期待されていました"
-expected_expression = "式が期待されていました"
-expected_return_expression = "return式が期待されていました"
-expected_block = "コードブロックが期待されていました"
-unexpected_keyword = "予期しない予約語"
+unexpected_token = "予期しないトークン"
+expected_but_found = "{}を予期しましたが、{}が見つかりました"
+unexpected_keyword = "予期しないキーワード"
 malformed_declaration = "不正な形式の宣言"
 duplicate_parameter_name = "パラメータ名の重複"
 parameter_count_mismatch = "パラメータ数の不一致"
@@ -96,7 +85,7 @@ unused_variable = "使用されていない変数"
 unused_function = "使用されていない関数"
 unreachable_code = "到達不能なコード"
 implicit_conversion = "暗黙的な型変換"
-missing_return_statement = "return文がありません"
+missing_return_statement = "リターン文がありません"
 deprecated_feature = "非推奨の機能"
 deprecated_api_usage = "非推奨のAPIの使用"
 ambiguous_call = "曖昧な呼び出し"
@@ -105,7 +94,7 @@ shadowing_variable = "変数のシャドウイング"
 numeric_division_by_zero = "ゼロ除算"
 always_true_condition = "常に真となる条件"
 always_false_condition = "常に偽となる条件"
-missing_default_case = "デフォルトのケースがありません"
+missing_default_case = "デフォルトケースがありません"
 inefficient_loop = "非効率なループ"
 redundant_cast = "冗長なキャスト"
 empty_loop_body = "空のループ本体"
@@ -113,14 +102,14 @@ ineffective_assignment = "効果のない代入"
 
 [label]
 use_of_undeclared_variable = "未宣言の変数 `{}` が使用されました" # variable
-expected_after = "`{}` の後に {} が期待されます"              # type, token
-borrow_occurs_here = "ここで借用が発生"
-move_occurs_here = "ここでムーブが発生"
-borrow_exits_scope_here = "ここで借用がスコープを抜けます"
+expected_after = "{}が`{}`の後に期待されていました"                # type, token
+borrow_occurs_here = "借用はここで発生"
+move_occurs_here = "ムーブはここで発生"
+borrow_exits_scope_here = "借用はここでスコープを抜けます"
 
 [annotation]
-was_not_declared_in_this_scope = "`{}` はこのスコープで宣言されていません"              # variable
-moved_variable_that_was_still_borrowed = "借用されている間に `{}` がムーブされました"    # variable
-try_cloning_data = "ムーブ後に使用する必要がある場合、`{}` をクローンしてみてください"               # variable
-did_you_mean = "`{}`を意図していましたか?"                                       # code
+was_not_declared_in_this_scope = "`{}`はこのスコープで宣言されていません"                    # variable
+moved_variable_that_was_still_borrowed = "借用されている間に`{}`がムーブされました"           # variable
+try_cloning_data = "ムーブ後に使用する必要がある場合、`{}`をクローンしてみてください"                     # variable
+did_you_mean = "`{}`を意図していましたか?"                                            # code
 change_charset_to_utf8_and_try_again = "ファイルの文字コードをutf-8に変更してからやり直してみてください"

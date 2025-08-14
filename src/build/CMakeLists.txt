@@ -46,7 +46,12 @@ if(ENABLE_BUILD_INFO_DEFINITIONS)
 endif()
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/build_config.h.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/build_config.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/project_config.h.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/project_config.h"
+  @ONLY
+)
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/build_time_info.h.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/build_time_info.h"
   @ONLY
 )

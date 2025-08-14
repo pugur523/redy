@@ -1,4 +1,4 @@
-unknown = "unknown diagnostic"
+unknown = "unknown"
 ok = "ok"
 
 [severity]
@@ -23,20 +23,9 @@ unexpected_end_of_file = "unexpected end of file"
 
 [parser]
 invalid_token = "invalid token"
-unexpected_token = "unexpected token"
 missing_token = "missing token"
-expected_semicolon = "expected semicolon"
-expected_identifier = "expected identifier"
-expected_type = "expected type"
-expected_left_paren = "expected left paren"
-expected_right_paren = "expected right paren"
-expected_left_brace = "expected left brace"
-expected_right_brace = "expected right brace"
-expected_left_bracket = "expected left bracket"
-expected_right_bracket = "expected right bracket"
-expected_expression = "expected expression"
-expected_return_expression = "expected return expression"
-expected_block = "expected block"
+unexpected_token = "unexpected token"
+expected_but_found = "expected {}, but found {}"
 unexpected_keyword = "unexpected keyword"
 malformed_declaration = "malformed declaration"
 duplicate_parameter_name = "duplicate parameter name"
