@@ -53,14 +53,14 @@ option(ENABLE_RUN_PROGRAM_POST_BUILD "enable running program post build" FALSE)
 option(ENABLE_RUN_BENCHMARK_POST_BUILD "enable running benchmarks post build" FALSE)
 option(ENABLE_RUN_TESTING_POST_BUILD "enable running tests post build" FALSE)
 
+set(TARGET_OS_NAME ${CMAKE_HOST_SYSTEM_NAME} CACHE STRING "target os name in lower case")
+set(TARGET_ARCH_NAME ${CMAKE_HOST_SYSTEM_PROCESSOR} CACHE STRING "target architecture name in lower case")
+
+set(CMAKE_SYSTEM_PROCESSOR ${TARGET_ARCH_NAME})
+set(CMAKE_SYSTEM_NAME ${TARGET_OS_NAME})
+
 string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} lower_arch)
 string(TOLOWER ${CMAKE_SYSTEM_NAME} lower_os_name)
-
-set(TARGET_ARCH_NAME ${lower_arch} CACHE STRING "target architecture name in lower case")
-set(TARGET_OS_NAME ${lower_os_name} CACHE STRING "target os name in lower case")
-
-set(CMAKE_SYSTEM_NAME ${TARGET_OS_NAME})
-set(CMAKE_SYSTEM_PROCESSOR ${TARGET_ARCH_NAME})
 
 string(TOLOWER ${CMAKE_HOST_SYSTEM_PROCESSOR} HOST_ARCH_NAME)
 string(TOLOWER ${CMAKE_HOST_SYSTEM_NAME} HOST_OS_NAME)
@@ -117,10 +117,22 @@ if(ENABLE_AVX2 AND TARGET_OS_NAME MATCHES "darwin")
   set(ENABLE_AVX2 FALSE)
 endif()
 
+if(ENABLE_AVX2 AND NOT (${lower_arch} MATCHES "x86"))
+  message(WARNING "ENABLE_AVX2 for not x86 is not supported.\n"
+    "set ENABLE_AVX2 to false forcely.")
+  set(ENABLE_AVX2 FALSE)
+endif()
+
 if(ENABLE_X86_ASM AND NOT (${lower_arch} MATCHES "x86"))
   message(WARNING "ENABLE_X86_ASM for not x86 is not supported.\n"
     "set ENABLE_X86_ASM to false forcely.")
   set(ENABLE_X86_ASM FALSE)
+endif()
+
+if(ENABLE_NATIVE_ARCH AND (NOT CMAKE_SYSTEM_PROCESSOR MATCHES ${CMAKE_HOST_SYSTEM_PROCESSOR}))
+  message(WARNING "ENABLE_NATIVE_ARCH in cross build is not supported.\n"
+    "set NATIVE_ARCH to false forcely.")
+  set(ENABLE_NATIVE_ARCH FALSE)
 endif()
 
 if(ENABLE_XRAY AND ENABLE_SANITIZERS)
