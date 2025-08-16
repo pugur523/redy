@@ -19,7 +19,6 @@ void token_stream_advance(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId file_id =
       manager.register_virtual_file(std::u8string(1000, 'x'));
-  const unicode::Utf8File& file = manager.file(file_id);
 
   std::vector<Token> tokens;
 
@@ -28,7 +27,7 @@ void token_stream_advance(benchmark::State& state) {
     tokens.emplace_back(TokenKind::kLiteralDecimal, 1, i, 1);
   }
   tokens.emplace_back(TokenKind::kEof, 1, 1000, 0);
-  TokenStream stream(std::move(tokens), file);
+  TokenStream stream(std::move(tokens), &manager, file_id);
 
   for (auto _ : state) {
     while (!stream.eof()) {
@@ -46,7 +45,6 @@ void token_stream_peek(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId file_id =
       manager.register_virtual_file(std::u8string(1000, '3'));
-  const unicode::Utf8File& file = manager.file(file_id);
   std::vector<Token> tokens;
   tokens.reserve(1001);
   for (int i = 0; i < 1000; ++i) {
@@ -55,7 +53,7 @@ void token_stream_peek(benchmark::State& state) {
   // ensure do not advance to the eof token
   std::size_t tokens_size = tokens.size();
   tokens.emplace_back(TokenKind::kEof, 1, 1000, 0);
-  TokenStream stream(std::move(tokens), file);
+  TokenStream stream(std::move(tokens), &manager, file_id);
 
   for (auto _ : state) {
     for (std::size_t i = 0; i < tokens_size; ++i) {

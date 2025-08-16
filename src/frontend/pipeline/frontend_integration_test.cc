@@ -20,14 +20,13 @@ namespace {
 void verify_compile_pipeline(std::u8string&& src) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId id = manager.register_virtual_file(std::move(src));
-  const unicode::Utf8File& file = manager.file(id);
   i18n::Translator translator;
   diagnostic::DiagnosticOptions options;
   diagnostic::DiagnosticEngine engine(&manager, &translator, options);
 
   lexer::Lexer lexer;
 
-  lexer::Lexer::InitResult init_result = lexer.init(file);
+  lexer::Lexer::InitResult init_result = lexer.init(&manager, id);
   if (init_result.is_err()) {
     engine.push(std::move(init_result).unwrap_err());
   }
@@ -40,7 +39,7 @@ void verify_compile_pipeline(std::u8string&& src) {
   }
   std::vector<base::Token> tokens = std::move(tokenize_result).unwrap();
   EXPECT_FALSE(tokens.empty());
-  base::TokenStream stream(std::move(tokens), file);
+  base::TokenStream stream(std::move(tokens), &manager, id);
   // DLOG(info, "{}", stream.dump());
 
   // parser::Parser parser(std::move(stream));

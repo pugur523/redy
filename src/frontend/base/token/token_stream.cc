@@ -11,16 +11,20 @@
 #include "core/check.h"
 #include "frontend/base/token/token.h"
 #include "unicode/utf8/file.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace base {
 
 TokenStream::TokenStream(std::vector<Token>&& tokens,
-                         const unicode::Utf8File& file)
+                         unicode::Utf8FileManager* file_manager,
+                         unicode::Utf8FileId file_id)
     : tokens_(std::move(tokens)),
-      file_(&file),
+      file_manager_(file_manager),
+      file_id_(file_id),
       current_token_(&tokens_[0]),
       end_token_(&tokens_.back()) {
-  DCHECK(file_);
+  DCHECK(file_manager_);
+  DCHECK_NE(file_id_, unicode::kInvalidFileId);
   DCHECK(!tokens_.empty()) << "TokenStream requires at least one token";
 }
 
@@ -35,7 +39,7 @@ std::string TokenStream::dump() const {
     result.append("\n");
 
     result.append("lexeme = ");
-    result.append(token.lexeme(*file_));
+    result.append(token.lexeme(file()));
     result.append("\n");
 
     result.append("line = ");

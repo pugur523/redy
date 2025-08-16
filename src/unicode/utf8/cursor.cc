@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "core/check.h"
+#include "unicode/utf8/file_manager.h"
 
 #if ENABLE_AVX2
 #include <immintrin.h>
@@ -17,8 +18,13 @@
 namespace unicode {
 
 // returns 0 if valid or byte index of the invalid byte
-std::size_t Utf8Cursor::init(const Utf8File& file) {
-  file_ = &file;
+std::size_t Utf8Cursor::init(Utf8FileManager* file_manager,
+                             Utf8FileId file_id) {
+  file_manager_ = file_manager;
+  file_id_ = file_id;
+  DCHECK(file_manager_);
+  DCHECK_NE(file_id_, kInvalidFileId);
+
   cursor_state_.position = 0;
   cursor_state_.line = 1;
   cursor_state_.column = 1;
@@ -29,8 +35,6 @@ std::size_t Utf8Cursor::init(const Utf8File& file) {
   if (result == 0) [[likely]] {
     status_ = Status::kValid;
   } else {
-    // reset on failure
-    file_ = nullptr;
     status_ = Status::kInvalid;
   }
 
@@ -41,7 +45,7 @@ char32_t Utf8Cursor::peek_at(std::size_t offset) const {
   DCHECK_EQ(status_, Status::kValid);
 
   const std::size_t target_pos = cursor_state_.position + offset;
-  const std::u8string_view content = file_->content_u8();
+  const std::u8string_view content = file().content_u8();
 
   DCHECK_LT(target_pos, content.size())
       << "peek target position is out of range";
@@ -89,7 +93,8 @@ bool Utf8Cursor::consume(char32_t code) {
 
 // returns 0 if valid or byte index of the invalid byte
 std::size_t Utf8Cursor::validate_utf8() const {
-  DCHECK(file_);
+  DCHECK(file_manager_);
+  DCHECK_NE(file_id_, kInvalidFileId);
   DCHECK_EQ(status_, Status::kInitialized);
 
 #if ENABLE_AVX2
@@ -102,7 +107,7 @@ std::size_t Utf8Cursor::validate_utf8() const {
 #if ENABLE_AVX2
 
 std::size_t Utf8Cursor::validate_utf8_avx2() const {
-  const std::u8string_view content = file_->content_u8();
+  const std::u8string_view content = file().content_u8();
   const std::size_t total_size = content.size();
   if (total_size == 0) {
     return 0;  // empty file is valid
@@ -156,7 +161,7 @@ std::size_t Utf8Cursor::validate_utf8_avx2() const {
 #endif
 
 std::size_t Utf8Cursor::validate_utf8_scalar(std::size_t start_pos) const {
-  const std::u8string_view content = file_->content_u8();
+  const std::u8string_view content = file().content_u8();
   const std::size_t total_size = content.size();
   if (total_size == 0 || start_pos >= total_size) {
     return 0;  // empty or nothing to validate

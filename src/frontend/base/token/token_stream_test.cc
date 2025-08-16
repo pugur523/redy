@@ -25,7 +25,7 @@ TEST(TokenStreamTest, BasicNextAndPeek) {
   tokens.emplace_back(TokenKind::kLiteralDecimal, 1, 5, 2);
   tokens.emplace_back(TokenKind::kEof, 1, 7, 0);
 
-  TokenStream stream(std::move(tokens), file);
+  TokenStream stream(std::move(tokens), &manager, file_id);
 
   EXPECT_EQ(stream.peek().kind(), TokenKind::kIdentifier);
   EXPECT_EQ(stream.peek().lexeme(file), "x");
@@ -50,7 +50,7 @@ TEST(TokenStreamTest, RewindWorks) {
   tokens.emplace_back(TokenKind::kLiteralDecimal, 1, 5, 1);
   tokens.emplace_back(TokenKind::kEof, 1, 6, 0);
 
-  TokenStream stream(std::move(tokens), file);
+  TokenStream stream(std::move(tokens), &manager, file_id);
 
   stream.next();  // foo
   std::size_t save_pos = stream.position();

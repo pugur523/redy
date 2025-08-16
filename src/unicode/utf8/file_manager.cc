@@ -15,8 +15,9 @@ Utf8FileId Utf8FileManager::register_file(std::u8string_view file_name) {
   DCHECK(!file_name.empty())
       << "file name is empty. use `add_virtual_file` for testing purposes.";
 
-  files_.emplace_back();
-  files_.back().init(file_name);
+  Utf8File file;
+  file.init(file_name);
+  files_.push_back(std::move(file));
   return files_.size() - 1;
 }
 
@@ -25,8 +26,9 @@ Utf8FileId Utf8FileManager::register_file_loaded(std::u8string_view file_name,
   DCHECK(!file_name.empty())
       << "file name is empty. use `add_virtual_file` for testing purposes.";
 
-  files_.emplace_back();
-  files_.back().init_loaded(file_name, std::move(source));
+  Utf8File file;
+  file.init_loaded(file_name, std::move(source));
+  files_.push_back(std::move(file));
   return files_.size() - 1;
 }
 

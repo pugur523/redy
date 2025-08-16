@@ -24,11 +24,13 @@ namespace lexer {
 
 Lexer::Lexer() = default;
 
-Lexer::InitResult Lexer::init(const unicode::Utf8File& file, Mode mode) {
+Lexer::InitResult Lexer::init(unicode::Utf8FileManager* file_manager,
+                              unicode::Utf8FileId file_id,
+                              Mode mode) {
   DCHECK_EQ(status_, Status::kNotInitialized);
   mode_ = mode;
 
-  std::size_t result = cursor_.init(file);
+  std::size_t result = cursor_.init(file_manager, file_id);
 
   if (result == 0) {
     status_ = Status::kReadyToTokenize;

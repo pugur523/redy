@@ -60,7 +60,8 @@ class LEXER_EXPORT Lexer {
   Lexer(Lexer&&) = default;
   Lexer& operator=(Lexer&&) = default;
 
-  [[nodiscard]] InitResult init(const unicode::Utf8File& file,
+  [[nodiscard]] InitResult init(unicode::Utf8FileManager* file_manager,
+                                unicode::Utf8FileId file_id,
                                 Mode mode = Mode::kCodeAnalysis);
 
   [[nodiscard]] Results<Token> tokenize(bool strict = false);

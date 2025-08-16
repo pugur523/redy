@@ -14,13 +14,15 @@
 #include "frontend/base/token/token.h"
 #include "frontend/base/token/token_kind.h"
 #include "unicode/utf8/file.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace base {
 
 class BASE_EXPORT TokenStream {
  public:
   explicit TokenStream(std::vector<Token>&& tokens,
-                       const unicode::Utf8File& file);
+                       unicode::Utf8FileManager* file_manager,
+                       unicode::Utf8FileId file_id);
 
   ~TokenStream() = default;
 
@@ -49,7 +51,8 @@ class BASE_EXPORT TokenStream {
 
  private:
   std::vector<Token> tokens_;
-  const unicode::Utf8File* file_ = nullptr;
+  unicode::Utf8FileManager* file_manager_ = nullptr;
+  unicode::Utf8FileId file_id_ = unicode::kInvalidFileId;
   const Token* current_token_ = nullptr;
   const Token* end_token_ = nullptr;
   std::size_t pos_ = 0;
@@ -111,7 +114,7 @@ inline constexpr std::size_t TokenStream::size() const {
 }
 
 inline const unicode::Utf8File& TokenStream::file() const {
-  return *file_;
+  return file_manager_->file_with_loaded(file_id_);
 }
 
 }  // namespace base

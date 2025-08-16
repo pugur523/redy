@@ -20,7 +20,7 @@ void lexer_loop(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId id = manager.register_virtual_file(std::move(code));
   Lexer lexer;
-  const auto _ = lexer.init(manager.file(id));
+  const auto _ = lexer.init(&manager, id);
 
   for (auto _ : state) {
     while (true) {

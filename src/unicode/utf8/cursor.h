@@ -10,6 +10,7 @@
 #include "unicode/base/unicode_export.h"
 #include "unicode/utf8/decoder.h"
 #include "unicode/utf8/file.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace unicode {
 
@@ -33,7 +34,7 @@ class UNICODE_EXPORT Utf8Cursor {
   Utf8Cursor& operator=(Utf8Cursor&&) = default;
 
   // returns 0 if valid or byte index of the invalid byte
-  std::size_t init(const Utf8File& file);
+  std::size_t init(Utf8FileManager* file_manager, Utf8FileId file_id);
 
   char32_t peek_at(std::size_t offset) const;
   char32_t next();
@@ -48,7 +49,7 @@ class UNICODE_EXPORT Utf8Cursor {
     if (eof()) [[unlikely]] {
       return 0;
     } else [[likely]] {
-      const std::u8string_view content = file_->content_u8();
+      const std::u8string_view content = file().content_u8();
       const char8_t* const ptr = content.data() + cursor_state_.position;
       const char8_t* const end = content.data() + content.size();
 
@@ -66,10 +67,14 @@ class UNICODE_EXPORT Utf8Cursor {
   inline std::size_t column() const { return cursor_state_.column; }
 
   inline bool eof() const {
-    return cursor_state_.position >= file_->content().size();
+    return cursor_state_.position >= file().content().size();
   }
 
-  inline const Utf8File& file() const { return *file_; }
+  inline const Utf8File& file() const {
+    DCHECK(file_manager_);
+    DCHECK_NE(file_id_, kInvalidFileId);
+    return file_manager_->file_with_loaded(file_id_);
+  }
 
   inline Status status() const { return status_; }
 
@@ -98,7 +103,8 @@ class UNICODE_EXPORT Utf8Cursor {
 
   mutable PeekCache peek_cache_;
   CursorState cursor_state_;
-  const Utf8File* file_ = nullptr;
+  Utf8FileManager* file_manager_ = nullptr;
+  Utf8FileId file_id_ = kInvalidFileId;
   Utf8Decoder decoder_;
   Status status_ = Status::kNotInitialized;
 };
