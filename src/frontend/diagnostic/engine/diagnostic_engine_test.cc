@@ -28,7 +28,8 @@ static unicode::Utf8FileManager file_manager;
 
 TEST(DiagnosticEngineTest, FormatSingle) {
   std::u8string source = u8"x := 42;\ny := ;\n";
-  unicode::Utf8FileId fid = file_manager.add_virtual_file(std::move(source));
+  unicode::Utf8FileId fid =
+      file_manager.register_virtual_file(std::move(source));
 
   i18n::Translator translator;
 
@@ -79,7 +80,8 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
     println#("{}", ref);
     consume(data);
   )";
-  unicode::Utf8FileId fid = file_manager.add_virtual_file(std::move(source));
+  unicode::Utf8FileId fid =
+      file_manager.register_virtual_file(std::move(source));
 
   i18n::Translator translator;
 
@@ -143,7 +145,8 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
       u8R"(
     y := ;
   )");
-  unicode::Utf8FileId fid = file_manager.add_virtual_file(std::move(source));
+  unicode::Utf8FileId fid =
+      file_manager.register_virtual_file(std::move(source));
   i18n::Translator translator;
 
   DiagnosticOptions options{

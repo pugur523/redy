@@ -17,7 +17,7 @@ namespace base {
 TEST(TokenStreamTest, BasicNextAndPeek) {
   std::vector<Token> tokens;
   unicode::Utf8FileManager manager;
-  unicode::Utf8FileId file_id = manager.add_virtual_file(u8"x + 42");
+  unicode::Utf8FileId file_id = manager.register_virtual_file(u8"x + 42");
   const unicode::Utf8File& file = manager.file(file_id);
 
   tokens.emplace_back(TokenKind::kIdentifier, 1, 1, 1);
@@ -43,7 +43,7 @@ TEST(TokenStreamTest, BasicNextAndPeek) {
 TEST(TokenStreamTest, RewindWorks) {
   std::vector<Token> tokens;
   unicode::Utf8FileManager manager;
-  unicode::Utf8FileId file_id = manager.add_virtual_file(u8"foo 1");
+  unicode::Utf8FileId file_id = manager.register_virtual_file(u8"foo 1");
   const unicode::Utf8File& file = manager.file(file_id);
 
   tokens.emplace_back(TokenKind::kIdentifier, 1, 1, 3);

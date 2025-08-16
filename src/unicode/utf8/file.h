@@ -20,7 +20,8 @@ class UNICODE_EXPORT Utf8File {
   enum class Status : uint8_t {
     kNotInitialized = 0,
 
-    kInitialized = 1,
+    kNotLoaded = 1,
+    kLoaded = 2,
   };
 
   Utf8File() = default;
@@ -32,23 +33,27 @@ class UNICODE_EXPORT Utf8File {
   Utf8File(Utf8File&&) = default;
   Utf8File& operator=(Utf8File&&) = default;
 
-  void init(std::u8string&& file_name, std::u8string&& content);
+  void init(std::u8string_view file_name);
+  void init_loaded(std::u8string_view file_name, std::u8string&& content);
 
-  void init(std::u8string&& file_name);
+  void load();
+  void unload();
+
+  inline bool loaded() const { return status_ == Status::kLoaded; }
 
   inline std::u8string_view file_name_u8() const {
-    DCHECK_EQ(status_, Status::kInitialized);
+    DCHECK_EQ(status_, Status::kLoaded);
     return file_name_;
   }
 
   inline std::u8string_view content_u8() const {
-    DCHECK_EQ(status_, Status::kInitialized);
+    DCHECK_EQ(status_, Status::kLoaded);
     return content_;
   }
 
   // 1 indexed
   inline std::u8string_view line_u8(std::size_t line_no) const {
-    DCHECK_EQ(status_, Status::kInitialized);
+    DCHECK_EQ(status_, Status::kLoaded);
     DCHECK_GT(line_no, 0);
     DCHECK_LE(line_no, line_count());
 
@@ -64,22 +69,19 @@ class UNICODE_EXPORT Utf8File {
   }
 
   inline std::string_view file_name() const {
-    std::u8string_view view = file_name_u8();
-    return core::to_string_view(view);
+    return core::to_string_view(file_name_u8());
   }
 
   inline std::string_view content() const {
-    std::u8string_view view = content_u8();
-    return core::to_string_view(view);
+    return core::to_string_view(content_u8());
   }
 
   inline std::string_view line(std::size_t line_no) const {
-    std::u8string_view view = line_u8(line_no);
-    return core::to_string_view(view);
+    return core::to_string_view(line_u8(line_no));
   }
 
   inline std::size_t line_count() const {
-    DCHECK_EQ(status_, Status::kInitialized);
+    DCHECK_EQ(status_, Status::kLoaded);
     return line_ends_.size();
   }
 

@@ -18,7 +18,7 @@ namespace {
 static Utf8FileManager manager;
 
 Utf8Cursor make_cursor(std::u8string&& input) {
-  Utf8FileId id = manager.add_virtual_file(std::move(input));
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
   Utf8Cursor cursor;
   cursor.init(manager.file(id));
   return cursor;

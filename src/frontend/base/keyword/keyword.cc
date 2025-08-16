@@ -112,7 +112,7 @@ consteval std::array<KeywordEntry, 128> create_keyword_table() {
   };
 
   for (const auto& kw : keywords) {
-    std::size_t index = calc_word_hash(kw.keyword_lexeme);
+    const std::size_t index = calc_word_hash(kw.keyword_lexeme);
     table[index] = kw;
   }
 

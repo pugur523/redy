@@ -32,13 +32,35 @@ class UNICODE_EXPORT Utf8FileManager {
   Utf8FileManager(Utf8FileManager&&) = default;
   Utf8FileManager& operator=(Utf8FileManager&&) = default;
 
-  Utf8FileId add_file(std::u8string&& source, std::u8string&& file_name);
-  Utf8FileId add_file(std::u8string&& file_name);
-  Utf8FileId add_virtual_file(std::u8string&& source);
+  Utf8FileId register_file(std::u8string_view file_name);
+  Utf8FileId register_file_loaded(std::u8string_view file_name,
+                                  std::u8string&& source);
+  Utf8FileId register_virtual_file(std::u8string&& source);
 
-  const Utf8File& file(Utf8FileId id) const;
+  inline void load(Utf8FileId id) { file_mutable(id).load(); }
+  inline void unload(Utf8FileId id) { file_mutable(id).unload(); }
+
+  inline const Utf8File& file(Utf8FileId id) const {
+    DCHECK_GE(id, 0);
+    DCHECK_LE(id, files_.size());
+    return files_[id];
+  }
+
+  inline const Utf8File& file_with_loaded(Utf8FileId id) {
+    auto& f = file_mutable(id);
+    if (!f.loaded()) {
+      f.load();
+    }
+    return f;
+  }
 
  private:
+  inline Utf8File& file_mutable(Utf8FileId id) {
+    DCHECK_GE(id, 0);
+    DCHECK_LE(id, files_.size());
+    return files_[id];
+  }
+
   std::vector<Utf8File> files_;
 };
 

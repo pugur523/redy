@@ -18,7 +18,7 @@ namespace {
 void token_stream_advance(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId file_id =
-      manager.add_virtual_file(std::u8string(1000, 'x'));
+      manager.register_virtual_file(std::u8string(1000, 'x'));
   const unicode::Utf8File& file = manager.file(file_id);
 
   std::vector<Token> tokens;
@@ -45,7 +45,7 @@ BENCHMARK(token_stream_advance);
 void token_stream_peek(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId file_id =
-      manager.add_virtual_file(std::u8string(1000, '3'));
+      manager.register_virtual_file(std::u8string(1000, '3'));
   const unicode::Utf8File& file = manager.file(file_id);
   std::vector<Token> tokens;
   tokens.reserve(1001);

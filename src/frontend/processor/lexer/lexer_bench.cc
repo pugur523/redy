@@ -18,7 +18,7 @@ void lexer_loop(benchmark::State& state) {
   std::size_t code_size = code.size();
 
   unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(std::move(code));
+  unicode::Utf8FileId id = manager.register_virtual_file(std::move(code));
   Lexer lexer;
   const auto _ = lexer.init(manager.file(id));
 

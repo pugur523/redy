@@ -9,6 +9,18 @@
 
 namespace base {
 
+constexpr std::size_t calc_word_hash(std::u8string_view word) {
+  if (word.empty()) {
+    return 0;
+  }
+
+  const std::size_t first = static_cast<std::size_t>(word[0]);
+  const std::size_t last = static_cast<std::size_t>(word[word.length() - 1]);
+  const std::size_t len = word.length();
+
+  return ((first * 7) + (last * 13) + (len * 3)) % 128;
+}
+
 TEST(KeywordTest, LookupKeyword) {
   EXPECT_EQ(lookup_id_or_keyword(u8"if"), TokenKind::kIf);
   EXPECT_EQ(lookup_id_or_keyword(u8"else"), TokenKind::kElse);

@@ -11,39 +11,39 @@
 
 namespace unicode {
 
-Utf8FileId Utf8FileManager::add_file(std::u8string&& source,
-                                     std::u8string&& file_name) {
+Utf8FileId Utf8FileManager::register_file(std::u8string_view file_name) {
   DCHECK(!file_name.empty())
       << "file name is empty. use `add_virtual_file` for testing purposes.";
 
   files_.emplace_back();
-  files_.back().init(std::move(file_name), std::move(source));
+  files_.back().init(file_name);
   return files_.size() - 1;
 }
 
-Utf8FileId Utf8FileManager::add_file(std::u8string&& file_name) {
-  return add_file(core::read_file_utf8(file_name.c_str()),
-                  std::move(file_name));
+Utf8FileId Utf8FileManager::register_file_loaded(std::u8string_view file_name,
+                                                 std::u8string&& source) {
+  DCHECK(!file_name.empty())
+      << "file name is empty. use `add_virtual_file` for testing purposes.";
+
+  files_.emplace_back();
+  files_.back().init_loaded(file_name, std::move(source));
+  return files_.size() - 1;
 }
 
-Utf8FileId Utf8FileManager::add_virtual_file(std::u8string&& source) {
+Utf8FileId Utf8FileManager::register_virtual_file(std::u8string&& source) {
   static std::size_t virtual_file_count = 0;
   constexpr std::string_view kPrefix = "virtual_file_";
   constexpr std::string_view kExtension = ".ry";
+
   std::string virtual_name;
   virtual_name.append(kPrefix);
   virtual_name.append(std::to_string(virtual_file_count++));
   virtual_name.append(kExtension);
-  std::u8string virtual_name_u8(
+  std::u8string_view virtual_name_u8(
       reinterpret_cast<const char8_t*>(virtual_name.c_str()),
       virtual_name.size());
-  return add_file(std::move(source), std::move(virtual_name_u8));
-}
 
-const Utf8File& Utf8FileManager::file(Utf8FileId id) const {
-  DCHECK_GE(id, 0);
-  DCHECK_LE(id, files_.size());
-  return files_[id];
+  return register_file_loaded(virtual_name_u8, std::move(source));
 }
 
 }  // namespace unicode

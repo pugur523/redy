@@ -19,7 +19,7 @@ namespace {
 
 void verify_compile_pipeline(std::u8string&& src) {
   unicode::Utf8FileManager manager;
-  unicode::Utf8FileId id = manager.add_virtual_file(std::move(src));
+  unicode::Utf8FileId id = manager.register_virtual_file(std::move(src));
   const unicode::Utf8File& file = manager.file(id);
   i18n::Translator translator;
   diagnostic::DiagnosticOptions options;

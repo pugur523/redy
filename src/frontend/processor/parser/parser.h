@@ -58,13 +58,13 @@ class PARSER_EXPORT Parser {
             unicode::Utf8FileId file_id,
             const i18n::Translator& translater);
 
-  Results parse_all(bool strict = false);
-
-  Result<void> parse_root();
-
   inline const ast::Context& context() const { return *context_; }
 
+  Results parse_all(bool strict = false);
+
  private:
+  Result<void> parse_root();
+
   // expression wo block
   Result<ast::LiteralExpressionNode> parse_literal_expression();
   Result<ast::PathExpressionNode> parse_path_expression();

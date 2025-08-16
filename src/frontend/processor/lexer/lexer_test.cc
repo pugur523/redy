@@ -23,7 +23,7 @@ struct TestLexer {
 
   explicit TestLexer(std::u8string source,
                      Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
-    id_ = manager.add_virtual_file(std::move(source));
+    id_ = manager.register_virtual_file(std::move(source));
     const auto _ = lexer.init(manager.file(id_), mode);
   }
 
@@ -96,7 +96,7 @@ void validate_token_properties(std::u8string source,
                                Lexer::Mode mode = Lexer::Mode::kCodeAnalysis) {
   TestLexer test_lexer(std::move(source), mode);
   const unicode::Utf8FileId id =
-      test_lexer.manager.add_virtual_file(std::u8string(source));
+      test_lexer.manager.register_virtual_file(std::u8string(source));
   const unicode::Utf8File& file = test_lexer.manager.file(id);
 
   while (true) {

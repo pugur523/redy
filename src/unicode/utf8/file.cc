@@ -4,28 +4,43 @@
 
 #include "unicode/utf8/file.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "core/base/file_util.h"
-#include "core/base/string_util.h"
 #include "core/check.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 
 namespace unicode {
 
-void Utf8File::init(std::u8string&& file_name, std::u8string&& content) {
+void Utf8File::init(std::u8string_view file_name) {
   DCHECK_EQ(status_, Status::kNotInitialized);
-
-  file_name_ = std::move(file_name);
-  content_ = std::move(content);
-  line_ends_ = core::index_newlines(core::to_string_view(content_));
-  status_ = Status::kInitialized;
+  file_name_ = file_name;
+  status_ = Status::kNotLoaded;
 }
 
-void Utf8File::init(std::u8string&& file_name) {
+void Utf8File::init_loaded(std::u8string_view file_name,
+                           std::u8string&& content) {
   DCHECK_EQ(status_, Status::kNotInitialized);
-  std::u8string content = core::read_file_utf8(file_name.c_str());
-  init(std::move(file_name), std::move(content));
+  init(file_name);
+  content_ = std::move(content);
+  line_ends_ = core::index_newlines(core::to_string_view(content_));
+  status_ = Status::kLoaded;
+}
+
+void Utf8File::load() {
+  DCHECK_EQ(status_, Status::kNotLoaded);
+  content_ = core::read_file_utf8(file_name_.c_str());
+  line_ends_ = core::index_newlines(core::to_string_view(content_));
+  status_ = Status::kLoaded;
+}
+
+void Utf8File::unload() {
+  DCHECK_EQ(status_, Status::kLoaded);
+  content_ = std::u8string();
+  line_ends_ = std::vector<std::size_t>();
+  status_ = Status::kNotLoaded;
 }
 
 }  // namespace unicode

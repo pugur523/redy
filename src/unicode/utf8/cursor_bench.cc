@@ -16,7 +16,7 @@ void utf8_cursor_peek(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
   std::size_t input_size = input.size();
   Utf8FileManager manager;
-  Utf8FileId id = manager.add_virtual_file(std::move(input));
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
   Utf8Cursor cursor;
   cursor.init(manager.file(id));
   for (auto _ : state) {
@@ -32,7 +32,7 @@ void utf8_cursor_next(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
   std::size_t input_size = input.size();
   Utf8FileManager manager;
-  Utf8FileId id = manager.add_virtual_file(std::move(input));
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
   Utf8Cursor cursor;
   cursor.init(manager.file(id));
   for (auto _ : state) {
@@ -58,7 +58,7 @@ void utf8_cursor_next_utf8(benchmark::State& state) {
   std::size_t input_size = input.size();
 
   Utf8FileManager manager;
-  Utf8FileId id = manager.add_virtual_file(std::move(input));
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
   for (auto _ : state) {
     Utf8Cursor cursor;
     cursor.init(manager.file(id));
@@ -78,7 +78,7 @@ void utf8_cursor_peek_utf8(benchmark::State& state) {
   std::size_t input_size = input.size();
 
   Utf8FileManager manager;
-  Utf8FileId id = manager.add_virtual_file(std::move(input));
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
   Utf8Cursor cursor;
   cursor.init(manager.file(id));
   for (auto _ : state) {
@@ -99,7 +99,7 @@ void utf8_cursor_mixed_next(benchmark::State& state) {
   std::size_t input_size = input.size();
 
   Utf8FileManager manager;
-  Utf8FileId id = manager.add_virtual_file(std::move(input));
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
   for (auto _ : state) {
     Utf8Cursor cursor;
     cursor.init(manager.file(id));

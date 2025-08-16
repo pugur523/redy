@@ -12,7 +12,7 @@ namespace base {
 
 TEST(TokenTest, BasicConstruction) {
   unicode::Utf8FileManager manager;
-  auto file_id = manager.add_virtual_file(u8"if");
+  auto file_id = manager.register_virtual_file(u8"if");
   const unicode::Utf8File& file = manager.file(file_id);
   Token tok(TokenKind::kIf, core::SourceLocation(1, 1), 2);
   EXPECT_EQ(tok.kind(), TokenKind::kIf);
