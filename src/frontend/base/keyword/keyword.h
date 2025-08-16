@@ -22,9 +22,13 @@ inline bool token_kind_is_literal(TokenKind kind) {
 
 BASE_EXPORT TokenKind lookup_id_or_keyword(std::u8string_view word);
 
-BASE_EXPORT TokenKind lookup_id_or_keyword(std::u8string_view full_source,
-                                           std::size_t start,
-                                           std::size_t length);
+inline TokenKind lookup_id_or_keyword(std::u8string_view full_source,
+                                      std::size_t start,
+                                      std::size_t length) {
+  DCHECK_LE(start + length, full_source.length());
+  return lookup_id_or_keyword(
+      std::u8string_view(full_source.data() + start, length));
+}
 
 }  // namespace base
 
