@@ -21,7 +21,7 @@ void DiagnosticEngine::format_label_header(const Label& label,
                                            const char* col_num_str,
                                            std::size_t col_num_len,
                                            std::string* out_str) const {
-  const unicode::Utf8File& file = file_manager_->file(label.file_id());
+  const unicode::Utf8File& file = file_manager_->loaded_file(label.file_id());
   const std::string_view file_name = file.file_name();
 
   core::StyleBuilder s;

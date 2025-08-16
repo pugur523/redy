@@ -73,7 +73,7 @@ class UNICODE_EXPORT Utf8Cursor {
   inline const Utf8File& file() const {
     DCHECK(file_manager_);
     DCHECK_NE(file_id_, kInvalidFileId);
-    return file_manager_->file_with_loaded(file_id_);
+    return file_manager_->loaded_file(file_id_);
   }
 
   inline Status status() const { return status_; }

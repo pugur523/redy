@@ -114,7 +114,7 @@ inline constexpr std::size_t TokenStream::size() const {
 }
 
 inline const unicode::Utf8File& TokenStream::file() const {
-  return file_manager_->file_with_loaded(file_id_);
+  return file_manager_->loaded_file(file_id_);
 }
 
 }  // namespace base

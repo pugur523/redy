@@ -26,7 +26,7 @@ class DiagnosticEngine {
  public:
   using Entries = std::vector<DiagnosticEntry>;
 
-  explicit DiagnosticEngine(const unicode::Utf8FileManager* file_manager,
+  explicit DiagnosticEngine(unicode::Utf8FileManager* file_manager,
                             const i18n::Translator* translator,
                             DiagnosticOptions options);
 
@@ -96,7 +96,7 @@ class DiagnosticEngine {
                                            std::size_t buf_size);
 
   Entries entries_;
-  const unicode::Utf8FileManager* file_manager_ = nullptr;
+  unicode::Utf8FileManager* file_manager_ = nullptr;
   const i18n::Translator* translator_ = nullptr;
   DiagnosticOptions options_;
 

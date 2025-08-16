@@ -46,7 +46,7 @@ namespace diagnostic {
 //    = note: `data` was moved while borrowed
 //    = help: try cloning `data` if you need to use it after moving
 
-DiagnosticEngine::DiagnosticEngine(const unicode::Utf8FileManager* file_manager,
+DiagnosticEngine::DiagnosticEngine(unicode::Utf8FileManager* file_manager,
                                    const i18n::Translator* translator,
                                    DiagnosticOptions options)
     : file_manager_(file_manager), translator_(translator), options_(options) {

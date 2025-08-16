@@ -46,7 +46,7 @@ class UNICODE_EXPORT Utf8FileManager {
     return files_[id];
   }
 
-  inline const Utf8File& file_with_loaded(Utf8FileId id) {
+  inline const Utf8File& loaded_file(Utf8FileId id) {
     auto& f = file_mutable(id);
     if (!f.loaded()) {
       f.load();
