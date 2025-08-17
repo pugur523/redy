@@ -37,7 +37,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
     if (ch1 == 'x' || ch1 == 'X') {
       // hex
       meta.is_base_prefixed = true;
-      kind = TokenKind::kLiteralHexadecimal;
+      kind = TokenKind::kHexadecimal;
       cursor_.next();  // consume '0'
       cursor_.next();  // consume 'x'
 
@@ -50,7 +50,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
     } else if (ch1 == 'b' || ch1 == 'B') {
       // binary
       meta.is_base_prefixed = true;
-      kind = TokenKind::kLiteralBinary;
+      kind = TokenKind::kBinary;
       cursor_.next();  // consume '0'
       cursor_.next();  // consume 'b'
 
@@ -76,7 +76,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
     } else if (ch1 == 'o' || ch1 == 'O') {
       // octal
       meta.is_base_prefixed = true;
-      kind = TokenKind::kLiteralOctal;
+      kind = TokenKind::kOctal;
       cursor_.next();  // consume '0'
       cursor_.next();  // consume 'o'
 
@@ -103,7 +103,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
 
   // handle decimal numbers (if not base-prefixed)
   if (!meta.is_base_prefixed) {
-    kind = TokenKind::kLiteralDecimal;
+    kind = TokenKind::kDecimal;
     // consume initial digits
     while (core::is_ascii_digit(cursor_.peek())) {
       meta.has_digit = true;

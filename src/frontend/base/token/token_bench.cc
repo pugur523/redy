@@ -11,7 +11,7 @@ namespace {
 
 void token_construction(benchmark::State& state) {
   for (auto _ : state) {
-    Token tok(TokenKind::kLiteralDecimal, 1, 1, 2);
+    Token tok(TokenKind::kDecimal, 1, 1, 2);
     benchmark::DoNotOptimize(tok.kind());
     benchmark::DoNotOptimize(tok.start().line());
     benchmark::DoNotOptimize(tok.start().column());

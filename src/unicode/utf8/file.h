@@ -34,7 +34,7 @@ class UNICODE_EXPORT Utf8File {
   Utf8File& operator=(Utf8File&&) = default;
 
   void init(std::u8string_view file_name);
-  void init_loaded(std::u8string_view file_name, std::u8string&& content);
+  void init_and_load(std::u8string_view file_name, std::u8string&& content);
 
   void load();
   void unload();

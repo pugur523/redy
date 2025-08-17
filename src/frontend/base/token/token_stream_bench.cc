@@ -24,7 +24,7 @@ void token_stream_advance(benchmark::State& state) {
 
   tokens.reserve(1001);
   for (int i = 0; i < 1000; ++i) {
-    tokens.emplace_back(TokenKind::kLiteralDecimal, 1, i, 1);
+    tokens.emplace_back(TokenKind::kDecimal, 1, i, 1);
   }
   tokens.emplace_back(TokenKind::kEof, 1, 1000, 0);
   TokenStream stream(std::move(tokens), &manager, file_id);
@@ -48,7 +48,7 @@ void token_stream_peek(benchmark::State& state) {
   std::vector<Token> tokens;
   tokens.reserve(1001);
   for (int i = 0; i < 1000; ++i) {
-    tokens.emplace_back(TokenKind::kLiteralDecimal, 1, i, 1);
+    tokens.emplace_back(TokenKind::kDecimal, 1, i, 1);
   }
   // ensure do not advance to the eof token
   std::size_t tokens_size = tokens.size();

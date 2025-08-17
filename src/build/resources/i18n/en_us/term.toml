@@ -61,7 +61,6 @@ constant = "constant"
 extern = "extern"
 static = "static"
 thread_local = "thread local"
-deprecated = "deprecated"
 public = "public"
 
 this = "this"

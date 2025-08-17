@@ -135,12 +135,6 @@ TokenKind lookup_id_or_keyword(std::u8string_view word) {
       }
       break;
 
-    case 10:
-      if (word == u8"deprecated") {
-        return TokenKind::kDeprecated;
-      }
-      break;
-
     case 12:
       if (word == u8"thread_local") {
         return TokenKind::kThreadLocal;

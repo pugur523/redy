@@ -64,7 +64,6 @@ TEST(KeywordTest, LookupKeyword) {
   verify_keyword(u8"extern", TokenKind::kExtern);
   verify_keyword(u8"static", TokenKind::kStatic);
   verify_keyword(u8"thread_local", TokenKind::kThreadLocal);
-  verify_keyword(u8"deprecated", TokenKind::kDeprecated);
   verify_keyword(u8"pub", TokenKind::kPublic);
 
   verify_keyword(u8"as", TokenKind::kAs);

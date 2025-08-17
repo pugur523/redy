@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "frontend/base/token/token_kind.h"
+
 namespace base {
 
 enum class LiteralKind : uint8_t {
@@ -23,6 +25,21 @@ enum class LiteralKind : uint8_t {
   kTrue = 7,
   kFalse = 8
 };
+
+inline LiteralKind token_kind_to_literal(base::TokenKind kind) {
+  switch (kind) {
+    case TokenKind::kDecimal: return LiteralKind::kDecimal;
+    case TokenKind::kBinary: return LiteralKind::kBinary;
+    case TokenKind::kOctal: return LiteralKind::kOctal;
+    case TokenKind::kHexadecimal: return LiteralKind::kHexadecimal;
+    case TokenKind::kString: return LiteralKind::kString;
+    case TokenKind::kCharacter: return LiteralKind::kCharacter;
+    case TokenKind::kTrue: return LiteralKind::kTrue;
+    case TokenKind::kFalse: return LiteralKind::kFalse;
+
+    default: return LiteralKind::kUnknown;
+  }
+}
 
 }  // namespace base
 

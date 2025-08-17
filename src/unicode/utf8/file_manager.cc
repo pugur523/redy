@@ -27,7 +27,7 @@ Utf8FileId Utf8FileManager::register_file_loaded(std::u8string_view file_name,
       << "file name is empty. use `add_virtual_file` for testing purposes.";
 
   Utf8File file;
-  file.init_loaded(file_name, std::move(source));
+  file.init_and_load(file_name, std::move(source));
   files_.push_back(std::move(file));
   return files_.size() - 1;
 }

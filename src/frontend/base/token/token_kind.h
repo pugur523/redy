@@ -71,7 +71,6 @@ enum class TokenKind : uint8_t {
   kExtern = 42,       // extern
   kStatic = 43,       // static
   kThreadLocal = 44,  // thread_local
-  kDeprecated = 45,   // deprecated
   kPublic = 46,       // pub
 
   // ## modifier keywords
@@ -81,15 +80,15 @@ enum class TokenKind : uint8_t {
   kKeywordsEnd = kAs,
 
   // # literals
-  kLiteralDecimal = 49,      // 42
-  kLiteralBinary = 50,       // 0b01010
-  kLiteralOctal = 51,        // 0o755
-  kLiteralHexadecimal = 52,  // 0xffffff
-  kLiteralStr = 53,          // "string"
-  kLiteralChar = 54,         // 'c'
-  kTrue = 55,                // true
-  kFalse = 56,               // false
-  kLiteralsBegin = kLiteralDecimal,
+  kDecimal = 49,      // 42
+  kBinary = 50,       // 0b01010
+  kOctal = 51,        // 0o755
+  kHexadecimal = 52,  // 0xffffff
+  kString = 53,       // "string"
+  kCharacter = 54,    // 'c'
+  kTrue = 55,         // true
+  kFalse = 56,        // false
+  kLiteralsBegin = kDecimal,
   kLiteralsEnd = kFalse,
 
   // # operators
@@ -239,18 +238,17 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kExtern: return "extern";
     case TokenKind::kStatic: return "static";
     case TokenKind::kThreadLocal: return "thread local";
-    case TokenKind::kDeprecated: return "deprecated";
     case TokenKind::kPublic: return "public";
 
     case TokenKind::kThis: return "this";
     case TokenKind::kAs: return "as";
 
-    case TokenKind::kLiteralDecimal: return "literal decimal";
-    case TokenKind::kLiteralBinary: return "literal binary";
-    case TokenKind::kLiteralOctal: return "literal octal";
-    case TokenKind::kLiteralHexadecimal: return "literal hexadecimal";
-    case TokenKind::kLiteralStr: return "literal string";
-    case TokenKind::kLiteralChar: return "literal char";
+    case TokenKind::kDecimal: return "literal decimal";
+    case TokenKind::kBinary: return "literal binary";
+    case TokenKind::kOctal: return "literal octal";
+    case TokenKind::kHexadecimal: return "literal hexadecimal";
+    case TokenKind::kString: return "literal string";
+    case TokenKind::kCharacter: return "literal char";
     case TokenKind::kTrue: return "true";
     case TokenKind::kFalse: return "false";
 
@@ -392,24 +390,22 @@ inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
     case TokenKind::kStatic: return i18n::TranslationKey::kTermTokenKindStatic;
     case TokenKind::kThreadLocal:
       return i18n::TranslationKey::kTermTokenKindThreadLocal;
-    case TokenKind::kDeprecated:
-      return i18n::TranslationKey::kTermTokenKindDeprecated;
     case TokenKind::kPublic: return i18n::TranslationKey::kTermTokenKindPublic;
 
     case TokenKind::kThis: return i18n::TranslationKey::kTermTokenKindThis;
     case TokenKind::kAs: return i18n::TranslationKey::kTermTokenKindAs;
 
-    case TokenKind::kLiteralDecimal:
+    case TokenKind::kDecimal:
       return i18n::TranslationKey::kTermTokenKindLiteralDecimal;
-    case TokenKind::kLiteralBinary:
+    case TokenKind::kBinary:
       return i18n::TranslationKey::kTermTokenKindLiteralBinary;
-    case TokenKind::kLiteralOctal:
+    case TokenKind::kOctal:
       return i18n::TranslationKey::kTermTokenKindLiteralOctal;
-    case TokenKind::kLiteralHexadecimal:
+    case TokenKind::kHexadecimal:
       return i18n::TranslationKey::kTermTokenKindLiteralHexadecimal;
-    case TokenKind::kLiteralStr:
+    case TokenKind::kString:
       return i18n::TranslationKey::kTermTokenKindLiteralStr;
-    case TokenKind::kLiteralChar:
+    case TokenKind::kCharacter:
       return i18n::TranslationKey::kTermTokenKindLiteralChar;
     case TokenKind::kTrue: return i18n::TranslationKey::kTermTokenKindTrue;
     case TokenKind::kFalse: return i18n::TranslationKey::kTermTokenKindFalse;

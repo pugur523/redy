@@ -20,8 +20,8 @@ void Utf8File::init(std::u8string_view file_name) {
   status_ = Status::kNotLoaded;
 }
 
-void Utf8File::init_loaded(std::u8string_view file_name,
-                           std::u8string&& content) {
+void Utf8File::init_and_load(std::u8string_view file_name,
+                             std::u8string&& content) {
   DCHECK_EQ(status_, Status::kNotInitialized);
   init(file_name);
   content_ = std::move(content);

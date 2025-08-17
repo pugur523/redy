@@ -22,7 +22,7 @@ TEST(TokenStreamTest, BasicNextAndPeek) {
 
   tokens.emplace_back(TokenKind::kIdentifier, 1, 1, 1);
   tokens.emplace_back(TokenKind::kPlus, 1, 3, 1);
-  tokens.emplace_back(TokenKind::kLiteralDecimal, 1, 5, 2);
+  tokens.emplace_back(TokenKind::kDecimal, 1, 5, 2);
   tokens.emplace_back(TokenKind::kEof, 1, 7, 0);
 
   TokenStream stream(std::move(tokens), &manager, file_id);
@@ -33,7 +33,7 @@ TEST(TokenStreamTest, BasicNextAndPeek) {
   EXPECT_EQ(stream.next().kind(), TokenKind::kPlus);
   EXPECT_EQ(stream.peek().kind(), TokenKind::kPlus);
 
-  EXPECT_EQ(stream.next().kind(), TokenKind::kLiteralDecimal);
+  EXPECT_EQ(stream.next().kind(), TokenKind::kDecimal);
   EXPECT_EQ(stream.peek().lexeme(file), "42");
 
   EXPECT_EQ(stream.next().kind(), TokenKind::kEof);
@@ -47,7 +47,7 @@ TEST(TokenStreamTest, RewindWorks) {
   const unicode::Utf8File& file = manager.file(file_id);
 
   tokens.emplace_back(TokenKind::kIdentifier, 1, 1, 3);
-  tokens.emplace_back(TokenKind::kLiteralDecimal, 1, 5, 1);
+  tokens.emplace_back(TokenKind::kDecimal, 1, 5, 1);
   tokens.emplace_back(TokenKind::kEof, 1, 6, 0);
 
   TokenStream stream(std::move(tokens), &manager, file_id);

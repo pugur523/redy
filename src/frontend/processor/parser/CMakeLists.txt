@@ -13,10 +13,13 @@ set(SOURCES
 
   declaration.cc
 
-  declaration/function.cc
-
   chore/parameter.cc
   chore/type_reference.cc
+
+  declaration/function.cc
+
+  expression/literal.cc
+  expression/path.cc
 
   # parse/assignment.cc
   # parse/expression.cc

@@ -18,8 +18,7 @@ enum class AttributeKeyword : uint8_t {
   kExtern = 3,       // extern
   kStatic = 4,       // static
   kThreadLocal = 5,  // thread_local
-  kDeprecated = 6,   // deprecated
-  kPublic = 7,       // pub
+  kPublic = 6,       // pub
 };
 
 inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
@@ -29,7 +28,6 @@ inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
     case TokenKind::kExtern: return AttributeKeyword::kExtern;
     case TokenKind::kStatic: return AttributeKeyword::kStatic;
     case TokenKind::kThreadLocal: return AttributeKeyword::kThreadLocal;
-    case TokenKind::kDeprecated: return AttributeKeyword::kDeprecated;
     case TokenKind::kPublic: return AttributeKeyword::kPublic;
     default: return AttributeKeyword::kUnknown;
   }
@@ -47,7 +45,6 @@ inline const char* attribute_keyword_to_string(AttributeKeyword keyword) {
     case AttributeKeyword::kExtern: return "extern";
     case AttributeKeyword::kStatic: return "static";
     case AttributeKeyword::kThreadLocal: return "thread local";
-    case AttributeKeyword::kDeprecated: return "deprecated";
     case AttributeKeyword::kPublic: return "public";
     default: return "invalid";
   }

@@ -97,7 +97,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_str() {
   // consume the closing '"'
   cursor_.next();
 
-  return create_token(TokenKind::kLiteralStr, start, line, col);
+  return create_token(TokenKind::kString, start, line, col);
 }
 
 }  // namespace lexer

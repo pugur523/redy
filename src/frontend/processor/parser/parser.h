@@ -11,6 +11,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"
+#include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/nodes.h"
 #include "frontend/data/ast/context.h"
 #include "frontend/diagnostic/data/error/source_error.h"
@@ -54,79 +55,73 @@ class PARSER_EXPORT Parser {
   Parser(Parser&&) = default;
   Parser& operator=(Parser&&) = default;
 
-  void init(base::TokenStream* stream,
-            unicode::Utf8FileId file_id,
-            const i18n::Translator& translater);
+  void init(base::TokenStream* stream, const i18n::Translator& translater);
 
   inline const ast::Context& context() const { return *context_; }
 
   Results parse_all(bool strict = false);
 
  private:
-  Result<void> parse_root();
+  Result<ast::NodeId> parse_root();
 
   // expression wo block
-  Result<ast::LiteralExpressionNode> parse_literal_expression();
-  Result<ast::PathExpressionNode> parse_path_expression();
-  Result<ast::UnaryOperatorExpressionNode> parse_unary_operator_expression();
-  Result<ast::BinaryOperatorExpressionNode> parse_binary_operator_expression();
-  Result<ast::GroupedExpressionNode> parse_grouped_expression();
-  Result<ast::ArrayExpressionNode> parse_array_expression();
-  Result<ast::TupleExpressionNode> parse_tuple_expression();
-  Result<ast::IndexExpressionNode> parse_index_expression();
-  Result<ast::ConstructExpressionNode> parse_construct_expression();
-  Result<ast::FunctionCallExpressionNode> parse_function_call_expression();
-  Result<ast::MethodCallExpressionNode> parse_method_call_expression();
-  Result<ast::MacroCallExpressionNode> parse_macro_call_expression();
-  Result<ast::FieldAccessExpressionNode> parse_field_access_expression();
-  Result<ast::AwaitExpressionNode> parse_await_expression();
-  Result<ast::ContinueExpressionNode> parse_continue_expression();
-  Result<ast::BreakExpressionNode> parse_break_expression();
-  Result<ast::ExclusiveRangeExpressionNode> parse_exclusive_range_expression();
-  Result<ast::InclusiveRangeExpressionNode> parse_inclusive_range_expression();
-  Result<ast::ReturnExpressionNode> parse_return_expression();
+  Result<ast::NodeId> parse_expression();
+  Result<ast::NodeId> parse_primary_expression();
+  Result<ast::NodeId> parse_literal_expression();
+  Result<ast::NodeId> parse_path_expression();
+  Result<ast::NodeId> parse_unary_operator_expression();
+  Result<ast::NodeId> parse_binary_operator_expression();
+  Result<ast::NodeId> parse_grouped_expression();
+  Result<ast::NodeId> parse_array_expression();
+  Result<ast::NodeId> parse_tuple_expression();
+  Result<ast::NodeId> parse_index_expression();
+  Result<ast::NodeId> parse_construct_expression();
+  Result<ast::NodeId> parse_function_call_expression();
+  Result<ast::NodeId> parse_method_call_expression();
+  Result<ast::NodeId> parse_macro_call_expression();
+  Result<ast::NodeId> parse_field_access_expression();
+  Result<ast::NodeId> parse_await_expression();
+  Result<ast::NodeId> parse_continue_expression();
+  Result<ast::NodeId> parse_break_expression();
+  Result<ast::NodeId> parse_exclusive_range_expression();
+  Result<ast::NodeId> parse_inclusive_range_expression();
+  Result<ast::NodeId> parse_return_expression();
 
   // expression w block
-  Result<ast::BlockExpressionNode> parse_block_expression();
-  Result<ast::UnsafeExpressionNode> parse_unsafe_expression();
-  Result<ast::FastExpressionNode> parse_fast_expression();
-  Result<ast::IfExpressionNode> parse_if_expression();
-  Result<ast::LoopExpressionNode> parse_loop_expression();
-  Result<ast::WhileExpressionNode> parse_while_expression();
-  Result<ast::ForExpressionNode> parse_for_expression();
-  Result<ast::MatchExpressionNode> parse_match_expression();
-  Result<ast::ClosureExpressionNode> parse_closure_expression();
+  Result<ast::NodeId> parse_block_expression();
+  Result<ast::NodeId> parse_unsafe_expression();
+  Result<ast::NodeId> parse_fast_expression();
+  Result<ast::NodeId> parse_if_expression();
+  Result<ast::NodeId> parse_loop_expression();
+  Result<ast::NodeId> parse_while_expression();
+  Result<ast::NodeId> parse_for_expression();
+  Result<ast::NodeId> parse_match_expression();
+  Result<ast::NodeId> parse_closure_expression();
 
   // statement
-  Result<void> parse_statement();
-  Result<ast::AssignStatementNode> parse_assign_statement(
-      ast::BuiltinAttribute attribute);
-  Result<ast::AttributeStatementNode> parse_attribute_statement();
-  Result<ast::ExpressionStatementNode> parse_expression_statement();
+  Result<ast::NodeId> parse_statement();
+  Result<ast::NodeId> parse_assign_statement(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_attribute_statement();
+  Result<ast::NodeId> parse_expression_statement();
 
   // declaration
-  Result<void> parse_declaration();
-  Result<ast::FunctionDeclarationNode> parse_function_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::StructDeclarationNode> parse_struct_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::EnumerationDeclarationNode> parse_enumeration_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::TraitDeclarationNode> parse_trait_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::ImplementationDeclarationNode> parse_impl_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::UnionDeclarationNode> parse_union_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::ModuleDeclarationNode> parse_module_declaration(
-      ast::BuiltinAttribute attribute);
-  Result<ast::ModuleDeclarationNode> parse_redirect_declaration(
-      ast::BuiltinAttribute attribute);
+  Result<ast::NodeId> parse_declaration();
+  Result<ast::NodeId> parse_function_declaration(
+      ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_struct_declaration(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_enumeration_declaration(
+      ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_trait_declaration(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_impl_declaration(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_union_declaration(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_module_declaration(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_redirect_declaration(
+      ast::StorageAttribute attribute);
 
   // chore
-  Result<ast::ParameterNode> parse_parameter_one();
+  Result<ast::NodeId> parse_parameter_one();
   Result<ast::NodeRange> parse_parameter_list();
-  Result<ast::TypeReferenceNode> parse_type_reference();
+  Result<ast::NodeId> parse_type_reference();
 
   void init_context();
 
@@ -150,14 +145,13 @@ class PARSER_EXPORT Parser {
     return Results(diagnostic::create_err(std::move(error)));
   }
   template <typename T>
-  inline static Result<T> ok(T&& ok_value) {
+  inline static Result<T> ok(T ok_value) {
     return Result<T>(diagnostic::create_ok(std::move(ok_value)));
   }
   template <typename T>
   inline static Result<T> err(De&& err_value) {
     return Result<T>(diagnostic::create_err(std::move(err_value)));
   }
-
   template <typename>
   inline static Result<void> ok() {
     return Result<void>(diagnostic::create_ok());
@@ -169,7 +163,6 @@ class PARSER_EXPORT Parser {
   std::unique_ptr<ast::Context> context_ = nullptr;
   const i18n::Translator* translator_ = nullptr;
   base::TokenStream* stream_ = nullptr;
-  unicode::Utf8FileId file_id_;
   Status status_ = Status::kNotInitialized;
 };
 

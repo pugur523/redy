@@ -16,31 +16,30 @@
 
 namespace parser {
 
-Parser::Result<ast::FunctionDeclarationNode> Parser::parse_function_declaration(
-    ast::BuiltinAttribute attribute) {
+Parser::Result<ast::NodeId> Parser::parse_function_declaration(
+    ast::StorageAttribute attribute) {
   consume(base::TokenKind::kFunction);
 
-  auto fn = consume(base::TokenKind::kIdentifier);
-  if (fn.is_err()) {
-    return err<ast::FunctionDeclarationNode>(std::move(fn).unwrap_err());
+  auto fn_name_r = consume(base::TokenKind::kIdentifier);
+  if (fn_name_r.is_err()) {
+    return err<ast::NodeId>(std::move(fn_name_r).unwrap_err());
   }
   const std::string_view function_name = peek().lexeme(stream_->file());
 
   auto lparen_r = consume(base::TokenKind::kLeftParen);
   if (lparen_r.is_err()) {
-    return err<ast::FunctionDeclarationNode>(std::move(lparen_r).unwrap_err());
+    return err<ast::NodeId>(std::move(lparen_r).unwrap_err());
   }
 
   auto parameters_r = parse_parameter_list();
   if (parameters_r.is_err()) {
-    return err<ast::FunctionDeclarationNode>(
-        std::move(parameters_r).unwrap_err());
+    return err<ast::NodeId>(std::move(parameters_r).unwrap_err());
   }
   const ast::NodeRange parameters_range = std::move(parameters_r).unwrap();
 
   auto rparen_r = consume(base::TokenKind::kRightParen);
   if (rparen_r.is_err()) {
-    return err<ast::FunctionDeclarationNode>(std::move(rparen_r).unwrap_err());
+    return err<ast::NodeId>(std::move(rparen_r).unwrap_err());
   }
 
   ast::NodeId return_type_id = ast::kInvalidNodeId;
@@ -48,35 +47,34 @@ Parser::Result<ast::FunctionDeclarationNode> Parser::parse_function_declaration(
     consume(base::TokenKind::kArrow);
     auto ret_type_r = parse_type_reference();
     if (ret_type_r.is_err()) {
-      return err<ast::FunctionDeclarationNode>(
-          std::move(ret_type_r).unwrap_err());
+      return err<ast::NodeId>(std::move(ret_type_r).unwrap_err());
     }
-    return_type_id = context_->alloc(std::move(ret_type_r).unwrap());
+    return_type_id = std::move(ret_type_r).unwrap();
   }
 
   auto lbrace_r = consume(base::TokenKind::kLeftBrace);
   if (lbrace_r.is_err()) {
-    return err<ast::FunctionDeclarationNode>(std::move(lbrace_r).unwrap_err());
+    return err<ast::NodeId>(std::move(lbrace_r).unwrap_err());
   }
 
   auto body_r = parse_block_expression();
   if (body_r.is_err()) {
-    return err<ast::FunctionDeclarationNode>(std::move(body_r).unwrap_err());
+    return err<ast::NodeId>(std::move(body_r).unwrap_err());
   }
-  ast::NodeId body_id = context_->alloc(std::move(body_r).unwrap());
+  ast::NodeId body_id = std::move(body_r).unwrap();
 
   auto rbrace_r = consume(base::TokenKind::kRightBrace);
   if (rbrace_r.is_err()) {
-    return err<ast::FunctionDeclarationNode>(std::move(rbrace_r).unwrap_err());
+    return err<ast::NodeId>(std::move(rbrace_r).unwrap_err());
   }
 
-  return ok(ast::FunctionDeclarationNode{
+  return ok(context_->alloc(ast::FunctionDeclarationNode{
       .name = function_name,
       .parameters_range = parameters_range,
       .return_type = return_type_id,
       .body = body_id,
       .attribute = attribute,
-  });
+  }));
 }
 
 }  // namespace parser

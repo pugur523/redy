@@ -2,19 +2,26 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
+#include <utility>
+
+#include "core/base/source_range.h"
 #include "frontend/base/keyword/attribute_keyword.h"
 #include "frontend/base/token/token_kind.h"
+#include "frontend/data/ast/base/node_id.h"
+#include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
+#include "i18n/base/translator.h"
 
 namespace parser {
 
-Parser::Result<void> Parser::parse_declaration() {
+Parser::Result<ast::NodeId> Parser::parse_declaration() {
   using Kind = base::TokenKind;
 
-  Kind kind = peek().kind();
+  const base::Token& first_token = peek();
+  Kind kind = first_token.kind();
 
-  // read builtin attribute
-  ast::BuiltinAttribute attribute;
+  // read storage attribute
+  ast::StorageAttribute attribute;
   while (!eof() && base::token_kind_is_attribute_keyword(kind)) {
     switch (kind) {
       case Kind::kMutable: attribute.is_mutable = true; break;
@@ -22,7 +29,6 @@ Parser::Result<void> Parser::parse_declaration() {
       case Kind::kExtern: attribute.is_extern = true; break;
       case Kind::kStatic: attribute.is_static = true; break;
       case Kind::kThreadLocal: attribute.is_thread_local = true; break;
-      case Kind::kDeprecated: attribute.is_deprecated = true; break;
       case Kind::kPublic: attribute.is_public = true; break;
       default: break;
     }
@@ -30,30 +36,76 @@ Parser::Result<void> Parser::parse_declaration() {
     kind = next().kind();
   }
 
-  if (has_any_builtin_attribute(attribute)) {
+  const base::Token& current = peek();
+
+  if (has_any_storage_attribute(attribute)) {
     if (attribute.is_mutable && attribute.is_const) [[unlikely]] {
-      // return error
+      return err<ast::NodeId>(
+          std::move(
+              Eb(diagnostic::Severity::kError,
+                 diagnostic::DiagnosticId::kUnexpectedToken)
+                  .label(stream_->file_id(),
+                         core::SourceRange{
+                             core::SourceLocation{
+                                 first_token.start().line(),
+                                 first_token.start().column(),
+                             },
+                             core::SourceLocation{
+                                 current.end().line(),
+                                 current.end().column() + current.length(),
+                             },
+                         },
+                         i18n::TranslationKey::
+                             kDiagnosticParserConflictingStorageSpecifiers,
+                         diagnostic::LabelMarkerType::kLine, {"mut", "const"}))
+              .build());
     } else if (attribute.is_extern && attribute.is_static) [[unlikely]] {
-      // return error
+      return err<ast::NodeId>(
+          std::move(
+              Eb(diagnostic::Severity::kError,
+                 diagnostic::DiagnosticId::kUnexpectedToken)
+                  .label(stream_->file_id(),
+                         core::SourceRange{
+                             core::SourceLocation{
+                                 first_token.start().line(),
+                                 first_token.start().column(),
+                             },
+                             core::SourceLocation{
+                                 current.end().line(),
+                                 current.end().column() + current.length(),
+                             },
+                         },
+                         i18n::TranslationKey::
+                             kDiagnosticParserConflictingStorageSpecifiers,
+                         diagnostic::LabelMarkerType::kLine,
+                         {"extern", "static"}))
+              .build());
     }
   }
 
   switch (kind) {
-    case Kind::kFunction: parse_function_declaration(attribute);
-    case Kind::kStruct: parse_struct_declaration(attribute);
-    case Kind::kEnumeration: parse_enumeration_declaration(attribute);
-    case Kind::kTrait: parse_trait_declaration(attribute);
-    case Kind::kImplementation: parse_impl_declaration(attribute);
-    case Kind::kUnion: parse_union_declaration(attribute);
-    case Kind::kModule: parse_module_declaration(attribute);
-    case Kind::kRedirect: parse_redirect_declaration(attribute);
-
-    case Kind::kIdentifier: parse_assign_statement(attribute);
-
-    default: break;  // return error
+    case Kind::kFunction: return parse_function_declaration(attribute);
+    case Kind::kStruct: return parse_struct_declaration(attribute);
+    case Kind::kEnumeration: return parse_enumeration_declaration(attribute);
+    case Kind::kTrait: return parse_trait_declaration(attribute);
+    case Kind::kImplementation: return parse_impl_declaration(attribute);
+    case Kind::kUnion: return parse_union_declaration(attribute);
+    case Kind::kModule: return parse_module_declaration(attribute);
+    case Kind::kRedirect: return parse_redirect_declaration(attribute);
+    case Kind::kIdentifier: return parse_assign_statement(attribute);
+    default: {
+      return err<ast::NodeId>(
+          std::move(
+              Eb(diagnostic::Severity::kError,
+                 diagnostic::DiagnosticId::kUnexpectedToken)
+                  .label(stream_->file_id(), peek().range(),
+                         i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
+                         diagnostic::LabelMarkerType::kLine,
+                         {translator_->translate(
+                             base::token_kind_to_tr_key(kind))}))
+              .build());
+    }
   }
-
-  return ok<void>();
 }
 
 }  // namespace parser

@@ -119,10 +119,9 @@ void validate_token_properties(std::u8string&& source,
 }  // namespace
 
 TEST(LexerTest, LexSimpleCode) {
-  expect_tokens(
-      u8"x := 42;",
-      {base::TokenKind::kIdentifier, base::TokenKind::kColonEqual,
-       base::TokenKind::kLiteralDecimal, base::TokenKind::kSemicolon});
+  expect_tokens(u8"x := 42;",
+                {base::TokenKind::kIdentifier, base::TokenKind::kColonEqual,
+                 base::TokenKind::kDecimal, base::TokenKind::kSemicolon});
 }
 
 // TEST(LexerTest, HelloWorldFunction) {
@@ -257,12 +256,11 @@ TEST(LexerErrorTest, InvalidNumericLiterals) {
 
 // edge cases
 TEST(LexerTest, NumericLiteralEdgeCases) {
-  expect_tokens(
-      u8"0 0x0 0b0 0o0",
-      {base::TokenKind::kLiteralDecimal, base::TokenKind::kLiteralHexadecimal,
-       base::TokenKind::kLiteralBinary, base::TokenKind::kLiteralOctal});
-  expect_repeated_token(u8"0.0 1e0 1E0 1e+0 1e-0",
-                        base::TokenKind::kLiteralDecimal, 5);
+  expect_tokens(u8"0 0x0 0b0 0o0",
+                {base::TokenKind::kDecimal, base::TokenKind::kHexadecimal,
+                 base::TokenKind::kBinary, base::TokenKind::kOctal});
+  expect_repeated_token(u8"0.0 1e0 1E0 1e+0 1e-0", base::TokenKind::kDecimal,
+                        5);
 }
 
 }  // namespace lexer

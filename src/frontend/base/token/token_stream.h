@@ -46,6 +46,7 @@ class BASE_EXPORT TokenStream {
   inline constexpr std::size_t position() const;
   inline constexpr std::size_t size() const;
   inline const unicode::Utf8File& file() const;
+  inline unicode::Utf8FileId file_id() const;
 
   std::string dump() const;
 
@@ -115,6 +116,10 @@ inline constexpr std::size_t TokenStream::size() const {
 
 inline const unicode::Utf8File& TokenStream::file() const {
   return file_manager_->loaded_file(file_id_);
+}
+
+inline unicode::Utf8FileId TokenStream::file_id() const {
+  return file_id_;
 }
 
 }  // namespace base

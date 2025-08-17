@@ -36,7 +36,7 @@ class AST_EXPORT Context {
 
   template <typename T>
   inline NodeId alloc(T&& value) {
-    return arena<T>().alloc(std::move(value));
+    return arena<std::decay_t<T>>().alloc(std::move(value));
   }
 
   template <typename T>
@@ -87,12 +87,15 @@ class AST_EXPORT Context {
   base::Arena<FunctionDeclarationNode> function_declaration_nodes_;
   base::Arena<StructDeclarationNode> struct_declaration_nodes_;
   base::Arena<EnumerationDeclarationNode> enumeration_declaration_nodes_;
+  base::Arena<TraitDeclarationNode> trait_declaration_nodes_;
+  base::Arena<ImplementationDeclarationNode> impl_declaration_nodes_;
   base::Arena<UnionDeclarationNode> union_declaration_nodes_;
   base::Arena<ModuleDeclarationNode> module_declaration_nodes_;
 
   // chore
   base::Arena<TypeReferenceNode> type_reference_nodes_;
   base::Arena<ParameterNode> parameter_nodes_;
+  base::Arena<IdentifierNode> identifier_nodes_;
 };
 
 // arena<T>() specializations
@@ -263,6 +266,16 @@ Context::arena<EnumerationDeclarationNode>() {
   return enumeration_declaration_nodes_;
 }
 template <>
+inline base::Arena<TraitDeclarationNode>&
+Context::arena<TraitDeclarationNode>() {
+  return trait_declaration_nodes_;
+}
+template <>
+inline base::Arena<ImplementationDeclarationNode>&
+Context::arena<ImplementationDeclarationNode>() {
+  return impl_declaration_nodes_;
+}
+template <>
 inline base::Arena<UnionDeclarationNode>&
 Context::arena<UnionDeclarationNode>() {
   return union_declaration_nodes_;
@@ -281,6 +294,13 @@ template <>
 inline base::Arena<ParameterNode>& Context::arena<ParameterNode>() {
   return parameter_nodes_;
 }
+template <>
+inline base::Arena<IdentifierNode>& Context::arena<IdentifierNode>() {
+  return identifier_nodes_;
+}
+
+template <>
+inline NodeId Context::alloc<NodeId>(NodeId&&) = delete;
 
 }  // namespace ast
 

@@ -9,6 +9,7 @@
 
 #include "frontend/base/operator/operator.h"
 #include "frontend/base/token/token_kind.h"
+#include "i18n/base/data/translation_key.h"
 
 namespace base {
 
@@ -99,6 +100,11 @@ inline OperatorPrecedence unary_op_to_precedence(UnaryOperator op) {
     case UnaryOperator::kUnaryMinus: return OperatorPrecedence::kUnaryPlusMinus;
     default: DCHECK(false); return OperatorPrecedence::kUnknown;
   }
+}
+
+inline bool is_postfix_operator(UnaryOperator op) {
+  return op != UnaryOperator::kPrefixIncrement &&
+         op != UnaryOperator::kPrefixDecrement;
 }
 
 }  // namespace base

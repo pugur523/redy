@@ -12,7 +12,7 @@
 
 namespace parser {
 
-Parser::Result<ast::TypeReferenceNode> Parser::parse_type_reference() {
+Parser::Result<ast::NodeId> Parser::parse_type_reference() {
   const base::TokenKind current_kind = peek().kind();
   const std::string_view lexeme = peek().lexeme(stream_->file());
 
@@ -22,11 +22,11 @@ Parser::Result<ast::TypeReferenceNode> Parser::parse_type_reference() {
   } else if (current_kind == base::TokenKind::kIdentifier) {
     kind = base::TypeKind::kUserDefined;
   } else {
-    return err<ast::TypeReferenceNode>(
+    return err<ast::NodeId>(
         std::move(
             Eb(diagnostic::Severity::kError,
                diagnostic::DiagId::kExpectedButFound)
-                .label(file_id_, peek().range(),
+                .label(stream_->file_id(), peek().range(),
                        i18n::TranslationKey::kDiagnosticParserExpectedButFound,
                        diagnostic::LabelMarkerType::kEmphasis,
                        {translator_->translate(i18n::TranslationKey::kTermType),
@@ -35,7 +35,10 @@ Parser::Result<ast::TypeReferenceNode> Parser::parse_type_reference() {
             .build());
   }
 
-  return ok<ast::TypeReferenceNode>({lexeme, kind});
+  return ok<ast::NodeId>(context_->alloc(ast::TypeReferenceNode{
+      .type_name = lexeme,
+      .type_kind = kind,
+  }));
 }
 
 }  // namespace parser

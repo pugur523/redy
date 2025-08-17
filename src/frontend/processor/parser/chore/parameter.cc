@@ -12,26 +12,29 @@
 
 namespace parser {
 
-Parser::Result<ast::ParameterNode> Parser::parse_parameter_one() {
+Parser::Result<ast::NodeId> Parser::parse_parameter_one() {
   auto param_name_r = consume(base::TokenKind::kIdentifier);
   if (param_name_r.is_err()) {
-    return err<ast::ParameterNode>(std::move(param_name_r).unwrap_err());
+    return err<ast::NodeId>(std::move(param_name_r).unwrap_err());
   }
   const std::string_view param_name =
       std::move(param_name_r).unwrap()->lexeme(stream_->file());
 
   auto colon_r = consume(base::TokenKind::kColon);
   if (colon_r.is_err()) {
-    return err<ast::ParameterNode>(std::move(colon_r).unwrap_err());
+    return err<ast::NodeId>(std::move(colon_r).unwrap_err());
   }
 
   auto type_r = parse_type_reference();
   if (type_r.is_err()) {
-    return err<ast::ParameterNode>(std::move(type_r).unwrap_err());
+    return err<ast::NodeId>(std::move(type_r).unwrap_err());
   }
-  ast::NodeId type = context_->alloc(std::move(type_r).unwrap());
+  const ast::NodeId type = std::move(type_r).unwrap();
 
-  return ok<ast::ParameterNode>({param_name, type});
+  return ok<ast::NodeId>(context_->alloc(ast::ParameterNode{
+      .name = param_name,
+      .type = type,
+  }));
 }
 
 Parser::Result<ast::NodeRange> Parser::parse_parameter_list() {
@@ -41,17 +44,18 @@ Parser::Result<ast::NodeRange> Parser::parse_parameter_list() {
     auto r = parse_parameter_one();
     if (r.is_err()) {
       return err<ast::NodeRange>(std::move(r).unwrap_err());
-    }
-    if (parameters_count == 0) {
-      id = context_->alloc(std::move(r).unwrap());
-    } else {
-      context_->alloc(std::move(r).unwrap());
+    } else if (parameters_count == 0) {
+      id = std::move(r).unwrap();
     }
     ++parameters_count;
     next();
   }
 
-  return ok<ast::NodeRange>({id, parameters_count});
+  // returns ok even if id is invalid and parameters count is 0
+  return ok<ast::NodeRange>(ast::NodeRange{
+      .begin = id,
+      .size = parameters_count,
+  });
 }
 
 }  // namespace parser
