@@ -229,24 +229,24 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
 
 - [ ] **Parser**
   - [ ] Expression
-    - [ ] Without block
-      - [ ] Literal
-      - [ ] Path
-      - [ ] Unary operator
-      - [ ] Binary operator
-      - [ ] Grouped
-      - [ ] Array
-      - [ ] Tuple
-      - [ ] Index
-      - [ ] Construct
-      - [ ] Function call
-      - [ ] Field access
-      - [ ] Closure
-      - [ ] Await
-      - [ ] Continue
-      - [ ] Break
-      - [ ] Range
-      - [ ] Return
+    - [x] Without block
+      - [x] Literal
+      - [x] Path
+      - [x] Unary operator
+      - [x] Binary operator
+      - [x] Grouped
+      - [x] Array
+      - [x] Tuple
+      - [x] Index
+      - [x] Construct
+      - [x] Function call
+      - [x] Field access
+      - [x] Closure
+      - [x] Await
+      - [x] Continue
+      - [x] Break
+      - [x] Range
+      - [x] Return
     - [ ] With block
       - [ ] Block
       - [ ] Unsafe
