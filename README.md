@@ -144,7 +144,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
   - [x] UTF-8 file reading / validating
     - [x] Strict unicode sequence validation using latest UCD data
   - [x] Multiple files managing system
-  - [x] UTF-8 file cursor (provides peek, next, etc.)
+  - [x] UTF-8 file cursor
 
 - [x] **Diagnostic**
   - [x] Code
@@ -167,12 +167,12 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
   - [x] Translator
     - [x] Formatting support
 
-- [x] **Base**
+- [x] **base**
   - [x] Arena (useful for design data oriented structs)
   - [x] Token definition
   - [x] Keyword definition
   - [x] Operator definition
-  - [x] Token stream (provides `peek`, `next`, etc.)
+  - [x] Token stream
 
 - [x] **Lexer**
   - [x] Identifier
@@ -186,7 +186,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
   - [x] Delimiter
 
 - [ ] **AST**
-  - [x] Context (data oriented structure using `Base::Arena`)
+  - [x] Context (data oriented structure)
   - [x] Nodes
     - [x] Expression
       - [x] Without block
@@ -273,13 +273,13 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
   - [ ] Desugar
 
 - [ ] **HIR**
-  - [ ] Context (data oriented structure using `Base::Arena`)
+  - [x] Context (data oriented structure)
 
 - [ ] **HIR-Analyzer**
   - [ ] Optimize HIR
 
 - [ ] **MIR**
-  - [ ] Context (data oriented structure using `Base::Arena`)
+  - [x] Context (data oriented structure)
 
 - [ ] **MIR-Analyzer**
   - [ ] Borrow Checker

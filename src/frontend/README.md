@@ -14,7 +14,7 @@ Tokenizes source code and output as a `TokenStream`
 If the source code is lexically invalid, it reports source error
 
 ### Parser
-Syntax analysis — parses `TokenStream` into an `AstContext`
+Syntax analysis - parses `TokenStream` into an `AstContext`
 
 ### AstAnalyzer
 Performs semantic analysis on the `AstContext` to resolve names and types, desugar, and convert it to `HirContext`.
@@ -45,7 +45,7 @@ Abstract Syntax Tree - Preserves only syntactic information, not semantic inform
 High-Level Intermediate Representation - Desugared and semantically analyzed code
 
 ### MirContext
-Mid-Level Intermediate Representation — SSA-based IR with a control flow graph (CFG), which is more suitable for rigorous analysis.
+Mid-Level Intermediate Representation - SSA-based IR with a control flow graph (CFG), which is more suitable for rigorous analysis.
 
 
 ## Pipeline

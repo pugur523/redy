@@ -299,7 +299,7 @@ class DIAGNOSTIC_EXPORT Result<void, E> {
   inline bool is_ok() const { return is_ok_; }
   inline bool is_err() const { return !is_ok_; }
 
-  // unwrap ok (no payload) – no-op with check
+  // unwrap ok (no payload) - no-op with check
   void unwrap() && { DCHECK(is_ok_); }
   void expect(const std::string& msg) const& {
     DCHECK(is_ok_) << msg << ": " << storage_.err_value_;

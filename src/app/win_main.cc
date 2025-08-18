@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE /* hInstance */,
   args_utf8.reserve(argc_wide);
   argv_utf8.reserve(argc_wide);
   for (int i = 0; i < argc_wide; ++i) {
-    // utf-16 (wchar_t*) → utf-8 (char*)
+    // utf-16 (wchar_t*) -> utf-8 (char*)
     int required_size = WideCharToMultiByte(CP_UTF8, 0, argv_wide[i], -1,
                                             nullptr, 0, nullptr, nullptr);
     if (required_size > 0) {
