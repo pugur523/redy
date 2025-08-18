@@ -10,7 +10,7 @@
   [![C](https://img.shields.io/badge/C-blue?logo=c)](https://www.c-language.org/)
   [![C++](https://img.shields.io/badge/C++-blue?logo=cplusplus)](https://isocpp.org/)
   [![LLVM](https://img.shields.io/badge/LLVM-20-emerald?logo=llvm)](https://llvm.org/docs/index.html)
-  [![Document](https://img.shields.io/badge/Document-purple?logo=materialformkdocs)](https://pugur523.github.io/redy_doc/)
+  [![Document](https://img.shields.io/badge/Document-purple)](https://pugur523.github.io/redy_doc/)
   [![日本語版](https://img.shields.io/badge/日本語版-blue)](README.ja.md)
 </div>
 
@@ -64,7 +64,7 @@ Runtime costs, such as boundary checks, are minimized through various compile-ti
 
 ### 🍃 No Lifetime Annotation Required
 
-The compiler uses a **Non-Lexical Constraint-Based Lifetime Checker**(**NLCBL**). This system is more flexible than Rust's while remaining safe. If the lifetime relationships are intuitive, the compiler can often infer them without requiring explicit annotations.
+The compiler uses **Control Flow Graph(CFG)** and **Static Single Assignment(SSA)** to do **Non-Lexical Constraint-Based Lifetime Checking**. This system is more flexible than Rust's while remaining safe. If the lifetime relationships are intuitive, the compiler can often infer them without requiring explicit annotations.
 
 ---
 
