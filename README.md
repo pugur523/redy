@@ -187,50 +187,85 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
 
 - [ ] **AST**
   - [x] Context (data oriented structure using `Base::Arena`)
-  - [ ] Nodes
-    - [ ] Expression
-      - [ ] Without block
-        - [ ] Literal
-        - [ ] Path
-        - [ ] Unary operator
-        - [ ] Binary operator
-        - [ ] Grouped
-        - [ ] Array
-        - [ ] Tuple
-        - [ ] Index
-        - [ ] Construct
-        - [ ] Function call
-        - [ ] Field access
-        - [ ] Closure
-        - [ ] Await
-        - [ ] Continue
-        - [ ] Break
-        - [ ] Range
-        - [ ] Return
-      - [ ] With block
-        - [ ] Block
-        - [ ] Const block
-        - [ ] Unsafe
-        - [ ] Fast
-        - [ ] If
-        - [ ] Loop
-        - [ ] While
-        - [ ] For
-        - [ ] Match
-    - [ ] Statements
-      - [ ] Assign
-      - [ ] Const Assign
-      - [ ] Expression
-      - [ ] Module
-      - [ ] Attribute
-      - [ ] Function
-      - [ ] Struct
-      - [ ] Enumeration
-      - [ ] Union
+  - [x] Nodes
+    - [x] Expression
+      - [x] Without block
+        - [x] Literal
+        - [x] Path
+        - [x] Unary operator
+        - [x] Binary operator
+        - [x] Grouped
+        - [x] Array
+        - [x] Tuple
+        - [x] Index
+        - [x] Construct
+        - [x] Function call
+        - [x] Field access
+        - [x] Closure
+        - [x] Await
+        - [x] Continue
+        - [x] Break
+        - [x] Range
+        - [x] Return
+      - [x] With block
+        - [x] Block
+        - [x] Unsafe
+        - [x] Fast
+        - [x] If
+        - [x] Loop
+        - [x] While
+        - [x] For
+        - [x] Match
+    - [x] Statements
+      - [x] Assign
+      - [x] Const Assign
+      - [x] Expression
+      - [x] Module
+      - [x] Attribute
+      - [x] Function
+      - [x] Struct
+      - [x] Enumeration
+      - [x] Union
 
 - [ ] **Parser**
-  - [ ] Parse expressions
-  - [ ] Parse statements
+  - [ ] Expression
+    - [ ] Without block
+      - [ ] Literal
+      - [ ] Path
+      - [ ] Unary operator
+      - [ ] Binary operator
+      - [ ] Grouped
+      - [ ] Array
+      - [ ] Tuple
+      - [ ] Index
+      - [ ] Construct
+      - [ ] Function call
+      - [ ] Field access
+      - [ ] Closure
+      - [ ] Await
+      - [ ] Continue
+      - [ ] Break
+      - [ ] Range
+      - [ ] Return
+    - [ ] With block
+      - [ ] Block
+      - [ ] Unsafe
+      - [ ] Fast
+      - [ ] If
+      - [ ] Loop
+      - [ ] While
+      - [ ] For
+      - [ ] Match
+  - [ ] Statements
+    - [ ] Assign
+    - [ ] Const Assign
+    - [ ] Expression
+    - [ ] Module
+    - [ ] Attribute
+    - [ ] Function
+    - [ ] Struct
+    - [ ] Enumeration
+    - [ ] Union
 
 - [ ] **AST-Analyzer**
   - [ ] Symbol resolution
