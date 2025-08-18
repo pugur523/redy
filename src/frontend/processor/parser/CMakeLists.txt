@@ -8,10 +8,11 @@ set(MODULE_OBJECTS_NAME "parser_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
-  # dummy.cc
   parser.cc
 
   declaration.cc
+  expression.cc
+  statement.cc
 
   chore/parameter.cc
   chore/type_reference.cc
@@ -19,12 +20,23 @@ set(SOURCES
   declaration/function.cc
 
   expression/array.cc
+  expression/await.cc
   expression/binary.cc
+  expression/break.cc
+  expression/construct.cc
+  expression/continue.cc
+  expression/field_access.cc
+  expression/function_call.cc
+  expression/function_macro_call.cc
   expression/grouped.cc
   expression/index.cc
   expression/literal.cc
+  expression/method_call.cc
+  expression/method_macro_call.cc
   expression/path.cc
+  expression/postfix.cc
   expression/primary.cc
+  expression/range.cc
   expression/tuple.cc
   expression/unary.cc
 )

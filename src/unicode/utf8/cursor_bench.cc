@@ -12,14 +12,26 @@
 
 namespace unicode {
 
+void utf8_cursor_init(benchmark::State& state) {
+  std::u8string input(u8"some utf8 string");
+  Utf8FileManager manager;
+  Utf8FileId id = manager.register_virtual_file(std::move(input));
+  for (auto _ : state) {
+    Utf8Cursor cursor;
+    cursor.init(&manager, id);
+  }
+  state.SetBytesProcessed(sizeof(Utf8Cursor) * state.iterations());
+}
+BENCHMARK(utf8_cursor_init);
+
 void utf8_cursor_peek(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
   std::size_t input_size = input.size();
   Utf8FileManager manager;
   Utf8FileId id = manager.register_virtual_file(std::move(input));
-  Utf8Cursor cursor;
-  cursor.init(&manager, id);
   for (auto _ : state) {
+    Utf8Cursor cursor;
+    cursor.init(&manager, id);
     for (int64_t i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(cursor.peek());
     }
@@ -33,15 +45,10 @@ void utf8_cursor_next(benchmark::State& state) {
   std::size_t input_size = input.size();
   Utf8FileManager manager;
   Utf8FileId id = manager.register_virtual_file(std::move(input));
-  Utf8Cursor cursor;
-  cursor.init(&manager, id);
   for (auto _ : state) {
-    // this code will be optimized (maybe unroll loop related)
-    // while (!cursor.eof()) {
-    //   cursor.next();
-    //   benchmark::DoNotOptimize(cursor.peek());
-    // }
-    for (int64_t i = 0; i < state.range(0); ++i) {
+    Utf8Cursor cursor;
+    cursor.init(&manager, id);
+    while (!cursor.eof()) {
       benchmark::DoNotOptimize(cursor.next());
     }
   }
@@ -79,9 +86,9 @@ void utf8_cursor_peek_utf8(benchmark::State& state) {
 
   Utf8FileManager manager;
   Utf8FileId id = manager.register_virtual_file(std::move(input));
-  Utf8Cursor cursor;
-  cursor.init(&manager, id);
   for (auto _ : state) {
+    Utf8Cursor cursor;
+    cursor.init(&manager, id);
     for (int64_t i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(cursor.peek());
     }

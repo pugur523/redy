@@ -46,12 +46,12 @@ Parser::Result<ast::NodeId> Parser::parse_type_reference() {
     }
     auto semicolon_r = consume(base::TokenKind::kSemicolon, false);
     if (semicolon_r.is_err()) {
-      return err<ast::NodeId>(std::move(semicolon_r).unwrap_err());
+      return err<NodeId>(std::move(semicolon_r).unwrap_err());
     }
 
     auto array_size_r = parse_primary_expression();
     if (array_size_r.is_err()) {
-      return err<ast::NodeId>(std::move(array_size_r).unwrap_err());
+      return err<NodeId>(std::move(array_size_r).unwrap_err());
     }
 
     return ok(context_->alloc(ast::ArrayTypeNode{
@@ -62,7 +62,7 @@ Parser::Result<ast::NodeId> Parser::parse_type_reference() {
     kind = base::TypeKind::kUserDefined;
     lexeme = peek().lexeme(stream_->file());
   } else {
-    return err<ast::NodeId>(
+    return err<NodeId>(
         std::move(
             Eb(diagnostic::Severity::kError,
                diagnostic::DiagId::kExpectedButFound)

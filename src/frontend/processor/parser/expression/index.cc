@@ -9,28 +9,23 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_index_expression() {
-  auto operand_r = parse_primary_expression();
-  if (operand_r.is_err()) {
-    return operand_r;
-  }
-
+Parser::Result<ast::NodeId> Parser::parse_index_expression(NodeId operand) {
   auto left_r = consume(base::TokenKind::kLeftBracket, true);
   if (left_r.is_err()) {
-    return err<ast::NodeId>(std::move(left_r).unwrap_err());
+    return err<NodeId>(std::move(left_r).unwrap_err());
   }
   auto index_r = parse_expression();
   if (index_r.is_err()) {
-    return err<ast::NodeId>(std::move(index_r).unwrap_err());
+    return err<NodeId>(std::move(index_r).unwrap_err());
   }
 
   auto right_r = consume(base::TokenKind::kRightBracket, true);
   if (right_r.is_err()) {
-    return err<ast::NodeId>(std::move(right_r).unwrap_err());
+    return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
   return ok(context_->alloc(ast::IndexExpressionNode{
-      .operand = std::move(operand_r).unwrap(),
+      .operand = operand,
       .index = std::move(index_r).unwrap(),
   }));
 }

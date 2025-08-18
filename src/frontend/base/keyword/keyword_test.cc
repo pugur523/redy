@@ -65,9 +65,11 @@ TEST(KeywordTest, LookupKeyword) {
   verify_keyword(u8"static", TokenKind::kStatic);
   verify_keyword(u8"thread_local", TokenKind::kThreadLocal);
   verify_keyword(u8"pub", TokenKind::kPublic);
+  verify_keyword(u8"async", TokenKind::kAsync);
 
   verify_keyword(u8"as", TokenKind::kAs);
   verify_keyword(u8"this", TokenKind::kThis);
+  verify_keyword(u8"await", TokenKind::kAwait);
 
   verify_keyword(u8"true", TokenKind::kTrue);
   verify_keyword(u8"false", TokenKind::kFalse);

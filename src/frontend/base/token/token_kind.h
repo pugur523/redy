@@ -72,117 +72,119 @@ enum class TokenKind : uint8_t {
   kStatic = 43,       // static
   kThreadLocal = 44,  // thread_local
   kPublic = 46,       // pub
+  kAsync = 47,        // async
 
   // ## modifier keywords
-  kThis = 47,  // this
-  kAs = 48,    // as
+  kThis = 48,   // this
+  kAs = 49,     // as
+  kAwait = 50,  // await
   kKeywordsBegin = kI8,
-  kKeywordsEnd = kAs,
+  kKeywordsEnd = kAwait,
 
   // # literals
-  kDecimal = 49,      // 42
-  kBinary = 50,       // 0b01010
-  kOctal = 51,        // 0o755
-  kHexadecimal = 52,  // 0xffffff
-  kString = 53,       // "string"
-  kCharacter = 54,    // 'c'
-  kTrue = 55,         // true
-  kFalse = 56,        // false
+  kDecimal = 51,      // 42
+  kBinary = 52,       // 0b01010
+  kOctal = 53,        // 0o755
+  kHexadecimal = 54,  // 0xffffff
+  kString = 55,       // "string"
+  kCharacter = 56,    // 'c'
+  kTrue = 57,         // true
+  kFalse = 58,        // false
   kLiteralsBegin = kDecimal,
   kLiteralsEnd = kFalse,
 
   // # operators
 
   // ## unary
-  kPlusPlus = 57,    // ++
-  kMinusMinus = 58,  // --
-  kBang = 59,        // !
-  kTilde = 60,       // ~
+  kPlusPlus = 59,    // ++
+  kMinusMinus = 60,  // --
+  kBang = 61,        // !
+  kTilde = 62,       // ~
 
   // ## exponentiation
-  kStarStar = 61,  // **
+  kStarStar = 63,  // **
 
   // ## multiplicative
-  kStar = 62,     // *
-  kSlash = 63,    // /
-  kPercent = 64,  // %
+  kStar = 64,     // *
+  kSlash = 65,    // /
+  kPercent = 66,  // %
 
   // ## additive
-  kPlus = 65,   // +
-  kMinus = 66,  // -
+  kPlus = 67,   // +
+  kMinus = 68,  // -
 
   // ## bitwise shift
-  kLtLt = 67,  // <<
-  kGtGt = 68,  // >>
+  kLtLt = 69,  // <<
+  kGtGt = 70,  // >>
 
   // ## comparisons
-  kThreeWay = 69,  // <=>
+  kThreeWay = 71,  // <=>
 
-  kLt = 70,  // <
-  kGt = 71,  // >
-  kLe = 72,  // <=
-  kGe = 73,  // >=
+  kLt = 72,  // <
+  kGt = 73,  // >
+  kLe = 74,  // <=
+  kGe = 75,  // >=
 
-  kEqEq = 74,      // ==
-  kNotEqual = 75,  // !=
+  kEqEq = 76,      // ==
+  kNotEqual = 77,  // !=
 
   // ## bitwise
-  kAnd = 76,       // &
-  kCaret = 77,     // ^
-  kPipe = 78,      // |
-  kAndAnd = 79,    // &&
-  kPipePipe = 80,  // ||
+  kAnd = 78,       // &
+  kCaret = 79,     // ^
+  kPipe = 80,      // |
+  kAndAnd = 81,    // &&
+  kPipePipe = 82,  // ||
 
   // ## assignment
-  kColonEqual = 81,  // :=
-  kEqual = 82,       // =
+  kColonEqual = 83,  // :=
+  kEqual = 84,       // =
 
   // ## compound assignment
-  kPlusEq = 83,     // +=
-  kMinusEq = 84,    // -=
-  kStarEq = 85,     // *=
-  kSlashEq = 86,    // /=
-  kPercentEq = 87,  // %=
-  kAndEq = 88,      // &=
-  kPipeEq = 89,     // |=
-  kCaretEq = 90,    // ^=
-  kLtLtEq = 91,     // <<=
-  kGtGtEq = 92,     // >>=
+  kPlusEq = 85,     // +=
+  kMinusEq = 86,    // -=
+  kStarEq = 87,     // *=
+  kSlashEq = 88,    // /=
+  kPercentEq = 89,  // %=
+  kAndEq = 90,      // &=
+  kPipeEq = 91,     // |=
+  kCaretEq = 92,    // ^=
+  kLtLtEq = 93,     // <<=
+  kGtGtEq = 94,     // >>=
   kOperatorsBegin = kPlusPlus,
   kOperatorsEnd = kGtGtEq,
 
   // # delimiters
-  kArrow = 93,          // ->
-  kColon = 94,          // :
-  kColonColon = 95,     // ::
-  kSemicolon = 96,      // ;
-  kComma = 97,          // ,
-  kDot = 98,            // .
-  kDotDot = 99,         // ..
-  kLeftParen = 100,     // (
-  kRightParen = 101,    // )
-  kLeftBrace = 102,     // {
-  kRightBrace = 103,    // }
-  kLeftBracket = 104,   // [
-  kRightBracket = 105,  // ]
-  kAt = 106,            // @
-  kHash = 107,          // #
-  kDollar = 108,        // $
-  kQuestion = 109,      // ?
+  kArrow = 95,          // ->
+  kColon = 96,          // :
+  kColonColon = 97,     // ::
+  kSemicolon = 98,      // ;
+  kComma = 99,          // ,
+  kDot = 100,           // .
+  kDotDot = 101,        // ..
+  kLeftParen = 102,     // (
+  kRightParen = 103,    // )
+  kLeftBrace = 104,     // {
+  kRightBrace = 105,    // }
+  kLeftBracket = 106,   // [
+  kRightBracket = 107,  // ]
+  kAt = 108,            // @
+  kHash = 109,          // #
+  kDollar = 110,        // $
+  kQuestion = 111,      // ?
   kDelimitersBegin = kArrow,
   kDelimitersEnd = kQuestion,
 
   // # whitespace
-  kWhitespace = 110,  // includes unicode whitespaces
-  kNewline = 111,     // includes unicode newlines
+  kWhitespace = 112,  // includes unicode whitespaces
+  kNewline = 113,     // includes unicode newlines
   //
   // # comment
-  kInlineComment = 112,         // // inline comment
-  kBlockComment = 113,          // /* block comment */
-  kDocumentationComment = 114,  // /// documetation comment
+  kInlineComment = 114,         // // inline comment
+  kBlockComment = 115,          // /* block comment */
+  kDocumentationComment = 116,  // /// documetation comment
 
   // # eof
-  kEof = 115,  // \0
+  kEof = 117,  // \0
 };
 
 inline constexpr const char* token_kind_to_string(TokenKind kind) {
@@ -239,9 +241,11 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kStatic: return "static";
     case TokenKind::kThreadLocal: return "thread local";
     case TokenKind::kPublic: return "public";
+    case TokenKind::kAsync: return "async";
 
     case TokenKind::kThis: return "this";
     case TokenKind::kAs: return "as";
+    case TokenKind::kAwait: return "await";
 
     case TokenKind::kDecimal: return "literal decimal";
     case TokenKind::kBinary: return "literal binary";
@@ -391,9 +395,11 @@ inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
     case TokenKind::kThreadLocal:
       return i18n::TranslationKey::kTermTokenKindThreadLocal;
     case TokenKind::kPublic: return i18n::TranslationKey::kTermTokenKindPublic;
+    case TokenKind::kAsync: return i18n::TranslationKey::kTermTokenKindAsync;
 
     case TokenKind::kThis: return i18n::TranslationKey::kTermTokenKindThis;
     case TokenKind::kAs: return i18n::TranslationKey::kTermTokenKindAs;
+    case TokenKind::kAwait: return i18n::TranslationKey::kTermTokenKindAwait;
 
     case TokenKind::kDecimal:
       return i18n::TranslationKey::kTermTokenKindLiteralDecimal;

@@ -21,7 +21,7 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
   if (left_r.is_err()) {
     return left_r;
   }
-  ast::NodeId left_id = std::move(left_r).unwrap();
+  NodeId left_id = std::move(left_r).unwrap();
 
   while (!eof()) {
     const base::TokenKind kind = peek().kind();
@@ -56,7 +56,7 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
     if (right_r.is_err()) {
       return right_r;
     }
-    const ast::NodeId right_id = std::move(right_r).unwrap();
+    const NodeId right_id = std::move(right_r).unwrap();
 
     left_id = context_->alloc(ast::BinaryOperatorExpressionNode{
         .op = op,

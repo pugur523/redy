@@ -15,10 +15,10 @@ namespace parser {
 Parser::Result<ast::NodeId> Parser::parse_array_expression() {
   auto left_r = consume(base::TokenKind::kLeftBracket, true);
   if (left_r.is_err()) {
-    return err<ast::NodeId>(std::move(left_r).unwrap_err());
+    return err<NodeId>(std::move(left_r).unwrap_err());
   }
 
-  ast::NodeId first_id = ast::kInvalidNodeId;
+  NodeId first_id = ast::kInvalidNodeId;
   uint32_t elements_count = 0;
 
   while (!eof()) {
@@ -40,7 +40,7 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
     if (next_token.kind() == base::TokenKind::kComma) {
       next_non_whitespace();
     } else {
-      return err<ast::NodeId>(
+      return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
                  diagnostic::DiagId::kUnexpectedToken)
@@ -53,7 +53,7 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
 
   auto right_r = consume(base::TokenKind::kRightBracket, true);
   if (right_r.is_err()) {
-    return err<ast::NodeId>(std::move(right_r).unwrap_err());
+    return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
   return ok(context_->alloc(ast::ArrayExpressionNode{
@@ -62,4 +62,3 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
 }
 
 }  // namespace parser
-

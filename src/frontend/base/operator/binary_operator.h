@@ -16,59 +16,63 @@ namespace base {
 enum class BinaryOperator : uint8_t {
   kUnknown = 0,
 
+  // # cast
+  kAs = 1,
+
   // # exponentiation
-  kPower = 1,  // **
+  kPower = 2,  // **
 
   // # multiplicative
-  kMultiply = 2,  // *
-  kDivide = 3,    // /
-  kModulo = 4,    // %
+  kMultiply = 3,  // *
+  kDivide = 4,    // /
+  kModulo = 5,    // %
 
   // # additive
-  kAdd = 5,       // +
-  kSubtract = 6,  // -
+  kAdd = 6,       // +
+  kSubtract = 7,  // -
 
   // # bitwise shift
-  kLeftShift = 7,   // <<
-  kRightShift = 8,  // >>
+  kLeftShift = 8,   // <<
+  kRightShift = 9,  // >>
 
   // # comparisons
-  kThreeWay = 9,  // <=>
+  kThreeWay = 10,  // <=>
 
-  kLessThan = 10,            // <
-  kGreaterThan = 11,         // >
-  kLessThanOrEqual = 12,     // <=
-  kGreaterThanOrEqual = 13,  // >=
+  kLessThan = 11,            // <
+  kGreaterThan = 12,         // >
+  kLessThanOrEqual = 13,     // <=
+  kGreaterThanOrEqual = 14,  // >=
 
-  kCompareEqual = 14,  // ==
-  kNotEqual = 15,      // !=
+  kCompareEqual = 15,  // ==
+  kNotEqual = 16,      // !=
 
   // # bitwise
-  kBitwiseAnd = 16,  // &
-  kBitwiseXor = 17,  // ^
-  kBitwiseOr = 18,   // |
-  kLogicalAnd = 19,  // &&
-  kLogicalOr = 20,   // ||
+  kBitwiseAnd = 17,  // &
+  kBitwiseXor = 18,  // ^
+  kBitwiseOr = 19,   // |
+  kLogicalAnd = 20,  // &&
+  kLogicalOr = 21,   // ||
 
   // # assignment
-  kDeclarationAssign = 21,  // :=
-  kStandardAssign = 22,     // =
+  kDeclarationAssign = 22,  // :=
+  kStandardAssign = 23,     // =
 
   // # compound assignment
-  kAddAssign = 23,         // +=
-  kSubtractAssign = 24,    // -=
-  kMultiplyAssign = 25,    // *=
-  kDivideAssign = 26,      // /=
-  kModuloAssign = 27,      // %=
-  kBitwiseAndAssign = 28,  // &=
-  kBitwiseOrAssign = 29,   // |=
-  kBitwiseXorAssign = 30,  // ^=
-  kLeftShiftAssign = 31,   // <<=
-  kRightShiftAssign = 32,  // >>=
+  kAddAssign = 24,         // +=
+  kSubtractAssign = 25,    // -=
+  kMultiplyAssign = 26,    // *=
+  kDivideAssign = 27,      // /=
+  kModuloAssign = 28,      // %=
+  kBitwiseAndAssign = 29,  // &=
+  kBitwiseOrAssign = 30,   // |=
+  kBitwiseXorAssign = 31,  // ^=
+  kLeftShiftAssign = 32,   // <<=
+  kRightShiftAssign = 33,  // >>=
 };
 
 inline BinaryOperator token_kind_to_binary_op(TokenKind kind) {
   switch (kind) {
+    case TokenKind::kAs: return BinaryOperator::kAs;
     case TokenKind::kStarStar: return BinaryOperator::kPower;
 
     case TokenKind::kStar: return BinaryOperator::kMultiply;
@@ -119,6 +123,7 @@ inline bool token_kind_is_binary_operator(TokenKind kind) {
 inline const char* binary_op_to_string(BinaryOperator op) {
   static constexpr const char* kNames[] = {
       "unknown",
+      "as",
       "power",
       "multiply",
       "divide",
@@ -159,7 +164,9 @@ inline const char* binary_op_to_string(BinaryOperator op) {
 }
 
 inline OperatorPrecedence binary_op_to_precedence(BinaryOperator op) {
-  if (op == BinaryOperator::kPower) {
+  if (op == BinaryOperator::kAs) {
+    return OperatorPrecedence::kCast;
+  } else if (op == BinaryOperator::kPower) {
     return OperatorPrecedence::kExponentiation;
   } else if (op >= BinaryOperator::kMultiply && op <= BinaryOperator::kModulo) {
     return OperatorPrecedence::kMultiplicative;

@@ -31,6 +31,7 @@ struct StorageAttribute {
   bool is_static : 1 = false;
   bool is_thread_local : 1 = false;
   bool is_public : 1 = false;
+  bool is_async : 1 = false;
 };
 
 // keep `Attribute` as a 1 byte or cast it to a 2 byte type such as uint16_t
@@ -88,21 +89,24 @@ struct FunctionCallExpressionNode {
 };
 
 struct MethodCallExpressionNode {
-  NodeId receiver = kInvalidNodeId;
-  NodeId callee = kInvalidNodeId;
+  NodeId obj = kInvalidNodeId;
+  NodeId method = kInvalidNodeId;
   NodeRange args_range;
 };
 
 struct FunctionMacroCallExpressionNode {
-  NodeId macro_path = kInvalidNodeId;
+  NodeId macro_callee = kInvalidNodeId;
+  NodeRange args_range;
 };
 
 struct MethodMacroCallExpressionNode {
-  NodeId macro_path = kInvalidNodeId;
+  NodeId obj = kInvalidNodeId;
+  NodeId macro_method = kInvalidNodeId;
+  NodeRange args_range;
 };
 
 struct FieldAccessExpressionNode {
-  NodeId base = kInvalidNodeId;
+  NodeId obj = kInvalidNodeId;
   NodeId field = kInvalidNodeId;
 };
 
@@ -129,7 +133,7 @@ struct InclusiveRangeExpressionNode {
 };
 
 struct ReturnExpressionNode {
-  NodeId value = kInvalidNodeId;
+  NodeId expression = kInvalidNodeId;
 };
 
 struct BlockExpressionNode {

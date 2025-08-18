@@ -21,15 +21,18 @@ Parser::Result<ast::NodeId> Parser::parse_unary_expression() {
     if (!base::token_kind_is_unary_operator(peek().kind())) {
       break;
     }
-    next();
+    next_non_whitespace();
   }
 
   // parse the primary expression (the operand)
   auto operand_r = parse_primary_expression();
   if (operand_r.is_err()) {
-    return err<ast::NodeId>(std::move(operand_r).unwrap_err());
+    return err<NodeId>(std::move(operand_r).unwrap_err());
+  } else if (pre_op_count == 0) {
+    return operand_r;
   }
-  ast::NodeId operand_id = std::move(operand_r).unwrap();
+
+  NodeId operand_id = std::move(operand_r).unwrap();
 
   // rewind to first unary operator position
   stream_->rewind(stream_->position() - pre_op_count);

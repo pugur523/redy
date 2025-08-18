@@ -49,23 +49,23 @@ enum class ExpressionKind : uint8_t {
   kMethodCall = 11,      // vec.some_method()
   kMacroCall = 12,       // some_macro#()
   kFieldAccess = 13,     // foo.some_field
-  kAwait = 15,           // await some_async_func()
-  kContinue = 16,        // continue
-  kBreak = 17,           // break
-  kExclusiveRange = 18,  // 1..<100
-  kInclusiveRange = 19,  // 1..=100
-  kReturn = 20,          // ret 0
+  kAwait = 14,           // some_async_func()->await
+  kContinue = 15,        // continue value
+  kBreak = 16,           // break value
+  kExclusiveRange = 17,  // 1..<100
+  kInclusiveRange = 18,  // 1..=100
+  kReturn = 19,          // ret 0
 
   // # expressions with block
-  kBlock = 21,       // { ... }
-  kUnsafe = 22,      // unsafe { ... }
-  kFast = 23,        // fast { ... }
-  kIf = 24,          // if cond { ... }
-  kLoop = 25,        // loop { ... }
-  kWhile = 26,       // while cond { ... }
-  kFor = 27,         // for i: 1..<100 { ... }
-  kMatch = 28,       // match x { a -> break, b -> break, * -> break }
-  kClosure = 29,     // (a: i32, b: i32) { ret a + b }
+  kBlock = 20,    // { ... }
+  kUnsafe = 21,   // unsafe { ... }
+  kFast = 22,     // fast { ... }
+  kIf = 23,       // if cond { ... }
+  kLoop = 24,     // loop { ... }
+  kWhile = 25,    // while cond { ... }
+  kFor = 26,      // for i: 1..<100 { ... }
+  kMatch = 27,    // match x { a -> break, b -> break, * -> break }
+  kClosure = 28,  // (a: i32, b: i32) { ret a + b }
 };
 
 enum class BlockDeclarationKind : uint8_t {

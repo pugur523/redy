@@ -12,7 +12,7 @@ namespace parser {
 Parser::Result<ast::NodeId> Parser::parse_grouped_expression() {
   auto left_r = consume(base::TokenKind::kLeftParen, true);
   if (left_r.is_err()) {
-    return err<ast::NodeId>(std::move(left_r).unwrap_err());
+    return err<NodeId>(std::move(left_r).unwrap_err());
   }
 
   auto expr_r = parse_expression();
@@ -22,7 +22,7 @@ Parser::Result<ast::NodeId> Parser::parse_grouped_expression() {
 
   auto right_r = consume(base::TokenKind::kRightParen, true);
   if (right_r.is_err()) {
-    return err<ast::NodeId>(std::move(right_r).unwrap_err());
+    return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
   return ok(context_->alloc(ast::GroupedExpressionNode{

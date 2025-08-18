@@ -62,9 +62,11 @@ extern = "extern"
 static = "static"
 thread_local = "thread local"
 public = "public"
+async = "async"
 
 this = "this"
 as = "as"
+await = "await"
 
 literal_decimal = "10進数リテラル"
 literal_binary = "2進数リテラル"

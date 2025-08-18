@@ -19,23 +19,24 @@ enum class OperatorPrecedence : uint8_t {
   kUnknown = 0,
   kPostUnary = 1,                   // a++ a--
   kPreUnary = 2,                    // ++a --a !a ^a ~a
-  kExponentiation = 3,              // a ** b
-  kMultiplicative = 4,              // a * b a / b a % b
-  kAdditive = 5,                    // a + b a - b
-  kBitwiseShift = 6,                // a << b a >> b
-  kThreeWayComparison = 7,          // a <=> b
-  kRelationalComparison = 8,        // a < b a <= b a > b a >= b
-  kEqualityComparison = 9,          // a == b a != b
-  kBitwiseAnd = 10,                 // a & b
-  kBitwiseXor = 11,                 // a ^ b
-  kBitwiseOr = 12,                  // a \| b
-  kLogicalAnd = 13,                 // a && b
-  kLogicalOr = 14,                  // a \|\| b
-  kAssignment = 15,                 // a = b a := b
-  kCompoundAssignment = 15,         // a += b a -= b a *= b a /= b a %= b
-  kBitwiseCompoundAssignment = 15,  // a &= b a ^= b a \|= b a <<= b a >>= b
+  kCast = 3,                        // a as b
+  kExponentiation = 4,              // a ** b
+  kMultiplicative = 5,              // a * b a / b a % b
+  kAdditive = 6,                    // a + b a - b
+  kBitwiseShift = 7,                // a << b a >> b
+  kThreeWayComparison = 8,          // a <=> b
+  kRelationalComparison = 9,        // a < b a <= b a > b a >= b
+  kEqualityComparison = 10,         // a == b a != b
+  kBitwiseAnd = 11,                 // a & b
+  kBitwiseXor = 12,                 // a ^ b
+  kBitwiseOr = 13,                  // a \| b
+  kLogicalAnd = 14,                 // a && b
+  kLogicalOr = 15,                  // a \|\| b
+  kAssignment = 16,                 // a = b a := b
+  kCompoundAssignment = 16,         // a += b a -= b a *= b a /= b a %= b
+  kBitwiseCompoundAssignment = 16,  // a &= b a ^= b a \|= b a <<= b a >>= b
 
-  kInvalid = std::numeric_limits<uint8_t>::max(),
+  kLowest = kBitwiseCompoundAssignment,
 };
 
 enum class OperatorAssociativity : uint8_t {

@@ -19,6 +19,7 @@ enum class AttributeKeyword : uint8_t {
   kStatic = 4,       // static
   kThreadLocal = 5,  // thread_local
   kPublic = 6,       // pub
+  kAsync = 7,        // async
 };
 
 inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
@@ -29,6 +30,7 @@ inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
     case TokenKind::kStatic: return AttributeKeyword::kStatic;
     case TokenKind::kThreadLocal: return AttributeKeyword::kThreadLocal;
     case TokenKind::kPublic: return AttributeKeyword::kPublic;
+    case TokenKind::kAsync: return AttributeKeyword::kAsync;
     default: return AttributeKeyword::kUnknown;
   }
 }
@@ -46,6 +48,7 @@ inline const char* attribute_keyword_to_string(AttributeKeyword keyword) {
     case AttributeKeyword::kStatic: return "static";
     case AttributeKeyword::kThreadLocal: return "thread local";
     case AttributeKeyword::kPublic: return "public";
+    case AttributeKeyword::kAsync: return "async";
     default: return "invalid";
   }
 }

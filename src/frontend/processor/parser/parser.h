@@ -64,66 +64,68 @@ class PARSER_EXPORT Parser {
 
  private:
   using StAt = ast::StorageAttribute;
+  using NodeId = ast::NodeId;
 
-  Result<ast::NodeId> parse_root();
+  Result<NodeId> parse_root();
 
   // expression wo block
-  Result<ast::NodeId> parse_expression();
-  Result<ast::NodeId> parse_primary_expression();
-  Result<ast::NodeId> parse_literal_expression();
-  Result<ast::NodeId> parse_path_expression();
-  Result<ast::NodeId> parse_unary_expression();
-  Result<ast::NodeId> parse_binary_expression(
+  Result<NodeId> parse_expression();
+  Result<NodeId> parse_primary_expression();
+  Result<NodeId> parse_postfix_expression();
+  Result<NodeId> parse_literal_expression();
+  Result<NodeId> parse_path_expression(NodeId first_part);
+  Result<NodeId> parse_unary_expression();
+  Result<NodeId> parse_binary_expression(
       base::OperatorPrecedence min_precedence);
-  Result<ast::NodeId> parse_grouped_expression();
-  Result<ast::NodeId> parse_array_expression();
-  Result<ast::NodeId> parse_tuple_expression();
-  Result<ast::NodeId> parse_index_expression();
-  Result<ast::NodeId> parse_construct_expression();
-  Result<ast::NodeId> parse_function_call_expression();
-  Result<ast::NodeId> parse_method_call_expression();
-  Result<ast::NodeId> parse_function_macro_call_expression();
-  Result<ast::NodeId> parse_method_macro_call_expression();
-  Result<ast::NodeId> parse_field_access_expression();
-  Result<ast::NodeId> parse_await_expression();
-  Result<ast::NodeId> parse_continue_expression();
-  Result<ast::NodeId> parse_break_expression();
-  Result<ast::NodeId> parse_exclusive_range_expression();
-  Result<ast::NodeId> parse_inclusive_range_expression();
-  Result<ast::NodeId> parse_return_expression();
+  Result<NodeId> parse_grouped_expression();
+  Result<NodeId> parse_array_expression();
+  Result<NodeId> parse_tuple_expression();
+  Result<NodeId> parse_index_expression(NodeId operand);
+  Result<NodeId> parse_construct_expression(NodeId type_path);
+  Result<NodeId> parse_function_call_expression(NodeId callee);
+  Result<NodeId> parse_method_call_expression(NodeId obj, NodeId method);
+  Result<NodeId> parse_function_macro_call_expression(NodeId callee);
+  Result<NodeId> parse_method_macro_call_expression(NodeId obj, NodeId method);
+  Result<NodeId> parse_field_access_expression(NodeId obj, NodeId field);
+  Result<NodeId> parse_await_expression(NodeId callee);
+  Result<NodeId> parse_continue_expression();
+  Result<NodeId> parse_break_expression();
+  Result<NodeId> parse_range_expression();
+  Result<NodeId> parse_return_expression();
 
   // expression w block
-  Result<ast::NodeId> parse_block_expression();
-  Result<ast::NodeId> parse_unsafe_expression();
-  Result<ast::NodeId> parse_fast_expression();
-  Result<ast::NodeId> parse_if_expression();
-  Result<ast::NodeId> parse_loop_expression();
-  Result<ast::NodeId> parse_while_expression();
-  Result<ast::NodeId> parse_for_expression();
-  Result<ast::NodeId> parse_match_expression();
-  Result<ast::NodeId> parse_closure_expression();
+  Result<NodeId> parse_block_expression();
+  Result<NodeId> parse_unsafe_expression();
+  Result<NodeId> parse_fast_expression();
+  Result<NodeId> parse_if_expression();
+  Result<NodeId> parse_loop_expression();
+  Result<NodeId> parse_while_expression();
+  Result<NodeId> parse_for_expression();
+  Result<NodeId> parse_match_expression();
+  Result<NodeId> parse_closure_expression();
 
   // statement
-  Result<ast::NodeId> parse_statement();
-  Result<ast::NodeId> parse_assign_statement(StAt attribute);
-  Result<ast::NodeId> parse_attribute_statement();
-  Result<ast::NodeId> parse_expression_statement();
+  Result<NodeId> parse_statement();
+  Result<NodeId> parse_assign_statement(StAt attribute);
+  Result<NodeId> parse_attribute_statement();
+  Result<NodeId> parse_expression_statement();
 
   // declaration
-  Result<ast::NodeId> parse_declaration();
-  Result<ast::NodeId> parse_function_declaration(StAt attribute);
-  Result<ast::NodeId> parse_struct_declaration(StAt attribute);
-  Result<ast::NodeId> parse_enumeration_declaration(StAt attribute);
-  Result<ast::NodeId> parse_trait_declaration(StAt attribute);
-  Result<ast::NodeId> parse_impl_declaration(StAt attribute);
-  Result<ast::NodeId> parse_union_declaration(StAt attribute);
-  Result<ast::NodeId> parse_module_declaration(StAt attribute);
-  Result<ast::NodeId> parse_redirect_declaration(StAt attribute);
+  Result<NodeId> parse_declaration();
+  Result<NodeId> parse_function_declaration(StAt attribute);
+  Result<NodeId> parse_struct_declaration(StAt attribute);
+  Result<NodeId> parse_enumeration_declaration(StAt attribute);
+  Result<NodeId> parse_trait_declaration(StAt attribute);
+  Result<NodeId> parse_impl_declaration(StAt attribute);
+  Result<NodeId> parse_union_declaration(StAt attribute);
+  Result<NodeId> parse_module_declaration(StAt attribute);
+  Result<NodeId> parse_redirect_declaration(StAt attribute);
 
   // chore
-  Result<ast::NodeId> parse_parameter_one();
+  Result<NodeId> parse_parameter_one();
   Result<ast::NodeRange> parse_parameter_list();
-  Result<ast::NodeId> parse_type_reference();
+  Result<NodeId> parse_type_reference();
+  Result<ast::NodeRange> parse_expression_sequence();
 
   void init_context();
 
@@ -136,6 +138,10 @@ class PARSER_EXPORT Parser {
 
   inline const base::Token& peek() const { return stream_->peek(); }
   inline const base::Token& peek_at(std::size_t offset) const {
+    if (stream_->position() + offset >= stream_->size()) {
+      // returns eof if out of range
+      return stream_->peek(stream_->size() - stream_->position() - 1);
+    }
     return stream_->peek(offset);
   }
   inline bool check(base::TokenKind kind) const { return stream_->check(kind); }

@@ -15,21 +15,21 @@ namespace parser {
 Parser::Result<ast::NodeId> Parser::parse_parameter_one() {
   auto param_name_r = consume(base::TokenKind::kIdentifier, true);
   if (param_name_r.is_err()) {
-    return err<ast::NodeId>(std::move(param_name_r).unwrap_err());
+    return err<NodeId>(std::move(param_name_r).unwrap_err());
   }
   const std::string_view param_name =
       std::move(param_name_r).unwrap()->lexeme(stream_->file());
 
   auto colon_r = consume(base::TokenKind::kColon, true);
   if (colon_r.is_err()) {
-    return err<ast::NodeId>(std::move(colon_r).unwrap_err());
+    return err<NodeId>(std::move(colon_r).unwrap_err());
   }
 
   auto type_r = parse_type_reference();
   if (type_r.is_err()) {
-    return err<ast::NodeId>(std::move(type_r).unwrap_err());
+    return err<NodeId>(std::move(type_r).unwrap_err());
   }
-  const ast::NodeId type = std::move(type_r).unwrap();
+  const NodeId type = std::move(type_r).unwrap();
 
   return ok(context_->alloc(ast::ParameterNode{
       .name = param_name,
@@ -39,7 +39,7 @@ Parser::Result<ast::NodeId> Parser::parse_parameter_one() {
 
 Parser::Result<ast::NodeRange> Parser::parse_parameter_list() {
   uint32_t parameters_count = 0;
-  ast::NodeId id = ast::kInvalidNodeId;
+  NodeId id = ast::kInvalidNodeId;
   while (!eof() && peek().kind() != base::TokenKind::kRightParen) {
     auto r = parse_parameter_one();
     if (r.is_err()) {

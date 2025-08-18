@@ -108,9 +108,14 @@ TokenKind lookup_id_or_keyword(std::u8string_view word) {
         return TokenKind::kUnion;
       } else if (word == u8"const") {
         return TokenKind::kConstant;
+      } else if (word == u8"async") {
+        return TokenKind::kAsync;
+      } else if (word == u8"await") {
+        return TokenKind::kAwait;
       } else if (word == u8"false") {
         return TokenKind::kFalse;
       }
+
       break;
 
     case 6:

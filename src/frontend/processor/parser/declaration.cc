@@ -30,6 +30,7 @@ Parser::Result<ast::NodeId> Parser::parse_declaration() {
       case Kind::kStatic: attribute.is_static = true; break;
       case Kind::kThreadLocal: attribute.is_thread_local = true; break;
       case Kind::kPublic: attribute.is_public = true; break;
+      case Kind::kAsync: attribute.is_async = true; break;
       default: break;
     }
 
@@ -40,7 +41,7 @@ Parser::Result<ast::NodeId> Parser::parse_declaration() {
 
   if (has_any_storage_attribute(attribute)) {
     if (attribute.is_mutable && attribute.is_const) [[unlikely]] {
-      return err<ast::NodeId>(
+      return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
                  diagnostic::DiagnosticId::kUnexpectedToken)
@@ -60,7 +61,7 @@ Parser::Result<ast::NodeId> Parser::parse_declaration() {
                          diagnostic::LabelMarkerType::kLine, {"mut", "const"}))
               .build());
     } else if (attribute.is_extern && attribute.is_static) [[unlikely]] {
-      return err<ast::NodeId>(
+      return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
                  diagnostic::DiagnosticId::kUnexpectedToken)
@@ -94,7 +95,7 @@ Parser::Result<ast::NodeId> Parser::parse_declaration() {
     case Kind::kRedirect: return parse_redirect_declaration(attribute);
     case Kind::kIdentifier: return parse_assign_statement(attribute);
     default: {
-      return err<ast::NodeId>(
+      return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
                  diagnostic::DiagnosticId::kUnexpectedToken)

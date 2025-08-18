@@ -11,14 +11,16 @@
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_literal_expression() {
-  const base::TokenKind kind = peek().kind();
-  DCHECK(base::token_kind_is_literal(kind));
+  const base::Token& literal_token = peek();
+  DCHECK(base::token_kind_is_literal(literal_token.kind()));
 
-  const base::LiteralKind literal_kind = token_kind_to_literal(kind);
+  const base::LiteralKind literal_kind =
+      token_kind_to_literal(literal_token.kind());
+  next_non_whitespace();
 
   return ok(context_->alloc(ast::LiteralExpressionNode{
       .kind = literal_kind,
-      .lexeme = peek().lexeme(stream_->file()),
+      .lexeme = literal_token.lexeme(stream_->file()),
   }));
 }
 

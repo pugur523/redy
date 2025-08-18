@@ -78,50 +78,22 @@ Parser::Results Parser::parse_all(bool strict) {
 
 Parser::Result<ast::NodeId> Parser::parse_root() {
   using Kind = base::TokenKind;
-
   const Kind current_kind = peek().kind();
 
+  // parses declaration or statement
   if (eof() || current_kind == Kind::kEof) {
-    return Result<ast::NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
+    return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
   } else if (current_kind == Kind::kBlockComment ||
              current_kind == Kind::kInlineComment) {
     // TODO: support document gen mode
-    return Result<ast::NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
+    return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
   } else if (base::token_kind_is_declaration_keyword(current_kind) ||
              base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {
     return parse_declaration();
-  } else if (current_kind == Kind::kIdentifier) {
-    // global variable assignment
-    const Kind next_kind = peek_at(1).kind();
-    switch (next_kind) {
-      case Kind::kColonEqual:
-      case Kind::kColon: return parse_statement();
-      default:
-        return err<ast::NodeId>(
-            std::move(
-                Eb(diagnostic::Severity::kError,
-                   diagnostic::DiagnosticId::kUnexpectedToken)
-                    .label(
-                        stream_->file_id(), peek().range(),
-                        i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
-                        diagnostic::LabelMarkerType::kLine,
-                        {translator_->translate(
-                            base::token_kind_to_tr_key(current_kind))}))
-                .build());
-    }
   } else {
-    err<ast::NodeId>(
-        std::move(
-            Eb(diagnostic::Severity::kError,
-               diagnostic::DiagnosticId::kUnexpectedToken)
-                .label(stream_->file_id(), peek().range(),
-                       i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
-                       diagnostic::LabelMarkerType::kLine,
-                       {translator_->translate(
-                           base::token_kind_to_tr_key(current_kind))}))
-            .build());
+    return parse_statement();
   }
-  return Result<ast::NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
+  return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
 }
 
 void Parser::append_errors(std::vector<De>&& new_errors) {
@@ -140,7 +112,7 @@ Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected,
     }
     return ok<const base::Token*>(&token);
   } else {
-    return Result<const base::Token*>(diagnostic::create_err(
+    return err<const base::Token*>(
         std::move(
             Eb(diagnostic::Severity::kError,
                diagnostic::DiagId::kExpectedButFound)
@@ -151,7 +123,7 @@ Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected,
                             base::token_kind_to_tr_key(expected)),
                         translator_->translate(
                             base::token_kind_to_tr_key(token.kind()))}))
-            .build()));
+            .build());
   }
 }
 

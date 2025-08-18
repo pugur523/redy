@@ -13,16 +13,34 @@ namespace lexer {
 
 namespace {
 
-void lexer_loop(benchmark::State& state) {
-  std::u8string code = u8"x := 42 while x < 100 { x = x + 1 }";
+void lexer_init(benchmark::State& state) {
+  std::u8string code =
+      u8"x := 42 while x < 100 { x = x + 1 } for i: 0..<100 { ++i } ret 0";
   std::size_t code_size = code.size();
 
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId id = manager.register_virtual_file(std::move(code));
-  Lexer lexer;
-  const auto _ = lexer.init(&manager, id);
 
   for (auto _ : state) {
+    Lexer lexer;
+    auto init_result = lexer.init(&manager, id);
+    benchmark::DoNotOptimize(init_result.is_ok());
+  }
+  state.SetBytesProcessed(code_size * sizeof(char) * state.iterations());
+}
+BENCHMARK(lexer_init);
+
+void lexer_loop(benchmark::State& state) {
+  std::u8string code =
+      u8"x := 42 while x < 100 { x = x + 1 } for i: 0..<100 { ++i } ret 0";
+  std::size_t code_size = code.size();
+
+  unicode::Utf8FileManager manager;
+  unicode::Utf8FileId id = manager.register_virtual_file(std::move(code));
+
+  for (auto _ : state) {
+    Lexer lexer;
+    auto init_result = lexer.init(&manager, id);
     while (true) {
       base::Token token = lexer.tokenize_next().unwrap();
       if (token.kind() == base::TokenKind::kEof) {
@@ -32,9 +50,8 @@ void lexer_loop(benchmark::State& state) {
   }
   state.SetBytesProcessed(code_size * sizeof(char) * state.iterations());
 }
+BENCHMARK(lexer_loop);
 
 }  // namespace
-
-BENCHMARK(lexer_loop);
 
 }  // namespace lexer
