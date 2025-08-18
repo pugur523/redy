@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/build/resources/assets/logo_1080.png" width="192" alt="redy">
+  <img src="src/build/resources/assets/logo_r.svg" width="192" alt="redy">
   <h1>redy</h1>
 
   A new programming language that prioritizes performance and memory safety.
