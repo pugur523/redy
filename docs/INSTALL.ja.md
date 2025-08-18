@@ -1,6 +1,6 @@
 # インストール
 
-このガイドでは、**redy**のインストール手順を説明します。
+**redy**のインストール手順を説明します
 
 ---
 
@@ -18,11 +18,11 @@ TBW...
 
 ## 2. ソースコードからビルド
 
-**redy**をソースコードからビルドするには、以下の手順に従ってください。
+ソースコードからビルドするには、以下の手順に従ってください
 
 ### ステップ1: リポジトリをクローン
 
-リポジトリとサブモジュールをクローンし、ディレクトリに移動します。
+リポジトリとサブモジュールをクローンし、ディレクトリに移動します
 
 ```bash
 git clone --depth 1 --recursive [https://github.com/pugur523/redy.git](https://github.com/pugur523/redy.git)
@@ -31,19 +31,19 @@ cd redy
 
 ### ステップ2: 依存関係のセットアップ
 
-**redy**にはPythonとシステムレベルの両方の依存関係が必要です。
+**redy**にはPythonなどのいくつかの依存関係が必要です
 
 #### Pythonの依存関係
 
-必要なPythonパッケージをインストールし、仮想環境をセットアップします。
+必要なPythonパッケージをインストールし、仮想環境をセットアップします
 
 <details>
 <summary>
 インストール詳細
 </summary>
 
-  * [**Python >= 3.13**](https://www.python.org/downloads/)をインストールします。
-  * `uv`パッケージマネージャーをインストールします: `pip install uv`。
+  * [**Python >= 3.13**](https://www.python.org/downloads/)をインストールします
+  * `uv`パッケージマネージャーをインストールします: `pip install uv`
   * 仮想環境を作成し、アクティベートします:
     ```bash
     uv venv
@@ -58,7 +58,7 @@ cd redy
 
 #### システムの依存関係
 
-必要なシステムの依存関係は、オペレーティングシステムによって異なります。
+必要なシステムの依存関係はOSごとに異なります
 
 <details>
 <summary>
@@ -115,8 +115,8 @@ yay -S --noconfirm libc++-with-libunwind
 
 ### Windows
 
-1.  [**Chocolatey**](https://chocolatey.org/install#individual)をインストールします。
-2.  管理者権限のPowerShellターミナルで、次のコマンドを実行します。
+1.  [**Chocolatey**](https://chocolatey.org/install#individual)をインストールします
+2.  管理者権限のPowerShellターミナルで、次のコマンドを実行します
     ```powershell
     choco install -y nsis ninja nasm cmake llvm
     ```
@@ -132,7 +132,7 @@ echo 'export PATH="$(brew --prefix lld@20)/bin:$PATH"' >> ~/.bash_profile
 
 **確認**
 
-すべての必要なツールが正しくインストールされ、コマンドラインからアクセスできることを確認するために、以下のコマンドを実行します。
+すべての必要なツールが正しくインストールされ、コマンドラインからアクセスできることを確認するために、以下のコマンドを実行します
 
 ```bash
 nasm --version
@@ -160,12 +160,14 @@ echo $LLVM_MINGW_DIR
 
 ### ステップ3: ビルドとインストール
 
-ビルドスクリプトを実行します。このプロセスには5〜10分かかる場合があります。座してただ待つがいい
+ビルドスクリプトを実行します  
+このプロセスには5〜10分かかる場合があります  
+座して待て
 
 ```bash
 ./cc build --release --install
 ```
 
-正常に完了すると、コンパイルされた成果物は`./out/install/{os}/{arch}/release/bin/`ディレクトリに配置されます。
+正常に完了すると、コンパイルされた成果物は`./out/install/{os}/{arch}/release/bin/`ディレクトリに配置されます
 
-コンパイルエラーが発生した場合は、必要なツールと依存関係がすべて正しくインストールされ、適切に設定されていることを再度確認してください。
+コンパイルエラーが発生した場合は、必要なツールと依存関係がすべて正しくインストールされ、適切に設定されていることを再度確認してください

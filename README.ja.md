@@ -82,11 +82,11 @@
 
 ## ✏ redyではじめてのプログラム
 
-以下は、**redy**の基本的なコード例です。
+以下は、**redy**の基本的なコード例です
 
 ```redy
-// インラインコメントはダブルスラッシュのあとに記述します。
-/* ブロックコメントはスラッシュとアスタリスクで囲みます。 */
+// インラインコメントはダブルスラッシュのあとに記述します
+/* ブロックコメントはスラッシュとアスタリスクで囲みます */
 
 // 関数を定義
 // 戻り値の型は、コードの可読性のために明示的に注釈を付けなければいけません
@@ -321,6 +321,6 @@ fn main() -> i32 {
 
   - **[femtolog](http://github.com/pugur523/femtolog)**: 超高速なロギングライブラリ
   - **[zlib](https://github.com/madler/zlib)**: ログとビルドキャッシュの圧縮に使用
-  - **[GoogleTest (gtest)](https://github.com/google/googletest)**: プロジェクト全体で使用しているユニットテストフレームワーク。
+  - **[GoogleTest (gtest)](https://github.com/google/googletest)**: プロジェクト全体で使用しているユニットテストフレームワーク
   - **[Google Benchmark](https://github.com/google/benchmark)**: マイクロベンチマークフレームワークとして使用
   - **[toml11](https://github.com/ToruNiina/toml11)**: TOML形式の設定ファイルの解析と出力に使用
