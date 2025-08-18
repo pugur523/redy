@@ -58,15 +58,14 @@ enum class ExpressionKind : uint8_t {
 
   // # expressions with block
   kBlock = 21,       // { ... }
-  kConstBlock = 22,  // const { ... }
-  kUnsafe = 23,      // unsafe { ... }
-  kFast = 24,        // fast { ... }
-  kIf = 25,          // if cond { ... }
-  kLoop = 26,        // loop { ... }
-  kWhile = 27,       // while cond { ... }
-  kFor = 28,         // for i: 1..<100 { ... }
-  kMatch = 29,       // match x { a -> break, b -> break, * -> break }
-  kClosure = 30,     // (a: i32, b: i32) { ret a + b }
+  kUnsafe = 22,      // unsafe { ... }
+  kFast = 23,        // fast { ... }
+  kIf = 24,          // if cond { ... }
+  kLoop = 25,        // loop { ... }
+  kWhile = 26,       // while cond { ... }
+  kFor = 27,         // for i: 1..<100 { ... }
+  kMatch = 28,       // match x { a -> break, b -> break, * -> break }
+  kClosure = 29,     // (a: i32, b: i32) { ret a + b }
 };
 
 enum class BlockDeclarationKind : uint8_t {

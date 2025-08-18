@@ -71,7 +71,6 @@ class AST_EXPORT Context {
   base::Arena<ReturnExpressionNode> return_expression_nodes_;
 
   base::Arena<BlockExpressionNode> block_expression_nodes_;
-  base::Arena<ConstBlockExpressionNode> const_block_expression_nodes_;
   base::Arena<UnsafeExpressionNode> unsafe_expression_nodes_;
   base::Arena<FastExpressionNode> fast_expression_nodes_;
   base::Arena<IfExpressionNode> if_expression_nodes_;
@@ -203,11 +202,6 @@ Context::arena<ReturnExpressionNode>() {
 template <>
 inline base::Arena<BlockExpressionNode>& Context::arena<BlockExpressionNode>() {
   return block_expression_nodes_;
-}
-template <>
-inline base::Arena<ConstBlockExpressionNode>&
-Context::arena<ConstBlockExpressionNode>() {
-  return const_block_expression_nodes_;
 }
 template <>
 inline base::Arena<UnsafeExpressionNode>&

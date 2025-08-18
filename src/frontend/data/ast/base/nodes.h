@@ -136,10 +136,6 @@ struct BlockExpressionNode {
   NodeRange body_nodes_range;
 };
 
-struct ConstBlockExpressionNode {
-  NodeId block;
-};
-
 struct UnsafeExpressionNode {
   NodeId block;
 };
