@@ -34,7 +34,7 @@ enum class TypeKind : uint8_t {
   kBool = 18,
   kChar = 19,
   kStr = 20,
-  kUserDefined = 21,
+  kUserDefined = 22,
 };
 
 inline bool token_kind_is_primitive_type(TokenKind kind) {

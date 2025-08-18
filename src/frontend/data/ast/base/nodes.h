@@ -89,11 +89,15 @@ struct FunctionCallExpressionNode {
 
 struct MethodCallExpressionNode {
   NodeId receiver = kInvalidNodeId;
-  NodeId method_callee = kInvalidNodeId;
+  NodeId callee = kInvalidNodeId;
   NodeRange args_range;
 };
 
-struct MacroCallExpressionNode {
+struct FunctionMacroCallExpressionNode {
+  NodeId macro_path = kInvalidNodeId;
+};
+
+struct MethodMacroCallExpressionNode {
   NodeId macro_path = kInvalidNodeId;
 };
 
@@ -251,6 +255,11 @@ struct ParameterNode {
 struct TypeReferenceNode {
   std::string_view type_name = "";
   base::TypeKind type_kind = base::TypeKind::kAuto;
+};
+
+struct ArrayTypeNode {
+  NodeId type = kInvalidNodeId;
+  NodeId array_size = kInvalidNodeId;
 };
 
 struct IdentifierNode {

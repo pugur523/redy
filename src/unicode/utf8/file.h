@@ -85,6 +85,11 @@ class UNICODE_EXPORT Utf8File {
     return line_ends_.size();
   }
 
+  inline std::string_view slice(std::size_t pos, std::size_t len) const {
+    DCHECK_EQ(status_, Status::kLoaded);
+    return std::string_view(reinterpret_cast<const char*>(&content_[pos]), len);
+  }
+
  private:
   std::u8string file_name_ = u8"";
   std::u8string content_ = u8"";

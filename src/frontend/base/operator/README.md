@@ -7,7 +7,7 @@
 |     2      | `!a` `~a`                                       | logical NOT / bitwise NOT           | ← (right-to-left) |
 |     2      | `+a` `-a`                                       | unary plus / minus                  | ← (right-to-left) |
 |     3      | `a as b`                                        | static cast                         | → (left-to-right) |
-|     4      | `a ** b`                                        | exponentiation                      | → (left-to-right) |
+|     4      | `a ** b`                                        | exponentiation                      | → (right-to-left) |
 |     5      | `a * b` `a / b` `a % b`                         | multiplication, division, modulo    | → (left-to-right) |
 |     6      | `a + b` `a - b`                                 | addition, subtraction               | → (left-to-right) |
 |     7      | `a << b` `a >> b`                               | bitwise shift left / right          | → (left-to-right) |

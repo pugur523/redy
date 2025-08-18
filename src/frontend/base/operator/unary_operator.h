@@ -87,24 +87,15 @@ inline const char* unary_op_to_string(UnaryOperator op) {
 inline OperatorPrecedence unary_op_to_precedence(UnaryOperator op) {
   switch (op) {
     case UnaryOperator::kPostfixIncrement:
-      return OperatorPrecedence::kPostIncrement;
     case UnaryOperator::kPostfixDecrement:
-      return OperatorPrecedence::kPostIncrement;
-    case UnaryOperator::kPrefixIncrement:
-      return OperatorPrecedence::kPreIncrement;
-    case UnaryOperator::kPrefixDecrement:
-      return OperatorPrecedence::kPreIncrement;
-    case UnaryOperator::kNot: return OperatorPrecedence::kLogicalNot;
-    case UnaryOperator::kBitwiseNot: return OperatorPrecedence::kLogicalNot;
-    case UnaryOperator::kUnaryPlus: return OperatorPrecedence::kUnaryPlusMinus;
-    case UnaryOperator::kUnaryMinus: return OperatorPrecedence::kUnaryPlusMinus;
-    default: DCHECK(false); return OperatorPrecedence::kUnknown;
+      return OperatorPrecedence::kPostUnary;
+    default: return OperatorPrecedence::kPreUnary;
   }
 }
 
 inline bool is_postfix_operator(UnaryOperator op) {
   return op != UnaryOperator::kPrefixIncrement &&
-         op != UnaryOperator::kPrefixDecrement;
+         op != UnaryOperator::kPrefixDecrement && op != UnaryOperator::kUnknown;
 }
 
 }  // namespace base

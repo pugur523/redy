@@ -13,14 +13,14 @@
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_parameter_one() {
-  auto param_name_r = consume(base::TokenKind::kIdentifier);
+  auto param_name_r = consume(base::TokenKind::kIdentifier, true);
   if (param_name_r.is_err()) {
     return err<ast::NodeId>(std::move(param_name_r).unwrap_err());
   }
   const std::string_view param_name =
       std::move(param_name_r).unwrap()->lexeme(stream_->file());
 
-  auto colon_r = consume(base::TokenKind::kColon);
+  auto colon_r = consume(base::TokenKind::kColon, true);
   if (colon_r.is_err()) {
     return err<ast::NodeId>(std::move(colon_r).unwrap_err());
   }
@@ -31,7 +31,7 @@ Parser::Result<ast::NodeId> Parser::parse_parameter_one() {
   }
   const ast::NodeId type = std::move(type_r).unwrap();
 
-  return ok<ast::NodeId>(context_->alloc(ast::ParameterNode{
+  return ok(context_->alloc(ast::ParameterNode{
       .name = param_name,
       .type = type,
   }));
@@ -48,11 +48,11 @@ Parser::Result<ast::NodeRange> Parser::parse_parameter_list() {
       id = std::move(r).unwrap();
     }
     ++parameters_count;
-    next();
+    next_non_whitespace();
   }
 
   // returns ok even if id is invalid and parameters count is 0
-  return ok<ast::NodeRange>(ast::NodeRange{
+  return ok(ast::NodeRange{
       .begin = id,
       .size = parameters_count,
   });

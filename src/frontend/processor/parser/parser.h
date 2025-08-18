@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "frontend/base/operator/operator.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/data/ast/base/node_id.h"
@@ -62,6 +63,8 @@ class PARSER_EXPORT Parser {
   Results parse_all(bool strict = false);
 
  private:
+  using StAt = ast::StorageAttribute;
+
   Result<ast::NodeId> parse_root();
 
   // expression wo block
@@ -69,8 +72,9 @@ class PARSER_EXPORT Parser {
   Result<ast::NodeId> parse_primary_expression();
   Result<ast::NodeId> parse_literal_expression();
   Result<ast::NodeId> parse_path_expression();
-  Result<ast::NodeId> parse_unary_operator_expression();
-  Result<ast::NodeId> parse_binary_operator_expression();
+  Result<ast::NodeId> parse_unary_expression();
+  Result<ast::NodeId> parse_binary_expression(
+      base::OperatorPrecedence min_precedence);
   Result<ast::NodeId> parse_grouped_expression();
   Result<ast::NodeId> parse_array_expression();
   Result<ast::NodeId> parse_tuple_expression();
@@ -78,7 +82,8 @@ class PARSER_EXPORT Parser {
   Result<ast::NodeId> parse_construct_expression();
   Result<ast::NodeId> parse_function_call_expression();
   Result<ast::NodeId> parse_method_call_expression();
-  Result<ast::NodeId> parse_macro_call_expression();
+  Result<ast::NodeId> parse_function_macro_call_expression();
+  Result<ast::NodeId> parse_method_macro_call_expression();
   Result<ast::NodeId> parse_field_access_expression();
   Result<ast::NodeId> parse_await_expression();
   Result<ast::NodeId> parse_continue_expression();
@@ -100,23 +105,20 @@ class PARSER_EXPORT Parser {
 
   // statement
   Result<ast::NodeId> parse_statement();
-  Result<ast::NodeId> parse_assign_statement(ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_assign_statement(StAt attribute);
   Result<ast::NodeId> parse_attribute_statement();
   Result<ast::NodeId> parse_expression_statement();
 
   // declaration
   Result<ast::NodeId> parse_declaration();
-  Result<ast::NodeId> parse_function_declaration(
-      ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_struct_declaration(ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_enumeration_declaration(
-      ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_trait_declaration(ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_impl_declaration(ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_union_declaration(ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_module_declaration(ast::StorageAttribute attribute);
-  Result<ast::NodeId> parse_redirect_declaration(
-      ast::StorageAttribute attribute);
+  Result<ast::NodeId> parse_function_declaration(StAt attribute);
+  Result<ast::NodeId> parse_struct_declaration(StAt attribute);
+  Result<ast::NodeId> parse_enumeration_declaration(StAt attribute);
+  Result<ast::NodeId> parse_trait_declaration(StAt attribute);
+  Result<ast::NodeId> parse_impl_declaration(StAt attribute);
+  Result<ast::NodeId> parse_union_declaration(StAt attribute);
+  Result<ast::NodeId> parse_module_declaration(StAt attribute);
+  Result<ast::NodeId> parse_redirect_declaration(StAt attribute);
 
   // chore
   Result<ast::NodeId> parse_parameter_one();
@@ -126,7 +128,8 @@ class PARSER_EXPORT Parser {
   void init_context();
 
   void append_errors(std::vector<De>&& new_errors);
-  Result<const base::Token*> consume(base::TokenKind expected);
+  Result<const base::Token*> consume(base::TokenKind expected,
+                                     bool skip_whitespaces);
   void synchronize();
 
   inline bool eof() const { return stream_->eof(); }
@@ -136,8 +139,15 @@ class PARSER_EXPORT Parser {
     return stream_->peek(offset);
   }
   inline bool check(base::TokenKind kind) const { return stream_->check(kind); }
-
   inline const base::Token& next() { return stream_->next(); }
+  inline const base::Token& next_non_whitespace() {
+    base::TokenKind kind = peek().kind();
+    while (!eof() && (kind == base::TokenKind::kNewline ||
+                      kind == base::TokenKind::kWhitespace)) {
+      kind = stream_->next().kind();
+    }
+    return peek();
+  }
 
   // TODO: T support
   inline static Results ok() { return Results(diagnostic::create_ok()); }

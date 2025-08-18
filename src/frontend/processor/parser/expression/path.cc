@@ -52,11 +52,10 @@ Parser::Result<ast::NodeId> Parser::parse_path_expression() {
       case base::TokenKind::kNewline: break;
       default: break;
     }
-
-    kind = next().kind();
+    kind = next_non_whitespace().kind();
   }
 
-  return ok<ast::NodeId>(context_->alloc(ast::PathExpressionNode{
+  return ok(context_->alloc(ast::PathExpressionNode{
       .path_parts_range = {first_id, parts_count},
   }));
 }

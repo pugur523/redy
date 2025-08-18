@@ -16,10 +16,6 @@ inline bool token_kind_is_keyword(TokenKind kind) {
   return kind >= TokenKind::kKeywordsBegin && kind <= TokenKind::kKeywordsEnd;
 }
 
-inline bool token_kind_is_literal(TokenKind kind) {
-  return kind >= TokenKind::kLiteralsBegin && kind <= TokenKind::kLiteralsEnd;
-}
-
 BASE_EXPORT TokenKind lookup_id_or_keyword(std::u8string_view word);
 
 inline TokenKind lookup_id_or_keyword(std::u8string_view full_source,

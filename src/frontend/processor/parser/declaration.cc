@@ -21,7 +21,7 @@ Parser::Result<ast::NodeId> Parser::parse_declaration() {
   Kind kind = first_token.kind();
 
   // read storage attribute
-  ast::StorageAttribute attribute;
+  StAt attribute{};
   while (!eof() && base::token_kind_is_attribute_keyword(kind)) {
     switch (kind) {
       case Kind::kMutable: attribute.is_mutable = true; break;

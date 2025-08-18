@@ -16,7 +16,7 @@ Parser::Result<ast::NodeId> Parser::parse_literal_expression() {
 
   const base::LiteralKind literal_kind = token_kind_to_literal(kind);
 
-  return ok<ast::NodeId>(context_->alloc(ast::LiteralExpressionNode{
+  return ok(context_->alloc(ast::LiteralExpressionNode{
       .kind = literal_kind,
       .lexeme = peek().lexeme(stream_->file()),
   }));

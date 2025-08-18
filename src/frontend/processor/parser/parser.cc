@@ -64,7 +64,7 @@ Parser::Results Parser::parse_all(bool strict) {
         continue;
       }
     }
-    next();
+    next_non_whitespace();
   }
 
   if (errors_.empty()) {
@@ -82,9 +82,6 @@ Parser::Result<ast::NodeId> Parser::parse_root() {
   const Kind current_kind = peek().kind();
 
   if (eof() || current_kind == Kind::kEof) {
-    return Result<ast::NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
-  } else if (current_kind == Kind::kNewline ||
-             current_kind == Kind::kWhitespace) {
     return Result<ast::NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
   } else if (current_kind == Kind::kBlockComment ||
              current_kind == Kind::kInlineComment) {
@@ -132,10 +129,15 @@ void Parser::append_errors(std::vector<De>&& new_errors) {
                  std::make_move_iterator(new_errors.end()));
 }
 
-Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected) {
+Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected,
+                                                   bool skip_whitespaces) {
   const auto& token = stream_->peek();
   if (check(expected)) [[likely]] {
-    next();
+    if (skip_whitespaces) {
+      next_non_whitespace();
+    } else {
+      next();
+    }
     return ok<const base::Token*>(&token);
   } else {
     return Result<const base::Token*>(diagnostic::create_err(

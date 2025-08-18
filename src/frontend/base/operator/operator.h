@@ -6,6 +6,7 @@
 #define FRONTEND_BASE_OPERATOR_OPERATOR_H_
 
 #include <cstdint>
+#include <limits>
 
 #include "core/check.h"
 
@@ -16,10 +17,8 @@ namespace base {
 // see README.md for detail.
 enum class OperatorPrecedence : uint8_t {
   kUnknown = 0,
-  kPostIncrement = 1,               // a++ a--
-  kPreIncrement = 2,                // ++a --a
-  kLogicalNot = 2,                  // !a ~a
-  kUnaryPlusMinus = 2,              // +a -a
+  kPostUnary = 1,                   // a++ a--
+  kPreUnary = 2,                    // ++a --a !a ^a ~a
   kExponentiation = 3,              // a ** b
   kMultiplicative = 4,              // a * b a / b a % b
   kAdditive = 5,                    // a + b a - b
@@ -35,6 +34,8 @@ enum class OperatorPrecedence : uint8_t {
   kAssignment = 15,                 // a = b a := b
   kCompoundAssignment = 15,         // a += b a -= b a *= b a /= b a %= b
   kBitwiseCompoundAssignment = 15,  // a &= b a ^= b a \|= b a <<= b a >>= b
+
+  kInvalid = std::numeric_limits<uint8_t>::max(),
 };
 
 enum class OperatorAssociativity : uint8_t {
@@ -47,39 +48,11 @@ inline OperatorAssociativity operator_precedence_to_associativity(
     OperatorPrecedence precedence) {
   switch (precedence) {
     case OperatorPrecedence::kUnknown: return OperatorAssociativity::kUnknown;
-    case OperatorPrecedence::kPostIncrement:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kPreIncrement:  // contains `kLogicalNot`,
-                                             // `kUnaryPlusMinus`
-      return OperatorAssociativity::kRightToLeft;
+    case OperatorPrecedence::kPreUnary:
     case OperatorPrecedence::kExponentiation:
+    case OperatorPrecedence::kAssignment:
       return OperatorAssociativity::kRightToLeft;
-    case OperatorPrecedence::kMultiplicative:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kAdditive:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kBitwiseShift:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kThreeWayComparison:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kRelationalComparison:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kEqualityComparison:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kBitwiseAnd:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kBitwiseXor:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kBitwiseOr:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kLogicalAnd:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kLogicalOr:
-      return OperatorAssociativity::kLeftToRight;
-    case OperatorPrecedence::kAssignment:  // contains `kCompoundAssignment`,
-                                           // `kBitwiseCompoundAssignment`
-      return OperatorAssociativity::kRightToLeft;
-    default: DCHECK(false); return OperatorAssociativity::kUnknown;
+    default: return OperatorAssociativity::kLeftToRight;
   }
 }
 

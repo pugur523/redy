@@ -60,7 +60,8 @@ class AST_EXPORT Context {
   base::Arena<ConstructExpressionNode> construct_expression_nodes_;
   base::Arena<FunctionCallExpressionNode> function_call_expression_nodes_;
   base::Arena<MethodCallExpressionNode> method_call_expression_nodes_;
-  base::Arena<MacroCallExpressionNode> macro_call_expression_nodes_;
+  base::Arena<FunctionMacroCallExpressionNode> fn_macro_call_expression_nodes_;
+  base::Arena<MethodMacroCallExpressionNode> mt_macro_call_expression_nodes_;
   base::Arena<FieldAccessExpressionNode> field_access_expression_nodes_;
   base::Arena<AwaitExpressionNode> await_expression_nodes_;
   base::Arena<ContinueExpressionNode> continue_expression_nodes_;
@@ -95,6 +96,7 @@ class AST_EXPORT Context {
   // chore
   base::Arena<TypeReferenceNode> type_reference_nodes_;
   base::Arena<ParameterNode> parameter_nodes_;
+  base::Arena<ArrayTypeNode> array_type_nodes_;
   base::Arena<IdentifierNode> identifier_nodes_;
 };
 
@@ -156,9 +158,14 @@ Context::arena<MethodCallExpressionNode>() {
   return method_call_expression_nodes_;
 }
 template <>
-inline base::Arena<MacroCallExpressionNode>&
-Context::arena<MacroCallExpressionNode>() {
-  return macro_call_expression_nodes_;
+inline base::Arena<FunctionMacroCallExpressionNode>&
+Context::arena<FunctionMacroCallExpressionNode>() {
+  return fn_macro_call_expression_nodes_;
+}
+template <>
+inline base::Arena<MethodMacroCallExpressionNode>&
+Context::arena<MethodMacroCallExpressionNode>() {
+  return mt_macro_call_expression_nodes_;
 }
 template <>
 inline base::Arena<FieldAccessExpressionNode>&
@@ -293,6 +300,10 @@ inline base::Arena<TypeReferenceNode>& Context::arena<TypeReferenceNode>() {
 template <>
 inline base::Arena<ParameterNode>& Context::arena<ParameterNode>() {
   return parameter_nodes_;
+}
+template <>
+inline base::Arena<ArrayTypeNode>& Context::arena<ArrayTypeNode>() {
+  return array_type_nodes_;
 }
 template <>
 inline base::Arena<IdentifierNode>& Context::arena<IdentifierNode>() {

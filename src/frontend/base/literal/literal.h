@@ -26,6 +26,10 @@ enum class LiteralKind : uint8_t {
   kFalse = 8
 };
 
+inline bool token_kind_is_literal(TokenKind kind) {
+  return kind >= TokenKind::kLiteralsBegin && kind <= TokenKind::kLiteralsEnd;
+}
+
 inline LiteralKind token_kind_to_literal(base::TokenKind kind) {
   switch (kind) {
     case TokenKind::kDecimal: return LiteralKind::kDecimal;
