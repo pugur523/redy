@@ -22,9 +22,11 @@ set(SOURCES
   expression/array.cc
   expression/await.cc
   expression/binary.cc
+  expression/block.cc
   expression/break.cc
   expression/construct.cc
   expression/continue.cc
+  expression/fast.cc
   expression/field_access.cc
   expression/function_call.cc
   expression/function_macro_call.cc
@@ -39,6 +41,7 @@ set(SOURCES
   expression/range.cc
   expression/tuple.cc
   expression/unary.cc
+  expression/unsafe.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})
