@@ -71,120 +71,120 @@ enum class TokenKind : uint8_t {
   kExtern = 42,       // extern
   kStatic = 43,       // static
   kThreadLocal = 44,  // thread_local
-  kPublic = 46,       // pub
-  kAsync = 47,        // async
+  kPublic = 45,       // pub
+  kAsync = 46,        // async
 
   // ## modifier keywords
-  kThis = 48,   // this
-  kAs = 49,     // as
-  kAwait = 50,  // await
+  kThis = 47,   // this
+  kAs = 48,     // as
+  kAwait = 49,  // await
   kKeywordsBegin = kI8,
   kKeywordsEnd = kAwait,
 
   // # literals
-  kDecimal = 51,      // 42
-  kBinary = 52,       // 0b01010
-  kOctal = 53,        // 0o755
-  kHexadecimal = 54,  // 0xffffff
-  kString = 55,       // "string"
-  kCharacter = 56,    // 'c'
-  kTrue = 57,         // true
-  kFalse = 58,        // false
+  kDecimal = 50,      // 42
+  kBinary = 51,       // 0b01010
+  kOctal = 52,        // 0o755
+  kHexadecimal = 53,  // 0xffffff
+  kString = 54,       // "string"
+  kCharacter = 55,    // 'c'
+  kTrue = 56,         // true
+  kFalse = 57,        // false
   kLiteralsBegin = kDecimal,
   kLiteralsEnd = kFalse,
 
   // # operators
 
   // ## unary
-  kPlusPlus = 59,    // ++
-  kMinusMinus = 60,  // --
-  kBang = 61,        // !
-  kTilde = 62,       // ~
+  kPlusPlus = 58,    // ++
+  kMinusMinus = 59,  // --
+  kBang = 60,        // !
+  kTilde = 61,       // ~
 
   // ## exponentiation
-  kStarStar = 63,  // **
+  kStarStar = 62,  // **
 
   // ## multiplicative
-  kStar = 64,     // *
-  kSlash = 65,    // /
-  kPercent = 66,  // %
+  kStar = 63,     // *
+  kSlash = 64,    // /
+  kPercent = 65,  // %
 
   // ## additive
-  kPlus = 67,   // +
-  kMinus = 68,  // -
+  kPlus = 66,   // +
+  kMinus = 67,  // -
 
   // ## bitwise shift
-  kLtLt = 69,  // <<
-  kGtGt = 70,  // >>
+  kLtLt = 68,  // <<
+  kGtGt = 69,  // >>
 
   // ## comparisons
-  kThreeWay = 71,  // <=>
+  kThreeWay = 70,  // <=>
 
-  kLt = 72,  // <
-  kGt = 73,  // >
-  kLe = 74,  // <=
-  kGe = 75,  // >=
+  kLt = 71,  // <
+  kGt = 72,  // >
+  kLe = 73,  // <=
+  kGe = 74,  // >=
 
-  kEqEq = 76,      // ==
-  kNotEqual = 77,  // !=
+  kEqEq = 75,      // ==
+  kNotEqual = 76,  // !=
 
   // ## bitwise
-  kAnd = 78,       // &
-  kCaret = 79,     // ^
-  kPipe = 80,      // |
-  kAndAnd = 81,    // &&
-  kPipePipe = 82,  // ||
+  kAnd = 77,       // &
+  kCaret = 78,     // ^
+  kPipe = 79,      // |
+  kAndAnd = 80,    // &&
+  kPipePipe = 81,  // ||
 
   // ## assignment
-  kColonEqual = 83,  // :=
-  kEqual = 84,       // =
+  kColonEqual = 82,  // :=
+  kEqual = 83,       // =
 
   // ## compound assignment
-  kPlusEq = 85,     // +=
-  kMinusEq = 86,    // -=
-  kStarEq = 87,     // *=
-  kSlashEq = 88,    // /=
-  kPercentEq = 89,  // %=
-  kAndEq = 90,      // &=
-  kPipeEq = 91,     // |=
-  kCaretEq = 92,    // ^=
-  kLtLtEq = 93,     // <<=
-  kGtGtEq = 94,     // >>=
+  kPlusEq = 84,     // +=
+  kMinusEq = 85,    // -=
+  kStarEq = 86,     // *=
+  kSlashEq = 87,    // /=
+  kPercentEq = 88,  // %=
+  kAndEq = 89,      // &=
+  kPipeEq = 90,     // |=
+  kCaretEq = 91,    // ^=
+  kLtLtEq = 92,     // <<=
+  kGtGtEq = 93,     // >>=
   kOperatorsBegin = kPlusPlus,
   kOperatorsEnd = kGtGtEq,
 
   // # delimiters
-  kArrow = 95,          // ->
-  kColon = 96,          // :
-  kColonColon = 97,     // ::
-  kSemicolon = 98,      // ;
-  kComma = 99,          // ,
-  kDot = 100,           // .
-  kDotDot = 101,        // ..
-  kLeftParen = 102,     // (
-  kRightParen = 103,    // )
-  kLeftBrace = 104,     // {
-  kRightBrace = 105,    // }
-  kLeftBracket = 106,   // [
-  kRightBracket = 107,  // ]
-  kAt = 108,            // @
-  kHash = 109,          // #
-  kDollar = 110,        // $
-  kQuestion = 111,      // ?
+  kArrow = 94,          // ->
+  kColon = 95,          // :
+  kColonColon = 96,     // ::
+  kSemicolon = 97,      // ;
+  kComma = 98,          // ,
+  kDot = 99,           // .
+  kDotDot = 100,        // ..
+  kLeftParen = 101,     // (
+  kRightParen = 102,    // )
+  kLeftBrace = 103,     // {
+  kRightBrace = 104,    // }
+  kLeftBracket = 105,   // [
+  kRightBracket = 106,  // ]
+  kAt = 107,            // @
+  kHash = 108,          // #
+  kDollar = 109,        // $
+  kQuestion = 110,      // ?
   kDelimitersBegin = kArrow,
   kDelimitersEnd = kQuestion,
 
   // # whitespace
-  kWhitespace = 112,  // includes unicode whitespaces
-  kNewline = 113,     // includes unicode newlines
+  kWhitespace = 111,  // includes unicode whitespaces
+  kNewline = 112,     // includes unicode newlines
   //
   // # comment
-  kInlineComment = 114,         // // inline comment
-  kBlockComment = 115,          // /* block comment */
-  kDocumentationComment = 116,  // /// documetation comment
+  kInlineComment = 113,         // // inline comment
+  kBlockComment = 114,          // /* block comment */
+  kDocumentationComment = 115,  // /// documetation comment
 
   // # eof
-  kEof = 117,  // \0
+  kEof = 116,  // \0
 };
 
 inline constexpr const char* token_kind_to_string(TokenKind kind) {
