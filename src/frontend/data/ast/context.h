@@ -36,12 +36,18 @@ class AST_EXPORT Context {
   inline base::Arena<T>& arena();
 
   template <typename T>
-  inline NodeId alloc(T&& value) {
+  inline std::size_t alloc(T&& value) {
     return arena<std::decay_t<T>>().alloc(std::move(value));
   }
 
   template <typename T>
-  inline T& get(NodeId id) {
+  inline std::size_t create(NodeKind kind, T&& payload) {
+    const PayloadId payload_id = alloc<T>(std::move(payload));
+    return alloc(Node{.kind = kind, .payload_id = payload_id});
+  }
+
+  template <typename T>
+  inline T& get(std::size_t id) {
     return arena<T>()[id];
   }
 
@@ -93,10 +99,13 @@ class AST_EXPORT Context {
   base::Arena<UnionDeclarationPayload> union_declaration_payloads_;
   base::Arena<ModuleDeclarationPayload> module_declaration_payloads_;
 
-  base::Arena<TypeReferencePayload> type_reference_payloads_;
   base::Arena<ParameterPayload> parameter_payloads_;
+  base::Arena<TypeReferencePayload> type_reference_payloads_;
   base::Arena<ArrayTypePayload> array_type_payloads_;
   base::Arena<IdentifierPayload> identifier_payloads_;
+  base::Arena<StorageAttributePayload> storage_attribute_payloads_;
+  base::Arena<IfBranchPayload> if_branch_payloads_;
+  base::Arena<MatchArmPayload> match_arm_payloads_;
 };
 
 template <>
@@ -300,13 +309,13 @@ Context::arena<ModuleDeclarationPayload>() {
 }
 
 template <>
+inline base::Arena<ParameterPayload>& Context::arena<ParameterPayload>() {
+  return parameter_payloads_;
+}
+template <>
 inline base::Arena<TypeReferencePayload>&
 Context::arena<TypeReferencePayload>() {
   return type_reference_payloads_;
-}
-template <>
-inline base::Arena<ParameterPayload>& Context::arena<ParameterPayload>() {
-  return parameter_payloads_;
 }
 template <>
 inline base::Arena<ArrayTypePayload>& Context::arena<ArrayTypePayload>() {
@@ -315,6 +324,19 @@ inline base::Arena<ArrayTypePayload>& Context::arena<ArrayTypePayload>() {
 template <>
 inline base::Arena<IdentifierPayload>& Context::arena<IdentifierPayload>() {
   return identifier_payloads_;
+}
+template <>
+inline base::Arena<StorageAttributePayload>&
+Context::arena<StorageAttributePayload>() {
+  return storage_attribute_payloads_;
+}
+template <>
+inline base::Arena<IfBranchPayload>& Context::arena<IfBranchPayload>() {
+  return if_branch_payloads_;
+}
+template <>
+inline base::Arena<MatchArmPayload>& Context::arena<MatchArmPayload>() {
+  return match_arm_payloads_;
 }
 
 template <>

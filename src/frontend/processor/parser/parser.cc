@@ -16,7 +16,6 @@
 #include "frontend/base/operator/unary_operator.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/result.h"
@@ -29,6 +28,7 @@ namespace parser {
 
 void Parser::init(base::TokenStream* stream,
                   const i18n::Translator& translator) {
+  DCHECK_EQ(status_, Status::kNotInitialized);
   stream_ = stream;
   DCHECK(stream_);
 
@@ -42,14 +42,18 @@ void Parser::init(base::TokenStream* stream,
 }
 
 void Parser::init_context() {
+  DCHECK_EQ(status_, Status::kNotInitialized);
   context_ = ast::Context::create();
   DCHECK(context_);
 
   // TODO: hot path heuristic allocations
-  context_->arena<ast::FunctionDeclarationNode>().reserve(32);
-  context_->arena<ast::AssignStatementNode>().reserve(128);
-  context_->arena<ast::TypeReferenceNode>().reserve(64);
-  context_->arena<ast::ParameterNode>().reserve(256);
+  context_->arena<ast::Node>().reserve(512);
+
+  context_->arena<ast::FunctionDeclarationPayload>().reserve(32);
+  context_->arena<ast::AssignStatementPayload>().reserve(128);
+  context_->arena<ast::TypeReferencePayload>().reserve(64);
+  context_->arena<ast::ParameterPayload>().reserve(256);
+  context_->arena<ast::IdentifierPayload>().reserve(256);
 }
 
 Parser::Results Parser::parse_all(bool strict) {
@@ -77,14 +81,13 @@ Parser::Results Parser::parse_all(bool strict) {
 }
 
 Parser::Result<ast::NodeId> Parser::parse_root() {
-  using Kind = base::TokenKind;
-  const Kind current_kind = peek().kind();
+  const base::TokenKind current_kind = peek().kind();
 
   // parses declaration or statement
-  if (eof() || current_kind == Kind::kEof) {
+  if (eof() || current_kind == base::TokenKind::kEof) {
     return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
-  } else if (current_kind == Kind::kBlockComment ||
-             current_kind == Kind::kInlineComment) {
+  } else if (current_kind == base::TokenKind::kBlockComment ||
+             current_kind == base::TokenKind::kInlineComment) {
     // TODO: support document gen mode
     return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
   } else if (base::token_kind_is_declaration_keyword(current_kind) ||

@@ -6,14 +6,15 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_range_expression() {
-  auto begin_r = parse_primary_expression();
+  auto begin_r = parse_binary_expression(base::OperatorPrecedence::kLowest);
   if (begin_r.is_err()) {
     return begin_r;
   }
@@ -41,22 +42,31 @@ Parser::Result<ast::NodeId> Parser::parse_range_expression() {
                .build()));
   }
 
-  auto end_r = parse_primary_expression();
+  auto end_r = parse_binary_expression(base::OperatorPrecedence::kLowest);
   if (end_r.is_err()) {
     return end_r;
   }
 
+  ast::NodeKind kind;
+  PayloadId payload_id;
   if (is_exclusive) {
-    return ok(context_->alloc(ast::ExclusiveRangeExpressionNode{
+    kind = ast::NodeKind::kExclusiveRangeExpression;
+    payload_id = context_->alloc(ast::ExclusiveRangeExpressionPayload{
         .begin = std::move(begin_r).unwrap(),
         .end = std::move(end_r).unwrap(),
-    }));
+    });
   } else {
-    return ok(context_->alloc(ast::InclusiveRangeExpressionNode{
+    kind = ast::NodeKind::kInclusiveRangeExpression;
+    payload_id = context_->alloc(ast::InclusiveRangeExpressionPayload{
         .begin = std::move(begin_r).unwrap(),
         .end = std::move(end_r).unwrap(),
-    }));
+    });
   }
+
+  return ok(context_->alloc(ast::Node{
+      .kind = kind,
+      .payload_id = payload_id,
+  }));
 }
 
 }  // namespace parser

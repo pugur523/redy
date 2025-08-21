@@ -7,43 +7,43 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_parameter_one() {
+Parser::Result<ast::PayloadId> Parser::parse_parameter_one() {
   auto param_name_r = consume(base::TokenKind::kIdentifier, true);
   if (param_name_r.is_err()) {
-    return err<NodeId>(std::move(param_name_r).unwrap_err());
+    return err<PayloadId>(std::move(param_name_r).unwrap_err());
   }
   const std::string_view param_name =
       std::move(param_name_r).unwrap()->lexeme(stream_->file());
 
   auto colon_r = consume(base::TokenKind::kColon, true);
   if (colon_r.is_err()) {
-    return err<NodeId>(std::move(colon_r).unwrap_err());
+    return err<PayloadId>(std::move(colon_r).unwrap_err());
   }
 
   auto type_r = parse_type_reference();
   if (type_r.is_err()) {
-    return err<NodeId>(std::move(type_r).unwrap_err());
+    return err<PayloadId>(std::move(type_r).unwrap_err());
   }
   const NodeId type = std::move(type_r).unwrap();
 
-  return ok(context_->alloc(ast::ParameterNode{
+  return ok(context_->alloc(ast::ParameterPayload{
       .name = param_name,
       .type = type,
   }));
 }
 
-Parser::Result<ast::NodeRange> Parser::parse_parameter_list() {
+Parser::Result<ast::PayloadRange> Parser::parse_parameter_list() {
   uint32_t parameters_count = 0;
-  NodeId id = ast::kInvalidNodeId;
+  ast::PayloadId id = ast::kInvalidPayloadId;
   while (!eof() && peek().kind() != base::TokenKind::kRightParen) {
     auto r = parse_parameter_one();
     if (r.is_err()) {
-      return err<ast::NodeRange>(std::move(r).unwrap_err());
+      return err<ast::PayloadRange>(std::move(r).unwrap_err());
     } else if (parameters_count == 0) {
       id = std::move(r).unwrap();
     }
@@ -52,7 +52,7 @@ Parser::Result<ast::NodeRange> Parser::parse_parameter_list() {
   }
 
   // returns ok even if id is invalid and parameters count is 0
-  return ok(ast::NodeRange{
+  return ok(ast::PayloadRange{
       .begin = id,
       .size = parameters_count,
   });

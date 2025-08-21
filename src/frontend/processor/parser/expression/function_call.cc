@@ -6,7 +6,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -28,10 +28,12 @@ Parser::Result<ast::NodeId> Parser::parse_function_call_expression(
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  const NodeId function_id = context_->alloc(ast::FunctionCallExpressionNode{
-      .callee = callee,
-      .args_range = std::move(args_r).unwrap(),
-  });
+  const NodeId function_id =
+      context_->create(ast::NodeKind::kFunctionCallExpression,
+                       ast::FunctionCallExpressionPayload{
+                           .callee = callee,
+                           .args_range = std::move(args_r).unwrap(),
+                       });
 
   if (peek().kind() == base::TokenKind::kArrow) {
     return parse_await_expression(function_id);

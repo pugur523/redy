@@ -6,6 +6,8 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
@@ -56,8 +58,13 @@ Parser::Result<ast::NodeId> Parser::parse_tuple_expression() {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::TupleExpressionNode{
+  const PayloadId payload_id = context_->alloc(ast::TupleExpressionPayload{
       .tuple_elements_range = {.begin = first_id, .size = elements_count},
+  });
+
+  return ok(context_->alloc(ast::Node{
+      .kind = ast::NodeKind::kTupleExpression,
+      .payload_id = payload_id,
   }));
 }
 

@@ -6,7 +6,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
@@ -14,6 +14,16 @@
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_postfix_expression() {
+  DCHECK_EQ(peek().kind(), base::TokenKind::kIdentifier);
+
+  if (peek_at(1).kind() == base::TokenKind::kColonColon) {
+    const PayloadId first_part = context_->alloc(ast::IdentifierPayload{
+        .lexeme = peek().lexeme(stream_->file()),
+    });
+    next_non_whitespace();
+    return parse_path_expression(first_part);
+  }
+
   auto expr = parse_unary_expression();
   if (expr.is_err()) {
     return expr;
@@ -21,7 +31,6 @@ Parser::Result<ast::NodeId> Parser::parse_postfix_expression() {
   const NodeId expr_id = std::move(expr).unwrap();
 
   switch (peek().kind()) {
-    case base::TokenKind::kColonColon: return parse_path_expression(expr_id);
     case base::TokenKind::kLeftBracket: return parse_index_expression(expr_id);
     case base::TokenKind::kLeftParen:
       return parse_function_call_expression(expr_id);
@@ -35,7 +44,7 @@ Parser::Result<ast::NodeId> Parser::parse_postfix_expression() {
       if (symbol_r.is_err()) {
         return err<NodeId>(std::move(symbol_r).unwrap_err());
       }
-      const NodeId symbol_id = context_->alloc(ast::IdentifierNode{
+      const NodeId symbol_payload_id = context_->alloc(ast::IdentifierPayload{
           .lexeme = std::move(symbol_r).unwrap()->lexeme(stream_->file()),
       });
 
@@ -43,10 +52,11 @@ Parser::Result<ast::NodeId> Parser::parse_postfix_expression() {
       const base::Token& postfix = peek();
       switch (postfix.kind()) {
         case base::TokenKind::kLeftParen:
-          return parse_method_call_expression(expr_id, symbol_id);
+          return parse_method_call_expression(expr_id, symbol_payload_id);
         case base::TokenKind::kHash:
-          return parse_method_macro_call_expression(expr_id, symbol_id);
-        default: return parse_field_access_expression(expr_id, symbol_id);
+          return parse_method_macro_call_expression(expr_id, symbol_payload_id);
+        default:
+          return parse_field_access_expression(expr_id, symbol_payload_id);
       }
     }
     default:

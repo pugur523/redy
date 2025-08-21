@@ -159,7 +159,7 @@ enum class TokenKind : uint8_t {
   kColonColon = 96,     // ::
   kSemicolon = 97,      // ;
   kComma = 98,          // ,
-  kDot = 99,           // .
+  kDot = 99,            // .
   kDotDot = 100,        // ..
   kLeftParen = 101,     // (
   kRightParen = 102,    // )

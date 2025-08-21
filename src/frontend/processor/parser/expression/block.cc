@@ -6,7 +6,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -37,9 +37,10 @@ Parser::Result<ast::NodeId> Parser::parse_block_expression() {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::BlockExpressionNode{
-      .body_nodes_range = {.begin = first, .size = body_statement_count},
-  }));
+  return ok(context_->create(
+      ast::NodeKind::kBlockExpression,
+      ast::BlockExpressionPayload{
+          .body_nodes_range = {.begin = first, .size = body_statement_count}}));
 }
 
 }  // namespace parser

@@ -13,7 +13,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/data/ast/context.h"
 #include "frontend/diagnostic/data/error/source_error.h"
 #include "frontend/diagnostic/data/result.h"
@@ -63,8 +63,11 @@ class PARSER_EXPORT Parser {
   Results parse_all(bool strict = false);
 
  private:
-  using StAt = ast::StorageAttribute;
   using NodeId = ast::NodeId;
+  using NodeRange = ast::NodeRange;
+  using PayloadId = ast::PayloadId;
+  using PayloadRange = ast::PayloadRange;
+  using OperatorPrecedence = base::OperatorPrecedence;
 
   Result<NodeId> parse_root();
 
@@ -73,20 +76,20 @@ class PARSER_EXPORT Parser {
   Result<NodeId> parse_primary_expression();
   Result<NodeId> parse_postfix_expression();
   Result<NodeId> parse_literal_expression();
-  Result<NodeId> parse_path_expression(NodeId first_part);
+  Result<NodeId> parse_path_expression(PayloadId first_part);
   Result<NodeId> parse_unary_expression();
-  Result<NodeId> parse_binary_expression(
-      base::OperatorPrecedence min_precedence);
+  Result<NodeId> parse_binary_expression(OperatorPrecedence min_precedence);
   Result<NodeId> parse_grouped_expression();
   Result<NodeId> parse_array_expression();
   Result<NodeId> parse_tuple_expression();
   Result<NodeId> parse_index_expression(NodeId operand);
   Result<NodeId> parse_construct_expression(NodeId type_path);
   Result<NodeId> parse_function_call_expression(NodeId callee);
-  Result<NodeId> parse_method_call_expression(NodeId obj, NodeId method);
+  Result<NodeId> parse_method_call_expression(NodeId obj, PayloadId method);
   Result<NodeId> parse_function_macro_call_expression(NodeId callee);
-  Result<NodeId> parse_method_macro_call_expression(NodeId obj, NodeId method);
-  Result<NodeId> parse_field_access_expression(NodeId obj, NodeId field);
+  Result<NodeId> parse_method_macro_call_expression(NodeId obj,
+                                                    PayloadId method);
+  Result<NodeId> parse_field_access_expression(NodeId obj, PayloadId field);
   Result<NodeId> parse_await_expression(NodeId callee);
   Result<NodeId> parse_continue_expression();
   Result<NodeId> parse_break_expression();
@@ -106,26 +109,26 @@ class PARSER_EXPORT Parser {
 
   // statement
   Result<NodeId> parse_statement();
-  Result<NodeId> parse_assign_statement(StAt attribute);
+  Result<NodeId> parse_assign_statement(PayloadId attribute);
   Result<NodeId> parse_attribute_statement();
   Result<NodeId> parse_expression_statement();
 
   // declaration
   Result<NodeId> parse_declaration();
-  Result<NodeId> parse_function_declaration(StAt attribute);
-  Result<NodeId> parse_struct_declaration(StAt attribute);
-  Result<NodeId> parse_enumeration_declaration(StAt attribute);
-  Result<NodeId> parse_trait_declaration(StAt attribute);
-  Result<NodeId> parse_impl_declaration(StAt attribute);
-  Result<NodeId> parse_union_declaration(StAt attribute);
-  Result<NodeId> parse_module_declaration(StAt attribute);
-  Result<NodeId> parse_redirect_declaration(StAt attribute);
+  Result<NodeId> parse_function_declaration(PayloadId attribute);
+  Result<NodeId> parse_struct_declaration(PayloadId attribute);
+  Result<NodeId> parse_enumeration_declaration(PayloadId attribute);
+  Result<NodeId> parse_trait_declaration(PayloadId attribute);
+  Result<NodeId> parse_impl_declaration(PayloadId attribute);
+  Result<NodeId> parse_union_declaration(PayloadId attribute);
+  Result<NodeId> parse_module_declaration(PayloadId attribute);
+  Result<NodeId> parse_redirect_declaration(PayloadId attribute);
 
   // chore
-  Result<NodeId> parse_parameter_one();
-  Result<ast::NodeRange> parse_parameter_list();
-  Result<NodeId> parse_type_reference();
-  Result<ast::NodeRange> parse_expression_sequence();
+  Result<ast::PayloadId> parse_parameter_one();
+  Result<ast::PayloadRange> parse_parameter_list();
+  Result<ast::PayloadId> parse_type_reference();
+  Result<NodeRange> parse_expression_sequence();
 
   void init_context();
 

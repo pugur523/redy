@@ -6,14 +6,16 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_path_expression(NodeId first_part) {
+Parser::Result<ast::NodeId> Parser::parse_path_expression(
+    PayloadId first_part) {
   uint32_t parts_count = 1;
   bool seen_identifier = true;
   while (!eof()) {
@@ -27,7 +29,7 @@ Parser::Result<ast::NodeId> Parser::parse_path_expression(NodeId first_part) {
       if (next_part_r.is_err()) {
         return err<NodeId>(std::move(next_part_r).unwrap_err());
       }
-      context_->alloc(ast::IdentifierNode{
+      context_->alloc(ast::IdentifierPayload{
           .lexeme = std::move(next_part_r).unwrap()->lexeme(stream_->file()),
       });
       ++parts_count;
@@ -36,9 +38,10 @@ Parser::Result<ast::NodeId> Parser::parse_path_expression(NodeId first_part) {
     next_non_whitespace();
   }
 
-  return ok(context_->alloc(ast::PathExpressionNode{
-      .path_parts_range = {first_part, parts_count},
-  }));
+  return ok(context_->create(ast::NodeKind::kPathExpression,
+                             ast::PathExpressionPayload{
+                                 .path_parts_range = {first_part, parts_count},
+                             }));
 }
 
 }  // namespace parser

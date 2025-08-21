@@ -7,7 +7,7 @@
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_expression() {
-  return parse_binary_expression(base::OperatorPrecedence::kLowest);
+  return parse_range_expression();
 }
 
 }  // namespace parser

@@ -5,14 +5,13 @@
 #include <utility>
 
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_method_call_expression(
     NodeId obj,
-    NodeId method) {
+    PayloadId method) {
   auto left_r = consume(base::TokenKind::kLeftParen, true);
   if (left_r.is_err()) {
     return err<NodeId>(std::move(left_r).unwrap_err());
@@ -28,11 +27,13 @@ Parser::Result<ast::NodeId> Parser::parse_method_call_expression(
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  const NodeId method_id = context_->alloc(ast::MethodCallExpressionNode{
-      .obj = obj,
-      .method = method,
-      .args_range = std::move(args_r).unwrap(),
-  });
+  const NodeId method_id =
+      context_->create(ast::NodeKind::kMethodCallExpression,
+                       ast::MethodCallExpressionPayload{
+                           .obj = obj,
+                           .method = method,
+                           .args_range = std::move(args_r).unwrap(),
+                       });
 
   if (peek().kind() == base::TokenKind::kArrow) {
     return parse_await_expression(method_id);

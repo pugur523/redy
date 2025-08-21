@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -32,10 +31,12 @@ Parser::Result<ast::NodeId> Parser::parse_function_macro_call_expression(
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  const NodeId macro_id = context_->alloc(ast::FunctionMacroCallExpressionNode{
-      .macro_callee = callee,
-      .args_range = std::move(args_r).unwrap(),
-  });
+  const NodeId macro_id =
+      context_->create(ast::NodeKind::kFunctionMacroCallExpression,
+                       ast::FunctionMacroCallExpressionPayload{
+                           .macro_callee = callee,
+                           .args_range = std::move(args_r).unwrap(),
+                       });
 
   if (peek().kind() == base::TokenKind::kArrow) {
     return parse_await_expression(macro_id);

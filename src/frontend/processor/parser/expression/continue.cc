@@ -6,7 +6,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -20,16 +20,17 @@ Parser::Result<ast::NodeId> Parser::parse_continue_expression() {
   NodeId expr_id = ast::kInvalidNodeId;
   if (peek().kind() != base::TokenKind::kNewline &&
       peek().kind() != base::TokenKind::kSemicolon) {
-    auto expr_r = parse_primary_expression();
+    auto expr_r = parse_expression();
     if (expr_r.is_err()) {
       return expr_r;
     }
     expr_id = std::move(expr_r).unwrap();
   }
 
-  return ok(context_->alloc(ast::ContinueExpressionNode{
-      .expression = expr_id,
-  }));
+  return ok(context_->create(ast::NodeKind::kContinueExpression,
+                             ast::ContinueExpressionPayload{
+                                 .expression = expr_id,
+                             }));
 }
 
 }  // namespace parser

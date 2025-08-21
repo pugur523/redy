@@ -6,7 +6,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -22,8 +22,13 @@ Parser::Result<ast::NodeId> Parser::parse_unsafe_expression() {
     return block_r;
   }
 
-  return ok(context_->alloc(ast::UnsafeExpressionNode{
+  const PayloadId payload_id = context_->alloc(ast::UnsafeExpressionPayload{
       .block = std::move(block_r).unwrap(),
+  });
+
+  return ok(context_->alloc(ast::Node{
+      .kind = ast::NodeKind::kUnsafeExpression,
+      .payload_id = payload_id,
   }));
 }
 

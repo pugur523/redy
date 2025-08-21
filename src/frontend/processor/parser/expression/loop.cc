@@ -12,20 +12,21 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_fast_expression() {
-  auto fast_r = consume(base::TokenKind::kFast, true);
-  if (fast_r.is_err()) {
-    return err<NodeId>(std::move(fast_r).unwrap_err());
+Parser::Result<ast::NodeId> Parser::parse_loop_expression() {
+  auto loop_r = consume(base::TokenKind::kLoop, true);
+  if (loop_r.is_err()) {
+    return err<NodeId>(std::move(loop_r).unwrap_err());
   }
 
   auto block_r = parse_block_expression();
   if (block_r.is_err()) {
     return block_r;
   }
+  const NodeId block_id = std::move(block_r).unwrap();
 
-  return ok(context_->create(ast::NodeKind::kFastExpression,
-                             ast::FastExpressionPayload{
-                                 .block = std::move(block_r).unwrap(),
+  return ok(context_->create(ast::NodeKind::kLoopExpression,
+                             ast::LoopExpressionPayload{
+                                 .body = block_id,
                              }));
 }
 

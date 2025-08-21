@@ -8,7 +8,7 @@
 #include "frontend/base/token/token.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
@@ -42,9 +42,14 @@ Parser::Result<ast::NodeId> Parser::parse_unary_expression() {
   for (uint32_t i = pre_op_count; i > 0; --i) {
     const base::UnaryOperator op = base::token_kind_to_unary_op(
         peek_at(i).kind(), base::IncrementPosition::kPrefix);
-    operand_id = context_->alloc(ast::UnaryOperatorExpressionNode{
+    const PayloadId payload_id = context_->alloc(ast::UnaryExpressionPayload{
         .op = op,
         .operand = operand_id,
+    });
+
+    operand_id = context_->alloc(ast::Node{
+        .kind = ast::NodeKind::kUnaryOperatorExpression,
+        .payload_id = payload_id,
     });
   }
 
@@ -61,9 +66,14 @@ Parser::Result<ast::NodeId> Parser::parse_unary_expression() {
     }
 
     next_non_whitespace();
-    operand_id = context_->alloc(ast::UnaryOperatorExpressionNode{
+    const PayloadId payload_id = context_->alloc(ast::UnaryExpressionPayload{
         .op = postfix_op,
         .operand = operand_id,
+    });
+
+    operand_id = context_->alloc(ast::Node{
+        .kind = ast::NodeKind::kUnaryOperatorExpression,
+        .payload_id = payload_id,
     });
   }
 

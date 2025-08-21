@@ -6,7 +6,8 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -38,7 +39,7 @@ Parser::Result<ast::NodeId> Parser::parse_construct_expression(
       return err<NodeId>(std::move(equal_r).unwrap_err());
     }
 
-    auto init_value_r = parse_primary_expression();
+    auto init_value_r = parse_expression();
     if (init_value_r.is_err()) {
       return init_value_r;
     }
@@ -60,10 +61,12 @@ Parser::Result<ast::NodeId> Parser::parse_construct_expression(
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::ConstructExpressionNode{
-      .type_path = type_path,
-      .args_range = {.begin = first, .size = arg_count},
-  }));
+  return ok(
+      context_->create(ast::NodeKind::kConstructExpression,
+                       ast::ConstructExpressionPayload{
+                           .type_path = type_path,
+                           .args_range = {.begin = first, .size = arg_count},
+                       }));
 }
 
 }  // namespace parser

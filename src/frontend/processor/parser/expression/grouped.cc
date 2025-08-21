@@ -5,6 +5,9 @@
 #include <utility>
 
 #include "frontend/base/token/token_kind.h"
+#include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -25,9 +28,10 @@ Parser::Result<ast::NodeId> Parser::parse_grouped_expression() {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::GroupedExpressionNode{
-      .expression = std::move(expr_r).unwrap(),
-  }));
+  return ok(context_->create(ast::NodeKind::kGroupedExpression,
+                             ast::GroupedExpressionPayload{
+                                 .expression = std::move(expr_r).unwrap(),
+                             }));
 }
 
 }  // namespace parser

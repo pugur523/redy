@@ -6,6 +6,8 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
@@ -26,7 +28,7 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
       break;
     }
 
-    auto expr_r = parse_expression();
+    auto expr_r = parse_unary_expression();
     if (expr_r.is_err()) {
       return expr_r;
     }
@@ -56,9 +58,11 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::ArrayExpressionNode{
-      .array_elements_range = {.begin = first_id, .size = elements_count},
-  }));
+  return ok(context_->create(
+      ast::NodeKind::kArrayExpression,
+      ast::ArrayExpressionPayload{
+          .array_elements_range = {.begin = first_id, .size = elements_count},
+      }));
 }
 
 }  // namespace parser

@@ -7,7 +7,6 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/nodes.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/label.h"
 #include "frontend/diagnostic/data/severity.h"
@@ -16,8 +15,12 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_function_declaration(StAt attribute) {
-  consume(base::TokenKind::kFunction, true);
+Parser::Result<ast::NodeId> Parser::parse_function_declaration(
+    PayloadId attribute) {
+  auto fn_r = consume(base::TokenKind::kFunction, true);
+  if (fn_r.is_err()) {
+    return err<NodeId>(std::move(fn_r).unwrap_err());
+  }
 
   auto fn_name_r = consume(base::TokenKind::kIdentifier, true);
   if (fn_name_r.is_err()) {
@@ -34,7 +37,7 @@ Parser::Result<ast::NodeId> Parser::parse_function_declaration(StAt attribute) {
   if (parameters_r.is_err()) {
     return err<NodeId>(std::move(parameters_r).unwrap_err());
   }
-  const ast::NodeRange parameters_range = std::move(parameters_r).unwrap();
+  const ast::PayloadRange parameters_range = std::move(parameters_r).unwrap();
 
   auto rparen_r = consume(base::TokenKind::kRightParen, true);
   if (rparen_r.is_err()) {
@@ -51,28 +54,38 @@ Parser::Result<ast::NodeId> Parser::parse_function_declaration(StAt attribute) {
     return_type_id = std::move(ret_type_r).unwrap();
   }
 
-  auto lbrace_r = consume(base::TokenKind::kLeftBrace, true);
-  if (lbrace_r.is_err()) {
-    return err<NodeId>(std::move(lbrace_r).unwrap_err());
+  // forward declaration -> empty body
+  NodeId body_id = ast::kInvalidNodeId;
+  if (peek().kind() == base::TokenKind::kLeftBrace) {
+    // with definition
+    auto lbrace_r = consume(base::TokenKind::kLeftBrace, true);
+    if (lbrace_r.is_err()) {
+      return err<NodeId>(std::move(lbrace_r).unwrap_err());
+    }
+
+    auto body_r = parse_block_expression();
+    if (body_r.is_err()) {
+      return err<NodeId>(std::move(body_r).unwrap_err());
+    }
+    body_id = std::move(body_r).unwrap();
+
+    auto rbrace_r = consume(base::TokenKind::kRightBrace, true);
+    if (rbrace_r.is_err()) {
+      return err<NodeId>(std::move(rbrace_r).unwrap_err());
+    }
   }
 
-  auto body_r = parse_block_expression();
-  if (body_r.is_err()) {
-    return err<NodeId>(std::move(body_r).unwrap_err());
-  }
-  NodeId body_id = std::move(body_r).unwrap();
-
-  auto rbrace_r = consume(base::TokenKind::kRightBrace, true);
-  if (rbrace_r.is_err()) {
-    return err<NodeId>(std::move(rbrace_r).unwrap_err());
-  }
-
-  return ok(context_->alloc(ast::FunctionDeclarationNode{
+  const PayloadId payload_id = context_->alloc(ast::FunctionDeclarationPayload{
       .name = function_name,
       .parameters_range = parameters_range,
       .return_type = return_type_id,
       .body = body_id,
-      .attribute = attribute,
+      .storage_attribute = attribute,
+  });
+
+  return ok(context_->alloc(ast::Node{
+      .kind = ast::NodeKind::kFunctionDeclaration,
+      .payload_id = payload_id,
   }));
 }
 

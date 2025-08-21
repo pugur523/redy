@@ -25,7 +25,7 @@ struct LiteralExpressionPayload {
 };
 
 struct PathExpressionPayload {
-  NodeRange path_parts_range;
+  PayloadRange path_parts_range;
 };
 
 struct UnaryExpressionPayload {
@@ -58,7 +58,7 @@ struct IndexExpressionPayload {
 
 struct ConstructExpressionPayload {
   NodeId type_path = kInvalidNodeId;
-  NodeRange args_range;
+  PayloadRange args_range;
 };
 
 struct FunctionCallExpressionPayload {
@@ -68,7 +68,7 @@ struct FunctionCallExpressionPayload {
 
 struct MethodCallExpressionPayload {
   NodeId obj = kInvalidNodeId;
-  NodeId method = kInvalidNodeId;
+  PayloadId method = kInvalidNodeId;
   NodeRange args_range;
 };
 
@@ -79,13 +79,13 @@ struct FunctionMacroCallExpressionPayload {
 
 struct MethodMacroCallExpressionPayload {
   NodeId obj = kInvalidNodeId;
-  NodeId macro_method = kInvalidNodeId;
+  PayloadId macro_method = kInvalidNodeId;
   NodeRange args_range;
 };
 
 struct FieldAccessExpressionPayload {
   NodeId obj = kInvalidNodeId;
-  NodeId field = kInvalidNodeId;
+  PayloadId field = kInvalidNodeId;
 };
 
 struct AwaitExpressionPayload {
@@ -127,9 +127,7 @@ struct FastExpressionPayload {
 };
 
 struct IfExpressionPayload {
-  NodeId condition = kInvalidNodeId;
-  NodeId then_block = kInvalidNodeId;
-  NodeId else_block = kInvalidNodeId;
+  PayloadRange branches_range;
 };
 
 struct LoopExpressionPayload {
@@ -142,13 +140,14 @@ struct WhileExpressionPayload {
 };
 
 struct ForExpressionPayload {
-  NodeId iterator = kInvalidNodeId;
+  PayloadId iterator = kInvalidNodeId;
+  NodeId range = kInvalidNodeId;
   NodeId body = kInvalidNodeId;
 };
 
 struct MatchExpressionPayload {
   NodeId expression = kInvalidNodeId;
-  NodeRange arms_range;
+  PayloadRange arms_range;
 };
 
 struct ClosureExpressionPayload {
@@ -181,7 +180,7 @@ struct ExpressionStatementPayload {
 
 struct FunctionDeclarationPayload {
   std::string_view name = "";
-  NodeRange parameters_range;
+  PayloadRange parameters_range;
   NodeId return_type = kInvalidNodeId;
   NodeId body = kInvalidNodeId;
   NodeId storage_attribute;
@@ -223,7 +222,7 @@ struct ModuleDeclarationPayload {
   NodeId storage_attribute;
 };
 
-// chore
+// data
 
 struct ParameterPayload {
   std::string_view name = "";
@@ -256,6 +255,16 @@ struct StorageAttributePayload {
   inline bool has_any_storage_attribute() const {
     return *reinterpret_cast<const uint8_t*>(this) != 0;
   }
+};
+
+struct IfBranchPayload {
+  NodeId condition = kInvalidNodeId;
+  NodeId block = kInvalidNodeId;
+};
+
+struct MatchArmPayload {
+  NodeId pattern = kInvalidNodeId;
+  NodeId expression = kInvalidNodeId;
 };
 
 }  // namespace ast

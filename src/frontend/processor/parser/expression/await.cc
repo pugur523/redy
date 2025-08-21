@@ -6,7 +6,7 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -22,9 +22,10 @@ Parser::Result<ast::NodeId> Parser::parse_await_expression(NodeId callee) {
     return err<NodeId>(std::move(await_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::AwaitExpressionNode{
-      .expression = callee,
-  }));
+  return ok(context_->create(ast::NodeKind::kAwaitExpression,
+                             ast::AwaitExpressionPayload{
+                                 .expression = callee,
+                             }));
 }
 
 }  // namespace parser

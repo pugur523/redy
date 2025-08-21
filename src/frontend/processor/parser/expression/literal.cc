@@ -5,7 +5,9 @@
 #include "frontend/base/literal/literal.h"
 
 #include "frontend/base/keyword/keyword.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -18,10 +20,12 @@ Parser::Result<ast::NodeId> Parser::parse_literal_expression() {
       token_kind_to_literal(literal_token.kind());
   next_non_whitespace();
 
-  return ok(context_->alloc(ast::LiteralExpressionNode{
-      .kind = literal_kind,
-      .lexeme = literal_token.lexeme(stream_->file()),
-  }));
+  return ok(
+      context_->create(ast::NodeKind::kLiteralExpression,
+                       ast::LiteralExpressionPayload{
+                           .kind = literal_kind,
+                           .lexeme = literal_token.lexeme(stream_->file()),
+                       }));
 }
 
 }  // namespace parser

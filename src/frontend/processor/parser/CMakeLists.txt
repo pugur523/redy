@@ -28,20 +28,26 @@ set(SOURCES
   expression/continue.cc
   expression/fast.cc
   expression/field_access.cc
+  expression/for.cc
   expression/function_call.cc
   expression/function_macro_call.cc
   expression/grouped.cc
+  expression/if.cc
   expression/index.cc
   expression/literal.cc
+  expression/loop.cc
+  expression/match.cc
   expression/method_call.cc
   expression/method_macro_call.cc
   expression/path.cc
   expression/postfix.cc
   expression/primary.cc
   expression/range.cc
+  expression/return.cc
   expression/tuple.cc
   expression/unary.cc
   expression/unsafe.cc
+  expression/while.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

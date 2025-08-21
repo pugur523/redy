@@ -7,7 +7,6 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/nodes.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -17,9 +16,9 @@ Parser::Result<ast::NodeRange> Parser::parse_expression_sequence() {
   uint32_t arg_count = 0;
 
   while (!eof()) {
-    auto arg_value_r = parse_primary_expression();
+    auto arg_value_r = parse_unary_expression();
     if (arg_value_r.is_err()) {
-      return err<ast::NodeRange>(std::move(arg_value_r).unwrap_err());
+      return err<NodeRange>(std::move(arg_value_r).unwrap_err());
     }
 
     if (arg_count == 0) {
@@ -34,7 +33,7 @@ Parser::Result<ast::NodeRange> Parser::parse_expression_sequence() {
     next_non_whitespace();
   }
 
-  return ok(ast::NodeRange{
+  return ok(NodeRange{
       .begin = first,
       .size = arg_count,
   });

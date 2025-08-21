@@ -7,7 +7,7 @@
 #include "frontend/base/operator/binary_operator.h"
 #include "frontend/base/operator/operator.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/nodes.h"
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -30,7 +30,7 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
     }
 
     const base::BinaryOperator op = base::token_kind_to_binary_op(kind);
-    const base::OperatorPrecedence current_precedence =
+    const OperatorPrecedence current_precedence =
         base::binary_op_to_precedence(op);
 
     // check if current operator has sufficient precedence
@@ -42,12 +42,12 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
     next_non_whitespace();
 
     // determine precedence for right operand based on associativity
-    base::OperatorPrecedence right_min_precedence;
+    OperatorPrecedence right_min_precedence;
     if (base::operator_precedence_to_associativity(current_precedence) ==
         base::OperatorAssociativity::kRightToLeft) {
       right_min_precedence = current_precedence;
     } else {
-      right_min_precedence = static_cast<base::OperatorPrecedence>(
+      right_min_precedence = static_cast<OperatorPrecedence>(
           static_cast<uint8_t>(current_precedence) - 1);
     }
 
@@ -58,11 +58,9 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
     }
     const NodeId right_id = std::move(right_r).unwrap();
 
-    left_id = context_->alloc(ast::BinaryOperatorExpressionNode{
-        .op = op,
-        .lhs = left_id,
-        .rhs = right_id,
-    });
+    left_id = context_->create(ast::NodeKind::kBinaryOperatorExpression,
+                               ast::BinaryExpressionPayload{
+                                   .op = op, .lhs = left_id, .rhs = right_id});
   }
 
   return ok(left_id);

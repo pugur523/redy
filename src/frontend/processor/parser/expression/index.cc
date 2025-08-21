@@ -5,6 +5,9 @@
 #include <utility>
 
 #include "frontend/base/token/token_kind.h"
+#include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -24,10 +27,11 @@ Parser::Result<ast::NodeId> Parser::parse_index_expression(NodeId operand) {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->alloc(ast::IndexExpressionNode{
-      .operand = operand,
-      .index = std::move(index_r).unwrap(),
-  }));
+  return ok(context_->create(ast::NodeKind::kIndexExpression,
+                             ast::IndexExpressionPayload{
+                                 .operand = operand,
+                                 .index = std::move(index_r).unwrap(),
+                             }));
 }
 
 }  // namespace parser
