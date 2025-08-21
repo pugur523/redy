@@ -2,8 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_DATA_AST_BASE_NODES_H_
-#define FRONTEND_DATA_AST_BASE_NODES_H_
+#ifndef FRONTEND_DATA_AST_BASE_PAYLOAD_H_
+#define FRONTEND_DATA_AST_BASE_PAYLOAD_H_
 
 #include <cstddef>
 #include <limits>
@@ -14,17 +14,237 @@
 #include "frontend/base/operator/binary_operator.h"
 #include "frontend/base/operator/unary_operator.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/node_kind.h"
 
 namespace ast {
 
-// utilities
-struct NodeRange {
-  NodeId begin = kInvalidNodeId;
-  uint32_t size = 0;
+// expressions
+
+struct LiteralExpressionPayload {
+  base::LiteralKind kind = base::LiteralKind::kUnknown;
+  std::string_view lexeme = "";
 };
 
-struct StorageAttribute {
+struct PathExpressionPayload {
+  NodeRange path_parts_range;
+};
+
+struct UnaryExpressionPayload {
+  base::UnaryOperator op = base::UnaryOperator::kUnknown;
+  NodeId operand = kInvalidNodeId;
+};
+
+struct BinaryExpressionPayload {
+  base::BinaryOperator op = base::BinaryOperator::kUnknown;
+  NodeId lhs = kInvalidNodeId;
+  NodeId rhs = kInvalidNodeId;
+};
+
+struct GroupedExpressionPayload {
+  NodeId expression = kInvalidNodeId;
+};
+
+struct ArrayExpressionPayload {
+  NodeRange array_elements_range;
+};
+
+struct TupleExpressionPayload {
+  NodeRange tuple_elements_range;
+};
+
+struct IndexExpressionPayload {
+  NodeId operand = kInvalidNodeId;
+  NodeId index = kInvalidNodeId;
+};
+
+struct ConstructExpressionPayload {
+  NodeId type_path = kInvalidNodeId;
+  NodeRange args_range;
+};
+
+struct FunctionCallExpressionPayload {
+  NodeId callee = kInvalidNodeId;
+  NodeRange args_range;
+};
+
+struct MethodCallExpressionPayload {
+  NodeId obj = kInvalidNodeId;
+  NodeId method = kInvalidNodeId;
+  NodeRange args_range;
+};
+
+struct FunctionMacroCallExpressionPayload {
+  NodeId macro_callee = kInvalidNodeId;
+  NodeRange args_range;
+};
+
+struct MethodMacroCallExpressionPayload {
+  NodeId obj = kInvalidNodeId;
+  NodeId macro_method = kInvalidNodeId;
+  NodeRange args_range;
+};
+
+struct FieldAccessExpressionPayload {
+  NodeId obj = kInvalidNodeId;
+  NodeId field = kInvalidNodeId;
+};
+
+struct AwaitExpressionPayload {
+  NodeId expression = kInvalidNodeId;
+};
+
+struct ContinueExpressionPayload {
+  NodeId expression = kInvalidNodeId;
+};
+
+struct BreakExpressionPayload {
+  NodeId expression = kInvalidNodeId;
+};
+
+struct ExclusiveRangeExpressionPayload {
+  NodeId begin = kInvalidNodeId;
+  NodeId end = kInvalidNodeId;
+};
+
+struct InclusiveRangeExpressionPayload {
+  NodeId begin = kInvalidNodeId;
+  NodeId end = kInvalidNodeId;
+};
+
+struct ReturnExpressionPayload {
+  NodeId expression = kInvalidNodeId;
+};
+
+struct BlockExpressionPayload {
+  NodeRange body_nodes_range;
+};
+
+struct UnsafeExpressionPayload {
+  NodeId block;
+};
+
+struct FastExpressionPayload {
+  NodeId block;
+};
+
+struct IfExpressionPayload {
+  NodeId condition = kInvalidNodeId;
+  NodeId then_block = kInvalidNodeId;
+  NodeId else_block = kInvalidNodeId;
+};
+
+struct LoopExpressionPayload {
+  NodeId body = kInvalidNodeId;
+};
+
+struct WhileExpressionPayload {
+  NodeId condition = kInvalidNodeId;
+  NodeId body = kInvalidNodeId;
+};
+
+struct ForExpressionPayload {
+  NodeId iterator = kInvalidNodeId;
+  NodeId body = kInvalidNodeId;
+};
+
+struct MatchExpressionPayload {
+  NodeId expression = kInvalidNodeId;
+  NodeRange arms_range;
+};
+
+struct ClosureExpressionPayload {
+  NodeRange parameters_range;
+  NodeId body = kInvalidNodeId;
+};
+
+// statements
+
+struct AssignStatementPayload {
+  NodeId target = kInvalidNodeId;
+  NodeId value = kInvalidNodeId;
+  NodeId storage_attribute;
+};
+
+struct AttributeStatementPayload {
+  NodeRange attributes_range;
+};
+
+struct RedirectStatementPayload {
+  NodeId target = kInvalidNodeId;
+  NodeId source = kInvalidNodeId;
+};
+
+struct ExpressionStatementPayload {
+  NodeId expression;
+};
+
+// declaration
+
+struct FunctionDeclarationPayload {
+  std::string_view name = "";
+  NodeRange parameters_range;
+  NodeId return_type = kInvalidNodeId;
+  NodeId body = kInvalidNodeId;
+  NodeId storage_attribute;
+};
+
+struct StructDeclarationPayload {
+  std::string_view name = "";
+  NodeRange fields_range;
+  NodeId storage_attribute;
+};
+
+struct EnumerationDeclarationPayload {
+  std::string_view name = "";
+  NodeRange variants_range;
+  NodeId storage_attribute;
+};
+
+struct TraitDeclarationPayload {
+  std::string_view name = "";
+  NodeRange function_declare_range;
+  NodeId storage_attribute;
+};
+
+struct ImplementationDeclarationPayload {
+  std::string_view name = "";
+  NodeRange function_definition_range;
+  NodeId storage_attribute;
+};
+
+struct UnionDeclarationPayload {
+  std::string_view name = "";
+  NodeRange fields_range;
+  NodeId storage_attribute;
+};
+
+struct ModuleDeclarationPayload {
+  std::string_view name = "";
+  NodeRange module_nodes_range;
+  NodeId storage_attribute;
+};
+
+// chore
+
+struct ParameterPayload {
+  std::string_view name = "";
+  NodeId type = kInvalidNodeId;
+};
+
+struct TypeReferencePayload {
+  std::string_view type_name = "";
+  base::TypeKind type_kind = base::TypeKind::kAuto;
+};
+
+struct ArrayTypePayload {
+  NodeId type = kInvalidNodeId;
+  NodeId array_size = kInvalidNodeId;
+};
+
+struct IdentifierPayload {
+  std::string_view lexeme = "";
+};
+
+struct StorageAttributePayload {
   bool is_mutable : 1 = false;
   bool is_const : 1 = false;
   bool is_extern : 1 = false;
@@ -32,240 +252,12 @@ struct StorageAttribute {
   bool is_thread_local : 1 = false;
   bool is_public : 1 = false;
   bool is_async : 1 = false;
-};
 
-// keep `Attribute` as a 1 byte or cast it to a 2 byte type such as uint16_t
-inline bool has_any_storage_attribute(StorageAttribute attribute) {
-  return *reinterpret_cast<uint8_t*>(&attribute) != 0;
-}
-
-// expressions
-
-struct LiteralExpressionNode {
-  base::LiteralKind kind = base::LiteralKind::kUnknown;
-  std::string_view lexeme = "";
-};
-
-struct PathExpressionNode {
-  NodeRange path_parts_range;
-};
-
-struct UnaryOperatorExpressionNode {
-  base::UnaryOperator op = base::UnaryOperator::kUnknown;
-  NodeId operand = kInvalidNodeId;
-};
-
-struct BinaryOperatorExpressionNode {
-  base::BinaryOperator op = base::BinaryOperator::kUnknown;
-  NodeId lhs = kInvalidNodeId;
-  NodeId rhs = kInvalidNodeId;
-};
-
-struct GroupedExpressionNode {
-  NodeId expression = kInvalidNodeId;
-};
-
-struct ArrayExpressionNode {
-  NodeRange array_elements_range;
-};
-
-struct TupleExpressionNode {
-  NodeRange tuple_elements_range;
-};
-
-struct IndexExpressionNode {
-  NodeId operand = kInvalidNodeId;
-  NodeId index = kInvalidNodeId;
-};
-
-struct ConstructExpressionNode {
-  NodeId type_path = kInvalidNodeId;
-  NodeRange args_range;
-};
-
-struct FunctionCallExpressionNode {
-  NodeId callee = kInvalidNodeId;
-  NodeRange args_range;
-};
-
-struct MethodCallExpressionNode {
-  NodeId obj = kInvalidNodeId;
-  NodeId method = kInvalidNodeId;
-  NodeRange args_range;
-};
-
-struct FunctionMacroCallExpressionNode {
-  NodeId macro_callee = kInvalidNodeId;
-  NodeRange args_range;
-};
-
-struct MethodMacroCallExpressionNode {
-  NodeId obj = kInvalidNodeId;
-  NodeId macro_method = kInvalidNodeId;
-  NodeRange args_range;
-};
-
-struct FieldAccessExpressionNode {
-  NodeId obj = kInvalidNodeId;
-  NodeId field = kInvalidNodeId;
-};
-
-struct AwaitExpressionNode {
-  NodeId expression = kInvalidNodeId;
-};
-
-struct ContinueExpressionNode {
-  NodeId expression = kInvalidNodeId;
-};
-
-struct BreakExpressionNode {
-  NodeId expression = kInvalidNodeId;
-};
-
-struct ExclusiveRangeExpressionNode {
-  NodeId begin = kInvalidNodeId;
-  NodeId end = kInvalidNodeId;
-};
-
-struct InclusiveRangeExpressionNode {
-  NodeId begin = kInvalidNodeId;
-  NodeId end = kInvalidNodeId;
-};
-
-struct ReturnExpressionNode {
-  NodeId expression = kInvalidNodeId;
-};
-
-struct BlockExpressionNode {
-  NodeRange body_nodes_range;
-};
-
-struct UnsafeExpressionNode {
-  NodeId block;
-};
-
-struct FastExpressionNode {
-  NodeId block;
-};
-
-struct IfExpressionNode {
-  NodeId condition = kInvalidNodeId;
-  NodeId then_block = kInvalidNodeId;
-  NodeId else_block = kInvalidNodeId;
-};
-
-struct LoopExpressionNode {
-  NodeId body = kInvalidNodeId;
-};
-
-struct WhileExpressionNode {
-  NodeId condition = kInvalidNodeId;
-  NodeId body = kInvalidNodeId;
-};
-
-struct ForExpressionNode {
-  NodeId iterator = kInvalidNodeId;
-  NodeId body = kInvalidNodeId;
-};
-
-struct MatchExpressionNode {
-  NodeId expression = kInvalidNodeId;
-  NodeRange arms_range;
-};
-
-struct ClosureExpressionNode {
-  NodeRange parameters_range;
-  NodeId body = kInvalidNodeId;
-};
-
-// statements
-
-struct AssignStatementNode {
-  NodeId target = kInvalidNodeId;
-  NodeId value = kInvalidNodeId;
-  StorageAttribute attribute;
-};
-
-struct AttributeStatementNode {
-  NodeRange attributes_range;
-};
-
-struct RedirectStatementNode {
-  NodeId target = kInvalidNodeId;
-  NodeId source = kInvalidNodeId;
-};
-
-struct ExpressionStatementNode {
-  NodeId expression;
-};
-
-// declaration
-
-struct FunctionDeclarationNode {
-  std::string_view name = "";
-  NodeRange parameters_range;
-  NodeId return_type = kInvalidNodeId;
-  NodeId body = kInvalidNodeId;
-  StorageAttribute attribute;
-};
-
-struct StructDeclarationNode {
-  std::string_view name = "";
-  NodeRange fields_range;
-  StorageAttribute attribute;
-};
-
-struct EnumerationDeclarationNode {
-  std::string_view name = "";
-  NodeRange variants_range;
-  StorageAttribute attribute;
-};
-
-struct TraitDeclarationNode {
-  std::string_view name = "";
-  NodeRange function_declare_range;
-  StorageAttribute attribute;
-};
-
-struct ImplementationDeclarationNode {
-  std::string_view name = "";
-  NodeRange function_definition_range;
-  StorageAttribute attribute;
-};
-
-struct UnionDeclarationNode {
-  std::string_view name = "";
-  NodeRange fields_range;
-  StorageAttribute attribute;
-};
-
-struct ModuleDeclarationNode {
-  std::string_view name = "";
-  NodeRange module_nodes_range;
-  StorageAttribute attribute;
-};
-
-// chore
-
-struct ParameterNode {
-  std::string_view name = "";
-  NodeId type = kInvalidNodeId;
-};
-
-struct TypeReferenceNode {
-  std::string_view type_name = "";
-  base::TypeKind type_kind = base::TypeKind::kAuto;
-};
-
-struct ArrayTypeNode {
-  NodeId type = kInvalidNodeId;
-  NodeId array_size = kInvalidNodeId;
-};
-
-struct IdentifierNode {
-  std::string_view lexeme = "";
+  inline bool has_any_storage_attribute() const {
+    return *reinterpret_cast<const uint8_t*>(this) != 0;
+  }
 };
 
 }  // namespace ast
 
-#endif  // FRONTEND_DATA_AST_BASE_NODES_H_
+#endif  // FRONTEND_DATA_AST_BASE_PAYLOAD_H_

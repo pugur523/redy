@@ -11,13 +11,22 @@
 namespace ast {
 
 using NodeId = std::size_t;
+using PayloadId = std::size_t;
+using TokenId = std::size_t;
 
-constexpr const NodeId kInvalidNodeId = std::numeric_limits<NodeId>::max();
+constexpr NodeId kInvalidNodeId = std::numeric_limits<NodeId>::max();
+constexpr PayloadId kInvalidPayloadId = std::numeric_limits<PayloadId>::max();
+constexpr TokenId kInvalidTokenId = std::numeric_limits<TokenId>::max();
 
-// template <typename T>
-// struct NodeId {
-//   std::size_t id = std::numeric_limits<std::size_t>::max();
-// };
+struct NodeRange {
+  NodeId begin = kInvalidNodeId;
+  uint32_t size = 0;
+};
+
+struct PayloadRange {
+  PayloadId begin = kInvalidPayloadId;
+  uint32_t size = 0;
+};
 
 }  // namespace ast
 
