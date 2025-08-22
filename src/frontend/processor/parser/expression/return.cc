@@ -28,14 +28,10 @@ Parser::Result<ast::NodeId> Parser::parse_return_expression() {
     expr_id = std::move(expr_r).unwrap();
   }
 
-  const PayloadId payload_id = context_->alloc(ast::ReturnExpressionPayload{
-      .expression = expr_id,
-  });
-
-  return ok(context_->alloc(ast::Node{
-      .kind = ast::NodeKind::kReturnExpression,
-      .payload_id = payload_id,
-  }));
+  return ok(context_->create(ast::NodeKind::kReturnExpression,
+                             ast::ReturnExpressionPayload{
+                                 .expression = expr_id,
+                             }));
 }
 
 }  // namespace parser

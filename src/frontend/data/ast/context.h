@@ -99,6 +99,7 @@ class AST_EXPORT Context {
   base::Arena<UnionDeclarationPayload> union_declaration_payloads_;
   base::Arena<ModuleDeclarationPayload> module_declaration_payloads_;
 
+  base::Arena<CapturePayload> capture_payloads_;
   base::Arena<ParameterPayload> parameter_payloads_;
   base::Arena<TypeReferencePayload> type_reference_payloads_;
   base::Arena<ArrayTypePayload> array_type_payloads_;
@@ -106,6 +107,7 @@ class AST_EXPORT Context {
   base::Arena<StorageAttributePayload> storage_attribute_payloads_;
   base::Arena<IfBranchPayload> if_branch_payloads_;
   base::Arena<MatchArmPayload> match_arm_payloads_;
+  base::Arena<VariablePayload> variable_payloads_;
 };
 
 template <>
@@ -309,6 +311,10 @@ Context::arena<ModuleDeclarationPayload>() {
 }
 
 template <>
+inline base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
+  return capture_payloads_;
+}
+template <>
 inline base::Arena<ParameterPayload>& Context::arena<ParameterPayload>() {
   return parameter_payloads_;
 }
@@ -337,6 +343,10 @@ inline base::Arena<IfBranchPayload>& Context::arena<IfBranchPayload>() {
 template <>
 inline base::Arena<MatchArmPayload>& Context::arena<MatchArmPayload>() {
   return match_arm_payloads_;
+}
+template <>
+inline base::Arena<VariablePayload>& Context::arena<VariablePayload>() {
+  return variable_payloads_;
 }
 
 template <>

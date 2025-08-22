@@ -14,6 +14,8 @@ set(SOURCES
   expression.cc
   statement.cc
 
+  chore/capture.cc
+  chore/expression_sequence.cc
   chore/parameter.cc
   chore/type_reference.cc
 
@@ -24,6 +26,7 @@ set(SOURCES
   expression/binary.cc
   expression/block.cc
   expression/break.cc
+  expression/closure.cc
   expression/construct.cc
   expression/continue.cc
   expression/fast.cc
@@ -48,6 +51,8 @@ set(SOURCES
   expression/unary.cc
   expression/unsafe.cc
   expression/while.cc
+
+  statement/assign.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

@@ -125,6 +125,8 @@ class PARSER_EXPORT Parser {
   Result<NodeId> parse_redirect_declaration(PayloadId attribute);
 
   // chore
+  Result<ast::PayloadId> parse_capture_one();
+  Result<ast::PayloadRange> parse_capture_list();
   Result<ast::PayloadId> parse_parameter_one();
   Result<ast::PayloadRange> parse_parameter_list();
   Result<ast::PayloadId> parse_type_reference();

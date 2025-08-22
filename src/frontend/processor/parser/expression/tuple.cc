@@ -58,14 +58,11 @@ Parser::Result<ast::NodeId> Parser::parse_tuple_expression() {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  const PayloadId payload_id = context_->alloc(ast::TupleExpressionPayload{
-      .tuple_elements_range = {.begin = first_id, .size = elements_count},
-  });
-
-  return ok(context_->alloc(ast::Node{
-      .kind = ast::NodeKind::kTupleExpression,
-      .payload_id = payload_id,
-  }));
+  return ok(context_->create(
+      ast::NodeKind::kTupleExpression,
+      ast::TupleExpressionPayload{
+          .tuple_elements_range = {.begin = first_id, .size = elements_count},
+      }));
 }
 
 }  // namespace parser

@@ -19,6 +19,7 @@ Parser::Result<ast::NodeId> Parser::parse_statement() {
       const Kind next_kind = peek_at(1).kind();
       switch (next_kind) {
         case Kind::kColonEqual:
+        case Kind::kEqual:
         case Kind::kColon:
           return parse_assign_statement(ast::kInvalidPayloadId);
         default:

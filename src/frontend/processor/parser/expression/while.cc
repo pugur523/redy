@@ -30,15 +30,11 @@ Parser::Result<ast::NodeId> Parser::parse_while_expression() {
   }
   const NodeId block_id = std::move(block_r).unwrap();
 
-  const PayloadId payload_id = context_->alloc(ast::WhileExpressionPayload{
-      .condition = cond_id,
-      .body = block_id,
-  });
-
-  return ok(context_->alloc(ast::Node{
-      .kind = ast::NodeKind::kWhileExpression,
-      .payload_id = payload_id,
-  }));
+  return ok(context_->create(ast::NodeKind::kWhileExpression,
+                             ast::WhileExpressionPayload{
+                                 .condition = cond_id,
+                                 .body = block_id,
+                             }));
 }
 
 }  // namespace parser

@@ -22,14 +22,10 @@ Parser::Result<ast::NodeId> Parser::parse_unsafe_expression() {
     return block_r;
   }
 
-  const PayloadId payload_id = context_->alloc(ast::UnsafeExpressionPayload{
-      .block = std::move(block_r).unwrap(),
-  });
-
-  return ok(context_->alloc(ast::Node{
-      .kind = ast::NodeKind::kUnsafeExpression,
-      .payload_id = payload_id,
-  }));
+  return ok(context_->create(ast::NodeKind::kUnsafeExpression,
+                             ast::UnsafeExpressionPayload{
+                                 .block = std::move(block_r).unwrap(),
+                             }));
 }
 
 }  // namespace parser

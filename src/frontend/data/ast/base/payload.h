@@ -151,15 +151,16 @@ struct MatchExpressionPayload {
 };
 
 struct ClosureExpressionPayload {
-  NodeRange parameters_range;
+  PayloadRange captures_range;
+  PayloadRange parameters_range;
   NodeId body = kInvalidNodeId;
 };
 
 // statements
 
 struct AssignStatementPayload {
-  NodeId target = kInvalidNodeId;
-  NodeId value = kInvalidNodeId;
+  PayloadId target_variable = kInvalidPayloadId;
+  NodeId value_expression = kInvalidNodeId;
   NodeId storage_attribute;
 };
 
@@ -224,6 +225,11 @@ struct ModuleDeclarationPayload {
 
 // data
 
+struct CapturePayload {
+  std::string_view name = "";
+  NodeId type = kInvalidNodeId;
+};
+
 struct ParameterPayload {
   std::string_view name = "";
   NodeId type = kInvalidNodeId;
@@ -265,6 +271,11 @@ struct IfBranchPayload {
 struct MatchArmPayload {
   NodeId pattern = kInvalidNodeId;
   NodeId expression = kInvalidNodeId;
+};
+
+struct VariablePayload {
+  PayloadId identifier_id = kInvalidPayloadId;
+  PayloadId type_id = kInvalidPayloadId;
 };
 
 }  // namespace ast

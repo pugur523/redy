@@ -42,15 +42,11 @@ Parser::Result<ast::NodeId> Parser::parse_unary_expression() {
   for (uint32_t i = pre_op_count; i > 0; --i) {
     const base::UnaryOperator op = base::token_kind_to_unary_op(
         peek_at(i).kind(), base::IncrementPosition::kPrefix);
-    const PayloadId payload_id = context_->alloc(ast::UnaryExpressionPayload{
-        .op = op,
-        .operand = operand_id,
-    });
-
-    operand_id = context_->alloc(ast::Node{
-        .kind = ast::NodeKind::kUnaryOperatorExpression,
-        .payload_id = payload_id,
-    });
+    operand_id = context_->create(ast::NodeKind::kUnaryOperatorExpression,
+                                  ast::UnaryExpressionPayload{
+                                      .op = op,
+                                      .operand = operand_id,
+                                  });
   }
 
   // handle postfix unary operators (left-to-right associativity)
@@ -66,15 +62,11 @@ Parser::Result<ast::NodeId> Parser::parse_unary_expression() {
     }
 
     next_non_whitespace();
-    const PayloadId payload_id = context_->alloc(ast::UnaryExpressionPayload{
-        .op = postfix_op,
-        .operand = operand_id,
-    });
-
-    operand_id = context_->alloc(ast::Node{
-        .kind = ast::NodeKind::kUnaryOperatorExpression,
-        .payload_id = payload_id,
-    });
+    operand_id = context_->create(ast::NodeKind::kUnaryOperatorExpression,
+                                  ast::UnaryExpressionPayload{
+                                      .op = postfix_op,
+                                      .operand = operand_id,
+                                  });
   }
 
   return ok(operand_id);
