@@ -70,7 +70,7 @@ std::string generate_invalid(std::size_t n) {
   return std::string(n, static_cast<char>(0x80));
 }
 
-void decode_ascii(benchmark::State& state) {
+void utf8_decode_ascii(benchmark::State& state) {
   Utf8Decoder decoder;
   auto data = generate_ascii(state.range(0));
   for (auto _ : state) {
@@ -86,9 +86,9 @@ void decode_ascii(benchmark::State& state) {
   }
   state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
 }
-BENCHMARK(decode_ascii)->Arg(1024)->Arg(4096)->Arg(16384);
+BENCHMARK(utf8_decode_ascii)->Arg(1024)->Arg(4096)->Arg(16384);
 
-void decode_two_byte(benchmark::State& state) {
+void utf8_decode_two_byte(benchmark::State& state) {
   Utf8Decoder decoder;
   auto data = generate_two_byte(state.range(0));
   for (auto _ : state) {
@@ -104,9 +104,9 @@ void decode_two_byte(benchmark::State& state) {
   }
   state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
 }
-BENCHMARK(decode_two_byte)->Arg(1024)->Arg(4096)->Arg(16384);
+BENCHMARK(utf8_decode_two_byte)->Arg(1024)->Arg(4096)->Arg(16384);
 
-void decode_three_byte(benchmark::State& state) {
+void utf8_decode_three_byte(benchmark::State& state) {
   Utf8Decoder decoder;
   auto data = generate_three_byte(state.range(0));
   for (auto _ : state) {
@@ -122,9 +122,9 @@ void decode_three_byte(benchmark::State& state) {
   }
   state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
 }
-BENCHMARK(decode_three_byte)->Arg(1024)->Arg(4096)->Arg(16384);
+BENCHMARK(utf8_decode_three_byte)->Arg(1024)->Arg(4096)->Arg(16384);
 
-void decode_four_byte(benchmark::State& state) {
+void utf8_decode_four_byte(benchmark::State& state) {
   Utf8Decoder decoder;
   auto data = generate_four_byte(state.range(0));
   for (auto _ : state) {
@@ -140,9 +140,9 @@ void decode_four_byte(benchmark::State& state) {
   }
   state.SetBytesProcessed(data.size() * sizeof(char32_t) * state.iterations());
 }
-BENCHMARK(decode_four_byte)->Arg(1024)->Arg(4096)->Arg(16384);
+BENCHMARK(utf8_decode_four_byte)->Arg(1024)->Arg(4096)->Arg(16384);
 
-void decode_mixed(benchmark::State& state) {
+void utf8_decode_mixed(benchmark::State& state) {
   Utf8Decoder decoder;
   auto data = generate_mixed(state.range(0));
   for (auto _ : state) {
@@ -158,9 +158,9 @@ void decode_mixed(benchmark::State& state) {
   }
   state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
 }
-BENCHMARK(decode_mixed)->Arg(1024)->Arg(4096)->Arg(16384);
+BENCHMARK(utf8_decode_mixed)->Arg(1024)->Arg(4096)->Arg(16384);
 
-void decode_invalid(benchmark::State& state) {
+void utf8_decode_invalid(benchmark::State& state) {
   Utf8Decoder decoder;
   auto data = generate_invalid(state.range(0));
   for (auto _ : state) {
@@ -176,7 +176,7 @@ void decode_invalid(benchmark::State& state) {
   }
   state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
 }
-BENCHMARK(decode_invalid)->Arg(1024)->Arg(4096)->Arg(16384);
+BENCHMARK(utf8_decode_invalid)->Arg(1024)->Arg(4096)->Arg(16384);
 
 }  // namespace
 

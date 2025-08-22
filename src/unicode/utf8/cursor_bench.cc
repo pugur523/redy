@@ -13,7 +13,7 @@
 namespace unicode {
 
 void utf8_cursor_init(benchmark::State& state) {
-  std::u8string input(u8"some utf8 string");
+  std::u8string input(state.range(0), 'a');
   Utf8FileManager manager;
   Utf8FileId id = manager.register_virtual_file(std::move(input));
   for (auto _ : state) {
@@ -22,7 +22,7 @@ void utf8_cursor_init(benchmark::State& state) {
   }
   state.SetBytesProcessed(sizeof(Utf8Cursor) * state.iterations());
 }
-BENCHMARK(utf8_cursor_init);
+BENCHMARK(utf8_cursor_init)->Arg(100)->Arg(1000)->Arg(10000);
 
 void utf8_cursor_peek(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
