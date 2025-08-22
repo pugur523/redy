@@ -2,7 +2,7 @@
 # This source code is licensed under the Apache License, Version 2.0
 # which can be found in the LICENSE file.
 
-set(TEST_NAME ${MAIN_EXECUTABLE_NAME_FROM_CONFIG}_test)
+set(TEST_NAME "${MAIN_EXECUTABLE_NAME_FROM_CONFIG}_test")
 
 message(STATUS "Configuring ${TEST_NAME}...")
 
@@ -18,6 +18,7 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/i18n/base/translator_test.cc
 
   ${PROJECT_SOURCE_DIR}/unicode/utf8/cursor_test.cc
+  ${PROJECT_SOURCE_DIR}/unicode/utf8/stream_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc

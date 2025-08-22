@@ -2,7 +2,7 @@
 # This source code is licensed under the Apache License, Version 2.0
 # which can be found in the LICENSE file.
 
-set(BENCHMARK_NAME ${MAIN_EXECUTABLE_NAME_FROM_CONFIG}_bench)
+set(BENCHMARK_NAME "${MAIN_EXECUTABLE_NAME_FROM_CONFIG}_bench")
 
 message(STATUS "Configuring ${BENCHMARK_NAME}...")
 
@@ -14,6 +14,7 @@ set(SOURCES
 
   ${PROJECT_SOURCE_DIR}/unicode/utf8/cursor_bench.cc
   ${PROJECT_SOURCE_DIR}/unicode/utf8/decoder_bench.cc
+  ${PROJECT_SOURCE_DIR}/unicode/utf8/stream_bench.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_bench.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_bench.cc

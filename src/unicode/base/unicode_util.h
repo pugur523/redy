@@ -63,23 +63,23 @@ inline constexpr bool is_ascii_letter(char32_t c) {
 }
 
 // this will cause segmentation fault
-// inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
-//   return kUtf8LengthTable[first_byte];
-// }
+inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
+  return kUtf8LengthTable[first_byte];
+}
 
 // implementation without utf8 length table
-inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
-  if (first_byte < 0x80) {
-    return 1;
-  } else if ((first_byte >> 5) == 0x06) {
-    return 2;
-  } else if ((first_byte >> 4) == 0x0E) {
-    return 3;
-  } else if ((first_byte >> 3) == 0x1E) {
-    return 4;
-  }
-  return 1;
-}
+// inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
+//   if (first_byte < 0x80) {
+//     return 1;
+//   } else if ((first_byte >> 5) == 0x06) {
+//     return 2;
+//   } else if ((first_byte >> 4) == 0x0E) {
+//     return 3;
+//   } else if ((first_byte >> 3) == 0x1E) {
+//     return 4;
+//   }
+//   return 1;
+// }
 
 inline constexpr uint8_t utf8_codepoint_length(char32_t c) {
   if (c <= 0x7F) {  // 0-127
@@ -103,9 +103,9 @@ inline bool is_valid_continuation_sequence(const uint8_t* bytes, uint8_t len) {
   return mask == 0;
 }
 
-inline bool is_valid_codepoint(char32_t cp, uint8_t len) {
-  constexpr char32_t kMinValues[5] = {0, 0, 0x80, 0x800, 0x10000};
-  constexpr char32_t kMaxValues[5] = {0, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+inline constexpr bool is_valid_codepoint(char32_t cp, uint8_t len) {
+  constexpr const char32_t kMinValues[5] = {0, 0, 0x80, 0x800, 0x10000};
+  constexpr const char32_t kMaxValues[5] = {0, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
   return cp >= kMinValues[len] && cp <= kMaxValues[len] &&
          !(cp >= 0xD800 && cp <= 0xDFFF);  // no surrogates
 }

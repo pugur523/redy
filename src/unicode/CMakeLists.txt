@@ -17,6 +17,7 @@ set(SOURCES
   utf8/decoder.cc
   utf8/file_manager.cc
   utf8/file.cc
+  utf8/stream.cc
 )
 
 if(ENABLE_X86_ASM)

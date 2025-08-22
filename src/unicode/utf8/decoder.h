@@ -27,17 +27,27 @@ class UNICODE_EXPORT Utf8Decoder {
   static constexpr const char32_t kInvalidUnicodePoint = 0xFFFD;
 
   // returns (codepoint, byte_count) or (0xFFFD, 1) if invalid.
-  std::pair<char32_t, std::size_t> decode(const char8_t* input,
-                                          std::size_t size) const;
+  static std::pair<char32_t, std::size_t> decode(const char8_t* input,
+                                                 std::size_t size);
+
+  static std::size_t decode_bulk(const char8_t* input,
+                                 std::size_t input_size,
+                                 char32_t* output,
+                                 std::size_t output_capacity);
 
   // consumes one codepoint from utf8 string, returns (codepoint, next_ptr)
-  inline std::pair<char32_t, const char8_t*> next_codepoint(
+  static inline std::pair<char32_t, const char8_t*> next_codepoint(
       const char8_t* ptr,
-      const char8_t* end) const {
+      const char8_t* end) {
     const std::size_t remaining = static_cast<std::size_t>(end - ptr);
     const auto [codepoint, length] = decode(ptr, remaining);
     return {codepoint, ptr + (length > 0 ? length : 1)};
   }
+
+ private:
+  static std::size_t process_ascii_bulk(const char8_t* input,
+                                        std::size_t size,
+                                        char32_t* output);
 };
 
 }  // namespace unicode
