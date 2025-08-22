@@ -33,8 +33,8 @@ class Vec {
   inline constexpr Vec(const Vec&) = default;
   inline constexpr Vec& operator=(const Vec&) = default;
 
-  inline constexpr Vec(Vec&&) = default;
-  inline constexpr Vec& operator=(Vec&&) = default;
+  inline constexpr Vec(Vec&&) noexcept = default;
+  inline constexpr Vec& operator=(Vec&&) noexcept = default;
 
   inline static constexpr Vec from_array(const std::array<T, kDimNumber>& arr) {
     Vec v;

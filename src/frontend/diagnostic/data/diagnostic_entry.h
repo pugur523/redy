@@ -24,8 +24,8 @@ class DIAGNOSTIC_EXPORT DiagnosticEntry {
   DiagnosticEntry(const DiagnosticEntry&) = delete;
   DiagnosticEntry& operator=(const DiagnosticEntry&) = delete;
 
-  DiagnosticEntry(DiagnosticEntry&&) = default;
-  DiagnosticEntry& operator=(DiagnosticEntry&&) = default;
+  DiagnosticEntry(DiagnosticEntry&&) noexcept = default;
+  DiagnosticEntry& operator=(DiagnosticEntry&&) noexcept = default;
 
   inline const Header& header() const { return header_; }
   inline const Labels& labels() const { return labels_; }

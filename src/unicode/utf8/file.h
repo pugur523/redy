@@ -30,8 +30,8 @@ class UNICODE_EXPORT Utf8File {
   Utf8File(const Utf8File&) = delete;
   Utf8File& operator=(const Utf8File&) = delete;
 
-  Utf8File(Utf8File&&) = default;
-  Utf8File& operator=(Utf8File&&) = default;
+  Utf8File(Utf8File&&) noexcept = default;
+  Utf8File& operator=(Utf8File&&) noexcept = default;
 
   void init(std::u8string_view file_name);
   void init_and_load(std::u8string_view file_name, std::u8string&& content);

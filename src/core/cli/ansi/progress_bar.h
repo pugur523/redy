@@ -31,8 +31,8 @@ class CORE_EXPORT ProgressBar {
   ProgressBar(const ProgressBar&) = delete;
   ProgressBar& operator=(const ProgressBar&) = delete;
 
-  ProgressBar(ProgressBar&&) = default;
-  ProgressBar& operator=(ProgressBar&&) = default;
+  ProgressBar(ProgressBar&&) noexcept = default;
+  ProgressBar& operator=(ProgressBar&&) noexcept = default;
 
   // update progress in the range from 0 to 1
   [[nodiscard]] inline std::string update(double progress,

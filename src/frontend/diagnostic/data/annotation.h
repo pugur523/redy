@@ -70,8 +70,8 @@ class DIAGNOSTIC_EXPORT Annotation {
   Annotation(const Annotation&) = delete;
   Annotation& operator=(const Annotation&) = delete;
 
-  Annotation(Annotation&&) = default;
-  Annotation& operator=(Annotation&&) = default;
+  Annotation(Annotation&&) noexcept = default;
+  Annotation& operator=(Annotation&&) noexcept = default;
 
   inline const i18n::FormatArgs& format_args() const { return format_args_; }
   inline AnnotationSeverity severity() const { return severity_; }

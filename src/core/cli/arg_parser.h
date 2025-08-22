@@ -48,8 +48,8 @@ class CORE_EXPORT ArgParser {
 
   ArgParser(const ArgParser&) = delete;
   ArgParser& operator=(const ArgParser&) = delete;
-  ArgParser(ArgParser&&) = default;
-  ArgParser& operator=(ArgParser&&) = default;
+  ArgParser(ArgParser&&) noexcept = default;
+  ArgParser& operator=(ArgParser&&) noexcept = default;
 
   // flag / option / list / positional adders
 

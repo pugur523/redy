@@ -19,8 +19,8 @@ class CORE_EXPORT OptionBase {
   OptionBase(const OptionBase&) = delete;
   OptionBase& operator=(const OptionBase&) = delete;
 
-  OptionBase(OptionBase&&) = default;
-  OptionBase& operator=(OptionBase&&) = default;
+  OptionBase(OptionBase&&) noexcept = default;
+  OptionBase& operator=(OptionBase&&) noexcept = default;
 
   virtual bool parse(const std::string& value) = 0;
 

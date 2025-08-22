@@ -31,8 +31,8 @@ class BASE_EXPORT TokenStream {
   TokenStream(const TokenStream&) = delete;
   TokenStream& operator=(const TokenStream&) = delete;
 
-  TokenStream(TokenStream&&) = default;
-  TokenStream& operator=(TokenStream&&) = default;
+  TokenStream(TokenStream&&) noexcept = default;
+  TokenStream& operator=(TokenStream&&) noexcept = default;
 
   inline const Token& peek(std::size_t offset = 0) const;
   inline const Token& previous() const;

@@ -77,8 +77,8 @@ class I18N_EXPORT Translator {
   Translator(const Translator&) = delete;
   Translator& operator=(const Translator&) = delete;
 
-  Translator(Translator&&) = default;
-  Translator& operator=(Translator&&) = default;
+  Translator(Translator&&) noexcept = default;
+  Translator& operator=(Translator&&) noexcept = default;
 
   // update the translator configuration
   inline void config(const TranslatorConfig& config) { config_ = config; }

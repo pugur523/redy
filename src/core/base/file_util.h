@@ -179,8 +179,8 @@ class CORE_EXPORT File {
   File(const File&) = delete;
   File& operator=(const File&) = delete;
 
-  File(File&&) = default;
-  File& operator=(File&&) = default;
+  File(File&&) noexcept = default;
+  File& operator=(File&&) noexcept = default;
 
   inline const std::string& file_name() const { return file_name_; }
   inline const std::string& source() const { return source_; }

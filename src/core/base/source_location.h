@@ -20,8 +20,8 @@ class CORE_EXPORT SourceLocation {
   SourceLocation(const SourceLocation&) = default;
   SourceLocation& operator=(const SourceLocation&) = default;
 
-  SourceLocation(SourceLocation&&) = default;
-  SourceLocation& operator=(SourceLocation&&) = default;
+  SourceLocation(SourceLocation&&) noexcept = default;
+  SourceLocation& operator=(SourceLocation&&) noexcept = default;
 
   inline constexpr std::size_t line() const { return internal_vec_[0]; }
   inline constexpr std::size_t column() const { return internal_vec_[1]; }

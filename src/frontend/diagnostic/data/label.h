@@ -89,8 +89,8 @@ class DIAGNOSTIC_EXPORT Label {
   Label(const Label&) = delete;
   Label& operator=(const Label&) = delete;
 
-  Label(Label&&) = default;
-  Label& operator=(Label&&) = default;
+  Label(Label&&) noexcept = default;
+  Label& operator=(Label&&) noexcept = default;
 
   inline void add_annotation(AnnotationSeverity severity,
                              i18n::TranslationKey message_tr_key,

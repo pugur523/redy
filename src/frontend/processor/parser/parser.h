@@ -53,8 +53,8 @@ class PARSER_EXPORT Parser {
   Parser(const Parser&) = delete;
   Parser& operator=(const Parser&) = delete;
 
-  Parser(Parser&&) = default;
-  Parser& operator=(Parser&&) = default;
+  Parser(Parser&&) noexcept = default;
+  Parser& operator=(Parser&&) noexcept = default;
 
   void init(base::TokenStream* stream, const i18n::Translator& translater);
 

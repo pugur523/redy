@@ -21,8 +21,8 @@ struct CORE_EXPORT RuntimeOptions {
   RuntimeOptions(const RuntimeOptions&) = delete;
   RuntimeOptions& operator=(const RuntimeOptions&) = delete;
 
-  RuntimeOptions(RuntimeOptions&&) = default;
-  RuntimeOptions& operator=(RuntimeOptions&&) = default;
+  RuntimeOptions(RuntimeOptions&&) noexcept = default;
+  RuntimeOptions& operator=(RuntimeOptions&&) noexcept = default;
 
   std::string to_string(std::size_t padding_size = 0);
   inline void print_all() {

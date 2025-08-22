@@ -29,8 +29,8 @@ class UNICODE_EXPORT Utf8FileManager {
   Utf8FileManager(const Utf8FileManager&) = delete;
   Utf8FileManager& operator=(const Utf8FileManager&) = delete;
 
-  Utf8FileManager(Utf8FileManager&&) = default;
-  Utf8FileManager& operator=(Utf8FileManager&&) = default;
+  Utf8FileManager(Utf8FileManager&&) noexcept = default;
+  Utf8FileManager& operator=(Utf8FileManager&&) noexcept = default;
 
   Utf8FileId register_file(std::u8string_view file_name);
   Utf8FileId register_file_loaded(std::u8string_view file_name,

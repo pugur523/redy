@@ -57,8 +57,8 @@ class LEXER_EXPORT Lexer {
   Lexer(const Lexer&) = delete;
   Lexer& operator=(const Lexer&) = delete;
 
-  Lexer(Lexer&&) = default;
-  Lexer& operator=(Lexer&&) = default;
+  Lexer(Lexer&&) noexcept = default;
+  Lexer& operator=(Lexer&&) noexcept = default;
 
   [[nodiscard]] InitResult init(unicode::Utf8FileManager* file_manager,
                                 unicode::Utf8FileId file_id,

@@ -30,8 +30,8 @@ class CORE_EXPORT FileManager {
   FileManager(const FileManager&) = delete;
   FileManager& operator=(const FileManager&) = delete;
 
-  FileManager(FileManager&&) = default;
-  FileManager& operator=(FileManager&&) = default;
+  FileManager(FileManager&&) noexcept = default;
+  FileManager& operator=(FileManager&&) noexcept = default;
 
   [[nodiscard]] FileId add_file(std::string&& source, std::string&& file_name);
   [[nodiscard]] FileId add_file(std::string&& file_name);

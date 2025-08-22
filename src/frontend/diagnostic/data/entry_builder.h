@@ -36,8 +36,8 @@ class DIAGNOSTIC_EXPORT EntryBuilder {
   EntryBuilder(const EntryBuilder&) = delete;
   EntryBuilder& operator=(const EntryBuilder&) = delete;
 
-  EntryBuilder(EntryBuilder&&) = default;
-  EntryBuilder& operator=(EntryBuilder&&) = default;
+  EntryBuilder(EntryBuilder&&) noexcept = default;
+  EntryBuilder& operator=(EntryBuilder&&) noexcept = default;
 
   inline EntryBuilder& label(
       unicode::Utf8FileId file_id,

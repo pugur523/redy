@@ -30,8 +30,8 @@ class CORE_EXPORT SourceRange {
   SourceRange(const SourceRange&) = default;
   SourceRange& operator=(const SourceRange&) = default;
 
-  SourceRange(SourceRange&&) = default;
-  SourceRange& operator=(SourceRange&&) = default;
+  SourceRange(SourceRange&&) noexcept = default;
+  SourceRange& operator=(SourceRange&&) noexcept = default;
 
   inline constexpr const SourceLocation& start() const { return start_; }
   inline constexpr std::size_t length() const { return length_; }

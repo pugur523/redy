@@ -25,8 +25,8 @@ class AST_EXPORT Context {
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
 
-  Context(Context&&) = default;
-  Context& operator=(Context&&) = default;
+  Context(Context&&) noexcept = default;
+  Context& operator=(Context&&) noexcept = default;
 
   static inline std::unique_ptr<Context> create() {
     return std::unique_ptr<Context>(new Context());

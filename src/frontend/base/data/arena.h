@@ -22,8 +22,8 @@ class BASE_EXPORT Arena {
   Arena(const Arena&) = delete;
   Arena& operator=(const Arena&) = delete;
 
-  Arena(Arena&&) = default;
-  Arena& operator=(Arena&&) = default;
+  Arena(Arena&&) noexcept = default;
+  Arena& operator=(Arena&&) noexcept = default;
 
   inline constexpr Id alloc(T&& value) {
     data_.emplace_back(std::move(value));

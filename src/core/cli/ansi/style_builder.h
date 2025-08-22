@@ -58,8 +58,8 @@ class CORE_EXPORT StyleBuilder {
   StyleBuilder(const StyleBuilder&) = delete;
   StyleBuilder& operator=(const StyleBuilder&) = delete;
 
-  StyleBuilder(StyleBuilder&&) = default;
-  StyleBuilder& operator=(StyleBuilder&&) = default;
+  StyleBuilder(StyleBuilder&&) noexcept = default;
+  StyleBuilder& operator=(StyleBuilder&&) noexcept = default;
 
   inline constexpr StyleBuilder& style(Style s) {
     styles_ = s;

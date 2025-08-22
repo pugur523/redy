@@ -30,8 +30,8 @@ class UNICODE_EXPORT Utf8Cursor {
   Utf8Cursor(const Utf8Cursor&) = delete;
   Utf8Cursor& operator=(const Utf8Cursor&) = delete;
 
-  Utf8Cursor(Utf8Cursor&&) = default;
-  Utf8Cursor& operator=(Utf8Cursor&&) = default;
+  Utf8Cursor(Utf8Cursor&&) noexcept = default;
+  Utf8Cursor& operator=(Utf8Cursor&&) noexcept = default;
 
   // returns 0 if valid or byte index of the invalid byte
   std::size_t init(Utf8FileManager* file_manager, Utf8FileId file_id);

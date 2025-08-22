@@ -21,8 +21,8 @@ class UNICODE_EXPORT Utf8Decoder {
   Utf8Decoder(const Utf8Decoder&) = delete;
   Utf8Decoder& operator=(const Utf8Decoder&) = delete;
 
-  Utf8Decoder(Utf8Decoder&&) = default;
-  Utf8Decoder& operator=(Utf8Decoder&&) = default;
+  Utf8Decoder(Utf8Decoder&&) noexcept = default;
+  Utf8Decoder& operator=(Utf8Decoder&&) noexcept = default;
 
   static constexpr const char32_t kInvalidUnicodePoint = 0xFFFD;
 

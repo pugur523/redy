@@ -23,8 +23,8 @@ class DIAGNOSTIC_EXPORT Header {
   Header(const Header&) = delete;
   Header& operator=(const Header&) = delete;
 
-  Header(Header&&) = default;
-  Header& operator=(Header&&) = default;
+  Header(Header&&) noexcept = default;
+  Header& operator=(Header&&) noexcept = default;
 
   inline Severity severity() const { return severity_; }
   inline DiagnosticId diag_id() const { return diag_id_; }

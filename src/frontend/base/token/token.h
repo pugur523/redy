@@ -45,8 +45,8 @@ class BASE_EXPORT Token {
   Token(const Token&) = delete;
   Token& operator=(const Token&) = delete;
 
-  Token(Token&&) = default;
-  Token& operator=(Token&&) = default;
+  Token(Token&&) noexcept = default;
+  Token& operator=(Token&&) noexcept = default;
 
   inline const core::SourceRange& range() const { return range_; }
   inline const core::SourceLocation& start() const { return range_.start(); }

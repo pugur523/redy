@@ -35,8 +35,8 @@ class DiagnosticEngine {
   DiagnosticEngine(const DiagnosticEngine&) = delete;
   DiagnosticEngine& operator=(const DiagnosticEngine&) = delete;
 
-  DiagnosticEngine(DiagnosticEngine&&) = default;
-  DiagnosticEngine& operator=(DiagnosticEngine&&) = default;
+  DiagnosticEngine(DiagnosticEngine&&) noexcept = default;
+  DiagnosticEngine& operator=(DiagnosticEngine&&) noexcept = default;
 
   inline const Entries& entries() const { return entries_; }
 
