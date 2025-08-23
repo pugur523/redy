@@ -3,6 +3,7 @@
 // which can be found in the LICENSE file.
 
 #include "core/base/logger.h"
+#include "core/cli/console.h"
 #include "core/diagnostics/signal_handler.h"
 #include "core/diagnostics/stack_trace.h"
 #include "core/diagnostics/terminate_handler.h"
@@ -24,6 +25,7 @@ int main() {
   core::register_stack_trace_handler();
   core::register_terminate_handler();
   core::register_signal_handlers();
+  core::register_console();
   core::register_glog();
 
   init_tests();
