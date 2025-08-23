@@ -247,17 +247,17 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [x] Break
       - [x] Range
       - [x] Return
-    - [ ] With block
-      - [ ] Block
-      - [ ] Unsafe
-      - [ ] Fast
-      - [ ] If
-      - [ ] Loop
-      - [ ] While
-      - [ ] For
-      - [ ] Match
+    - [x] With block
+      - [x] Block
+      - [x] Unsafe
+      - [x] Fast
+      - [x] If
+      - [x] Loop
+      - [x] While
+      - [x] For
+      - [x] Match
   - [ ] Statements
-    - [ ] Assign
+    - [x] Assign
     - [ ] Const Assign
     - [ ] Expression
     - [ ] Module

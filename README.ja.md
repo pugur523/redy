@@ -250,17 +250,17 @@ fn main() -> i32 {
         - [x] Break
         - [x] Range
         - [x] Return
-      - [ ] ブロックあり
-        - [ ] ブロック
-        - [ ] Unsafe
-        - [ ] Fast
-        - [ ] If
-        - [ ] Loop
-        - [ ] While
-        - [ ] For
-        - [ ] Match
+      - [x] ブロックあり
+        - [x] ブロック
+        - [x] Unsafe
+        - [x] Fast
+        - [x] If
+        - [x] Loop
+        - [x] While
+        - [x] For
+        - [x] Match
     - [ ] 文
-      - [ ] 代入
+      - [x] 代入
       - [ ] Const代入
       - [ ] 文として扱う式
       - [ ] モジュール
