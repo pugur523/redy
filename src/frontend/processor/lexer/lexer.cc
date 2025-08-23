@@ -11,6 +11,7 @@
 
 #include "frontend/base/keyword/keyword.h"
 #include "frontend/base/token/token.h"
+#include "frontend/base/token/token_kind.h"
 #include "frontend/diagnostic/data/annotation.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
@@ -59,10 +60,10 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
     Result<Token> result = tokenize_next();
     if (result.is_ok()) [[likely]] {
       Token token{std::move(result).unwrap()};
-      const TokenKind kind = token.kind();
-      tokens.push_back(std::move(token));
+      bool is_eof = token.kind() == base::TokenKind::kEof;
+      tokens.emplace_back(std::move(token));
 
-      if (kind == TokenKind::kEof) {
+      if (is_eof) [[unlikely]] {
         break;
       }
     } else {

@@ -13,7 +13,6 @@ set(SOURCES
 
   base/unicode_util.cc
 
-  utf8/cursor.cc
   utf8/decoder.cc
   utf8/file_manager.cc
   utf8/file.cc

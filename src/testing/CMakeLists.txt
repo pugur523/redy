@@ -17,7 +17,6 @@ set(SOURCES
 
   ${PROJECT_SOURCE_DIR}/i18n/base/translator_test.cc
 
-  ${PROJECT_SOURCE_DIR}/unicode/utf8/cursor_test.cc
   ${PROJECT_SOURCE_DIR}/unicode/utf8/stream_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
