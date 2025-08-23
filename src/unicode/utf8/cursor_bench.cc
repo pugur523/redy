@@ -22,7 +22,7 @@ void utf8_cursor_init(benchmark::State& state) {
   }
   state.SetBytesProcessed(sizeof(Utf8Cursor) * state.iterations());
 }
-BENCHMARK(utf8_cursor_init)->Arg(100)->Arg(1000)->Arg(10000);
+BENCHMARK(utf8_cursor_init)->Arg(1024)->Arg(4096)->Arg(16384);
 
 void utf8_cursor_peek(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
@@ -38,7 +38,7 @@ void utf8_cursor_peek(benchmark::State& state) {
   }
   state.SetBytesProcessed(input_size * sizeof(char) * state.iterations());
 }
-BENCHMARK(utf8_cursor_peek)->Arg(100)->Arg(1000)->Arg(10000);
+BENCHMARK(utf8_cursor_peek)->Arg(1024)->Arg(4096)->Arg(16384);
 
 void utf8_cursor_next(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
@@ -54,7 +54,7 @@ void utf8_cursor_next(benchmark::State& state) {
   }
   state.SetBytesProcessed(input_size * sizeof(char) * state.iterations());
 }
-BENCHMARK(utf8_cursor_next)->Arg(100)->Arg(1000)->Arg(10000);
+BENCHMARK(utf8_cursor_next)->Arg(1024)->Arg(4096)->Arg(16384);
 
 void utf8_cursor_next_utf8(benchmark::State& state) {
   // alternating "あ😊"
@@ -75,7 +75,7 @@ void utf8_cursor_next_utf8(benchmark::State& state) {
   }
   state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
 }
-BENCHMARK(utf8_cursor_next_utf8)->Arg(100)->Arg(1000)->Arg(10000);
+BENCHMARK(utf8_cursor_next_utf8)->Arg(1024)->Arg(4096)->Arg(16384);
 
 void utf8_cursor_peek_utf8(benchmark::State& state) {
   std::u8string input;
@@ -95,7 +95,7 @@ void utf8_cursor_peek_utf8(benchmark::State& state) {
   }
   state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
 }
-BENCHMARK(utf8_cursor_peek_utf8)->Arg(100)->Arg(1000)->Arg(10000);
+BENCHMARK(utf8_cursor_peek_utf8)->Arg(1024)->Arg(4096)->Arg(16384);
 
 // random mixed (ascii + breakline + utf8) next
 void utf8_cursor_mixed_next(benchmark::State& state) {
@@ -116,6 +116,6 @@ void utf8_cursor_mixed_next(benchmark::State& state) {
   }
   state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
 }
-BENCHMARK(utf8_cursor_mixed_next)->Arg(100)->Arg(1000)->Arg(10000);
+BENCHMARK(utf8_cursor_mixed_next)->Arg(1024)->Arg(4096)->Arg(16384);
 
 }  // namespace unicode

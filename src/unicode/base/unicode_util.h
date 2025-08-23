@@ -18,9 +18,21 @@
 
 namespace unicode {
 
-UNICODE_EXPORT constexpr bool is_in_ranges(const UnicodeRange* ranges,
-                                           std::size_t count,
-                                           char32_t codepoint) {
+constexpr const char32_t kAsciiMax = 0x7F;
+
+constexpr const char32_t kOneByteMin = 0;          // 0-127
+constexpr const char32_t kTwoBytesMin = 0x80;      // 128-2047
+constexpr const char32_t kThreeBytesMin = 0x800;   // 2048-65535
+constexpr const char32_t kFourBytesMin = 0x10000;  // 65536-1114111
+
+constexpr const char32_t kOneByteMax = kAsciiMax;   // 0-127
+constexpr const char32_t kTwoBytesMax = 0x7FF;      // 128-2047
+constexpr const char32_t kThreeBytesMax = 0xFFFF;   // 2048-65535
+constexpr const char32_t kFourBytesMax = 0x10FFFF;  // 65536-1114111
+
+inline constexpr bool is_in_ranges(const UnicodeRange* ranges,
+                                   std::size_t count,
+                                   char32_t codepoint) {
   if (count == 0) [[unlikely]] {
     return false;
   }
@@ -46,7 +58,7 @@ UNICODE_EXPORT constexpr bool is_in_ranges(const UnicodeRange* ranges,
 }
 
 inline constexpr bool is_ascii(char32_t codepoint) {
-  return codepoint <= 0x7F;
+  return codepoint <= kAsciiMax;
 }
 
 inline constexpr bool is_eof(char32_t codepoint) {
@@ -55,57 +67,66 @@ inline constexpr bool is_eof(char32_t codepoint) {
 
 inline constexpr bool is_ascii_letter(char32_t c) {
   // A-Z: 0x41-0x5A, a-z: 0x61-0x7A
-
   // the difference between uppercase and lowercase is only 0x20, so use bitwise
   // OR to normalize to lowercase
-  char32_t normalized = c | 0x20;
-  return (normalized - 'a') <= 25;
+  constexpr const char32_t kDiff = 0x20;
+  constexpr const char32_t kAlphabetsCount = 25;
+  const char32_t normalized = c | kDiff;
+  return (normalized - 'a') <= kAlphabetsCount;
 }
 
 // this will cause segmentation fault
-inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
-  return kUtf8LengthTable[first_byte];
-}
-
-// implementation without utf8 length table
 // inline constexpr uint8_t utf8_sequence_length(unsigned char first_byte) {
-//   if (first_byte < 0x80) {
-//     return 1;
-//   } else if ((first_byte >> 5) == 0x06) {
-//     return 2;
-//   } else if ((first_byte >> 4) == 0x0E) {
-//     return 3;
-//   } else if ((first_byte >> 3) == 0x1E) {
-//     return 4;
-//   }
-//   return 1;
+//   return kUtf8LengthTable[first_byte];
 // }
 
-inline constexpr uint8_t utf8_codepoint_length(char32_t c) {
-  if (c <= 0x7F) {  // 0-127
+// implementation without utf8 length table
+inline constexpr uint8_t utf8_sequence_length(uint8_t b) {
+  if (b <= kOneByteMax) {
     return 1;
-  } else if (c <= 0x7FF) {  // 128-2047
+  } else if ((b & 0xE0) == 0xC0) {
     return 2;
-  } else if (c <= 0xFFFF) {  // 2048-65535
+  } else if ((b & 0xF0) == 0xE0) {
     return 3;
-  } else if (c <= 0x10FFFF) {  // 65536-1114111
+  } else if ((b & 0xF8) == 0xF0) {
+    return 4;
+  } else {
+    return 0;
+  }
+}
+
+inline constexpr uint8_t utf8_codepoint_length(char32_t c) {
+  if (c <= kOneByteMax) {  // 0-127
+    return 1;
+  } else if (c <= kTwoBytesMax) {  // 128-2047
+    return 2;
+  } else if (c <= kThreeBytesMax) {  // 2048-65535
+    return 3;
+  } else if (c <= kFourBytesMax) {  // 65536-1114111
     return 4;
   }
   return 0;
 }
 
 inline bool is_valid_continuation_sequence(const uint8_t* bytes, uint8_t len) {
-  // check all continuation bytes at once using simd where possible
+  // TODO: check all continuation bytes at once using simd where possible
   char32_t mask = 0;
   for (uint8_t i = 1; i < len; ++i) {
-    mask |= (bytes[i] & 0xC0) ^ 0x80;
+    mask |= (bytes[i] & 0xC0) ^ kTwoBytesMin;
   }
   return mask == 0;
 }
 
 inline constexpr bool is_valid_codepoint(char32_t cp, uint8_t len) {
-  constexpr const char32_t kMinValues[5] = {0, 0, 0x80, 0x800, 0x10000};
-  constexpr const char32_t kMaxValues[5] = {0, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+  if (len < 1 || len > 4) [[unlikely]] {
+    return false;
+  }
+  constexpr const char32_t kMinValues[5] = {
+      0, kOneByteMin, kTwoBytesMin, kThreeBytesMin, kFourBytesMin,
+  };
+  constexpr const char32_t kMaxValues[5] = {
+      0, kOneByteMax, kTwoBytesMax, kThreeBytesMax, kFourBytesMax,
+  };
   return cp >= kMinValues[len] && cp <= kMaxValues[len] &&
          !(cp >= 0xD800 && cp <= 0xDFFF);  // no surrogates
 }
@@ -224,10 +245,10 @@ inline constexpr bool is_unicode_whitespace(char32_t codepoint) {
     // bitwise whitespace detection:
     // {' ', '\t', '\n', '\r', '\f', '\v'}
     // = {0x20, 0x09, 0x0A, 0x0D, 0x0C, 0x0B}
-    constexpr uint64_t whitespace_mask = (1ull << 0x20) | (1ull << 0x09) |
-                                         (1ull << 0x0A) | (1ull << 0x0D) |
-                                         (1ull << 0x0C) | (1ull << 0x0B);
-    return codepoint <= 0x20 && (whitespace_mask & (1ull << codepoint));
+    constexpr const uint64_t whitespace_mask = (1ull << 0x20) | (1ull << 0x09) |
+                                               (1ull << 0x0A) | (1ull << 0x0D) |
+                                               (1ull << 0x0C) | (1ull << 0x0B);
+    return codepoint <= 0x20 && ((whitespace_mask >> codepoint) & 1u);
   }
   return is_in_ranges(kWhiteSpace, kWhiteSpaceCount, codepoint);
 }
@@ -236,7 +257,7 @@ inline constexpr bool is_unicode_newline(char32_t codepoint) {
   if (is_ascii(codepoint)) [[likely]] {
     // bitwise newline detection:
     // LF: 0x0A, VT: 0x0B, FF: 0x0C, CR: 0x0D
-    constexpr uint64_t ascii_newline_mask =
+    constexpr const uint64_t ascii_newline_mask =
         (1ull << 0x0A) | (1ull << 0x0B) | (1ull << 0x0C) | (1ull << 0x0D);
     return codepoint <= 0x0D && (ascii_newline_mask & (1ull << codepoint));
   }
