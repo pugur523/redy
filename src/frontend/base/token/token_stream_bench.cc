@@ -37,7 +37,7 @@ void token_stream_advance(benchmark::State& state) {
     stream.rewind(0);
   }
 
-  state.SetBytesProcessed(1000 * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(1000 * state.iterations());
 }
 BENCHMARK(token_stream_advance);
 
@@ -64,7 +64,7 @@ void token_stream_peek(benchmark::State& state) {
     stream.rewind(0);
   }
 
-  state.SetBytesProcessed(1000 * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(1000 * state.iterations());
 }
 BENCHMARK(token_stream_peek);
 

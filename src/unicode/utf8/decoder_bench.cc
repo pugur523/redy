@@ -120,7 +120,7 @@ void utf8_decode_three_byte(benchmark::State& state) {
     }
     benchmark::DoNotOptimize(sum);
   }
-  state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
+  state.SetBytesProcessed(data.size() * state.iterations());
 }
 BENCHMARK(utf8_decode_three_byte)->Arg(1024)->Arg(4096)->Arg(16384);
 

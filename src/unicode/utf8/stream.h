@@ -118,7 +118,10 @@ class UNICODE_EXPORT Utf8Stream {
     std::size_t column;
   };
 
-  inline void reset() { restore_position({}); }
+  inline void reset() {
+    DCHECK_EQ(status_, Status::kValid);
+    restore_position({});
+  }
 
   inline const std::vector<char32_t>& codepoints() const { return codepoints_; }
   inline Status status() const { return status_; }

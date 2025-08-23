@@ -17,7 +17,7 @@ void keyword_lookup_keyword(benchmark::State& state) {
     benchmark::DoNotOptimize(lookup_id_or_keyword(id));
   }
 
-  state.SetBytesProcessed(id.size() * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(id.size() * state.iterations());
 }
 BENCHMARK(keyword_lookup_keyword);
 

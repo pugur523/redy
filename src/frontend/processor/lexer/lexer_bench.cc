@@ -26,7 +26,7 @@ void lexer_init(benchmark::State& state) {
     auto init_result = lexer.init(&manager, id);
     benchmark::DoNotOptimize(init_result.is_ok());
   }
-  state.SetBytesProcessed(code_size * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(code_size * state.iterations());
 }
 BENCHMARK(lexer_init);
 
@@ -38,17 +38,18 @@ void lexer_loop(benchmark::State& state) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId id = manager.register_virtual_file(std::move(code));
 
+  Lexer lexer;
+  auto init_result = lexer.init(&manager, id);
   for (auto _ : state) {
-    Lexer lexer;
-    auto init_result = lexer.init(&manager, id);
     while (true) {
       const base::Token token = lexer.tokenize_next().unwrap();
       if (token.kind() == base::TokenKind::kEof) {
         break;
       }
     }
+    lexer.reset();
   }
-  state.SetBytesProcessed(code_size * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(code_size * state.iterations());
 }
 BENCHMARK(lexer_loop);
 

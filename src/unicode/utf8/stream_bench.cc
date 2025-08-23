@@ -14,13 +14,14 @@ namespace unicode {
 
 void utf8_stream_init(benchmark::State& state) {
   std::u8string input(state.range(0), 'a');
+  std::size_t input_size = input.size();
   Utf8FileManager manager;
   Utf8FileId id = manager.register_virtual_file(std::move(input));
   for (auto _ : state) {
     Utf8Stream stream;
     stream.init(&manager, id);
   }
-  state.SetBytesProcessed(sizeof(Utf8Stream) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_stream_init)->Arg(1024)->Arg(4096)->Arg(16384);
 
