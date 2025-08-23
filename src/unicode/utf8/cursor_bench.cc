@@ -36,7 +36,7 @@ void utf8_cursor_peek(benchmark::State& state) {
       benchmark::DoNotOptimize(cursor.peek());
     }
   }
-  state.SetBytesProcessed(input_size * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_cursor_peek)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -52,7 +52,7 @@ void utf8_cursor_next(benchmark::State& state) {
       benchmark::DoNotOptimize(cursor.next());
     }
   }
-  state.SetBytesProcessed(input_size * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_cursor_next)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -73,7 +73,7 @@ void utf8_cursor_next_utf8(benchmark::State& state) {
       benchmark::DoNotOptimize(cursor.next());
     }
   }
-  state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_cursor_next_utf8)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -93,7 +93,7 @@ void utf8_cursor_peek_utf8(benchmark::State& state) {
       benchmark::DoNotOptimize(cursor.peek());
     }
   }
-  state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_cursor_peek_utf8)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -114,7 +114,7 @@ void utf8_cursor_mixed_next(benchmark::State& state) {
       cursor.next();
     }
   }
-  state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_cursor_mixed_next)->Arg(1024)->Arg(4096)->Arg(16384);
 

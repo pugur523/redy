@@ -84,7 +84,7 @@ void utf8_decode_ascii(benchmark::State& state) {
     }
     benchmark::DoNotOptimize(sum);
   }
-  state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
+  state.SetBytesProcessed(data.size() * state.iterations());
 }
 BENCHMARK(utf8_decode_ascii)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -102,7 +102,7 @@ void utf8_decode_two_byte(benchmark::State& state) {
     }
     benchmark::DoNotOptimize(sum);
   }
-  state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
+  state.SetBytesProcessed(data.size() * state.iterations());
 }
 BENCHMARK(utf8_decode_two_byte)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -138,7 +138,7 @@ void utf8_decode_four_byte(benchmark::State& state) {
     }
     benchmark::DoNotOptimize(sum);
   }
-  state.SetBytesProcessed(data.size() * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(data.size() * state.iterations());
 }
 BENCHMARK(utf8_decode_four_byte)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -156,7 +156,7 @@ void utf8_decode_mixed(benchmark::State& state) {
     }
     benchmark::DoNotOptimize(sum);
   }
-  state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
+  state.SetBytesProcessed(data.size() * state.iterations());
 }
 BENCHMARK(utf8_decode_mixed)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -174,7 +174,7 @@ void utf8_decode_invalid(benchmark::State& state) {
     }
     benchmark::DoNotOptimize(sum);
   }
-  state.SetBytesProcessed(data.size() * sizeof(char8_t) * state.iterations());
+  state.SetBytesProcessed(data.size() * state.iterations());
 }
 BENCHMARK(utf8_decode_invalid)->Arg(1024)->Arg(4096)->Arg(16384);
 

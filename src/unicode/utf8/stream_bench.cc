@@ -37,7 +37,7 @@ void utf8_stream_peek(benchmark::State& state) {
     }
     stream.reset();
   }
-  state.SetBytesProcessed(input_size * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_stream_peek)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -54,7 +54,7 @@ void utf8_stream_next(benchmark::State& state) {
     }
     stream.reset();
   }
-  state.SetBytesProcessed(input_size * sizeof(char) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_stream_next)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -76,7 +76,7 @@ void utf8_stream_next_utf8(benchmark::State& state) {
     }
     stream.reset();
   }
-  state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_stream_next_utf8)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -97,7 +97,7 @@ void utf8_stream_peek_utf8(benchmark::State& state) {
     }
     stream.reset();
   }
-  state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_stream_peek_utf8)->Arg(1024)->Arg(4096)->Arg(16384);
 
@@ -119,7 +119,7 @@ void utf8_stream_mixed_next(benchmark::State& state) {
     }
     stream.reset();
   }
-  state.SetBytesProcessed(input_size * sizeof(char32_t) * state.iterations());
+  state.SetBytesProcessed(input_size * state.iterations());
 }
 BENCHMARK(utf8_stream_mixed_next)->Arg(1024)->Arg(4096)->Arg(16384);
 
