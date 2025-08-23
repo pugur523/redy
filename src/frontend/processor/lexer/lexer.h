@@ -70,6 +70,12 @@ class LEXER_EXPORT Lexer {
 
   inline const unicode::Utf8Stream& stream() const { return stream_; }
 
+  inline void reset() {
+    DCHECK_NE(status_, Status::kNotInitialized);
+    stream_.reset();
+    status_ = Status::kReadyToTokenize;
+  }
+
  private:
   void skip_whitespace();
   Result<void> skip_comments();
@@ -130,7 +136,7 @@ class LEXER_EXPORT Lexer {
   Status status_ = Status::kNotInitialized;
 
   // heuristic
-  static constexpr const std::size_t kPredictedTokensCountPerLine = 5;
+  static constexpr const std::size_t kPredictedTokensCountPerLine = 12;
 };
 
 }  // namespace lexer
