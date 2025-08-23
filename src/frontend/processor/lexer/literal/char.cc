@@ -11,39 +11,39 @@
 namespace lexer {
 
 Lexer::Result<Lexer::Token> Lexer::literal_char() {
-  const std::size_t start = cursor_.position();
-  const std::size_t line = cursor_.line();
-  const std::size_t col = cursor_.column();
+  const std::size_t start = stream_.position();
+  const std::size_t line = stream_.line();
+  const std::size_t col = stream_.column();
 
   // consume the opening '\''
-  cursor_.next();
+  stream_.next();
 
-  if (cursor_.eof()) {
+  if (stream_.eof()) {
     return err<Token>(Error::create(
         start, line, col, diagnostic::DiagId::kUnterminatedCharacterLiteral));
   }
 
-  if (cursor_.peek() == '\\') {
+  if (stream_.peek() == '\\') {
     // consume '\'
-    cursor_.next();
+    stream_.next();
 
-    if (cursor_.eof()) {
+    if (stream_.eof()) {
       return err<Token>(Error::create(
           start, line, col, diagnostic::DiagId::kUnterminatedCharacterLiteral));
     }
 
-    const char32_t esc = cursor_.peek();
+    const char32_t esc = stream_.peek();
     if (unicode::is_ascii(esc) && core::is_valid_escape_sequence('\\', esc)) {
       // consume escape
-      cursor_.next();
+      stream_.next();
     } else if (esc == 'x') {
       // hex escape
       // consume 'x'
-      cursor_.next();
+      stream_.next();
       std::string buf;
-      while (core::is_ascii_hex_digit(cursor_.peek())) {
-        buf += static_cast<char>(cursor_.peek());
-        cursor_.next();
+      while (core::is_ascii_hex_digit(stream_.peek())) {
+        buf += static_cast<char>(stream_.peek());
+        stream_.next();
       }
       if (!core::is_valid_hex_escape("x" + buf)) {
         return err<Token>(Error::create(
@@ -55,14 +55,14 @@ Lexer::Result<Lexer::Token> Lexer::literal_char() {
       std::string buf;
       buf += static_cast<char>(esc);
       // consume 'u'
-      cursor_.next();
+      stream_.next();
 
       for (int i = 0; i < expected_digits; ++i) {
-        if (!core::is_ascii_hex_digit(cursor_.peek())) {
+        if (!core::is_ascii_hex_digit(stream_.peek())) {
           break;
         }
-        buf += static_cast<char>(cursor_.peek());
-        cursor_.next();
+        buf += static_cast<char>(stream_.peek());
+        stream_.next();
       }
 
       if (buf.size() != (1 + expected_digits) ||
@@ -74,10 +74,10 @@ Lexer::Result<Lexer::Token> Lexer::literal_char() {
     } else if (core::is_ascii_octal_digit(esc)) {
       // octal escape (up to 3 digits)
       std::string buf;
-      for (int i = 0; i < 3 && (core::is_ascii_octal_digit(cursor_.peek()));
+      for (int i = 0; i < 3 && (core::is_ascii_octal_digit(stream_.peek()));
            ++i) {
-        buf += static_cast<char>(cursor_.peek());
-        cursor_.next();
+        buf += static_cast<char>(stream_.peek());
+        stream_.next();
       }
       if (!core::is_valid_octal_escape(buf)) {
         return err<Token>(Error::create(
@@ -92,16 +92,16 @@ Lexer::Result<Lexer::Token> Lexer::literal_char() {
 
   } else {
     // consume literal character
-    cursor_.next();
+    stream_.next();
   }
 
-  if (cursor_.eof() || cursor_.peek() != '\'') {
+  if (stream_.eof() || stream_.peek() != '\'') {
     return err<Token>(Error::create(
         start, line, col, diagnostic::DiagId::kUnterminatedCharacterLiteral));
   }
 
   // consume the closing '\''
-  cursor_.next();
+  stream_.next();
 
   return create_token(TokenKind::kCharacter, start, line, col);
 }

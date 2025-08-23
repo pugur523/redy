@@ -144,7 +144,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
   - [x] UTF-8 file reading / validating
     - [x] Strict unicode sequence validation using latest UCD data
   - [x] Multiple files managing system
-  - [x] UTF-8 file cursor
+  - [x] UTF-8 file stream
 
 - [x] **Diagnostic**
   - [x] Code

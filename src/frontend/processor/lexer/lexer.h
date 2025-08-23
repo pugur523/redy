@@ -12,7 +12,7 @@
 #include "frontend/diagnostic/data/error/source_error.h"
 #include "frontend/diagnostic/data/result.h"
 #include "frontend/processor/lexer/base/lexer_export.h"
-#include "unicode/utf8/cursor.h"
+#include "unicode/utf8/stream.h"
 
 namespace lexer {
 
@@ -68,7 +68,7 @@ class LEXER_EXPORT Lexer {
 
   [[nodiscard]] Result<Token> tokenize_next();
 
-  inline const unicode::Utf8Cursor& cursor() const { return cursor_; }
+  inline const unicode::Utf8Stream& stream() const { return stream_; }
 
  private:
   void skip_whitespace();
@@ -101,7 +101,7 @@ class LEXER_EXPORT Lexer {
                                     std::size_t start_pos,
                                     std::size_t line,
                                     std::size_t column) {
-    const std::size_t end_pos = cursor_.position();
+    const std::size_t end_pos = stream_.position();
     const std::size_t length = end_pos - start_pos;
     return Result<Token>(
         diagnostic::create_ok(Token(kind, line, column, length)));
@@ -125,7 +125,7 @@ class LEXER_EXPORT Lexer {
     return mode_ == Mode::kDocumentGen;
   }
 
-  unicode::Utf8Cursor cursor_;
+  unicode::Utf8Stream stream_;
   Mode mode_ = Mode::kCodeAnalysis;
   Status status_ = Status::kNotInitialized;
 

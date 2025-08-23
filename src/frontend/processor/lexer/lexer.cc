@@ -30,7 +30,7 @@ Lexer::InitResult Lexer::init(unicode::Utf8FileManager* file_manager,
   DCHECK_EQ(status_, Status::kNotInitialized);
   mode_ = mode;
 
-  std::size_t result = cursor_.init(file_manager, file_id);
+  std::size_t result = stream_.init(file_manager, file_id);
 
   if (result == 0) {
     status_ = Status::kReadyToTokenize;
@@ -51,14 +51,14 @@ Lexer::InitResult Lexer::init(unicode::Utf8FileManager* file_manager,
 Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
   DCHECK_EQ(status_, Status::kReadyToTokenize);
   std::vector<Token> tokens;
-  tokens.reserve(cursor_.file().line_count() * kPredictedTokensCountPerLine);
-
   std::vector<Error> errors;
+
+  tokens.reserve(stream_.file().line_count() * kPredictedTokensCountPerLine);
 
   while (true) {
     Result<Token> result = tokenize_next();
     if (result.is_ok()) [[likely]] {
-      Token token = std::move(result).unwrap();
+      Token token{std::move(result).unwrap()};
       const TokenKind kind = token.kind();
       tokens.push_back(std::move(token));
 
@@ -90,16 +90,16 @@ Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
         diagnostic::create_err(std::move(r).unwrap_err()));
   }
 
-  if (cursor_.eof()) {
+  if (stream_.eof()) {
     status_ = Status::kTokenizeCompleted;
     return Result<Token>(diagnostic::create_ok(
-        Token(TokenKind::kEof, cursor_.line(), cursor_.column(), 0)));
+        Token(TokenKind::kEof, stream_.line(), stream_.column(), 0)));
   }
 
-  const char32_t current_codepoint = cursor_.peek();
-  const std::size_t line = cursor_.line();
-  const std::size_t col = cursor_.column();
-  const std::size_t start = cursor_.position();
+  const char32_t current_codepoint = stream_.peek();
+  const std::size_t line = stream_.line();
+  const std::size_t col = stream_.column();
+  const std::size_t start = stream_.position();
 
   if (unicode::is_eof(current_codepoint)) {
     status_ = Status::kErrorOccured;
@@ -117,16 +117,16 @@ Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
 }
 
 void Lexer::skip_whitespace() {
-  while (!cursor_.eof() && !unicode::is_unicode_newline(cursor_.peek()) &&
-         unicode::is_unicode_whitespace(cursor_.peek())) {
-    cursor_.next();
+  while (!stream_.eof() && !unicode::is_unicode_newline(stream_.peek()) &&
+         unicode::is_unicode_whitespace(stream_.peek())) {
+    stream_.next();
   }
 }
 
 Lexer::Result<void> Lexer::skip_comments() {
-  while (!cursor_.eof()) {
-    if (cursor_.peek() == '/' && cursor_.peek_at(1) == '/') {
-      const char32_t third_cp = cursor_.peek_at(2);
+  while (!stream_.eof()) {
+    if (stream_.peek() == '/' && stream_.peek_at(1) == '/') {
+      const char32_t third_cp = stream_.peek_at(2);
       if (third_cp == '@') {
         if (should_include_documentation_comments()) {
           break;
@@ -137,39 +137,39 @@ Lexer::Result<void> Lexer::skip_comments() {
         }
       }
       // skip inline comment
-      cursor_.next();
-      cursor_.next();  // skip //
-      while (!cursor_.eof() && !unicode::is_unicode_newline(cursor_.peek())) {
-        cursor_.next();
+      stream_.next();
+      stream_.next();  // skip //
+      while (!stream_.eof() && !unicode::is_unicode_newline(stream_.peek())) {
+        stream_.next();
       }
       continue;
     }
 
-    if (cursor_.peek() == '/' && cursor_.peek_at(1) == '*') {
+    if (stream_.peek() == '/' && stream_.peek_at(1) == '*') {
       if (should_include_normal_comments()) {
         break;
       }
       // skip block comment
 
       // remember start position for error reporting
-      const std::size_t error_line = cursor_.line();
-      const std::size_t error_col = cursor_.column();
+      const std::size_t error_line = stream_.line();
+      const std::size_t error_col = stream_.column();
 
-      cursor_.next();
-      cursor_.next();  // skip /*
+      stream_.next();
+      stream_.next();  // skip /*
 
-      while (!cursor_.eof()) {
-        if (cursor_.peek() == '*' && cursor_.peek_at(1) == '/') {
-          cursor_.next();
-          cursor_.next();
+      while (!stream_.eof()) {
+        if (stream_.peek() == '*' && stream_.peek_at(1) == '/') {
+          stream_.next();
+          stream_.next();
           break;
         }
-        cursor_.next();
+        stream_.next();
       }
 
       // check if we reached eof without finding closing */
-      if (cursor_.eof() &&
-          !(cursor_.peek() == '*' && cursor_.peek_at(1) == '/')) {
+      if (stream_.eof() &&
+          !(stream_.peek() == '*' && stream_.peek_at(1) == '/')) {
         return Result<void>(diagnostic::create_err(Error::create(
             error_line, error_col, 2,
             diagnostic::DiagnosticId::kUnterminatedBlockComment)));
@@ -185,8 +185,8 @@ Lexer::Result<void> Lexer::skip_comments() {
 }
 
 Lexer::Result<void> Lexer::skip_trivia() {
-  while (!cursor_.eof()) {
-    const std::size_t old_position = cursor_.position();
+  while (!stream_.eof()) {
+    const std::size_t old_position = stream_.position();
 
     if (!should_include_whitespace()) {
       skip_whitespace();
@@ -201,7 +201,7 @@ Lexer::Result<void> Lexer::skip_trivia() {
       }
     }
 
-    if (cursor_.position() == old_position) {
+    if (stream_.position() == old_position) {
       break;
     }
   }
@@ -210,16 +210,16 @@ Lexer::Result<void> Lexer::skip_trivia() {
 }
 
 Lexer::Result<Lexer::Token> Lexer::identifier_or_keyword() {
-  const std::size_t start = cursor_.position();
-  const std::size_t line = cursor_.line();
-  const std::size_t col = cursor_.column();
+  const std::size_t start = stream_.position();
+  const std::size_t line = stream_.line();
+  const std::size_t col = stream_.column();
 
-  while (unicode::is_xid_continue(cursor_.peek())) {
-    cursor_.next();
+  while (unicode::is_xid_continue(stream_.peek())) {
+    stream_.next();
   }
 
   TokenKind kind = base::lookup_id_or_keyword(
-      cursor_.file().content_u8(), start, cursor_.position() - start);
+      stream_.file().content_u8(), start, stream_.position() - start);
   return create_token(kind, start, line, col);
 }
 

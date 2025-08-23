@@ -32,8 +32,8 @@ Performs semantic analysis on the `MirContext` to check lifetimes and borrowing 
 Owns source code content as a UTF-8 encoded string.
 All processors use this interface to get a reference to the code, enabling zero-copy access for memory efficiency.
 
-### Utf8Cursor
-Cursor for utf8 string that provides `peek()`, `next()`, `rewind()`, etc.
+### Utf8Stream
+Stream for utf8 string that provides `peek()`, `next()`, `rewind()`, etc.
 
 ### TokenStream
 Vector of tokens that provides `peek()`, `next()`, `rewind()`, etc.

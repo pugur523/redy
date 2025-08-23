@@ -42,7 +42,7 @@ void lexer_loop(benchmark::State& state) {
     Lexer lexer;
     auto init_result = lexer.init(&manager, id);
     while (true) {
-      base::Token token = lexer.tokenize_next().unwrap();
+      const base::Token token = lexer.tokenize_next().unwrap();
       if (token.kind() == base::TokenKind::kEof) {
         break;
       }
