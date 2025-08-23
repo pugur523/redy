@@ -5,6 +5,7 @@
 #include "unicode/utf8/stream.h"
 
 #include <vector>
+#include "unicode/base/unicode_util.h"
 
 #if ENABLE_AVX2
 #include <immintrin.h>
@@ -99,7 +100,7 @@ std::size_t Utf8Stream::validate_utf8_avx2() const {
   const std::size_t simd_bytes = total_size & ~(kBlock - 1);
   const char8_t* simd_end = begin + simd_bytes;
 
-  const __m256i ascii_mask = _mm256_set1_epi8(static_cast<char>(0x7F));
+  const __m256i ascii_mask = _mm256_set1_epi8(static_cast<char>(kAsciiMax));
 
   while (ptr < simd_end) {
     const __m256i chunk1 =

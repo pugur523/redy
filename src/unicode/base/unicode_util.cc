@@ -15,7 +15,7 @@ bool is_ascii_letters_bulk_avx2(const char32_t* codepoints,
   const std::size_t simd_count = count & ~7;
 
   // const __m256i zero = _mm256_setzero_si256();
-  const __m256i ascii_max = _mm256_set1_epi32(0x7F);
+  const __m256i ascii_max = _mm256_set1_epi32(kAsciiMax);
   const __m256i upper_min = _mm256_set1_epi32('A');
   const __m256i upper_max = _mm256_set1_epi32('Z');
   const __m256i lower_min = _mm256_set1_epi32('a');
@@ -69,7 +69,7 @@ bool is_ascii_digits_bulk_avx2(const char32_t* codepoints,
                                std::size_t count) {
   const std::size_t simd_count = count & ~7;
 
-  const __m256i ascii_max = _mm256_set1_epi32(0x7F);
+  const __m256i ascii_max = _mm256_set1_epi32(kAsciiMax);
   const __m256i digit_min = _mm256_set1_epi32('0');
   const __m256i digit_max = _mm256_set1_epi32('9');
 
