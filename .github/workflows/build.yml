@@ -55,7 +55,7 @@ jobs:
             target_platform: darwin
             cc: clang
             cxx: clang++
-            llvm_version: "21"
+            llvm_version: "20"
           - os: ubuntu-latest
             target_platform: mingw
             cc: x86_64-w64-mingw32-clang
