@@ -14,7 +14,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  CMAKE_VERSION: "4.0.3"
+  CMAKE_VERSION: "4.1.1"
 
 jobs:
   lint:
@@ -159,6 +159,7 @@ jobs:
               ;;
             macos-latest)
               brew update
+              brew uninstall cmake
               brew install --quiet llvm@${{ matrix.llvm_version }} lld@${{ matrix.llvm_version }} nasm cmake
               echo "$(brew --prefix llvm@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
               echo "$(brew --prefix lld@${{ matrix.llvm_version }})/bin" >> $GITHUB_PATH
