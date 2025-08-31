@@ -158,6 +158,7 @@ macro(setup_apple_flags)
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   add_compile_options(-isysroot ${MACOS_SDK_PATH} -I${MACOS_SDK_PATH}/usr/include)
+  list(APPEND PROJECT_LINK_LIBRARIES c++ c++abi)
 endmacro()
 
 macro(setup_common_flags)
