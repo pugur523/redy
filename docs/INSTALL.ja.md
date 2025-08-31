@@ -85,7 +85,7 @@ sudo ./cmake-installer.sh --skip-license --prefix=/usr/local
 rm cmake-installer.sh
 
 # LLVMのインストール
-LLVM_VERSION="20"
+LLVM_VERSION="21"
 wget -qOllvm.sh [https://apt.llvm.org/llvm.sh](https://apt.llvm.org/llvm.sh) && chmod +x llvm.sh && sudo ./llvm.sh $LLVM_VERSION all && rm ./llvm.sh
 
 source ./src/build/scripts/install_llvm_mingw.sh
@@ -120,11 +120,11 @@ yay -S --noconfirm libc++-with-libunwind
 
 <b>Windows</b>
 
-1.  [**Chocolatey**](https://chocolatey.org/install#individual)をインストールします。
-2.  管理者権限のPowerShellターミナルで、次のコマンドを実行します。
-    ```powershell
-    choco install -y nsis ninja nasm cmake llvm
-    ```
+1. [**Chocolatey**](https://chocolatey.org/install#individual)をインストールします。
+2. 管理者権限のPowerShellターミナルで、次のコマンドを実行します。  
+```powershell
+choco install -y nsis ninja nasm cmake llvm
+```
 
 <b>macOS</b>
 

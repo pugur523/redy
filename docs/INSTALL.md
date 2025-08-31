@@ -79,14 +79,14 @@ sudo apt-get install -y wget curl ninja-build nasm nsis wine python3
 
 # Install CMake
 CMAKE_VERSION="4.1.1"
-cmake_url="[https://github.com/Kitware/CMake/releases/download/v$](https://github.com/Kitware/CMake/releases/download/v$){CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh"
+cmake_url="https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh"
 wget -nv "${cmake_url}" -O cmake-installer.sh
 chmod +x cmake-installer.sh
 sudo ./cmake-installer.sh --skip-license --prefix=/usr/local
 rm cmake-installer.sh
 
 # Install LLVM
-LLVM_VERSION="20"
+LLVM_VERSION="21"
 wget -qOllvm.sh [https://apt.llvm.org/llvm.sh](https://apt.llvm.org/llvm.sh) && chmod +x llvm.sh && sudo ./llvm.sh $LLVM_VERSION all && rm ./llvm.sh
 
 source ./src/build/scripts/install_llvm_mingw.sh
@@ -121,11 +121,11 @@ yay -S --noconfirm libc++-with-libunwind
 
 ### Windows
 
-1.  Install [**Chocolatey**](https://chocolatey.org/install#individual).
-2.  Run the following command in an administrator PowerShell terminal:
-    ```powershell
-    choco install -y nsis ninja nasm cmake llvm
-    ```
+1. Install [**Chocolatey**](https://chocolatey.org/install#individual).
+2. Run the following command in an administrator PowerShell terminal:
+```powershell
+choco install -y nsis ninja nasm cmake llvm
+```
 
 ### macOS
 
