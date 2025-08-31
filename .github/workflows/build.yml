@@ -152,6 +152,8 @@ jobs:
               elif [ "${{ matrix.target_platform }}" = 'mingw' ] && [ "${{ steps.cache-llvm-mingw.outputs.cache-hit }}" != 'true' ]; then
                 source ./src/build/scripts/install_llvm_mingw.sh "${{ matrix.llvm_mingw_tag }}"
                 echo "LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> $GITHUB_ENV
+              elif [ "${{ matrix.target_platform }}" = 'mingw' ] && [ "${{ steps.cache-llvm-mingw.outputs.cache-hit }}" = 'true' ]; then
+                echo "LLVM_MINGW_DIR=/opt/llvm-mingw-${{ matrix.llvm_mingw_tag }}-ucrt-ubuntu-22.04-x86_64" >> $GITHUB_ENV
               fi
               ;;
             windows-latest)
