@@ -95,7 +95,7 @@ fn main() -> i32 {
   println#("hello world!") // セミコロンは必要なし
 
   // 型を明示的に指定した変数宣言
-  my_favourite_number :i32 = 42
+  my_favourite_number: i32 = 42
 
   // 型は `:=` を使用してコンパイラに推論させることもできます
   my_name := "redy"

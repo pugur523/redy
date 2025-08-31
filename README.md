@@ -93,7 +93,7 @@ fn main() -> i32 {
   println#("hello world!")       // no semicolons needed.
 
   // variable declaration with an explicit type annotation.
-  my_favourite_number :i32 = 42
+  my_favourite_number: i32 = 42
 
   // type can be inferred using `:=`.
   my_name := "redy"
