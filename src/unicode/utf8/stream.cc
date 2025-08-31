@@ -5,6 +5,7 @@
 #include "unicode/utf8/stream.h"
 
 #include <vector>
+
 #include "unicode/base/unicode_util.h"
 
 #if ENABLE_AVX2
