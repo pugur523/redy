@@ -14,7 +14,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.13"
-  CMAKE_VERSION: "4.0.3"
+  CMAKE_VERSION: "4.1.1"
 
 jobs:
   lint:
@@ -45,22 +45,22 @@ jobs:
             target_platform: linux
             cc: clang
             cxx: clang++
-            llvm_version: "20"
+            llvm_version: "21"
           - os: windows-latest
             target_platform: windows
             cc: clang-cl
             cxx: clang-cl
-            llvm_version: "20"
+            llvm_version: "21"
           - os: macos-latest
             target_platform: darwin
             cc: clang
             cxx: clang++
-            llvm_version: "20"
+            llvm_version: "21"
           - os: ubuntu-latest
             target_platform: mingw
             cc: x86_64-w64-mingw32-clang
             cxx: x86_64-w64-mingw32-clang++
-            llvm_mingw_tag: "20250709"
+            llvm_mingw_tag: "20250826"
 
     runs-on: ${{ matrix.os }}
 
