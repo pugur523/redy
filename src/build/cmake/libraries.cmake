@@ -99,6 +99,10 @@ macro(setup_llvm)
   if(MINGW_BUILD)
     list(APPEND PROJECT_LINK_OPTIONS -Wl,-Bstatic -lc++ -lc++abi -lunwind -Wl,-Bdynamic)
   endif()
+
+  if(NOT TARGET_OS_NAME MATCHES "windows")
+    list(APPEND PROJECT_LINK_LIBRARIES c++experimental c++abi c++)
+  endif()
 endmacro()
 
 macro(setup_toml11)
