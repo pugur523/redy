@@ -42,17 +42,23 @@ Install the required Python packages and set up a virtual environment.
 Installation Details
 </summary>
 
-  * Install **Python >= 3.13** from the [official website](https://www.python.org/downloads/).
-  * Install the **`uv`** package manager: `pip install uv`.
-  * Create and activate a virtual environment:
-    ```bash
-    uv venv
-    source .venv/bin/activate
-    ```
-  * Install the build dependencies:
-    ```bash
-    uv sync
-    ```
+1. Install Python(>= 3.13) from the <a href="https://www.python.org/downloads/">official website</a>.<br/>
+
+2. Install uv:<br/>
+```bash
+pip install uv.
+```
+
+3. Create and activate a virtual environment:<br/>
+```bash
+uv venv
+source .venv/bin/activate
+```
+
+4. Install the build dependencies:  
+```bash
+uv sync
+```
 
 </details>
 
@@ -72,7 +78,7 @@ sudo apt-get update
 sudo apt-get install -y wget curl ninja-build nasm nsis wine python3
 
 # Install CMake
-CMAKE_VERSION="4.0.3"
+CMAKE_VERSION="4.1.1"
 cmake_url="[https://github.com/Kitware/CMake/releases/download/v$](https://github.com/Kitware/CMake/releases/download/v$){CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh"
 wget -nv "${cmake_url}" -O cmake-installer.sh
 chmod +x cmake-installer.sh
@@ -139,7 +145,7 @@ nasm --version
 # Expected output: NASM version 2.16.03 compiled on May 13 2025
 
 cmake --version
-# Expected output: cmake version 4.0.3-dirty
+# Expected output: cmake version 4.1.1-dirty
 # CMake suite maintained and supported by Kitware ([kitware.com/cmake](https://kitware.com/cmake)).
 
 ninja --version
