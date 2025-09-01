@@ -21,7 +21,7 @@
 
 # ☄ Overview
 
-**redy** is a new programming language to achieve both high performance and robust memory safety.
+**redy** is a new programming language to achieve both high performance and robust safety.
 
 It emphasizes performance in all aspects, including reducing computation, memory usage, and improving the cache hit rate, as well as minimizing the size of compiled binaries, which is often overlooked in an era of abundant computing resources.
 
@@ -140,55 +140,95 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
     </h3>
   </summary>
 
-- [x] **File Managing**
-  - [x] UTF-8 file reading / validating
-    - [x] Strict unicode sequence validation using latest UCD data
-  - [x] Multiple files managing system
-  - [x] UTF-8 file stream
+  - [x] **File Managing**
+    - [x] UTF-8 file reading / validating
+      - [x] Strict unicode sequence validation using latest UCD data
+    - [x] Multiple files managing system
+    - [x] UTF-8 file stream
 
-- [x] **Diagnostic**
-  - [x] Code
-  - [x] Severity
-  - [x] Entry
-    - [x] Header
-    - [x] Label
-      - [x] Body
-      - [x] Annotation
-  - [x] Diagnostic engine
-    - [x] Formatters
-      - [x] Header Formatter
-      - [x] Label Formatter
-        - [x] Render source line
-      - [x] Annotation Formatter
-    
-- [x] **Internationalization**
-  - [x] i18n Code generator (from toml language files)
-    - [x] Duplication saving for memory efficiency
-  - [x] Translator
-    - [x] Formatting support
+  - [x] **Diagnostic**
+    - [x] Code
+    - [x] Severity
+    - [x] Entry
+      - [x] Header
+      - [x] Label
+        - [x] Body
+        - [x] Annotation
+    - [x] Diagnostic engine
+      - [x] Formatters
+        - [x] Header Formatter
+        - [x] Label Formatter
+          - [x] Render source line
+        - [x] Annotation Formatter
 
-- [x] **base**
-  - [x] Arena (useful for design data oriented structs)
-  - [x] Token definition
-  - [x] Keyword definition
-  - [x] Operator definition
-  - [x] Token stream
+  - [x] **Internationalization**
+    - [x] i18n Code generator (from toml language files)
+      - [x] Duplication saving for memory efficiency
+    - [x] Translator
+      - [x] Formatting support
 
-- [x] **Lexer**
-  - [x] Identifier
-    - [x] Use UAX #31 - unicode identifiers rule
-  - [x] Keyword
-  - [x] Literal
-    - [x] Numeric
-    - [x] Character
-    - [x] String
-  - [x] Operator
-  - [x] Delimiter
+  - [x] **base**
+    - [x] Arena (useful for design data oriented structs)
+    - [x] Token definition
+    - [x] Keyword definition
+    - [x] Operator definition
+    - [x] Token stream
 
-- [ ] **AST**
-  - [x] Context (data oriented structure)
-  - [x] Nodes
-    - [x] Expression
+  - [x] **Lexer**
+    - [x] Identifier
+      - [x] Use UAX #31 - unicode identifiers rule
+    - [x] Keyword
+    - [x] Literal
+      - [x] Numeric
+      - [x] Character
+      - [x] String
+    - [x] Operator
+    - [x] Delimiter
+
+  - [ ] **AST**
+    - [x] Context (data oriented structure)
+    - [x] Nodes
+      - [x] Expression
+        - [x] Without block
+          - [x] Literal
+          - [x] Path
+          - [x] Unary operator
+          - [x] Binary operator
+          - [x] Grouped
+          - [x] Array
+          - [x] Tuple
+          - [x] Index
+          - [x] Construct
+          - [x] Function call
+          - [x] Field access
+          - [x] Closure
+          - [x] Await
+          - [x] Continue
+          - [x] Break
+          - [x] Range
+          - [x] Return
+        - [x] With block
+          - [x] Block
+          - [x] Unsafe
+          - [x] Fast
+          - [x] If
+          - [x] Loop
+          - [x] While
+          - [x] For
+          - [x] Match
+      - [x] Statements
+        - [x] Assign
+        - [x] Const Assign
+        - [x] Expression
+        - [x] Module
+        - [x] Attribute
+        - [x] Function
+        - [x] Struct
+        - [x] Enumeration
+        - [x] Union
+
+  - [ ] **Parser**
+    - [ ] Expression
       - [x] Without block
         - [x] Literal
         - [x] Path
@@ -216,82 +256,42 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] While
         - [x] For
         - [x] Match
-    - [x] Statements
+    - [ ] Statements
       - [x] Assign
-      - [x] Const Assign
-      - [x] Expression
-      - [x] Module
+      - [ ] Const Assign
+      - [ ] Expression
+      - [ ] Module
       - [x] Attribute
-      - [x] Function
-      - [x] Struct
-      - [x] Enumeration
-      - [x] Union
+      - [x] Function Declaration
+      - [ ] Struct Declaration
+      - [ ] Enumeration Declaration
+      - [ ] Union Declaration
 
-- [ ] **Parser**
-  - [ ] Expression
-    - [x] Without block
-      - [x] Literal
-      - [x] Path
-      - [x] Unary operator
-      - [x] Binary operator
-      - [x] Grouped
-      - [x] Array
-      - [x] Tuple
-      - [x] Index
-      - [x] Construct
-      - [x] Function call
-      - [x] Field access
-      - [x] Closure
-      - [x] Await
-      - [x] Continue
-      - [x] Break
-      - [x] Range
-      - [x] Return
-    - [x] With block
-      - [x] Block
-      - [x] Unsafe
-      - [x] Fast
-      - [x] If
-      - [x] Loop
-      - [x] While
-      - [x] For
-      - [x] Match
-  - [ ] Statements
-    - [x] Assign
-    - [ ] Const Assign
-    - [ ] Expression
-    - [ ] Module
-    - [ ] Attribute
-    - [ ] Function
-    - [ ] Struct
-    - [ ] Enumeration
-    - [ ] Union
+  - [ ] **AST-Analyzer**
+    - [ ] Symbol resolution
+    - [ ] Type resolution
+    - [ ] Desugar
 
-- [ ] **AST-Analyzer**
-  - [ ] Symbol resolution
-  - [ ] Type resolution
-  - [ ] Desugar
+  - [ ] **HIR**
+    - [x] Context (data oriented structure)
 
-- [ ] **HIR**
-  - [x] Context (data oriented structure)
+  - [ ] **HIR-Analyzer**
+    - [ ] Optimize HIR
 
-- [ ] **HIR-Analyzer**
-  - [ ] Optimize HIR
+  - [ ] **MIR**
+    - [x] Context (data oriented structure)
 
-- [ ] **MIR**
-  - [x] Context (data oriented structure)
+  - [ ] **MIR-Analyzer**
+    - [ ] Borrow Checker
+    - [ ] Lifetime Checker
+    - [ ] Optimize MIR
 
-- [ ] **MIR-Analyzer**
-  - [ ] Borrow Checker
-  - [ ] Lifetime Checker
-  - [ ] Optimize MIR
+  - [ ] **Codegen**
+    - [ ] Convert MIR to LLVM-IR
 
-- [ ] **Codegen**
-  - [ ] Convert MIR to LLVM-IR
+  - [ ] **Create first version of the standard libaray in redy**
 
-- [ ] **Create first version of the standard libaray in redy**
-
-- [ ] **Release v0.1.0 (alpha, written in C++)**
+  - [ ] **Release v0.1.0 (alpha, written in C++)**
 
 </details>
 
