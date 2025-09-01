@@ -58,6 +58,7 @@ set(SOURCES
 
   statement/assign.cc
   statement/attribute.cc
+  statement/expression.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

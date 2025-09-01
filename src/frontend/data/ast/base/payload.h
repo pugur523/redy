@@ -168,13 +168,13 @@ struct AttributeStatementPayload {
   PayloadRange attributes_range;
 };
 
+struct ExpressionStatementPayload {
+  NodeId expression;
+};
+
 struct RedirectStatementPayload {
   NodeId target = kInvalidNodeId;
   NodeId source = kInvalidNodeId;
-};
-
-struct ExpressionStatementPayload {
-  NodeId expression;
 };
 
 // declaration

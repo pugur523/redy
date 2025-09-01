@@ -89,6 +89,7 @@ class AST_EXPORT Context {
 
   base::Arena<AssignStatementPayload> assign_statement_payloads_;
   base::Arena<AttributeStatementPayload> attribute_statement_payloads_;
+  base::Arena<ExpressionStatementPayload> expression_statement_payloads_;
   base::Arena<RedirectStatementPayload> redirect_statement_payloads_;
 
   base::Arena<FunctionDeclarationPayload> function_declaration_payloads_;
@@ -270,6 +271,11 @@ template <>
 inline base::Arena<AttributeStatementPayload>&
 Context::arena<AttributeStatementPayload>() {
   return attribute_statement_payloads_;
+}
+template <>
+inline base::Arena<ExpressionStatementPayload>&
+Context::arena<ExpressionStatementPayload>() {
+  return expression_statement_payloads_;
 }
 template <>
 inline base::Arena<RedirectStatementPayload>&
