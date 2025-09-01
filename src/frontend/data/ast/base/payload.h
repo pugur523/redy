@@ -161,7 +161,7 @@ struct ClosureExpressionPayload {
 struct AssignStatementPayload {
   PayloadId target_variable = kInvalidPayloadId;
   NodeId value_expression = kInvalidNodeId;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct AttributeStatementPayload {
@@ -180,47 +180,47 @@ struct ExpressionStatementPayload {
 // declaration
 
 struct FunctionDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   PayloadRange parameters_range;
   NodeId return_type = kInvalidNodeId;
   NodeId body = kInvalidNodeId;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct StructDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   PayloadRange fields_range;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct EnumerationDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   NodeRange variants_range;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct TraitDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   NodeRange function_declare_range;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct ImplementationDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   NodeRange function_definition_range;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct UnionDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   NodeRange fields_range;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 struct ModuleDeclarationPayload {
-  std::string_view name = "";
+  PayloadId name = kInvalidPayloadId;
   NodeRange module_nodes_range;
-  NodeId storage_attribute;
+  PayloadId storage_attribute = kInvalidPayloadId;
 };
 
 // data

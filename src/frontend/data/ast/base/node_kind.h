@@ -56,7 +56,7 @@ enum class NodeKind : uint8_t {
   kTraitDeclaration = 37,   // trait to_string(&this) -> String
   kImplDeclaration = 38,    // impl to_string(&this) { ret format#("n: {}", n) }
   kUnionDeclaration = 39,   // union Bar { i: i32, u: u32 }
-  kModuleDeclaration = 40,  // mod foo
+  kModuleDeclaration = 40,  // mod foo { ... }
 };
 
 struct Node {

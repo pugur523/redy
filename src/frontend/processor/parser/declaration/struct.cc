@@ -7,6 +7,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/label.h"
 #include "frontend/diagnostic/data/severity.h"
@@ -26,7 +27,9 @@ Parser::Result<ast::NodeId> Parser::parse_struct_declaration(
   if (struct_name_r.is_err()) {
     return err<NodeId>(std::move(struct_name_r).unwrap_err());
   }
-  const std::string_view struct_name = peek().lexeme(stream_->file());
+  const PayloadId struct_name = context_->alloc(ast::IdentifierPayload{
+      .lexeme = std::move(struct_name_r).unwrap()->lexeme(stream_->file()),
+  });
 
   auto left_r = consume(base::TokenKind::kLeftBrace, true);
   if (left_r.is_err()) {

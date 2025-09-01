@@ -259,9 +259,9 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
     - [ ] Statements
       - [x] Assign
       - [ ] Expression
-      - [ ] Module
       - [x] Attribute
       - [x] Function Declaration
+      - [x] Module Declaration
       - [x] Struct Declaration
       - [ ] Enumeration Declaration
       - [ ] Union Declaration
