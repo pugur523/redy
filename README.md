@@ -263,7 +263,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [ ] Module
       - [x] Attribute
       - [x] Function Declaration
-      - [ ] Struct Declaration
+      - [x] Struct Declaration
       - [ ] Enumeration Declaration
       - [ ] Union Declaration
 

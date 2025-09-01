@@ -189,7 +189,7 @@ struct FunctionDeclarationPayload {
 
 struct StructDeclarationPayload {
   std::string_view name = "";
-  NodeRange fields_range;
+  PayloadRange fields_range;
   NodeId storage_attribute;
 };
 
@@ -231,6 +231,11 @@ struct AttributeUsePayload {
 };
 
 struct CapturePayload {
+  std::string_view name = "";
+  NodeId type = kInvalidNodeId;
+};
+
+struct FieldPayload {
   std::string_view name = "";
   NodeId type = kInvalidNodeId;
 };

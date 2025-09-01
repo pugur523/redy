@@ -17,6 +17,7 @@ set(SOURCES
   chore/attribute_use.cc
   chore/capture.cc
   chore/expression_sequence.cc
+  chore/field.cc
   chore/parameter.cc
   chore/type_reference.cc
 

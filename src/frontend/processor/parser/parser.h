@@ -127,6 +127,8 @@ class PARSER_EXPORT Parser {
   // chore
   Result<ast::PayloadId> parse_capture_one();
   Result<ast::PayloadRange> parse_capture_list();
+  Result<ast::PayloadId> parse_field_one();
+  Result<ast::PayloadRange> parse_field_list();
   Result<ast::PayloadId> parse_parameter_one();
   Result<ast::PayloadRange> parse_parameter_list();
   Result<ast::PayloadId> parse_attribute_use_one();
