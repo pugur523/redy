@@ -168,7 +168,7 @@ echo $LLVM_MINGW_DIR
 Execute the build script. This process may take 5 to 10 minutes, it's time for tea :)
 
 ```bash
-./cc build --release --install
+./c build --release --install
 ```
 
 Upon successful completion, the compiled artifacts will be located in the `./out/install/{os}/{arch}/release/bin/` directory.

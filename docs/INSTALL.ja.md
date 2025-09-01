@@ -168,7 +168,7 @@ echo $LLVM_MINGW_DIR
 このプロセスには5〜10分かかる場合があります。  
 
 ```bash
-./cc build --release --install
+./c build --release --install
 ```
 
 正常に完了すると、コンパイルされた成果物は`./out/install/{os}/{arch}/release/bin/`ディレクトリに配置されます。
