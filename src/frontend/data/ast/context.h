@@ -99,6 +99,7 @@ class AST_EXPORT Context {
   base::Arena<UnionDeclarationPayload> union_declaration_payloads_;
   base::Arena<ModuleDeclarationPayload> module_declaration_payloads_;
 
+  base::Arena<AttributeUsePayload> attribute_use_payloads_;
   base::Arena<CapturePayload> capture_payloads_;
   base::Arena<ParameterPayload> parameter_payloads_;
   base::Arena<TypeReferencePayload> type_reference_payloads_;
@@ -310,6 +311,10 @@ Context::arena<ModuleDeclarationPayload>() {
   return module_declaration_payloads_;
 }
 
+template <>
+inline base::Arena<AttributeUsePayload>& Context::arena<AttributeUsePayload>() {
+  return attribute_use_payloads_;
+}
 template <>
 inline base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
   return capture_payloads_;

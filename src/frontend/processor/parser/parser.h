@@ -129,6 +129,8 @@ class PARSER_EXPORT Parser {
   Result<ast::PayloadRange> parse_capture_list();
   Result<ast::PayloadId> parse_parameter_one();
   Result<ast::PayloadRange> parse_parameter_list();
+  Result<ast::PayloadId> parse_attribute_use_one();
+  Result<ast::PayloadRange> parse_attribute_use_list();
   Result<ast::PayloadId> parse_type_reference();
   Result<NodeRange> parse_expression_sequence();
 

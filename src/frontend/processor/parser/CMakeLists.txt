@@ -14,6 +14,7 @@ set(SOURCES
   expression.cc
   statement.cc
 
+  chore/attribute_use.cc
   chore/capture.cc
   chore/expression_sequence.cc
   chore/parameter.cc
@@ -53,6 +54,7 @@ set(SOURCES
   expression/while.cc
 
   statement/assign.cc
+  statement/attribute.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

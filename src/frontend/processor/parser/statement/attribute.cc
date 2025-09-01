@@ -23,15 +23,21 @@ Parser::Result<ast::NodeId> Parser::parse_attribute_statement() {
     return err<NodeId>(std::move(left_r).unwrap_err());
   }
 
+  auto attributes_r = parse_attribute_use_list();
+  if (attributes_r.is_err()) {
+    return err<NodeId>(std::move(attributes_r).unwrap_err());
+  }
+
   auto right_r = consume(base::TokenKind::kRightBracket, true);
   if (right_r.is_err()) {
     return err<NodeId>(std::move(right_r).unwrap_err());
   }
 
-  return ok(context_->create(ast::NodeKind::kAttributeStatement,
-                             ast::AttributeStatementPayload{
-                                 .attributes_range = {},
-                             }));
+  return ok(
+      context_->create(ast::NodeKind::kAttributeStatement,
+                       ast::AttributeStatementPayload{
+                           .attributes_range = std::move(attributes_r).unwrap(),
+                       }));
 }
 
 }  // namespace parser

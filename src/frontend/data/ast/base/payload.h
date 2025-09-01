@@ -165,7 +165,7 @@ struct AssignStatementPayload {
 };
 
 struct AttributeStatementPayload {
-  NodeRange attributes_range;
+  PayloadRange attributes_range;
 };
 
 struct RedirectStatementPayload {
@@ -224,6 +224,11 @@ struct ModuleDeclarationPayload {
 };
 
 // data
+
+struct AttributeUsePayload {
+  PayloadId callee = kInvalidPayloadId;
+  NodeRange args_range;
+};
 
 struct CapturePayload {
   std::string_view name = "";
