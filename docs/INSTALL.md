@@ -46,7 +46,7 @@ Installation Details
 
 2. Install uv:<br/>
 ```bash
-pip install uv.
+pip install uv
 ```
 
 3. Create and activate a virtual environment:<br/>
@@ -71,7 +71,7 @@ The required system dependencies vary by operating system.
 Installation Details
 </summary>
 
-### Ubuntu
+<h4>Ubuntu</h4>
 
 ```bash
 sudo apt-get update
@@ -94,7 +94,7 @@ echo "export LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> ~/.bashrc
 echo "export LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> ~/.zshrc
 ```
 
-### Arch Linux
+<h4>Arch Linux</h4>
 
 ```bash
 pacman -S --noconfirm \
@@ -119,15 +119,14 @@ pacman -S --noconfirm \
 yay -S --noconfirm libc++-with-libunwind
 ```
 
-### Windows
+<h4>Windows</h4>
 
-1. Install [**Chocolatey**](https://chocolatey.org/install#individual).
-2. Run the following command in an administrator PowerShell terminal:
+Install <a href="https://chocolatey.org/install#individual">Chocolatey</a>, and run the following command in administrator PowerShell terminal:
 ```powershell
 choco install -y nsis ninja nasm cmake llvm
 ```
 
-### macOS
+<h4>macOS</h4>
 
 ```bash
 brew update
@@ -136,7 +135,7 @@ echo 'export PATH="$(brew --prefix llvm@20)/bin:$PATH"' >> ~/.bash_profile
 echo 'export PATH="$(brew --prefix lld@20)/bin:$PATH"' >> ~/.bash_profile
 ```
 
-**Verification**
+<h4>Verification</h4>
 
 Ensure all required tools are correctly installed and accessible from the command line by running the following commands.
 

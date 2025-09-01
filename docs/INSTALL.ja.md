@@ -45,7 +45,7 @@ cd redy
 1. Python(>= 3.13)を<a href="https://www.python.org/downloads/">公式サイト</a>の手順通りにインストールします。<br/>
 2. uvをインストールします:<br/>
 ```bash
-`pip install uv`
+pip install uv
 ```
 
 3. 仮想環境を作成し、アクティベートします:<br/>
@@ -70,7 +70,7 @@ uv sync
 詳しい手順
 </summary>
 
-<b>Ubuntu</b>
+<h4>Ubuntu</h4>
 
 ```bash
 sudo apt-get update
@@ -93,7 +93,7 @@ echo "export LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> ~/.bashrc
 echo "export LLVM_MINGW_DIR=${LLVM_MINGW_DIR}" >> ~/.zshrc
 ```
 
-<b>Arch Linux</b>
+<h4>Arch Linux</h4>
 
 ```bash
 pacman -S --noconfirm \
@@ -118,15 +118,14 @@ pacman -S --noconfirm \
 yay -S --noconfirm libc++-with-libunwind
 ```
 
-<b>Windows</b>
+<h4>Windows</h4>
 
-1. [**Chocolatey**](https://chocolatey.org/install#individual)をインストールします。
-2. 管理者権限のPowerShellターミナルで、次のコマンドを実行します。  
+<a href="https://chocolatey.org/install#individual">Chocolatey</a>をインストールしてから、管理者権限つきで起動したPowerShellターミナルで、次のコマンドを実行します。<br/>
 ```powershell
 choco install -y nsis ninja nasm cmake llvm
 ```
 
-<b>macOS</b>
+<h4>macOS</h4>
 
 ```bash
 brew update
@@ -135,7 +134,7 @@ echo 'export PATH="$(brew --prefix llvm@20)/bin:$PATH"' >> ~/.bash_profile
 echo 'export PATH="$(brew --prefix lld@20)/bin:$PATH"' >> ~/.bash_profile
 ```
 
-<b>確認</b>
+<h4>依存関係の確認</h4>
 
 すべての必要なツールが正しくインストールされ、コマンドラインからアクセスできることを確認するために、以下のコマンドを実行します。
 
