@@ -261,10 +261,13 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [x] Expression
       - [x] Attribute
       - [x] Function Declaration
-      - [x] Module Declaration
       - [x] Struct Declaration
       - [ ] Enumeration Declaration
+      - [ ] Trait Declaration
+      - [ ] Implementation Declaration
       - [ ] Union Declaration
+      - [x] Module Declaration
+      - [ ] Redirect Declaration
 
   - [ ] **AST-Analyzer**
     - [ ] Symbol resolution
