@@ -22,6 +22,7 @@ set(SOURCES
   chore/type_reference.cc
 
   declaration/function.cc
+  declaration/struct.cc
 
   expression/array.cc
   expression/await.cc
