@@ -172,11 +172,6 @@ struct ExpressionStatementPayload {
   NodeId expression;
 };
 
-struct RedirectStatementPayload {
-  NodeId target = kInvalidNodeId;
-  NodeId source = kInvalidNodeId;
-};
-
 // declaration
 
 struct FunctionDeclarationPayload {
@@ -220,6 +215,12 @@ struct UnionDeclarationPayload {
 struct ModuleDeclarationPayload {
   PayloadId name = kInvalidPayloadId;
   NodeRange module_nodes_range;
+  PayloadId storage_attribute = kInvalidPayloadId;
+};
+
+struct RedirectDeclarationPayload {
+  NodeId name = kInvalidNodeId;
+  NodeId target = kInvalidNodeId;
   PayloadId storage_attribute = kInvalidPayloadId;
 };
 

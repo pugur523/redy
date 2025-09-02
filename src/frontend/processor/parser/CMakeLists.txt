@@ -23,6 +23,7 @@ set(SOURCES
 
   declaration/function.cc
   declaration/module.cc
+  declaration/redirect.cc
   declaration/struct.cc
 
   expression/array.cc

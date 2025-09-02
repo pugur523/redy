@@ -267,7 +267,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [ ] Implementation Declaration
       - [ ] Union Declaration
       - [x] Module Declaration
-      - [ ] Redirect Declaration
+      - [x] Redirect Declaration
 
   - [ ] **AST-Analyzer**
     - [ ] Symbol resolution

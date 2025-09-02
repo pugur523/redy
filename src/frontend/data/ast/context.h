@@ -90,7 +90,6 @@ class AST_EXPORT Context {
   base::Arena<AssignStatementPayload> assign_statement_payloads_;
   base::Arena<AttributeStatementPayload> attribute_statement_payloads_;
   base::Arena<ExpressionStatementPayload> expression_statement_payloads_;
-  base::Arena<RedirectStatementPayload> redirect_statement_payloads_;
 
   base::Arena<FunctionDeclarationPayload> function_declaration_payloads_;
   base::Arena<StructDeclarationPayload> struct_declaration_payloads_;
@@ -99,6 +98,7 @@ class AST_EXPORT Context {
   base::Arena<ImplementationDeclarationPayload> impl_declaration_payloads_;
   base::Arena<UnionDeclarationPayload> union_declaration_payloads_;
   base::Arena<ModuleDeclarationPayload> module_declaration_payloads_;
+  base::Arena<RedirectDeclarationPayload> redirect_declaration_payloads_;
 
   base::Arena<AttributeUsePayload> attribute_use_payloads_;
   base::Arena<CapturePayload> capture_payloads_;
@@ -278,11 +278,6 @@ Context::arena<ExpressionStatementPayload>() {
   return expression_statement_payloads_;
 }
 template <>
-inline base::Arena<RedirectStatementPayload>&
-Context::arena<RedirectStatementPayload>() {
-  return redirect_statement_payloads_;
-}
-template <>
 inline base::Arena<FunctionDeclarationPayload>&
 Context::arena<FunctionDeclarationPayload>() {
   return function_declaration_payloads_;
@@ -316,6 +311,11 @@ template <>
 inline base::Arena<ModuleDeclarationPayload>&
 Context::arena<ModuleDeclarationPayload>() {
   return module_declaration_payloads_;
+}
+template <>
+inline base::Arena<RedirectDeclarationPayload>&
+Context::arena<RedirectDeclarationPayload>() {
+  return redirect_declaration_payloads_;
 }
 
 template <>

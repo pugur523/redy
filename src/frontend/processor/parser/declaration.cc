@@ -39,8 +39,9 @@ Parser::Result<ast::NodeId> Parser::parse_declaration() {
   }
 
   const base::Token& current = peek();
+  const bool has_attr = attribute.has_any_storage_attribute();
 
-  if (attribute.has_any_storage_attribute()) {
+  if (has_attr) {
     if (attribute.is_mutable && attribute.is_const) [[unlikely]] {
       return err<NodeId>(
           std::move(
