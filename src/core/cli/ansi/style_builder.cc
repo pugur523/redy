@@ -79,12 +79,12 @@ std::string StyleBuilder::build(std::string_view text) const {
   estimated_size += style_count * kStyleCodeLength;
   if (use_fg_rgb_) {
     estimated_size += kRgbCodeLength;
-  } else if (fg_ != Colour::kDefault) {
+  } else if (fg_ != Color::kDefault) {
     estimated_size += kStyleCodeLength;
   }
   if (use_bg_rgb_) {
     estimated_size += kRgbCodeLength;
-  } else if (bg_ != BgColour::kDefault) {
+  } else if (bg_ != BgColor::kDefault) {
     estimated_size += kStyleCodeLength;
   }
   result.reserve(estimated_size);
@@ -102,15 +102,15 @@ std::string StyleBuilder::build(std::string_view text) const {
   // foreground
   if (use_fg_rgb_) {
     append_rgb_sequence(&result, kFgRgbPrefix, fg_rgb_);
-  } else if (fg_ != Colour::kDefault) {
-    result.append(kColourCodes[static_cast<uint8_t>(fg_)]);
+  } else if (fg_ != Color::kDefault) {
+    result.append(kColorCodes[static_cast<uint8_t>(fg_)]);
   }
 
   // background
   if (use_bg_rgb_) {
     append_rgb_sequence(&result, kBgRgbPrefix, bg_rgb_);
-  } else if (bg_ != BgColour::kDefault) {
-    result.append(kBgColourCodes[static_cast<uint8_t>(bg_)]);
+  } else if (bg_ != BgColor::kDefault) {
+    result.append(kBgColorCodes[static_cast<uint8_t>(bg_)]);
   }
 
   // text + reset

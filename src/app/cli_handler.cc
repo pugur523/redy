@@ -99,11 +99,11 @@ int handle_arguments(int argc, char** argv) {
   }
 
   core::StyleBuilder ing;
-  ing.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightBlue);
+  ing.style(core::Style::kBoldUnderline).color(core::Color::kBrightBlue);
   core::ProgressBar bar(30, ing.build("Compiling...") + " : demo.ry");
 
   core::StyleBuilder ed;
-  ed.style(core::Style::kBoldUnderline).colour(core::Colour::kBrightGreen);
+  ed.style(core::Style::kBoldUnderline).color(core::Color::kBrightGreen);
   for (int i = 0; i <= 100; ++i) {
     const std::string progress = bar.update(i / 100.0);
     core::glog.raw_ref<"\r{}">(progress);

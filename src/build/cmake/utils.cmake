@@ -3,8 +3,8 @@
 # which can be found in the LICENSE file.
 
 string(ASCII 27 Esc)
-set(ColourReset "${Esc}[m")
-set(ColourBold "${Esc}[1m")
+set(ColorReset "${Esc}[m")
+set(ColorBold "${Esc}[1m")
 set(Gray "${Esc}[30m")
 set(Red "${Esc}[31m")
 set(Green "${Esc}[32m")
@@ -70,7 +70,7 @@ function(describe_target target_name)
     set(description "${description}\n${target_name} build type: ${target_type}")
   endif()
 
-  set(description "${description}\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${ColourReset}\n")
+  set(description "${description}\n-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=${ColorReset}\n")
 
   message(${description})
 endfunction()

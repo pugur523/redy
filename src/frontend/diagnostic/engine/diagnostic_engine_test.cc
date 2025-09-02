@@ -35,7 +35,7 @@ TEST(DiagnosticEngineTest, FormatSingle) {
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
-      .colourise = true,
+      .colorise = true,
       .show_notes = true,
       .show_help = true,
       .show_source_snippet = true,
@@ -87,7 +87,7 @@ TEST(DiagnosticEngineTest, FormatMultipleLabel) {
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
-      .colourise = true,
+      .colorise = true,
       .show_notes = true,
       .show_help = true,
       .show_source_snippet = true,
@@ -151,7 +151,7 @@ TEST(DiagnosticEngineTest, FormatVeryLargeLineNumber) {
 
   DiagnosticOptions options{
       .output_format = diagnostic::DiagnosticOutputFormat::kClassic,
-      .colourise = true,
+      .colorise = true,
       .show_notes = true,
       .show_help = true,
       .show_source_snippet = true,

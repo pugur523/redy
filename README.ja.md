@@ -95,14 +95,14 @@ fn main() -> i32 {
   println#("hello world!") // セミコロンは必要なし
 
   // 型を明示的に指定した変数宣言
-  my_favourite_number: i32 = 42
+  my_favorite_number: i32 = 42
 
   // 型は `:=` を使用してコンパイラに推論させることもできます
   my_name := "redy"
 
   // `println#`はfmtlibのようなフォーマットつきprintをサポートしています
-  println#("My name is {} and my favourite number is {}.", my_name, my_favourite_number)
-  // これは`My name is redy and my favourite number is 42.`のようにフォーマットされます
+  println#("My name is {} and my favorite number is {}.", my_name, my_favorite_number)
+  // これは`My name is redy and my favorite number is 42.`のようにフォーマットされます
 
   for n: 0..<100 {
     if n % 15 == 0 {

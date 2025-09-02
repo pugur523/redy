@@ -32,8 +32,8 @@ enum class Style : uint8_t {
   kDefault = kReset,
 };
 
-// foreground colours
-enum class Colour : uint8_t {
+// foreground colors
+enum class Color : uint8_t {
   kBlack = 0,
   kRed = 1,
   kGreen = 2,
@@ -54,8 +54,8 @@ enum class Colour : uint8_t {
   kDefault = 255,
 };
 
-// background colours
-enum class BgColour : uint8_t {
+// background colors
+enum class BgColor : uint8_t {
   kBlack = 0,
   kRed = 1,
   kGreen = 2,
@@ -91,13 +91,13 @@ inline constexpr std::array<const char*, 8> kStyleCodes = {
     "\033[5m", "\033[7m", "\033[8m", "\033[9m",
 };
 
-inline constexpr std::array<const char*, 16> kColourCodes = {
+inline constexpr std::array<const char*, 16> kColorCodes = {
     "\033[30m", "\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m",
     "\033[36m", "\033[37m", "\033[90m", "\033[91m", "\033[92m", "\033[93m",
     "\033[94m", "\033[95m", "\033[96m", "\033[97m",
 };
 
-inline constexpr std::array<const char*, 16> kBgColourCodes = {
+inline constexpr std::array<const char*, 16> kBgColorCodes = {
     "\033[40m",  "\033[41m",  "\033[42m",  "\033[43m",
     "\033[44m",  "\033[45m",  "\033[46m",  "\033[47m",
     "\033[100m", "\033[101m", "\033[102m", "\033[103m",
@@ -112,18 +112,18 @@ inline constexpr const char* style_str(Style style) {
   return kStyleCodes[static_cast<uint8_t>(style)];
 }
 
-inline constexpr const char* colour_str(Colour colour) {
-  if (colour == Colour::kDefault) {
+inline constexpr const char* color_str(Color color) {
+  if (color == Color::kDefault) {
     return kResetCode;
   }
-  return kColourCodes[static_cast<uint8_t>(colour)];
+  return kColorCodes[static_cast<uint8_t>(color)];
 }
 
-inline constexpr const char* colour_str(BgColour bg_colour) {
-  if (bg_colour == BgColour::kDefault) {
+inline constexpr const char* color_str(BgColor bg_color) {
+  if (bg_color == BgColor::kDefault) {
     return kResetCode;
   }
-  return kBgColourCodes[static_cast<uint8_t>(bg_colour)];
+  return kBgColorCodes[static_cast<uint8_t>(bg_color)];
 }
 
 }  // namespace core

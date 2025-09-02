@@ -262,7 +262,7 @@ enable llvm unwind: ${ENABLE_LLVM_UNWIND}
 enable avx2: ${ENABLE_AVX2}
 enable x86 asm: ${ENABLE_X86_ASM}
 enable warnings as errors: ${ENABLE_WARNINGS_AS_ERRORS}
--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-${ColourReset}")
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-${ColorReset}")
   print_all_build_flags()
 endif()
 

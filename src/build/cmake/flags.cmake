@@ -265,7 +265,7 @@ CMAKE_EXE_LINKER_FLAGS_RELEASE: ${CMAKE_EXE_LINKER_FLAGS_RELEASE}
 CMAKE_SHARED_LINKER_FLAGS_RELEASE: ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}
 PROJECT_C_CXX_COMPILE_OPTIONS: ${PROJECT_C_CXX_COMPILE_OPTIONS}
 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-${ColourReset}")
+${ColorReset}")
 endfunction()
 
 # Helper function to reset all flags (for testing)

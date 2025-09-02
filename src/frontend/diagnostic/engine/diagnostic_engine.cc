@@ -128,8 +128,8 @@ void DiagnosticEngine::render_source_line(std::string* out_str,
 
   out_str->append(src_before_marker);
 
-  const core::Colour marker_colour = label_marker_type_to_colour(marker_type);
-  s.style(core::Style::kBold).colour(marker_colour);
+  const core::Color marker_color = label_marker_type_to_color(marker_type);
+  s.style(core::Style::kBold).color(marker_color);
   out_str->append(s.build(src_on_marker));
   s.reset();
 
@@ -166,7 +166,7 @@ void DiagnosticEngine::render_source_line(std::string* out_str,
       marker_string_buf.append(translator_->translate(marker_msg_tr_key));
     }
   }
-  s.style(core::Style::kBold).colour(marker_colour);
+  s.style(core::Style::kBold).color(marker_color);
   out_str->append(s.build(std::move(marker_string_buf)));
   s.reset();
 

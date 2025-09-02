@@ -15,7 +15,7 @@ void DiagnosticEngine::format_annotation(const Annotation& annotation,
                                          std::size_t line_number_width,
                                          std::string* out_str) const {
   const AnnotationSeverity severity = annotation.severity();
-  const core::Colour severity_colour = annotation_severity_to_colour(severity);
+  const core::Color severity_color = annotation_severity_to_color(severity);
   const char* severity_str = annotation_severity_to_string(severity);
 
   core::StyleBuilder s;
@@ -23,7 +23,7 @@ void DiagnosticEngine::format_annotation(const Annotation& annotation,
   out_str->append(line_number_width, ' ');
   out_str->append(" = ");
 
-  s.style(core::Style::kBold).colour(severity_colour);
+  s.style(core::Style::kBold).color(severity_color);
   out_str->append(s.build(severity_str));
   s.reset();
 

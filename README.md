@@ -93,14 +93,14 @@ fn main() -> i32 {
   println#("hello world!")       // no semicolons needed.
 
   // variable declaration with an explicit type annotation.
-  my_favourite_number: i32 = 42
+  my_favorite_number: i32 = 42
 
   // type can be inferred using `:=`.
   my_name := "redy"
 
   // `println#` supports fmtlib like formatting
-  println#("My name is {} and my favourite number is {}.", my_name, my_favourite_number)
-  // it will be formatted to like `My name is redy and my favourite number is 42.`
+  println#("My name is {} and my favorite number is {}.", my_name, my_favorite_number)
+  // it will be formatted to like `My name is redy and my favorite number is 42.`
 
   for n: 0..<100 {
     if n % 15 == 0 {

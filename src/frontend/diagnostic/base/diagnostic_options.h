@@ -20,7 +20,7 @@ enum class DiagnosticOutputFormat : uint8_t {
 
 struct DIAGNOSTIC_EXPORT DiagnosticOptions {
   DiagnosticOutputFormat output_format = DiagnosticOutputFormat::kClassic;
-  bool colourise : 1 = true;
+  bool colorise : 1 = true;
   bool show_notes : 1 = true;
   bool show_help : 1 = true;
   bool show_source_snippet : 1 = true;

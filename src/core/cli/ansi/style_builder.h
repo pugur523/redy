@@ -85,13 +85,13 @@ class CORE_EXPORT StyleBuilder {
     return *this;
   }
 
-  inline constexpr StyleBuilder& colour(Colour c) {
+  inline constexpr StyleBuilder& color(Color c) {
     fg_ = c;
     update_should_build_cache();
     return *this;
   }
 
-  inline constexpr StyleBuilder& bg(BgColour c) {
+  inline constexpr StyleBuilder& bg(BgColor c) {
     bg_ = c;
     update_should_build_cache();
     return *this;
@@ -146,14 +146,14 @@ class CORE_EXPORT StyleBuilder {
     }
 
     should_build_ = styles_ != Style::kDefault || use_fg_rgb_ ||
-                    fg_ != Colour::kDefault || use_bg_rgb_ ||
-                    bg_ != BgColour::kDefault;
+                    fg_ != Color::kDefault || use_bg_rgb_ ||
+                    bg_ != BgColor::kDefault;
   }
 
   Style styles_ = Style::kDefault;
 
-  Colour fg_ = Colour::kDefault;
-  BgColour bg_ = BgColour::kDefault;
+  Color fg_ = Color::kDefault;
+  BgColor bg_ = BgColor::kDefault;
 
   bool should_build_ : 1 = false;
   bool use_fg_rgb_ : 1 = false;

@@ -35,15 +35,15 @@ inline constexpr i18n::TranslationKey severity_to_tr_key(Severity severity) {
   }
 }
 
-inline constexpr core::Colour severity_to_colour(Severity severity) {
+inline constexpr core::Color severity_to_color(Severity severity) {
   switch (severity) {
-    case Severity::kUnknown: return core::Colour::kDefault;
-    case Severity::kFatal: return core::Colour::kMagenta;
-    case Severity::kError: return core::Colour::kRed;
-    case Severity::kWarn: return core::Colour::kYellow;
-    case Severity::kInfo: return core::Colour::kGreen;
-    case Severity::kDebug: return core::Colour::kCyan;
-    case Severity::kTrace: return core::Colour::kGray;
+    case Severity::kUnknown: return core::Color::kDefault;
+    case Severity::kFatal: return core::Color::kMagenta;
+    case Severity::kError: return core::Color::kRed;
+    case Severity::kWarn: return core::Color::kYellow;
+    case Severity::kInfo: return core::Color::kGreen;
+    case Severity::kDebug: return core::Color::kCyan;
+    case Severity::kTrace: return core::Color::kGray;
   }
 }
 

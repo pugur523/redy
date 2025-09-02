@@ -253,8 +253,8 @@ void ArgParser::print_help() const {
 
   strong_style.style(Style::kBold).rgb(255, 100, 32);
   category_style.style(Style::kBoldUnderline);
-  arg_style.style(Style::kBold).colour(Colour::kBrightCyan);
-  desc_style.style(Style::kBold).colour(Colour::kBrightMagenta);
+  arg_style.style(Style::kBold).color(Color::kBrightCyan);
+  desc_style.style(Style::kBold).color(Color::kBrightMagenta);
 
   std::string help_str = desc_style.build(description_);
   help_str.append("\n\n");

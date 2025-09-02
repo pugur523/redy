@@ -38,16 +38,16 @@ inline const char* annotation_severity_to_string(AnnotationSeverity severity) {
   }
 }
 
-inline core::Colour annotation_severity_to_colour(AnnotationSeverity severity) {
+inline core::Color annotation_severity_to_color(AnnotationSeverity severity) {
   using Severity = AnnotationSeverity;
   switch (severity) {
-    case Severity::kUnknown: return core::Colour::kDefault;
-    case Severity::kNote: return core::Colour::kCyan;
-    case Severity::kSuggestion: return core::Colour::kBrightCyan;
-    case Severity::kHelp: return core::Colour::kBlue;
-    case Severity::kWarn: return core::Colour::kYellow;
-    case Severity::kError: return core::Colour::kRed;
-    case Severity::kFatal: return core::Colour::kMagenta;
+    case Severity::kUnknown: return core::Color::kDefault;
+    case Severity::kNote: return core::Color::kCyan;
+    case Severity::kSuggestion: return core::Color::kBrightCyan;
+    case Severity::kHelp: return core::Color::kBlue;
+    case Severity::kWarn: return core::Color::kYellow;
+    case Severity::kError: return core::Color::kRed;
+    case Severity::kFatal: return core::Color::kMagenta;
   }
 }
 

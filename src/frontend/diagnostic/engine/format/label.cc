@@ -29,7 +29,7 @@ void DiagnosticEngine::format_label_header(const Label& label,
   out_str->append(line_number_width, ' ');
   out_str->append("-> ");
 
-  s.style(core::Style::kBold).colour(core::Colour::kBrightGreen);
+  s.style(core::Style::kBold).color(core::Color::kBrightGreen);
   std::string file_info_buf;
   file_info_buf.reserve(file_name.size() + sizeof(":") + line_num_len +
                         sizeof(":") + col_num_len);

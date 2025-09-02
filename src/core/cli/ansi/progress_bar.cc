@@ -50,11 +50,11 @@ std::string ProgressBar::update_impl(double progress,
         "{}\r{:<50} {}[ {} ]{} {:>6.2f}%    "
         "({}elapsed: {}{} | {}eta: {}{})";
     return std::format(kFormatStr, remove_line ? "\033[2K" : "", prefix,
-                       colour_str(Colour::kBrightGreen), bar,
+                       color_str(Color::kBrightGreen), bar,
                        style_str(Style::kReset), progress * 100.0,
-                       colour_str(Colour::kBrightMagenta),
+                       color_str(Color::kBrightMagenta),
                        format_time(elapsed_sec), style_str(Style::kReset),
-                       colour_str(Colour::kBrightCyan),
+                       color_str(Color::kBrightCyan),
                        progress == 1.0 ? "--:--" : format_time(eta_sec),
                        style_str(Style::kReset));
   } else {

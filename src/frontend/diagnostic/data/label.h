@@ -47,16 +47,16 @@ inline constexpr char label_maker_type_to_char(LabelMarkerType marker) {
   }
 }
 
-inline constexpr core::Colour label_marker_type_to_colour(
+inline constexpr core::Color label_marker_type_to_color(
     LabelMarkerType marker) {
   switch (marker) {
-    case LabelMarkerType::kUnknown: return core::Colour::kGray;
-    case LabelMarkerType::kLine: return core::Colour::kBlue;
-    case LabelMarkerType::kCircle: return core::Colour::kBrightRed;
-    case LabelMarkerType::kEqual: return core::Colour::kCyan;
-    case LabelMarkerType::kEmphasis: return core::Colour::kRed;
-    case LabelMarkerType::kCodeAddition: return core::Colour::kBrightGreen;
-    case LabelMarkerType::kCodeRemoval: return core::Colour::kBrightCyan;
+    case LabelMarkerType::kUnknown: return core::Color::kGray;
+    case LabelMarkerType::kLine: return core::Color::kBlue;
+    case LabelMarkerType::kCircle: return core::Color::kBrightRed;
+    case LabelMarkerType::kEqual: return core::Color::kCyan;
+    case LabelMarkerType::kEmphasis: return core::Color::kRed;
+    case LabelMarkerType::kCodeAddition: return core::Color::kBrightGreen;
+    case LabelMarkerType::kCodeRemoval: return core::Color::kBrightCyan;
   }
 }
 

@@ -14,11 +14,11 @@ namespace diagnostic {
 
 void DiagnosticEngine::format_header(const Header& header,
                                      std::string* out_str) const {
-  const core::Colour severity_colour = severity_to_colour(header.severity());
+  const core::Color severity_color = severity_to_color(header.severity());
 
   core::StyleBuilder s;
 
-  s.style(core::Style::kBold).colour(severity_colour);
+  s.style(core::Style::kBold).color(severity_color);
   out_str->append(
       s.build(translator_->translate(severity_to_tr_key(header.severity()))));
   s.reset();
@@ -32,7 +32,7 @@ void DiagnosticEngine::format_header(const Header& header,
   diagnostic_id_to_code(header.diag_id(), header.severity(), diag_code_buf + 1);
   diag_code_buf[kDiagCodeBufSize - 1] = ']';
 
-  s.style(core::Style::kBold).colour(severity_colour);
+  s.style(core::Style::kBold).color(severity_color);
   out_str->append(s.build(diag_code_buf, 7));
   s.reset();
 
