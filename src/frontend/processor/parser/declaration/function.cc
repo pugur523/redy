@@ -78,18 +78,14 @@ Parser::Result<ast::NodeId> Parser::parse_function_declaration(
     }
   }
 
-  const PayloadId payload_id = context_->alloc(ast::FunctionDeclarationPayload{
-      .name = function_name,
-      .parameters_range = parameters_range,
-      .return_type = return_type_id,
-      .body = body_id,
-      .storage_attribute = attribute,
-  });
-
-  return ok(context_->alloc(ast::Node{
-      .kind = ast::NodeKind::kFunctionDeclaration,
-      .payload_id = payload_id,
-  }));
+  return ok(context_->create(ast::NodeKind::kFunctionDeclaration,
+                             ast::FunctionDeclarationPayload{
+                                 .name = function_name,
+                                 .parameters_range = parameters_range,
+                                 .return_type = return_type_id,
+                                 .body = body_id,
+                                 .storage_attribute = attribute,
+                             }));
 }
 
 }  // namespace parser
