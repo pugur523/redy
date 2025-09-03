@@ -76,7 +76,7 @@ class PARSER_EXPORT Parser {
   Result<NodeId> parse_primary_expression();
   Result<NodeId> parse_postfix_expression();
   Result<NodeId> parse_literal_expression();
-  Result<NodeId> parse_path_expression(PayloadId first_part);
+  Result<NodeId> parse_path_expression();
   Result<NodeId> parse_unary_expression();
   Result<NodeId> parse_binary_expression(OperatorPrecedence min_precedence);
   Result<NodeId> parse_grouped_expression();
