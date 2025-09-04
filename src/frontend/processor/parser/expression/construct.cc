@@ -23,10 +23,7 @@ Parser::Result<R> Parser::parse_construct_expr(NodeId type_path) {
   NodeId first_id = ast::kInvalidNodeId;
   uint32_t arg_count = 0;
 
-  while (!eof()) {
-    if (!check(base::TokenKind::kDot)) {
-      break;
-    }
+  while (!eof() && check(base::TokenKind::kDot)) {
     // consume dot
     next_non_whitespace();
 

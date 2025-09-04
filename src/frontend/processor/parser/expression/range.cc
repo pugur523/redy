@@ -12,6 +12,7 @@
 #include "frontend/data/ast/payload/expression.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
+#include "i18n/base/translator.h"
 
 namespace parser {
 
@@ -48,7 +49,9 @@ Parser::Result<R> Parser::parse_range_expr() {
                  diagnostic::DiagId::kUnexpectedToken)
                   .label(stream_->file_id(), lt_or_equal.range(),
                          i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
-                         diagnostic::LabelMarkerType::kEmphasis))
+                         diagnostic::LabelMarkerType::kEmphasis,
+                         {translator_->translate(
+                             base::token_kind_to_tr_key(lt_or_equal.kind()))}))
               .build()));
   }
 

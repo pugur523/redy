@@ -34,11 +34,7 @@ Parser::Result<R> Parser::parse_match_expr() {
   PayloadId<ast::MatchArmPayload> first_id;
   uint32_t arms_count = 0;
 
-  while (!eof()) {
-    if (check(base::TokenKind::kRightBrace)) {
-      break;
-    }
-
+  while (!eof() && !check(base::TokenKind::kRightBrace)) {
     auto pattern_r = parse_expression();
     if (pattern_r.is_err()) {
       return err<R>(std::move(pattern_r));

@@ -12,6 +12,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/diagnostic/data/diagnostic_id.h"
+#include "frontend/diagnostic/engine/diagnostic_engine.h"
 #include "gtest/gtest.h"
 #include "i18n/base/translator.h"
 #include "unicode/utf8/file_manager.h"
@@ -48,18 +49,37 @@ struct TestParser {
     parser.init(&stream_, translator);
   }
 
+  ~TestParser() = default;
+
   void expect_ok(bool strict = false) {
     auto result = parser.parse_all(strict);
 
     EXPECT_TRUE(result.is_ok());
     if (result.is_err()) {
-      // int diag_id = static_cast<int>(result.unwrap_err().diag_id);
+      // auto errors = std::move(result).unwrap_err();
 
-      // std::cerr << "diag id: " << diag_id << '\n'
-      //           << "pos: " << stream.position() << '\n'
-      //           << "line: " << stream.line() << '\n'
-      //           << "column: " << stream.column() << '\n';
-      return;
+      // for (const auto& entry : errors) {
+      //   std::cerr << "diag id: "
+      //             <<
+      //             translator.translate(diagnostic::diagnostic_id_to_tr_key(
+      //                    entry.header().diag_id()))
+      //             << '\n';
+      //   for (const auto& label : entry.labels()) {
+      //     std::cerr << "label: " <<
+      //     translator.translate(label.message_tr_key())
+      //               << '\n';
+      //     for (uint8_t i = 0; i < label.args_count(); ++i) {
+      //       std::cerr << "format args " << i << ": " <<
+      //       label.format_args()[i]
+      //                 << '\n';
+      //     }
+      //     for (const auto& ann : label.annotations()) {
+      //       std::cerr << "ann: " <<
+      //       translator.translate(ann.message_tr_key())
+      //                 << '\n';
+      //     }
+      //   }
+      // }
     }
   }
 
@@ -67,12 +87,6 @@ struct TestParser {
     auto result = parser.parse_all(false);
     EXPECT_TRUE(result.is_err());
     if (result.is_ok()) {
-      // auto token = std::move(result).unwrap();
-      // const unicode::Utf8Stream& stream = parser.stream();
-      // std::cerr << "lexeme: " << token.lexeme(manager.file(id_)) << '\n'
-      //           << "pos: " << stream.position() << '\n'
-      //           << "line: " << stream.line() << '\n'
-      //           << "column: " << stream.column() << '\n';
       return;
     }
     const auto errors = std::move(result).unwrap_err();
@@ -102,14 +116,31 @@ void expect_errors(base::TokenStream&& stream,
 
 }  // namespace
 
-TEST(ParserTest, ParseSimple) {
+TEST(ParserTest, ParseEmptyStruct) {
+  TestParser parser({
+      base::TokenKind::kStruct,
+      base::TokenKind::kIdentifier,
+      base::TokenKind::kLeftBrace,
+      base::TokenKind::kRightBrace,
+      base::TokenKind::kEof,
+  });
+  // struct String{}
+  parser.expect_ok();
+}
+
+TEST(ParserTest, ParseEmptyFunction) {
   TestParser parser({
       base::TokenKind::kFunction,
       base::TokenKind::kIdentifier,
       base::TokenKind::kLeftParen,
       base::TokenKind::kRightParen,
+      base::TokenKind::kArrow,
+      base::TokenKind::kI32,
+      base::TokenKind::kLeftBrace,
+      base::TokenKind::kRightBrace,
       base::TokenKind::kEof,
   });
+  // fn some_name() -> i32 {}
   parser.expect_ok();
 }
 

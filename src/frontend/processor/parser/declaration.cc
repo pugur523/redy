@@ -9,6 +9,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/payload/data.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
@@ -18,6 +19,7 @@ namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
   using Kind = base::TokenKind;
+  using Sadd = ast::StorageAttributeData::Data;
 
   const base::Token& first_token = peek();
   Kind kind = first_token.kind();
@@ -25,19 +27,23 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
   // read storage attribute
   Sad attribute{};
   const base::Token* attribute_last_token = nullptr;
-  while (!eof()) {
-    if (!base::token_kind_is_attribute_keyword(kind)) {
-      break;
-    }
+  while (!eof() && base::token_kind_is_attribute_keyword(kind)) {
     attribute_last_token = &peek();
     switch (kind) {
-      case Kind::kMutable: attribute.is_mutable = true; break;
-      case Kind::kConstant: attribute.is_const = true; break;
-      case Kind::kExtern: attribute.is_extern = true; break;
-      case Kind::kStatic: attribute.is_static = true; break;
-      case Kind::kThreadLocal: attribute.is_thread_local = true; break;
-      case Kind::kPublic: attribute.is_public = true; break;
-      case Kind::kAsync: attribute.is_async = true; break;
+      // case Kind::kMutable: attribute.is_mutable = true; break;
+      // case Kind::kConstant: attribute.is_const = true; break;
+      // case Kind::kExtern: attribute.is_extern = true; break;
+      // case Kind::kStatic: attribute.is_static = true; break;
+      // case Kind::kThreadLocal: attribute.is_thread_local = true; break;
+      // case Kind::kPublic: attribute.is_public = true; break;
+      // case Kind::kAsync: attribute.is_async = true; break;
+      case Kind::kMutable: attribute |= Sadd::kMutable; break;
+      case Kind::kConstant: attribute |= Sadd::kConstant; break;
+      case Kind::kExtern: attribute |= Sadd::kExtern; break;
+      case Kind::kStatic: attribute |= Sadd::kStatic; break;
+      case Kind::kThreadLocal: attribute |= Sadd::kThreadLocal; break;
+      case Kind::kPublic: attribute |= Sadd::kPublic; break;
+      case Kind::kAsync: attribute |= Sadd::kAsync; break;
       default: break;
     }
 
@@ -51,7 +57,7 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
         attribute_last_token->end(),
     };
 
-    if (attribute.is_mutable && attribute.is_const) [[unlikely]] {
+    if ((attribute & Sadd::kMutable) && (attribute & Sadd::kConstant)) {
       return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
@@ -65,7 +71,7 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
                           translator_->translate(
                               i18n::TranslationKey::kTermTokenKindConstant)}))
               .build());
-    } else if (attribute.is_extern && attribute.is_static) [[unlikely]] {
+    } else if ((attribute & Sadd::kExtern) && (attribute & Sadd::kStatic)) {
       return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,

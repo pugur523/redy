@@ -51,7 +51,8 @@ Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute) {
 
   PayloadId<ast::TypeReferencePayload> return_type_id;
   if (check(base::TokenKind::kArrow)) {
-    consume(base::TokenKind::kArrow, true);
+    // consumes ->
+    next_non_whitespace();
     auto ret_type_r = parse_type_reference();
     if (ret_type_r.is_err()) {
       return err<R>(std::move(ret_type_r));
@@ -63,21 +64,11 @@ Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute) {
   PayloadId<ast::BlockExpressionPayload> body_id;
   if (check(base::TokenKind::kLeftBrace)) {
     // with definition
-    auto lbrace_r = consume(base::TokenKind::kLeftBrace, true);
-    if (lbrace_r.is_err()) {
-      return err<R>(std::move(lbrace_r));
-    }
-
     auto body_r = parse_block_expr();
     if (body_r.is_err()) {
       return err<R>(std::move(body_r));
     }
     body_id = std::move(body_r).unwrap();
-
-    auto rbrace_r = consume(base::TokenKind::kRightBrace, true);
-    if (rbrace_r.is_err()) {
-      return err<R>(std::move(rbrace_r));
-    }
   }
 
   return ok(context_->alloc_payload(ast::FunctionDeclarationPayload{

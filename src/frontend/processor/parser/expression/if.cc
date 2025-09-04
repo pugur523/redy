@@ -39,10 +39,7 @@ Parser::Result<R> Parser::parse_if_expr() {
       });
 
   uint32_t branches_count = 1;
-  while (!eof()) {
-    if (!check(base::TokenKind::kElse)) {
-      break;
-    }
+  while (!eof() && check(base::TokenKind::kElse)) {
     // consume else
     next_non_whitespace();
 

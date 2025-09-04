@@ -24,6 +24,9 @@ Parser::Result<R> Parser::parse_type_reference() {
 
   if (base::token_kind_is_primitive_type(current_kind)) {
     // primitive types
+
+    // consume type
+    next_non_whitespace();
     return ok(context_->alloc_payload(ast::TypeReferencePayload(
         base::token_kind_to_primitive_type(current_kind))));
   } else if (current_kind == base::TokenKind::kIdentifier) {
@@ -36,6 +39,8 @@ Parser::Result<R> Parser::parse_type_reference() {
         ast::TypeReferencePayload(std::move(path_r).unwrap())));
   } else if (current_kind == base::TokenKind::kLeftBracket) {
     // array type [i32], [i32; 5]
+
+    // consume [
     next_non_whitespace();
 
     // recursive

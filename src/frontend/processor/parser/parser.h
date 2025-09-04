@@ -184,10 +184,10 @@ class Parser {
   inline bool check(base::TokenKind kind) const { return stream_->check(kind); }
   inline const base::Token& next() { return stream_->next(); }
   inline const base::Token& next_non_whitespace() {
-    base::TokenKind kind = peek().kind();
+    base::TokenKind kind = next().kind();
     while (!eof() && (kind == base::TokenKind::kNewline ||
                       kind == base::TokenKind::kWhitespace)) {
-      kind = stream_->next().kind();
+      kind = next().kind();
     }
     return peek();
   }

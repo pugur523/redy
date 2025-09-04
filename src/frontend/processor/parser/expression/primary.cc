@@ -4,9 +4,11 @@
 
 #include <utility>
 
+#include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_kind.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
+#include "i18n/base/translator.h"
 
 namespace parser {
 
@@ -57,7 +59,9 @@ Parser::Result<ast::NodeId> Parser::parse_primary_expr() {
                  diagnostic::DiagnosticId::kUnexpectedToken)
                   .label(stream_->file_id(), peek().range(),
                          i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
-                         diagnostic::LabelMarkerType::kLine))
+                         diagnostic::LabelMarkerType::kLine,
+                         {translator_->translate(
+                             base::token_kind_to_tr_key(kind))}))
               .build());
   }
 }

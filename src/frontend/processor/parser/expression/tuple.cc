@@ -24,11 +24,7 @@ Parser::Result<R> Parser::parse_tuple_expr() {
   NodeId first_id = ast::kInvalidNodeId;
   uint32_t elements_count = 0;
 
-  while (!eof()) {
-    if (check(base::TokenKind::kRightParen)) {
-      break;
-    }
-
+  while (!eof() && !check(base::TokenKind::kRightParen)) {
     auto expr_r = parse_expression();
     if (expr_r.is_err()) {
       return err<R>(std::move(expr_r));
@@ -49,7 +45,9 @@ Parser::Result<R> Parser::parse_tuple_expr() {
                  diagnostic::DiagId::kUnexpectedToken)
                   .label(stream_->file_id(), next_token.range(),
                          i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
-                         diagnostic::LabelMarkerType::kEmphasis))
+                         diagnostic::LabelMarkerType::kEmphasis,
+                         {translator_->translate(
+                             base::token_kind_to_tr_key(next_token.kind()))}))
               .build());
     }
   }

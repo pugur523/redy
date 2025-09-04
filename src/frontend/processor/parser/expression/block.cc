@@ -22,7 +22,7 @@ Parser::Result<R> Parser::parse_block_expr() {
   NodeId first_id = ast::kInvalidNodeId;
   uint32_t body_statement_count = 0;
 
-  while (!eof()) {
+  while (!eof() && !check(base::TokenKind::kRightBrace)) {
     auto body_statement_r = parse_statement();
     if (body_statement_r.is_err()) {
       return err<R>(std::move(body_statement_r));

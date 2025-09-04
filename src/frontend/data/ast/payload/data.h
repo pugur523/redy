@@ -149,22 +149,57 @@ struct MatchArmPayload {
   NodeId expression = kInvalidNodeId;
 };
 
+enum class StorageAttribute : uint8_t {};
+
 // storage attribute should be small bitfield structure,
 // so we don't have a dedicated arena, but instead just hold raw data
 struct StorageAttributeData {
-  bool is_mutable : 1 = false;
-  bool is_const : 1 = false;
-  bool is_extern : 1 = false;
-  bool is_static : 1 = false;
-  bool is_thread_local : 1 = false;
-  bool is_public : 1 = false;
-  bool is_async : 1 = false;
+  // bool is_mutable : 1 = false;
+  // bool is_const : 1 = false;
+  // bool is_extern : 1 = false;
+  // bool is_static : 1 = false;
+  // bool is_thread_local : 1 = false;
+  // bool is_public : 1 = false;
+  // bool is_async : 1 = false;
 
-  inline bool has_any() const {
-    // return is_mutable || is_const || is_extern || is_static ||
-    //        is_thread_local || is_public || is_async;
-    return *reinterpret_cast<const uint8_t*>(this) != 0;
+  // inline bool has_any() const {
+  //   // return is_mutable || is_const || is_extern || is_static ||
+  //   //        is_thread_local || is_public || is_async;
+  //   return *reinterpret_cast<const uint8_t*>(this) != 0;
+  // }
+
+  enum class Data : uint8_t {
+    kNone = 0,
+    kMutable = 1 << 0,      // 1
+    kConstant = 1 << 1,     // 2
+    kExtern = 1 << 2,       // 4
+    kStatic = 1 << 3,       // 8
+    kThreadLocal = 1 << 4,  // 16
+    kPublic = 1 << 5,       // 32
+    kAsync = 1 << 6,        // 64
+  } data = Data::kNone;
+
+  inline bool has_any() const { return !!*this; }
+
+  inline StorageAttributeData operator|(StorageAttributeData::Data other) {
+    return {.data = static_cast<StorageAttributeData::Data>(
+                static_cast<uint8_t>(data) | static_cast<uint8_t>(other))};
   }
+
+  inline StorageAttributeData operator&(StorageAttributeData::Data other) {
+    return {.data = static_cast<StorageAttributeData::Data>(
+                static_cast<uint8_t>(data) & static_cast<uint8_t>(other))};
+  }
+
+  inline StorageAttributeData operator|=(StorageAttributeData::Data other) {
+    return *this = *this | other;
+  }
+
+  inline StorageAttributeData& operator&=(StorageAttributeData::Data other) {
+    return *this = *this & other;
+  }
+
+  inline explicit operator bool() const { return data != Data::kNone; }
 };
 
 }  // namespace ast
