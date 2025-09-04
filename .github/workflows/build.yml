@@ -172,7 +172,7 @@ jobs:
       - name: Build
         run: |
           BUILD_ARGS="--build_mode=${{ inputs.build_mode }} --target_platform=${{ matrix.target_platform }} --no-install --package --no-cpplint --no-clang_format"
-          EXTRA_ARGS="-DENABLE_XRAY=false,-DENABLE_SANITIZERS=false,-DENABLE_BUILD_REPORT=false,-DENABLE_LTO=true,-DENABLE_NATIVE_ARCH=true,-DENABLE_LLVM_UNWIND=true,-DENABLE_VERBOSE=true,-DENABLE_COVERAGE=false,-DENABLE_WARNINGS_AS_ERRORS=false,-DENABLE_BUILD_SHARED=false,-DENABLE_BUILD_PROGRAM=true,-DENABLE_BUILD_BENCHMARK=false,-DENABLE_BUILD_TESTING=false"
+          EXTRA_ARGS="-DENABLE_XRAY=false,-DENABLE_SANITIZERS=false,-DENABLE_BUILD_REPORT=false,-DENABLE_LTO=true,-DENABLE_NATIVE_ARCH=true,-DENABLE_LLVM_UNWIND=true,-DENABLE_VERBOSE=true,-DENABLE_COVERAGE=false,-DENABLE_WARNINGS_AS_ERRORS=false,-DENABLE_BUILD_SHARED=false,-DENABLE_BUILD_PROGRAM=true,-DENABLE_BUILD_INFO_DEFINITIONS=true,-DENABLE_BUILD_BENCHMARK=false,-DENABLE_BUILD_TESTING=false"
 
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             # Setup MSVC environment for Windows

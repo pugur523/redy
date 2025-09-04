@@ -69,7 +69,7 @@ option(ENABLE_VERBOSE "enable detailed build information" TRUE)
 option(ENABLE_LTO "enable link time optimization" TRUE)
 option(ENABLE_NATIVE_ARCH "enable optimization for native architecture" TRUE)
 
-option(ENABLE_BUILD_INFO_DEFINITIONS "enable compile-time information definitions" TRUE)
+option(ENABLE_BUILD_INFO_DEFINITIONS "enable compile-time information definitions" FALSE)
 option(ENABLE_BUILD_REPORT "generate the report for optimization, build time, etc." TRUE)
 option(ENABLE_COVERAGE "enable coverage using -fprofile-instr-generate and llvm-cov. runs main app and test on post build if available." FALSE)
 option(ENABLE_OPTIMIZATION_REPORT "generate optimization report" FALSE)
