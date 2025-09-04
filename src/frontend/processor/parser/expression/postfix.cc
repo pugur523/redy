@@ -38,7 +38,8 @@ Parser::Result<ast::NodeId> Parser::parse_postfix_expr() {
       if (symbol_r.is_err()) {
         return err<NodeId>(std::move(symbol_r));
       }
-      const auto symbol_id = std::move(symbol_r).unwrap();
+      const PayloadId<ast::PathExpressionPayload> symbol_id =
+          std::move(symbol_r).unwrap();
 
       // some_obj.some_identifier
       const base::Token& postfix = peek();

@@ -112,7 +112,7 @@ void Parser::append_errors(std::vector<De>&& new_errors) {
 
 Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected,
                                                    bool skip_whitespaces) {
-  const auto& token = stream_->peek();
+  const base::Token& token = stream_->peek();
   if (check(expected)) [[likely]] {
     if (skip_whitespaces) {
       next_non_whitespace();

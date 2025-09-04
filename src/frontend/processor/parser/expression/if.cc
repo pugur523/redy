@@ -7,6 +7,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/payload/data.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
@@ -31,10 +32,11 @@ Parser::Result<R> Parser::parse_if_expr() {
     return err<R>(std::move(block_r));
   }
 
-  const auto first_id = context_->alloc_payload(ast::IfBranchPayload{
-      .condition = cond_id,
-      .block = std::move(block_r).unwrap(),
-  });
+  const PayloadId<ast::IfBranchPayload> first_id =
+      context_->alloc_payload(ast::IfBranchPayload{
+          .condition = cond_id,
+          .block = std::move(block_r).unwrap(),
+      });
 
   uint32_t branches_count = 1;
   while (!eof()) {

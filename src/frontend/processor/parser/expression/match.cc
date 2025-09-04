@@ -53,10 +53,11 @@ Parser::Result<R> Parser::parse_match_expr() {
       return err<R>(std::move(expr_r));
     }
 
-    const auto arm_id = context_->alloc_payload(ast::MatchArmPayload{
-        .pattern = std::move(pattern_r).unwrap(),
-        .expression = std::move(expr_r).unwrap(),
-    });
+    const PayloadId<ast::MatchArmPayload> arm_id =
+        context_->alloc_payload(ast::MatchArmPayload{
+            .pattern = std::move(pattern_r).unwrap(),
+            .expression = std::move(expr_r).unwrap(),
+        });
 
     if (arms_count == 0) {
       first_id = arm_id;

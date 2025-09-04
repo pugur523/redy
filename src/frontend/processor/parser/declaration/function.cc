@@ -30,7 +30,8 @@ Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute) {
   if (fn_name_r.is_err()) {
     return err<R>(std::move(fn_name_r));
   }
-  const PayloadId function_name = std::move(fn_name_r).unwrap();
+  const PayloadId<ast::PathExpressionPayload> function_name =
+      std::move(fn_name_r).unwrap();
 
   auto lparen_r = consume(base::TokenKind::kLeftParen, true);
   if (lparen_r.is_err()) {
