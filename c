@@ -28,6 +28,11 @@ elif [ "$action" = "bench" ]; then
   ${release_out_bin_dir}/redy_bench $remain_args
 elif [ "$action" = "docker" ]; then
   ${docker_dir}/build.sh $remain_args
+elif [ "$action" = "pcheck" ]; then
+  # check before push
+  ${build_scripts_dir}/build.py --build_mode=all
+  ${debug_out_bin_dir}/redy_test
+  echo "push check completed successfully"
 else
   echo "unknown option specified; aborted"
   exit 1
