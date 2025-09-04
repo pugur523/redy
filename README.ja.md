@@ -1,5 +1,7 @@
 <div align="center">
-  <img src="src/build/resources/assets/logo_r.svg" width="192" alt="redy">
+  <img src="src/build/resources/assets/logo_dark_r.svg#gh-dark-mode-only" width="192" alt="redy">
+  <img src="src/build/resources/assets/logo_light_r.svg#gh-light-mode-only" width="192" alt="redy">
+
   <h1>redy</h1>
 
   安全性を保ちながら最大限のパフォーマンス発揮する新しいプログラミング言語
