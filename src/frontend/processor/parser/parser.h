@@ -75,7 +75,7 @@ class Parser {
   template <typename T>
   using PayloadRange = ast::PayloadRange<T>;
 
-  void parse_root();
+  void parse_next();
 
   // temporarily disable line length limit for readability
   // clang-format off

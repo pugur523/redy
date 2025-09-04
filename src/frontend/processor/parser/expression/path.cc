@@ -31,9 +31,10 @@ Parser::Result<R> Parser::parse_path_expr() {
     if (next_part_r.is_err()) {
       return err<R>(std::move(next_part_r));
     }
-    const PayloadId part_id = context_->alloc_payload(ast::IdentifierPayload{
-        .lexeme_range = std::move(next_part_r).unwrap()->range(),
-    });
+    const PayloadId<ast::IdentifierPayload> part_id =
+        context_->alloc_payload(ast::IdentifierPayload{
+            .lexeme_range = std::move(next_part_r).unwrap()->range(),
+        });
 
     if (parts_count == 0) {
       first_part = part_id;

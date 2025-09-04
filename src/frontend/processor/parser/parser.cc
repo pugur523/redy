@@ -59,7 +59,7 @@ void Parser::init_context() {
 Parser::Results Parser::parse_all(bool strict) {
   DCHECK_EQ(status_, Status::kReadyToParse);
   while (!eof()) {
-    parse_root();
+    parse_next();
     if (!errors_.empty()) [[unlikely]] {
       if (strict) {
         break;
@@ -79,7 +79,7 @@ Parser::Results Parser::parse_all(bool strict) {
   }
 }
 
-void Parser::parse_root() {
+void Parser::parse_next() {
   const base::TokenKind current_kind = peek().kind();
 
   // parses declaration or statement
