@@ -7,30 +7,32 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_array_expression() {
+using R = ast::PayloadId<ast::ArrayExpressionPayload>;
+
+Parser::Result<R> Parser::parse_array_expr() {
   auto left_r = consume(base::TokenKind::kLeftBracket, true);
   if (left_r.is_err()) {
-    return err<NodeId>(std::move(left_r).unwrap_err());
+    return err<R>(std::move(left_r));
   }
 
-  NodeId first_id = ast::kInvalidNodeId;
+  NodeId first_id;
   uint32_t elements_count = 0;
 
   while (!eof()) {
-    if (peek().kind() == base::TokenKind::kRightBracket) {
+    if (check(base::TokenKind::kRightBracket)) {
       break;
     }
 
-    auto expr_r = parse_unary_expression();
+    auto expr_r = parse_unary_expr();
     if (expr_r.is_err()) {
-      return expr_r;
+      return err<R>(std::move(expr_r));
     }
     if (elements_count == 0) {
       first_id = std::move(expr_r).unwrap();
@@ -42,7 +44,7 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
     if (next_token.kind() == base::TokenKind::kComma) {
       next_non_whitespace();
     } else {
-      return err<NodeId>(
+      return err<R>(
           std::move(
               Eb(diagnostic::Severity::kError,
                  diagnostic::DiagId::kUnexpectedToken)
@@ -55,14 +57,12 @@ Parser::Result<ast::NodeId> Parser::parse_array_expression() {
 
   auto right_r = consume(base::TokenKind::kRightBracket, true);
   if (right_r.is_err()) {
-    return err<NodeId>(std::move(right_r).unwrap_err());
+    return err<R>(std::move(right_r));
   }
 
-  return ok(context_->create(
-      ast::NodeKind::kArrayExpression,
-      ast::ArrayExpressionPayload{
-          .array_elements_range = {.begin = first_id, .size = elements_count},
-      }));
+  return ok(context_->alloc_payload(ast::ArrayExpressionPayload{
+      .array_elements_range = {.begin = first_id, .size = elements_count},
+  }));
 }
 
 }  // namespace parser

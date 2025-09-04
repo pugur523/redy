@@ -14,7 +14,8 @@
 #include "frontend/data/ast/base/ast_export.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
+#include "frontend/data/ast/payload/expression.h"
+#include "frontend/data/ast/payload/statement.h"
 
 namespace ast {
 
@@ -36,18 +37,26 @@ class AST_EXPORT Context {
   inline base::Arena<T>& arena();
 
   template <typename T>
-  inline std::size_t alloc(T&& value) {
-    return arena<std::decay_t<T>>().alloc(std::move(value));
+  inline NodeId alloc(T&& value) {
+    return arena<T>().alloc(std::move(value));
   }
 
   template <typename T>
-  inline std::size_t create(NodeKind kind, T&& payload) {
-    const PayloadId payload_id = alloc<T>(std::move(payload));
-    return alloc(Node{.kind = kind, .payload_id = payload_id});
+  inline PayloadId<T> alloc_payload(T&& value) {
+    return PayloadId<T>(alloc(std::move(value)));
   }
 
   template <typename T>
-  inline T& get(std::size_t id) {
+  inline NodeId alloc_node(NodeKind kind, T&& payload) {
+    const PayloadId<T> payload_id = alloc_payload<T>(std::move(payload));
+    return alloc(Node{
+        .payload_id = payload_id.id,
+        .kind = kind,
+    });
+  }
+
+  template <typename T>
+  inline T& get(uint32_t id) {
     return arena<T>()[id];
   }
 
@@ -73,8 +82,7 @@ class AST_EXPORT Context {
   base::Arena<AwaitExpressionPayload> await_expression_payloads_;
   base::Arena<ContinueExpressionPayload> continue_expression_payloads_;
   base::Arena<BreakExpressionPayload> break_expression_payloads_;
-  base::Arena<ExclusiveRangeExpressionPayload> ex_range_expression_payloads_;
-  base::Arena<InclusiveRangeExpressionPayload> in_range_expression_payloads_;
+  base::Arena<RangeExpressionPayload> range_expression_payloads_;
   base::Arena<ReturnExpressionPayload> return_expression_payloads_;
 
   base::Arena<BlockExpressionPayload> block_expression_payloads_;
@@ -107,10 +115,8 @@ class AST_EXPORT Context {
   base::Arena<TypeReferencePayload> type_reference_payloads_;
   base::Arena<ArrayTypePayload> array_type_payloads_;
   base::Arena<IdentifierPayload> identifier_payloads_;
-  base::Arena<StorageAttributePayload> storage_attribute_payloads_;
   base::Arena<IfBranchPayload> if_branch_payloads_;
   base::Arena<MatchArmPayload> match_arm_payloads_;
-  base::Arena<VariablePayload> variable_payloads_;
 };
 
 template <>
@@ -204,14 +210,9 @@ Context::arena<BreakExpressionPayload>() {
   return break_expression_payloads_;
 }
 template <>
-inline base::Arena<ExclusiveRangeExpressionPayload>&
-Context::arena<ExclusiveRangeExpressionPayload>() {
-  return ex_range_expression_payloads_;
-}
-template <>
-inline base::Arena<InclusiveRangeExpressionPayload>&
-Context::arena<InclusiveRangeExpressionPayload>() {
-  return in_range_expression_payloads_;
+inline base::Arena<RangeExpressionPayload>&
+Context::arena<RangeExpressionPayload>() {
+  return range_expression_payloads_;
 }
 template <>
 inline base::Arena<ReturnExpressionPayload>&
@@ -348,11 +349,6 @@ inline base::Arena<IdentifierPayload>& Context::arena<IdentifierPayload>() {
   return identifier_payloads_;
 }
 template <>
-inline base::Arena<StorageAttributePayload>&
-Context::arena<StorageAttributePayload>() {
-  return storage_attribute_payloads_;
-}
-template <>
 inline base::Arena<IfBranchPayload>& Context::arena<IfBranchPayload>() {
   return if_branch_payloads_;
 }
@@ -360,13 +356,6 @@ template <>
 inline base::Arena<MatchArmPayload>& Context::arena<MatchArmPayload>() {
   return match_arm_payloads_;
 }
-template <>
-inline base::Arena<VariablePayload>& Context::arena<VariablePayload>() {
-  return variable_payloads_;
-}
-
-template <>
-inline PayloadId Context::alloc<NodeId>(NodeId&&) = delete;
 
 }  // namespace ast
 

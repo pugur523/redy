@@ -8,18 +8,19 @@
 #include "frontend/base/operator/operator.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
 // precedence climbing for binary expressions
 // lower precedence value means higher priority
-Parser::Result<ast::NodeId> Parser::parse_binary_expression(
+Parser::Result<ast::NodeId> Parser::parse_binary_expr(
     base::OperatorPrecedence min_precedence) {
   // parse left operand (unary expression)
-  auto left_r = parse_unary_expression();
+  auto left_r = parse_unary_expr();
   if (left_r.is_err()) {
-    return left_r;
+    return err<NodeId>(std::move(left_r));
   }
   NodeId left_id = std::move(left_r).unwrap();
 
@@ -30,7 +31,7 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
     }
 
     const base::BinaryOperator op = base::token_kind_to_binary_op(kind);
-    const OperatorPrecedence current_precedence =
+    const base::OperatorPrecedence current_precedence =
         base::binary_op_to_precedence(op);
 
     // check if current operator has sufficient precedence
@@ -42,25 +43,29 @@ Parser::Result<ast::NodeId> Parser::parse_binary_expression(
     next_non_whitespace();
 
     // determine precedence for right operand based on associativity
-    OperatorPrecedence right_min_precedence;
+    base::OperatorPrecedence right_min_precedence;
     if (base::operator_precedence_to_associativity(current_precedence) ==
         base::OperatorAssociativity::kRightToLeft) {
       right_min_precedence = current_precedence;
     } else {
-      right_min_precedence = static_cast<OperatorPrecedence>(
+      DCHECK_NE(current_precedence, base::OperatorPrecedence::kUnknown);
+      // only base::OperatorPrecedence::kUnknown is 0 and the others are greater
+      // than 0 so this is safe that will not cause underflow
+      right_min_precedence = static_cast<base::OperatorPrecedence>(
           static_cast<uint8_t>(current_precedence) - 1);
     }
 
     // recursive approach
-    auto right_r = parse_binary_expression(right_min_precedence);
+    auto right_r = parse_binary_expr(right_min_precedence);
     if (right_r.is_err()) {
-      return right_r;
+      return err<NodeId>(std::move(right_r));
     }
     const NodeId right_id = std::move(right_r).unwrap();
 
-    left_id = context_->create(ast::NodeKind::kBinaryOperatorExpression,
-                               ast::BinaryExpressionPayload{
-                                   .op = op, .lhs = left_id, .rhs = right_id});
+    left_id =
+        context_->alloc_node(ast::NodeKind::kBinaryExpression,
+                             ast::BinaryExpressionPayload{
+                                 .op = op, .lhs = left_id, .rhs = right_id});
   }
 
   return ok(left_id);

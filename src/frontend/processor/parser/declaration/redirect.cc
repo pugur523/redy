@@ -7,7 +7,6 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/label.h"
 #include "frontend/diagnostic/data/severity.h"
@@ -16,40 +15,34 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_redirect_declaration(
-    PayloadId attribute) {
+using R = ast::PayloadId<ast::RedirectDeclarationPayload>;
+
+Parser::Result<R> Parser::parse_redirect_decl_stmt(Sad attribute) {
   auto redirect_r = consume(base::TokenKind::kRedirect, true);
   if (redirect_r.is_err()) {
-    return err<NodeId>(std::move(redirect_r).unwrap_err());
+    return err<R>(std::move(redirect_r));
   }
 
-  auto fn_name_r = consume(base::TokenKind::kIdentifier, true);
+  auto fn_name_r = parse_path_expr();
   if (fn_name_r.is_err()) {
-    return err<NodeId>(std::move(fn_name_r).unwrap_err());
+    return err<R>(std::move(fn_name_r));
   }
-  const PayloadId fn_name = context_->alloc(ast::IdentifierPayload{
-      .lexeme = std::move(fn_name_r).unwrap()->lexeme(stream_->file()),
-  });
 
   auto arrow_r = consume(base::TokenKind::kArrow, true);
   if (arrow_r.is_err()) {
-    return err<NodeId>(std::move(arrow_r).unwrap_err());
+    return err<R>(std::move(arrow_r));
   }
 
-  auto target_name_r = consume(base::TokenKind::kIdentifier, true);
+  auto target_name_r = parse_path_expr();
   if (target_name_r.is_err()) {
-    return err<NodeId>(std::move(target_name_r).unwrap_err());
+    return err<R>(std::move(target_name_r));
   }
-  const PayloadId target_name = context_->alloc(ast::IdentifierPayload{
-      .lexeme = std::move(target_name_r).unwrap()->lexeme(stream_->file()),
-  });
 
-  return ok(context_->create(ast::NodeKind::kRedirectDeclaration,
-                             ast::RedirectDeclarationPayload{
-                                 .name = fn_name,
-                                 .target = target_name,
-                                 .storage_attribute = attribute,
-                             }));
+  return ok(context_->alloc_payload(ast::RedirectDeclarationPayload{
+      .name = std::move(fn_name_r).unwrap(),
+      .target = std::move(target_name_r).unwrap(),
+      .storage_attribute = attribute,
+  }));
 }
 
 }  // namespace parser

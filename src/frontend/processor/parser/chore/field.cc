@@ -7,52 +7,54 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::PayloadId> Parser::parse_field_one() {
-  auto param_name_r = consume(base::TokenKind::kIdentifier, true);
-  if (param_name_r.is_err()) {
-    return err<PayloadId>(std::move(param_name_r).unwrap_err());
+using R = ast::PayloadId<ast::FieldPayload>;
+using RR = ast::PayloadRange<ast::FieldPayload>;
+
+Parser::Result<R> Parser::parse_field_one() {
+  auto field_name_r = parse_path_expr();
+  if (field_name_r.is_err()) {
+    return err<R>(std::move(field_name_r));
   }
-  const std::string_view param_name =
-      std::move(param_name_r).unwrap()->lexeme(stream_->file());
+  const PayloadId<ast::PathExpressionPayload> field_name =
+      std::move(field_name_r).unwrap();
 
   auto colon_r = consume(base::TokenKind::kColon, true);
   if (colon_r.is_err()) {
-    return err<PayloadId>(std::move(colon_r).unwrap_err());
+    return err<R>(std::move(colon_r));
   }
 
   auto type_r = parse_type_reference();
   if (type_r.is_err()) {
-    return err<PayloadId>(std::move(type_r).unwrap_err());
+    return err<R>(std::move(type_r));
   }
-  const NodeId type = std::move(type_r).unwrap();
+  const PayloadId<ast::TypeReferencePayload> type = std::move(type_r).unwrap();
 
-  return ok(context_->alloc(ast::FieldPayload{
-      .name = param_name,
+  return ok(context_->alloc_payload(ast::FieldPayload{
+      .field_name = field_name,
       .type = type,
   }));
 }
 
-Parser::Result<ast::PayloadRange> Parser::parse_field_list() {
+Parser::Result<RR> Parser::parse_field_list() {
   uint32_t fields_count = 0;
-  ast::PayloadId id = ast::kInvalidPayloadId;
+  R id;
   while (!eof() && peek().kind() != base::TokenKind::kRightBrace) {
     auto r = parse_field_one();
     if (r.is_err()) {
-      return err<ast::PayloadRange>(std::move(r).unwrap_err());
+      return err<RR>(std::move(r));
     } else if (fields_count == 0) {
       id = std::move(r).unwrap();
     }
     ++fields_count;
-    next_non_whitespace();  // consumes comma
+    next_non_whitespace();
   }
 
   // returns ok even if id is invalid and fields count is 0
-  return ok(ast::PayloadRange{
+  return ok(RR{
       .begin = id,
       .size = fields_count,
   });

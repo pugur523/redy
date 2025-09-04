@@ -12,84 +12,87 @@
 
 namespace base {
 
-enum class TypeKind : uint8_t {
+enum class TypeCategory : uint8_t {
   kUnknown = 0,
-  kAuto = 1,
-  kI8 = 2,
-  kI16 = 3,
-  kI32 = 4,
-  kI64 = 5,
-  kI128 = 6,
-  kIsize = 7,
-  kU8 = 8,
-  kU16 = 9,
-  kU32 = 10,
-  kU64 = 11,
-  kU128 = 12,
-  kUsize = 13,
-  kF32 = 14,
-  kF64 = 15,
-  kVoid = 16,
-  kByte = 17,
-  kBool = 18,
-  kChar = 19,
-  kStr = 20,
-  kUserDefined = 22,
+  kPrimitive = 1,
+  kArray = 2,
+  kUserDefined = 3,
+};
+
+enum class PrimitiveType : uint8_t {
+  kUnknown = 0,
+  kI8 = 1,
+  kI16 = 2,
+  kI32 = 3,
+  kI64 = 4,
+  kI128 = 5,
+  kIsize = 6,
+  kU8 = 7,
+  kU16 = 8,
+  kU32 = 9,
+  kU64 = 10,
+  kU128 = 11,
+  kUsize = 12,
+  kF32 = 13,
+  kF64 = 14,
+  kVoid = 15,
+  kByte = 16,
+  kBool = 17,
+  kChar = 18,
+  kStr = 19,
 };
 
 inline bool token_kind_is_primitive_type(TokenKind kind) {
   return TokenKind::kI8 <= kind && kind <= TokenKind::kStr;
 }
 
-inline TypeKind token_kind_to_type_kind(TokenKind kind) {
+inline PrimitiveType token_kind_to_primitive_type(TokenKind kind) {
   switch (kind) {
-    case TokenKind::kI8: return TypeKind::kI8;
-    case TokenKind::kI16: return TypeKind::kI16;
-    case TokenKind::kI32: return TypeKind::kI32;
-    case TokenKind::kI64: return TypeKind::kI64;
-    case TokenKind::kI128: return TypeKind::kI128;
-    case TokenKind::kIsize: return TypeKind::kIsize;
-    case TokenKind::kU8: return TypeKind::kU8;
-    case TokenKind::kU16: return TypeKind::kU16;
-    case TokenKind::kU32: return TypeKind::kU32;
-    case TokenKind::kU64: return TypeKind::kU64;
-    case TokenKind::kU128: return TypeKind::kU128;
-    case TokenKind::kUsize: return TypeKind::kUsize;
-    case TokenKind::kF32: return TypeKind::kF32;
-    case TokenKind::kF64: return TypeKind::kF64;
-    case TokenKind::kVoid: return TypeKind::kVoid;
-    case TokenKind::kByte: return TypeKind::kByte;
-    case TokenKind::kBool: return TypeKind::kBool;
-    case TokenKind::kChar: return TypeKind::kChar;
-    case TokenKind::kStr: return TypeKind::kStr;
-    default: DCHECK(false); return TypeKind::kUnknown;
+    case TokenKind::kI8: return PrimitiveType::kI8;
+    case TokenKind::kI16: return PrimitiveType::kI16;
+    case TokenKind::kI32: return PrimitiveType::kI32;
+    case TokenKind::kI64: return PrimitiveType::kI64;
+    case TokenKind::kI128: return PrimitiveType::kI128;
+    case TokenKind::kIsize: return PrimitiveType::kIsize;
+    case TokenKind::kU8: return PrimitiveType::kU8;
+    case TokenKind::kU16: return PrimitiveType::kU16;
+    case TokenKind::kU32: return PrimitiveType::kU32;
+    case TokenKind::kU64: return PrimitiveType::kU64;
+    case TokenKind::kU128: return PrimitiveType::kU128;
+    case TokenKind::kUsize: return PrimitiveType::kUsize;
+    case TokenKind::kF32: return PrimitiveType::kF32;
+    case TokenKind::kF64: return PrimitiveType::kF64;
+    case TokenKind::kVoid: return PrimitiveType::kVoid;
+    case TokenKind::kByte: return PrimitiveType::kByte;
+    case TokenKind::kBool: return PrimitiveType::kBool;
+    case TokenKind::kChar: return PrimitiveType::kChar;
+    case TokenKind::kStr: return PrimitiveType::kStr;
+    default: DCHECK(false); return PrimitiveType::kUnknown;
   }
 }
 
-inline const char* type_kind_to_string(TypeKind kind) {
+inline const char* type_kind_to_string(PrimitiveType kind) {
   switch (kind) {
-    case TypeKind::kUnknown: return "unknown";
-    case TypeKind::kAuto: return "auto";
-    case TypeKind::kI8: return "i8";
-    case TypeKind::kI16: return "i16";
-    case TypeKind::kI32: return "i32";
-    case TypeKind::kI64: return "i64";
-    case TypeKind::kI128: return "i128";
-    case TypeKind::kIsize: return "isize";
-    case TypeKind::kU8: return "u8";
-    case TypeKind::kU16: return "u16";
-    case TypeKind::kU32: return "u32";
-    case TypeKind::kU64: return "u64";
-    case TypeKind::kU128: return "u128";
-    case TypeKind::kUsize: return "usize";
-    case TypeKind::kF32: return "f32";
-    case TypeKind::kF64: return "f64";
-    case TypeKind::kVoid: return "void";
-    case TypeKind::kByte: return "byte";
-    case TypeKind::kBool: return "bool";
-    case TypeKind::kChar: return "char";
-    case TypeKind::kStr: return "str";
-    case TypeKind::kUserDefined: return "user defined";
+    case PrimitiveType::kUnknown: return "unknown";
+    case PrimitiveType::kI8: return "i8";
+    case PrimitiveType::kI16: return "i16";
+    case PrimitiveType::kI32: return "i32";
+    case PrimitiveType::kI64: return "i64";
+    case PrimitiveType::kI128: return "i128";
+    case PrimitiveType::kIsize: return "isize";
+    case PrimitiveType::kU8: return "u8";
+    case PrimitiveType::kU16: return "u16";
+    case PrimitiveType::kU32: return "u32";
+    case PrimitiveType::kU64: return "u64";
+    case PrimitiveType::kU128: return "u128";
+    case PrimitiveType::kUsize: return "usize";
+    case PrimitiveType::kF32: return "f32";
+    case PrimitiveType::kF64: return "f64";
+    case PrimitiveType::kVoid: return "void";
+    case PrimitiveType::kByte: return "byte";
+    case PrimitiveType::kBool: return "bool";
+    case PrimitiveType::kChar: return "char";
+    case PrimitiveType::kStr: return "str";
     default: DCHECK(false); return "invalid";
   }
 }

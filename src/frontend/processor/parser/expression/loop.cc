@@ -7,27 +7,26 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_loop_expression() {
+using R = ast::PayloadId<ast::LoopExpressionPayload>;
+
+Parser::Result<R> Parser::parse_loop_expr() {
   auto loop_r = consume(base::TokenKind::kLoop, true);
   if (loop_r.is_err()) {
-    return err<NodeId>(std::move(loop_r).unwrap_err());
+    return err<R>(std::move(loop_r));
   }
 
-  auto block_r = parse_block_expression();
+  auto block_r = parse_block_expr();
   if (block_r.is_err()) {
-    return block_r;
+    return err<R>(std::move(block_r));
   }
-  const NodeId block_id = std::move(block_r).unwrap();
 
-  return ok(context_->create(ast::NodeKind::kLoopExpression,
-                             ast::LoopExpressionPayload{
-                                 .body = block_id,
-                             }));
+  return ok(context_->alloc_payload(ast::LoopExpressionPayload{
+      .body = std::move(block_r).unwrap(),
+  }));
 }
 
 }  // namespace parser

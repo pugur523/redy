@@ -11,10 +11,12 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_continue_expression() {
+using R = ast::PayloadId<ast::ContinueExpressionPayload>;
+
+Parser::Result<R> Parser::parse_continue_expr() {
   auto continue_r = consume(base::TokenKind::kContinue, false);
   if (continue_r.is_err()) {
-    return err<NodeId>(std::move(continue_r).unwrap_err());
+    return err<R>(std::move(continue_r));
   }
 
   NodeId expr_id = ast::kInvalidNodeId;
@@ -22,15 +24,14 @@ Parser::Result<ast::NodeId> Parser::parse_continue_expression() {
       peek().kind() != base::TokenKind::kSemicolon) {
     auto expr_r = parse_expression();
     if (expr_r.is_err()) {
-      return expr_r;
+      return err<R>(std::move(expr_r));
     }
     expr_id = std::move(expr_r).unwrap();
   }
 
-  return ok(context_->create(ast::NodeKind::kContinueExpression,
-                             ast::ContinueExpressionPayload{
-                                 .expression = expr_id,
-                             }));
+  return ok(context_->alloc_payload(ast::ContinueExpressionPayload{
+      .expression = expr_id,
+  }));
 }
 
 }  // namespace parser

@@ -16,9 +16,9 @@ Parser::Result<ast::NodeRange> Parser::parse_expression_sequence() {
   uint32_t arg_count = 0;
 
   while (!eof()) {
-    auto arg_value_r = parse_unary_expression();
+    auto arg_value_r = parse_expression();
     if (arg_value_r.is_err()) {
-      return err<NodeRange>(std::move(arg_value_r).unwrap_err());
+      return err<NodeRange>(std::move(arg_value_r));
     }
 
     if (arg_count == 0) {

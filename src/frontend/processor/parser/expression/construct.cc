@@ -7,16 +7,17 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_construct_expression(
-    NodeId type_path) {
+using R = ast::PayloadId<ast::ConstructExpressionPayload>;
+
+Parser::Result<R> Parser::parse_construct_expr(NodeId type_path) {
   auto left_r = consume(base::TokenKind::kLeftBrace, true);
   if (left_r.is_err()) {
-    return err<NodeId>(std::move(left_r).unwrap_err());
+    return err<R>(std::move(left_r));
   }
 
   NodeId first = ast::kInvalidNodeId;
@@ -29,19 +30,19 @@ Parser::Result<ast::NodeId> Parser::parse_construct_expression(
     // consume dot
     next_non_whitespace();
 
-    auto field_name_r = consume(base::TokenKind::kIdentifier, true);
+    auto field_name_r = parse_path_expr();
     if (field_name_r.is_err()) {
-      return err<NodeId>(std::move(field_name_r).unwrap_err());
+      return err<R>(std::move(field_name_r));
     }
 
     auto equal_r = consume(base::TokenKind::kEqual, true);
     if (equal_r.is_err()) {
-      return err<NodeId>(std::move(equal_r).unwrap_err());
+      return err<R>(std::move(equal_r));
     }
 
     auto init_value_r = parse_expression();
     if (init_value_r.is_err()) {
-      return init_value_r;
+      return err<R>(std::move(init_value_r));
     }
 
     if (arg_count == 0) {
@@ -58,15 +59,13 @@ Parser::Result<ast::NodeId> Parser::parse_construct_expression(
 
   auto right_r = consume(base::TokenKind::kRightBrace, true);
   if (right_r.is_err()) {
-    return err<NodeId>(std::move(right_r).unwrap_err());
+    return err<R>(std::move(right_r));
   }
 
-  return ok(
-      context_->create(ast::NodeKind::kConstructExpression,
-                       ast::ConstructExpressionPayload{
-                           .type_path = type_path,
-                           .args_range = {.begin = first, .size = arg_count},
-                       }));
+  return ok(context_->alloc_payload(ast::ConstructExpressionPayload{
+      .type_path = type_path,
+      .args_range = {.begin = first, .size = arg_count},
+  }));
 }
 
 }  // namespace parser

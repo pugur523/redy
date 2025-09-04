@@ -11,6 +11,7 @@
 
 #include "frontend/data/ast/base/ast_export.h"
 #include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/payload/common.h"
 
 namespace ast {
 
@@ -22,8 +23,8 @@ enum class NodeKind : uint8_t {
   kExpressionStatement = 3,           // expression node as statement
   kLiteralExpression = 4,             // 42
   kPathExpression = 5,                // std::io
-  kUnaryOperatorExpression = 6,       // !x, -x, x++
-  kBinaryOperatorExpression = 7,      // a + b, c * d
+  kUnaryExpression = 6,               // !x, -x, x++
+  kBinaryExpression = 7,              // a + b, c * d
   kGroupedExpression = 8,             // (a + b)
   kArrayExpression = 9,               // [4, 2, 5, 7]
   kTupleExpression = 10,              // (4, "25", '7')
@@ -37,31 +38,30 @@ enum class NodeKind : uint8_t {
   kAwaitExpression = 18,              // some_async_func()->await
   kContinueExpression = 19,           // continue value
   kBreakExpression = 20,              // break value
-  kExclusiveRangeExpression = 21,     // 1..<100
-  kInclusiveRangeExpression = 22,     // 1..=100
-  kReturnExpression = 23,             // ret 0
-  kBlockExpression = 24,              // { ... }
-  kUnsafeExpression = 25,             // unsafe { ... }
-  kFastExpression = 26,               // fast { ... }
-  kIfExpression = 27,                 // if cond { ... }
-  kLoopExpression = 28,               // loop { ... }
-  kWhileExpression = 29,              // while cond { ... }
-  kForExpression = 30,                // for i: 1..<100 { ... }
-  kMatchExpression = 31,      // match x { a -> break, b -> break, * -> break }
-  kClosureExpression = 32,    // (a: i32, b: i32) { ret a + b }
-  kFunctionDeclaration = 33,  // fn lucky_number() -> i32 { ret 42 }
-  kStructDeclaration = 34,    // struct Vec<T: type, D: u64> { T data[D] }
-  kEnumDeclaration = 35,    // enum Result<T: type, E: type> { ok(T), err(E), }
-  kTraitDeclaration = 36,   // trait to_string(&this) -> String
-  kImplDeclaration = 37,    // impl to_string(&this) { ret format#("n: {}", n) }
-  kUnionDeclaration = 38,   // union Bar { i: i32, u: u32 }
-  kModuleDeclaration = 39,  // mod foo { ... }
-  kRedirectDeclaration = 40,  // redirect some_func -> other_func
+  kRangeExpression = 21,              // 1..=100 1..<100
+  kReturnExpression = 22,             // ret 0
+  kBlockExpression = 23,              // { ... }
+  kUnsafeExpression = 24,             // unsafe { ... }
+  kFastExpression = 25,               // fast { ... }
+  kIfExpression = 26,                 // if cond { ... }
+  kLoopExpression = 27,               // loop { ... }
+  kWhileExpression = 28,              // while cond { ... }
+  kForExpression = 29,                // for i: 1..<100 { ... }
+  kMatchExpression = 30,      // match x { a -> break, b -> break, * -> break }
+  kClosureExpression = 31,    // (a: i32, b: i32) { ret a + b }
+  kFunctionDeclaration = 32,  // fn lucky_number() -> i32 { ret 42 }
+  kStructDeclaration = 33,    // struct Vec<T: type, D: u64> { T data[D] }
+  kEnumDeclaration = 34,    // enum Result<T: type, E: type> { ok(T), err(E), }
+  kTraitDeclaration = 35,   // trait to_string(&this) -> String
+  kImplDeclaration = 36,    // impl to_string(&this) { ret format#("n: {}", n) }
+  kUnionDeclaration = 37,   // union Bar { i: i32, u: u32 }
+  kModuleDeclaration = 38,  // mod foo { ... }
+  kRedirectDeclaration = 39,  // redirect some_func -> other_func
 };
 
 struct Node {
+  uint32_t payload_id = kInvalidPayloadId;
   NodeKind kind = NodeKind::kUnknown;
-  PayloadId payload_id = kInvalidPayloadId;
 };
 
 }  // namespace ast

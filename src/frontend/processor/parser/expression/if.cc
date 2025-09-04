@@ -7,33 +7,33 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_if_expression() {
+using R = ast::PayloadId<ast::IfExpressionPayload>;
+
+Parser::Result<R> Parser::parse_if_expr() {
   // parse first branch
   auto if_r = consume(base::TokenKind::kIf, true);
   if (if_r.is_err()) {
-    return err<NodeId>(std::move(if_r).unwrap_err());
+    return err<R>(std::move(if_r));
   }
 
   auto cond_r = parse_expression();
   if (cond_r.is_err()) {
-    return cond_r;
+    return err<R>(std::move(cond_r));
   }
   const NodeId cond_id = std::move(cond_r).unwrap();
 
-  auto block_r = parse_block_expression();
+  auto block_r = parse_block_expr();
   if (block_r.is_err()) {
-    return block_r;
+    return err<R>(std::move(block_r));
   }
-  const NodeId block_id = std::move(block_r).unwrap();
 
-  const PayloadId first_id = context_->alloc(ast::IfBranchPayload{
+  const auto first_id = context_->alloc_payload(ast::IfBranchPayload{
       .condition = cond_id,
-      .block = block_id,
+      .block = std::move(block_r).unwrap(),
   });
 
   uint32_t branches_count = 1;
@@ -46,7 +46,7 @@ Parser::Result<ast::NodeId> Parser::parse_if_expression() {
 
     bool is_else_if;
     NodeId cond_id = ast::kInvalidNodeId;
-    if (peek().kind() == base::TokenKind::kIf) {
+    if (check(base::TokenKind::kIf)) {
       // else if
       is_else_if = true;
 
@@ -54,7 +54,7 @@ Parser::Result<ast::NodeId> Parser::parse_if_expression() {
       next_non_whitespace();
       auto cond_r = parse_expression();
       if (cond_r.is_err()) {
-        return cond_r;
+        return err<R>(std::move(cond_r));
       }
       cond_id = std::move(cond_r).unwrap();
     } else {
@@ -62,15 +62,14 @@ Parser::Result<ast::NodeId> Parser::parse_if_expression() {
       cond_id = ast::kInvalidNodeId;
     }
 
-    auto block_r = parse_block_expression();
+    auto block_r = parse_block_expr();
     if (block_r.is_err()) {
-      return block_r;
+      return err<R>(std::move(block_r));
     }
-    const NodeId block_id = std::move(block_r).unwrap();
 
-    context_->alloc(ast::IfBranchPayload{
+    context_->alloc_payload(ast::IfBranchPayload{
         .condition = cond_id,
-        .block = block_id,
+        .block = std::move(block_r).unwrap(),
     });
 
     ++branches_count;
@@ -81,11 +80,9 @@ Parser::Result<ast::NodeId> Parser::parse_if_expression() {
     }
   }
 
-  return ok(context_->create(
-      ast::NodeKind::kIfExpression,
-      ast::IfExpressionPayload{
-          .branches_range = {.begin = first_id, .size = branches_count},
-      }));
+  return ok(context_->alloc_payload(ast::IfExpressionPayload{
+      .branches_range = {.begin = first_id, .size = branches_count},
+  }));
 }
 
 }  // namespace parser

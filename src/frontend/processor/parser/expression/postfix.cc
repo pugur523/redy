@@ -6,61 +6,55 @@
 
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/payload.h"
+#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_postfix_expression() {
-  DCHECK_EQ(peek().kind(), base::TokenKind::kIdentifier);
-
-  if (peek_at(1).kind() == base::TokenKind::kColonColon) {
-    const PayloadId first_part = context_->alloc(ast::IdentifierPayload{
-        .lexeme = peek().lexeme(stream_->file()),
-    });
-    next_non_whitespace();
-    return parse_path_expression(first_part);
+Parser::Result<ast::NodeId> Parser::parse_postfix_expr() {
+  auto expr_r = parse_unary_expr();
+  if (expr_r.is_err()) {
+    return err<NodeId>(std::move(expr_r));
   }
-
-  auto expr = parse_unary_expression();
-  if (expr.is_err()) {
-    return expr;
-  }
-  const NodeId expr_id = std::move(expr).unwrap();
+  const NodeId expr_id = std::move(expr_r).unwrap();
 
   switch (peek().kind()) {
-    case base::TokenKind::kLeftBracket: return parse_index_expression(expr_id);
-    case base::TokenKind::kLeftParen:
-      return parse_function_call_expression(expr_id);
+    case base::TokenKind::kLeftBracket:
+      return wrap_to_node(ast::NodeKind::kIndexExpression,
+                          parse_index_expr(expr_id));
+    case base::TokenKind::kLeftParen: return parse_function_call_expr(expr_id);
     case base::TokenKind::kHash:
-      return parse_function_macro_call_expression(expr_id);
+      return wrap_to_node(ast::NodeKind::kFunctionMacroCallExpression,
+                          parse_function_macro_call_expr(expr_id));
     case base::TokenKind::kLeftBrace:
-      return parse_construct_expression(expr_id);
+      return wrap_to_node(ast::NodeKind::kConstructExpression,
+                          parse_construct_expr(expr_id));
     case base::TokenKind::kDot: {
       next_non_whitespace();
-      auto symbol_r = consume(base::TokenKind::kIdentifier, true);
+      auto symbol_r = parse_path_expr();
       if (symbol_r.is_err()) {
-        return err<NodeId>(std::move(symbol_r).unwrap_err());
+        return err<NodeId>(std::move(symbol_r));
       }
-      const NodeId symbol_payload_id = context_->alloc(ast::IdentifierPayload{
-          .lexeme = std::move(symbol_r).unwrap()->lexeme(stream_->file()),
-      });
+      const auto symbol_id = std::move(symbol_r).unwrap();
 
       // some_obj.some_identifier
       const base::Token& postfix = peek();
       switch (postfix.kind()) {
         case base::TokenKind::kLeftParen:
-          return parse_method_call_expression(expr_id, symbol_payload_id);
+          return parse_method_call_expr(expr_id, symbol_id);
         case base::TokenKind::kHash:
-          return parse_method_macro_call_expression(expr_id, symbol_payload_id);
+          return wrap_to_node(ast::NodeKind::kMethodMacroCallExpression,
+                              parse_method_macro_call_expr(expr_id, symbol_id));
         default:
-          return parse_field_access_expression(expr_id, symbol_payload_id);
+          return wrap_to_node(ast::NodeKind::kFieldAccessExpression,
+                              parse_field_access_expr(expr_id, symbol_id));
       }
     }
     default:
-      // raw identifier
+      // raw unary expression
       return ok(expr_id);
   }
 }

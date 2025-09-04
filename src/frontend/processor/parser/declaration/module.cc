@@ -7,29 +7,26 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_module_declaration(
-    PayloadId attribute) {
+using R = ast::PayloadId<ast::ModuleDeclarationPayload>;
+
+Parser::Result<R> Parser::parse_module_decl_stmt(Sad attribute) {
   auto module_r = consume(base::TokenKind::kModule, true);
   if (module_r.is_err()) {
-    return err<NodeId>(std::move(module_r).unwrap_err());
+    return err<R>(std::move(module_r));
   }
 
-  auto module_name_r = consume(base::TokenKind::kIdentifier, true);
+  auto module_name_r = parse_path_expr();
   if (module_name_r.is_err()) {
-    return err<NodeId>(std::move(module_name_r).unwrap_err());
+    return err<R>(std::move(module_name_r));
   }
-  const PayloadId module_name = context_->alloc(ast::IdentifierPayload{
-      .lexeme = std::move(module_name_r).unwrap()->lexeme(stream_->file()),
-  });
 
   auto left_r = consume(base::TokenKind::kLeftBrace, true);
   if (left_r.is_err()) {
-    return err<NodeId>(std::move(left_r).unwrap_err());
+    return err<R>(std::move(left_r));
   }
 
   NodeId first_node = ast::kInvalidNodeId;
@@ -37,7 +34,7 @@ Parser::Result<ast::NodeId> Parser::parse_module_declaration(
   while (!eof() && !check(base::TokenKind::kRightBrace)) {
     auto stmt_r = parse_statement();
     if (stmt_r.is_err()) {
-      return stmt_r;
+      return err<R>(std::move(stmt_r));
     }
 
     if (nodes_count == 0) {
@@ -48,16 +45,14 @@ Parser::Result<ast::NodeId> Parser::parse_module_declaration(
 
   auto right_r = consume(base::TokenKind::kRightBrace, true);
   if (right_r.is_err()) {
-    return err<NodeId>(std::move(right_r).unwrap_err());
+    return err<R>(std::move(right_r));
   }
 
-  return ok(context_->create(
-      ast::NodeKind::kModuleDeclaration,
-      ast::ModuleDeclarationPayload{
-          .name = module_name,
-          .module_nodes_range = {.begin = first_node, .size = nodes_count},
-          .storage_attribute = attribute,
-      }));
+  return ok(context_->alloc_payload(ast::ModuleDeclarationPayload{
+      .name = std::move(module_name_r).unwrap(),
+      .module_nodes_range = {.begin = first_node, .size = nodes_count},
+      .storage_attribute = attribute,
+  }));
 }
 
 }  // namespace parser

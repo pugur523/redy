@@ -7,12 +7,13 @@
 #include "frontend/base/keyword/keyword.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_literal_expression() {
+using R = ast::PayloadId<ast::LiteralExpressionPayload>;
+
+Parser::Result<R> Parser::parse_literal_expr() {
   const base::Token& literal_token = peek();
   DCHECK(base::token_kind_is_literal(literal_token.kind()));
 
@@ -20,12 +21,10 @@ Parser::Result<ast::NodeId> Parser::parse_literal_expression() {
       token_kind_to_literal(literal_token.kind());
   next_non_whitespace();
 
-  return ok(
-      context_->create(ast::NodeKind::kLiteralExpression,
-                       ast::LiteralExpressionPayload{
-                           .kind = literal_kind,
-                           .lexeme = literal_token.lexeme(stream_->file()),
-                       }));
+  return ok(context_->alloc_payload(ast::LiteralExpressionPayload{
+      .kind = literal_kind,
+      .lexeme_range = literal_token.range(),
+  }));
 }
 
 }  // namespace parser

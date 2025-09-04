@@ -68,7 +68,6 @@ Parser::Results Parser::parse_all(bool strict) {
         continue;
       }
     }
-    next_non_whitespace();
   }
 
   if (errors_.empty()) {
@@ -80,23 +79,30 @@ Parser::Results Parser::parse_all(bool strict) {
   }
 }
 
-Parser::Result<ast::NodeId> Parser::parse_root() {
+void Parser::parse_root() {
   const base::TokenKind current_kind = peek().kind();
 
   // parses declaration or statement
   if (eof() || current_kind == base::TokenKind::kEof) {
-    return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
+    return;
   } else if (current_kind == base::TokenKind::kBlockComment ||
              current_kind == base::TokenKind::kInlineComment) {
     // TODO: support document gen mode
-    return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
+    return;
   } else if (base::token_kind_is_declaration_keyword(current_kind) ||
              base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {
-    return parse_declaration();
+    auto result = parse_decl_stmt();
+    if (result.is_err()) {
+      errors_.emplace_back(std::move(result).unwrap_err());
+    }
+    return;
   } else {
-    return parse_statement();
+    auto result = parse_statement();
+    if (result.is_err()) {
+      errors_.emplace_back(std::move(result).unwrap_err());
+    }
+    return;
   }
-  return Result<NodeId>(diagnostic::create_ok(ast::kInvalidNodeId));
 }
 
 void Parser::append_errors(std::vector<De>&& new_errors) {
@@ -131,10 +137,12 @@ Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected,
 }
 
 void Parser::synchronize() {
-  if (stream_->eof()) {
+  if (stream_->eof()) [[unlikely]] {
     return;
   }
-  stream_->next();  // consume invalid token
+
+  // consume invalid token
+  stream_->next();
   while (!stream_->eof()) {
     if (is_sync_point(stream_->peek().kind())) {
       return;

@@ -5,46 +5,41 @@
 #include <utility>
 
 #include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_method_macro_call_expression(
+using R = ast::PayloadId<ast::MethodMacroCallExpressionPayload>;
+
+Parser::Result<R> Parser::parse_method_macro_call_expr(
     NodeId obj,
-    PayloadId method) {
+    PayloadId<ast::PathExpressionPayload> method) {
   auto hash_r = consume(base::TokenKind::kHash, true);
   if (hash_r.is_err()) {
-    return err<NodeId>(std::move(hash_r).unwrap_err());
+    return err<R>(std::move(hash_r));
   }
 
   auto left_r = consume(base::TokenKind::kLeftParen, true);
   if (left_r.is_err()) {
-    return err<NodeId>(std::move(left_r).unwrap_err());
+    return err<R>(std::move(left_r));
   }
 
   auto args_r = parse_expression_sequence();
   if (args_r.is_err()) {
-    return err<NodeId>(std::move(args_r).unwrap_err());
+    return err<R>(std::move(args_r));
   }
 
   auto right_r = consume(base::TokenKind::kRightParen, true);
   if (right_r.is_err()) {
-    return err<NodeId>(std::move(right_r).unwrap_err());
+    return err<R>(std::move(right_r));
   }
 
-  const NodeId macro_id =
-      context_->create(ast::NodeKind::kMethodMacroCallExpression,
-                       ast::MethodMacroCallExpressionPayload{
-                           .obj = obj,
-                           .macro_method = method,
-                           .args_range = std::move(args_r).unwrap(),
-                       });
-
-  if (peek().kind() == base::TokenKind::kArrow) {
-    return parse_await_expression(macro_id);
-  } else {
-    return ok(macro_id);
-  }
+  return ok(context_->alloc_payload(ast::MethodMacroCallExpressionPayload{
+      .obj = obj,
+      .macro_method = method,
+      .args_range = std::move(args_r).unwrap(),
+  }));
 }
 
 }  // namespace parser

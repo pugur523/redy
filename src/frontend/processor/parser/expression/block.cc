@@ -11,10 +11,12 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_block_expression() {
+using R = ast::PayloadId<ast::BlockExpressionPayload>;
+
+Parser::Result<R> Parser::parse_block_expr() {
   auto left_r = consume(base::TokenKind::kLeftBrace, true);
   if (left_r.is_err()) {
-    return err<NodeId>(std::move(left_r).unwrap_err());
+    return err<R>(std::move(left_r));
   }
 
   NodeId first = ast::kInvalidNodeId;
@@ -23,7 +25,7 @@ Parser::Result<ast::NodeId> Parser::parse_block_expression() {
   while (!eof()) {
     auto body_statement_r = parse_statement();
     if (body_statement_r.is_err()) {
-      return body_statement_r;
+      return err<R>(std::move(body_statement_r));
     }
 
     if (body_statement_count == 0) {
@@ -34,13 +36,11 @@ Parser::Result<ast::NodeId> Parser::parse_block_expression() {
 
   auto right_r = consume(base::TokenKind::kRightBrace, true);
   if (right_r.is_err()) {
-    return err<NodeId>(std::move(right_r).unwrap_err());
+    return err<R>(std::move(right_r));
   }
 
-  return ok(context_->create(
-      ast::NodeKind::kBlockExpression,
-      ast::BlockExpressionPayload{
-          .body_nodes_range = {.begin = first, .size = body_statement_count}}));
+  return ok(context_->alloc_payload(ast::BlockExpressionPayload{
+      .body_nodes_range = {.begin = first, .size = body_statement_count}}));
 }
 
 }  // namespace parser

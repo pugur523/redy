@@ -4,45 +4,44 @@
 
 #include <utility>
 
+#include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_function_macro_call_expression(
-    NodeId callee) {
+using R = ast::PayloadId<ast::FunctionMacroCallExpressionPayload>;
+
+Parser::Result<R> Parser::parse_function_macro_call_expr(NodeId callee) {
   auto hash_r = consume(base::TokenKind::kHash, true);
   if (hash_r.is_err()) {
-    return err<NodeId>(std::move(hash_r).unwrap_err());
+    return err<R>(std::move(hash_r));
   }
 
   auto left_r = consume(base::TokenKind::kLeftParen, true);
   if (left_r.is_err()) {
-    return err<NodeId>(std::move(left_r).unwrap_err());
+    return err<R>(std::move(left_r));
   }
 
   auto args_r = parse_expression_sequence();
   if (args_r.is_err()) {
-    return err<NodeId>(std::move(args_r).unwrap_err());
+    return err<R>(std::move(args_r));
   }
 
   auto right_r = consume(base::TokenKind::kRightParen, true);
   if (right_r.is_err()) {
-    return err<NodeId>(std::move(right_r).unwrap_err());
+    return err<R>(std::move(right_r));
   }
 
-  const NodeId macro_id =
-      context_->create(ast::NodeKind::kFunctionMacroCallExpression,
-                       ast::FunctionMacroCallExpressionPayload{
-                           .macro_callee = callee,
-                           .args_range = std::move(args_r).unwrap(),
-                       });
+  // TODO: return "tried to use await for macro" error
+  // if (check(base::TokenKind::kArrow)) {
+  //   return err<R>();
+  // }
 
-  if (peek().kind() == base::TokenKind::kArrow) {
-    return parse_await_expression(macro_id);
-  } else {
-    return ok(macro_id);
-  }
+  return ok(context_->alloc_payload(ast::FunctionMacroCallExpressionPayload{
+      .macro_callee = callee,
+      .args_range = std::move(args_r).unwrap(),
+  }));
 }
 
 }  // namespace parser

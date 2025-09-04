@@ -7,43 +7,47 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
+#include "frontend/data/ast/payload/data.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::PayloadId> Parser::parse_parameter_one() {
-  auto param_name_r = consume(base::TokenKind::kIdentifier, true);
+using R = ast::PayloadId<ast::ParameterPayload>;
+using RR = ast::PayloadRange<ast::ParameterPayload>;
+
+Parser::Result<R> Parser::parse_parameter_one() {
+  auto param_name_r = parse_path_expr();
   if (param_name_r.is_err()) {
-    return err<PayloadId>(std::move(param_name_r).unwrap_err());
+    return err<R>(std::move(param_name_r));
   }
-  const std::string_view param_name =
-      std::move(param_name_r).unwrap()->lexeme(stream_->file());
+  const PayloadId<ast::PathExpressionPayload> param_name =
+      std::move(param_name_r).unwrap();
 
   auto colon_r = consume(base::TokenKind::kColon, true);
   if (colon_r.is_err()) {
-    return err<PayloadId>(std::move(colon_r).unwrap_err());
+    return err<R>(std::move(colon_r));
   }
 
   auto type_r = parse_type_reference();
   if (type_r.is_err()) {
-    return err<PayloadId>(std::move(type_r).unwrap_err());
+    return err<R>(std::move(type_r));
   }
-  const NodeId type = std::move(type_r).unwrap();
+  const PayloadId<ast::TypeReferencePayload> type = std::move(type_r).unwrap();
 
-  return ok(context_->alloc(ast::ParameterPayload{
-      .name = param_name,
+  return ok(context_->alloc_payload(ast::ParameterPayload{
+      .param_name = param_name,
       .type = type,
   }));
 }
 
-Parser::Result<ast::PayloadRange> Parser::parse_parameter_list() {
+Parser::Result<RR> Parser::parse_parameter_list() {
   uint32_t parameters_count = 0;
-  ast::PayloadId id = ast::kInvalidPayloadId;
+  R id;
   while (!eof() && peek().kind() != base::TokenKind::kRightParen) {
     auto r = parse_parameter_one();
     if (r.is_err()) {
-      return err<ast::PayloadRange>(std::move(r).unwrap_err());
+      return err<RR>(std::move(r));
     } else if (parameters_count == 0) {
       id = std::move(r).unwrap();
     }
@@ -52,7 +56,7 @@ Parser::Result<ast::PayloadRange> Parser::parse_parameter_list() {
   }
 
   // returns ok even if id is invalid and parameters count is 0
-  return ok(ast::PayloadRange{
+  return ok(RR{
       .begin = id,
       .size = parameters_count,
   });

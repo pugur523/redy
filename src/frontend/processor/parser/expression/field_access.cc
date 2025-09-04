@@ -4,18 +4,20 @@
 
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/payload/expression.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_field_access_expression(
+using R = ast::PayloadId<ast::FieldAccessExpressionPayload>;
+
+Parser::Result<R> Parser::parse_field_access_expr(
     NodeId obj,
-    PayloadId field) {
-  return ok(context_->create(ast::NodeKind::kFieldAccessExpression,
-                             ast::FieldAccessExpressionPayload{
-                                 .obj = obj,
-                                 .field = field,
-                             }));
+    PayloadId<ast::PathExpressionPayload> field) {
+  return ok(context_->alloc_payload(ast::FieldAccessExpressionPayload{
+      .obj = obj,
+      .field = field,
+  }));
 }
 
 }  // namespace parser

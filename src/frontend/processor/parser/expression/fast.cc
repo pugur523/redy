@@ -7,26 +7,26 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_fast_expression() {
+using R = ast::PayloadId<ast::FastExpressionPayload>;
+
+Parser::Result<R> Parser::parse_fast_expr() {
   auto fast_r = consume(base::TokenKind::kFast, true);
   if (fast_r.is_err()) {
-    return err<NodeId>(std::move(fast_r).unwrap_err());
+    return err<R>(std::move(fast_r));
   }
 
-  auto block_r = parse_block_expression();
+  auto block_r = parse_block_expr();
   if (block_r.is_err()) {
-    return block_r;
+    return err<R>(std::move(block_r));
   }
 
-  return ok(context_->create(ast::NodeKind::kFastExpression,
-                             ast::FastExpressionPayload{
-                                 .block = std::move(block_r).unwrap(),
-                             }));
+  return ok(context_->alloc_payload(ast::FastExpressionPayload{
+      .block = std::move(block_r).unwrap(),
+  }));
 }
 
 }  // namespace parser

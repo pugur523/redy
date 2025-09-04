@@ -4,33 +4,52 @@
 
 #include <utility>
 
+#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_primary_expression() {
+Parser::Result<ast::NodeId> Parser::parse_primary_expr() {
   const base::TokenKind kind = peek().kind();
 
   if (base::token_kind_is_literal(kind)) {
-    return parse_literal_expression();
+    return wrap_to_node(ast::NodeKind::kLiteralExpression,
+                        parse_literal_expr());
   }
   switch (kind) {
-    case base::TokenKind::kIdentifier: return parse_postfix_expression();
-    case base::TokenKind::kBreak: return parse_break_expression();
-    case base::TokenKind::kContinue: return parse_continue_expression();
-    case base::TokenKind::kReturn: return parse_return_expression();
-    case base::TokenKind::kLeftParen: return parse_grouped_expression();
-
-    case base::TokenKind::kLeftBrace: return parse_block_expression();
-    case base::TokenKind::kUnsafe: return parse_unsafe_expression();
-    case base::TokenKind::kFast: return parse_fast_expression();
-    case base::TokenKind::kIf: return parse_if_expression();
-    case base::TokenKind::kLoop: return parse_loop_expression();
-    case base::TokenKind::kWhile: return parse_while_expression();
-    case base::TokenKind::kFor: return parse_for_expression();
-    case base::TokenKind::kMatch: return parse_match_expression();
-    case base::TokenKind::kLeftBracket: return parse_closure_expression();
+    case base::TokenKind::kIdentifier: return parse_postfix_expr();
+    case base::TokenKind::kBreak:
+      return wrap_to_node(ast::NodeKind::kBreakExpression, parse_break_expr());
+    case base::TokenKind::kContinue:
+      return wrap_to_node(ast::NodeKind::kContinueExpression,
+                          parse_continue_expr());
+    case base::TokenKind::kReturn:
+      return wrap_to_node(ast::NodeKind::kReturnExpression,
+                          parse_return_expr());
+    case base::TokenKind::kLeftParen:
+      return wrap_to_node(ast::NodeKind::kGroupedExpression,
+                          parse_grouped_expr());
+    case base::TokenKind::kLeftBrace:
+      return wrap_to_node(ast::NodeKind::kBlockExpression, parse_block_expr());
+    case base::TokenKind::kUnsafe:
+      return wrap_to_node(ast::NodeKind::kUnsafeExpression,
+                          parse_unsafe_expr());
+    case base::TokenKind::kFast:
+      return wrap_to_node(ast::NodeKind::kFastExpression, parse_fast_expr());
+    case base::TokenKind::kIf:
+      return wrap_to_node(ast::NodeKind::kIfExpression, parse_if_expr());
+    case base::TokenKind::kLoop:
+      return wrap_to_node(ast::NodeKind::kLoopExpression, parse_loop_expr());
+    case base::TokenKind::kWhile:
+      return wrap_to_node(ast::NodeKind::kWhileExpression, parse_while_expr());
+    case base::TokenKind::kFor:
+      return wrap_to_node(ast::NodeKind::kForExpression, parse_for_expr());
+    case base::TokenKind::kMatch:
+      return wrap_to_node(ast::NodeKind::kMatchExpression, parse_match_expr());
+    case base::TokenKind::kLeftBracket:
+      return wrap_to_node(ast::NodeKind::kClosureExpression,
+                          parse_closure_expr());
     default:
       return err<NodeId>(
           std::move(

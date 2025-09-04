@@ -11,21 +11,22 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_unsafe_expression() {
+using R = ast::PayloadId<ast::UnsafeExpressionPayload>;
+
+Parser::Result<R> Parser::parse_unsafe_expr() {
   auto unsafe_r = consume(base::TokenKind::kUnsafe, true);
   if (unsafe_r.is_err()) {
-    return err<NodeId>(std::move(unsafe_r).unwrap_err());
+    return err<R>(std::move(unsafe_r));
   }
 
-  auto block_r = parse_block_expression();
+  auto block_r = parse_block_expr();
   if (block_r.is_err()) {
-    return block_r;
+    return err<R>(std::move(block_r));
   }
 
-  return ok(context_->create(ast::NodeKind::kUnsafeExpression,
-                             ast::UnsafeExpressionPayload{
-                                 .block = std::move(block_r).unwrap(),
-                             }));
+  return ok(context_->alloc_payload(ast::UnsafeExpressionPayload{
+      .block = std::move(block_r).unwrap(),
+  }));
 }
 
 }  // namespace parser

@@ -11,10 +11,12 @@
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_break_expression() {
+using R = ast::PayloadId<ast::BreakExpressionPayload>;
+
+Parser::Result<R> Parser::parse_break_expr() {
   auto break_r = consume(base::TokenKind::kBreak, false);
   if (break_r.is_err()) {
-    return err<NodeId>(std::move(break_r).unwrap_err());
+    return err<R>(std::move(break_r));
   }
 
   NodeId expr_id = ast::kInvalidNodeId;
@@ -22,14 +24,13 @@ Parser::Result<ast::NodeId> Parser::parse_break_expression() {
       peek().kind() != base::TokenKind::kSemicolon) {
     auto expr_r = parse_expression();
     if (expr_r.is_err()) {
-      return expr_r;
+      return err<R>(std::move(expr_r));
     }
     expr_id = std::move(expr_r).unwrap();
   }
 
-  return ok(
-      context_->create(ast::NodeKind::kBreakExpression,
-                       ast::BreakExpressionPayload{.expression = expr_id}));
+  return ok(context_->alloc_payload(
+      ast::BreakExpressionPayload{.expression = expr_id}));
 }
 
 }  // namespace parser

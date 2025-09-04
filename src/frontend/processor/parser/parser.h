@@ -13,8 +13,9 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/data/ast/context.h"
+#include "frontend/data/ast/payload/expression.h"
+#include "frontend/data/ast/payload/statement.h"
 #include "frontend/diagnostic/data/error/source_error.h"
 #include "frontend/diagnostic/data/result.h"
 #include "frontend/processor/parser/base/parser_export.h"
@@ -31,7 +32,7 @@ class Translator;
 
 namespace parser {
 
-class PARSER_EXPORT Parser {
+class Parser {
   using Eb = diagnostic::EntryBuilder;
   using De = diagnostic::DiagnosticEntry;
 
@@ -47,8 +48,8 @@ class PARSER_EXPORT Parser {
     kParseCompleted = 3,
   };
 
-  Parser() = default;
-  ~Parser() = default;
+  PARSER_EXPORT Parser() = default;
+  PARSER_EXPORT ~Parser() = default;
 
   Parser(const Parser&) = delete;
   Parser& operator=(const Parser&) = delete;
@@ -56,85 +57,108 @@ class PARSER_EXPORT Parser {
   Parser(Parser&&) noexcept = default;
   Parser& operator=(Parser&&) noexcept = default;
 
-  void init(base::TokenStream* stream, const i18n::Translator& translater);
+  PARSER_EXPORT void init(base::TokenStream* stream,
+                          const i18n::Translator& translater);
+
+  PARSER_EXPORT Results parse_all(bool strict = false);
 
   inline const ast::Context& context() const { return *context_; }
 
-  Results parse_all(bool strict = false);
-
  private:
+  using Node = ast::Node;
   using NodeId = ast::NodeId;
   using NodeRange = ast::NodeRange;
-  using PayloadId = ast::PayloadId;
-  using PayloadRange = ast::PayloadRange;
-  using OperatorPrecedence = base::OperatorPrecedence;
 
-  Result<NodeId> parse_root();
+  template <typename T>
+  using PayloadId = ast::PayloadId<T>;
+
+  template <typename T>
+  using PayloadRange = ast::PayloadRange<T>;
+
+  void parse_root();
+
+  // temporarily disable line length limit for readability
+  // clang-format off
+  // NOLINTBEGIN
 
   // expression wo block
   Result<NodeId> parse_expression();
-  Result<NodeId> parse_primary_expression();
-  Result<NodeId> parse_postfix_expression();
-  Result<NodeId> parse_literal_expression();
-  Result<NodeId> parse_path_expression();
-  Result<NodeId> parse_unary_expression();
-  Result<NodeId> parse_binary_expression(OperatorPrecedence min_precedence);
-  Result<NodeId> parse_grouped_expression();
-  Result<NodeId> parse_array_expression();
-  Result<NodeId> parse_tuple_expression();
-  Result<NodeId> parse_index_expression(NodeId operand);
-  Result<NodeId> parse_construct_expression(NodeId type_path);
-  Result<NodeId> parse_function_call_expression(NodeId callee);
-  Result<NodeId> parse_method_call_expression(NodeId obj, PayloadId method);
-  Result<NodeId> parse_function_macro_call_expression(NodeId callee);
-  Result<NodeId> parse_method_macro_call_expression(NodeId obj,
-                                                    PayloadId method);
-  Result<NodeId> parse_field_access_expression(NodeId obj, PayloadId field);
-  Result<NodeId> parse_await_expression(NodeId callee);
-  Result<NodeId> parse_continue_expression();
-  Result<NodeId> parse_break_expression();
-  Result<NodeId> parse_range_expression();
-  Result<NodeId> parse_return_expression();
+  Result<NodeId> parse_primary_expr();
+  Result<NodeId> parse_postfix_expr();
+  Result<PayloadId<ast::LiteralExpressionPayload>> parse_literal_expr();
+  Result<PayloadId<ast::PathExpressionPayload>> parse_path_expr();
+  Result<NodeId> parse_unary_expr();
+  Result<NodeId> parse_binary_expr(base::OperatorPrecedence min_precedence);
+  Result<PayloadId<ast::GroupedExpressionPayload>> parse_grouped_expr();
+  Result<PayloadId<ast::ArrayExpressionPayload>> parse_array_expr();
+  Result<PayloadId<ast::TupleExpressionPayload>> parse_tuple_expr();
+  Result<PayloadId<ast::IndexExpressionPayload>> parse_index_expr(NodeId operand);
+  Result<PayloadId<ast::ConstructExpressionPayload>> parse_construct_expr(NodeId type_path);
+
+  // can await
+  Result<NodeId> parse_function_call_expr(NodeId callee);
+  // can await
+  Result<NodeId> parse_method_call_expr(
+      NodeId obj,
+      PayloadId<ast::PathExpressionPayload> method);
+
+  Result<PayloadId<ast::FunctionMacroCallExpressionPayload>> parse_function_macro_call_expr(NodeId callee);
+  Result<PayloadId<ast::MethodMacroCallExpressionPayload>> parse_method_macro_call_expr(
+      NodeId obj,
+      PayloadId<ast::PathExpressionPayload> method);
+  Result<PayloadId<ast::FieldAccessExpressionPayload>> parse_field_access_expr(
+      NodeId obj,
+      PayloadId<ast::PathExpressionPayload> field);
+  Result<NodeId> parse_await_expr(NodeId callee);
+  Result<PayloadId<ast::ContinueExpressionPayload>> parse_continue_expr();
+  Result<PayloadId<ast::BreakExpressionPayload>> parse_break_expr();
+  Result<PayloadId<ast::RangeExpressionPayload>> parse_range_expr();
+  Result<PayloadId<ast::ReturnExpressionPayload>> parse_return_expr();
 
   // expression w block
-  Result<NodeId> parse_block_expression();
-  Result<NodeId> parse_unsafe_expression();
-  Result<NodeId> parse_fast_expression();
-  Result<NodeId> parse_if_expression();
-  Result<NodeId> parse_loop_expression();
-  Result<NodeId> parse_while_expression();
-  Result<NodeId> parse_for_expression();
-  Result<NodeId> parse_match_expression();
-  Result<NodeId> parse_closure_expression();
+  Result<PayloadId<ast::BlockExpressionPayload>> parse_block_expr();
+  Result<PayloadId<ast::UnsafeExpressionPayload>> parse_unsafe_expr();
+  Result<PayloadId<ast::FastExpressionPayload>> parse_fast_expr();
+  Result<PayloadId<ast::IfExpressionPayload>> parse_if_expr();
+  Result<PayloadId<ast::LoopExpressionPayload>> parse_loop_expr();
+  Result<PayloadId<ast::WhileExpressionPayload>> parse_while_expr();
+  Result<PayloadId<ast::ForExpressionPayload>> parse_for_expr();
+  Result<PayloadId<ast::MatchExpressionPayload>> parse_match_expr();
+  Result<PayloadId<ast::ClosureExpressionPayload>> parse_closure_expr();
 
   // statement
+  using Sad = ast::StorageAttributeData;
   Result<NodeId> parse_statement();
-  Result<NodeId> parse_assign_statement(PayloadId attribute);
-  Result<NodeId> parse_attribute_statement();
-  Result<NodeId> parse_expression_statement();
+  Result<PayloadId<ast::AssignStatementPayload>> parse_assign_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::AttributeStatementPayload>> parse_attribute_stmt();
+  Result<PayloadId<ast::ExpressionStatementPayload>> parse_expression_stmt();
 
   // declaration
-  Result<NodeId> parse_declaration();
-  Result<NodeId> parse_function_declaration(PayloadId attribute);
-  Result<NodeId> parse_struct_declaration(PayloadId attribute);
-  Result<NodeId> parse_enumeration_declaration(PayloadId attribute);
-  Result<NodeId> parse_trait_declaration(PayloadId attribute);
-  Result<NodeId> parse_impl_declaration(PayloadId attribute);
-  Result<NodeId> parse_union_declaration(PayloadId attribute);
-  Result<NodeId> parse_module_declaration(PayloadId attribute);
-  Result<NodeId> parse_redirect_declaration(PayloadId attribute);
+  Result<NodeId> parse_decl_stmt();
+  Result<PayloadId<ast::FunctionDeclarationPayload>> parse_function_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::StructDeclarationPayload>> parse_struct_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::EnumerationDeclarationPayload>> parse_enumeration_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::TraitDeclarationPayload>> parse_trait_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::ImplementationDeclarationPayload>> parse_impl_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::UnionDeclarationPayload>> parse_union_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::ModuleDeclarationPayload>> parse_module_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::RedirectDeclarationPayload>> parse_redirect_decl_stmt(Sad storage_attribute);
 
   // chore
-  Result<ast::PayloadId> parse_capture_one();
-  Result<ast::PayloadRange> parse_capture_list();
-  Result<ast::PayloadId> parse_field_one();
-  Result<ast::PayloadRange> parse_field_list();
-  Result<ast::PayloadId> parse_parameter_one();
-  Result<ast::PayloadRange> parse_parameter_list();
-  Result<ast::PayloadId> parse_attribute_use_one();
-  Result<ast::PayloadRange> parse_attribute_use_list();
-  Result<ast::PayloadId> parse_type_reference();
+  Result<PayloadId<ast::CapturePayload>> parse_capture_one();
+  Result<PayloadRange<ast::CapturePayload>> parse_capture_list();
+  Result<PayloadId<ast::FieldPayload>> parse_field_one();
+  Result<PayloadRange<ast::FieldPayload>> parse_field_list();
+  Result<PayloadId<ast::ParameterPayload>> parse_parameter_one();
+  Result<PayloadRange<ast::ParameterPayload>> parse_parameter_list();
+  Result<PayloadId<ast::AttributeUsePayload>> parse_attribute_use_one();
+  Result<PayloadRange<ast::AttributeUsePayload>> parse_attribute_use_list();
+  Result<PayloadId<ast::TypeReferencePayload>> parse_type_reference();
+
   Result<NodeRange> parse_expression_sequence();
+
+  // NOLINTEND
+  // clang-format on
 
   void init_context();
 
@@ -169,6 +193,7 @@ class PARSER_EXPORT Parser {
   inline static Results err(std::vector<De>&& error) {
     return Results(diagnostic::create_err(std::move(error)));
   }
+
   template <typename T>
   inline static Result<T> ok(T ok_value) {
     return Result<T>(diagnostic::create_ok(std::move(ok_value)));
@@ -177,9 +202,28 @@ class PARSER_EXPORT Parser {
   inline static Result<T> err(De&& err_value) {
     return Result<T>(diagnostic::create_err(std::move(err_value)));
   }
+
+  // void specialization
   template <typename>
   inline static Result<void> ok() {
     return Result<void>(diagnostic::create_ok());
+  }
+
+  // error result casting
+  template <typename T, typename U>
+  inline static Result<T> err(Result<U>&& result) {
+    return Result<T>(diagnostic::create_err(std::move(result).unwrap_err()));
+  }
+
+  template <typename T>
+  inline Result<NodeId> wrap_to_node(ast::NodeKind kind, Result<T>&& result) {
+    if (result.is_err()) {
+      return err<NodeId>(std::move(result));
+    }
+    return ok<NodeId>(context_->alloc(Node{
+        .payload_id = std::move(result).unwrap().id,
+        .kind = kind,
+    }));
   }
 
   static bool is_sync_point(base::TokenKind kind);

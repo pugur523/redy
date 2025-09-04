@@ -7,22 +7,22 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
+#include "frontend/data/ast/payload/data.h"
+#include "frontend/data/ast/payload/statement.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_assign_statement(
-    PayloadId attribute) {
-  auto target_r = consume(base::TokenKind::kIdentifier, true);
-  if (target_r.is_err()) {
-    return err<NodeId>(std::move(target_r).unwrap_err());
-  }
-  const PayloadId identifier_id = context_->alloc(ast::IdentifierPayload{
-      .lexeme = std::move(target_r).unwrap()->lexeme(stream_->file()),
-  });
+using R = ast::PayloadId<ast::AssignStatementPayload>;
 
-  PayloadId type_id = ast::kInvalidPayloadId;
+Parser::Result<R> Parser::parse_assign_stmt(Sad attribute) {
+  auto target_r = parse_path_expr();
+  if (target_r.is_err()) {
+    return err<R>(std::move(target_r));
+  }
+
+  PayloadId<ast::TypeReferencePayload> type_id;
+
   switch (peek().kind()) {
     case base::TokenKind::kColonEqual:
     case base::TokenKind::kEqual: next_non_whitespace(); break;
@@ -31,36 +31,31 @@ Parser::Result<ast::NodeId> Parser::parse_assign_statement(
 
       auto type_r = parse_type_reference();
       if (type_r.is_err()) {
-        return type_r;
+        return err<R>(std::move(type_r));
       }
       type_id = std::move(type_r).unwrap();
 
       auto equal_r = consume(base::TokenKind::kEqual, true);
       if (equal_r.is_err()) {
-        return err<NodeId>(std::move(equal_r).unwrap_err());
+        return err<R>(std::move(equal_r));
       }
 
       break;
     }
     default: break;
   }
-  const PayloadId variable_id = context_->alloc(ast::VariablePayload{
-      .identifier_id = identifier_id,
-      .type_id = type_id,
-  });
 
   auto value_r = parse_expression();
   if (value_r.is_err()) {
-    return value_r;
+    return err<R>(std::move(value_r));
   }
 
-  return ok(
-      context_->create(ast::NodeKind::kAssignStatement,
-                       ast::AssignStatementPayload{
-                           .target_variable = variable_id,
-                           .value_expression = std::move(value_r).unwrap(),
-                           .storage_attribute = attribute,
-                       }));
+  return ok(context_->alloc_payload(ast::AssignStatementPayload{
+      .target_variable = std::move(target_r).unwrap(),
+      .target_type = type_id,
+      .value_expression = std::move(value_r).unwrap(),
+      .storage_attribute = attribute,
+  }));
 }
 
 }  // namespace parser

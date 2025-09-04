@@ -10,22 +10,17 @@
 
 namespace ast {
 
-using NodeId = std::size_t;
-using PayloadId = std::size_t;
-using TokenId = std::size_t;
+using NodeId = uint32_t;
+using TokenId = uint32_t;
 
 constexpr NodeId kInvalidNodeId = std::numeric_limits<NodeId>::max();
-constexpr PayloadId kInvalidPayloadId = std::numeric_limits<PayloadId>::max();
 constexpr TokenId kInvalidTokenId = std::numeric_limits<TokenId>::max();
 
 struct NodeRange {
   NodeId begin = kInvalidNodeId;
   uint32_t size = 0;
-};
 
-struct PayloadRange {
-  PayloadId begin = kInvalidPayloadId;
-  uint32_t size = 0;
+  bool valid() const { return begin != kInvalidNodeId && size > 0; }
 };
 
 }  // namespace ast

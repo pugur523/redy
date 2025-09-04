@@ -7,15 +7,16 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/base/node_kind.h"
-#include "frontend/data/ast/base/payload.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
 
-Parser::Result<ast::NodeId> Parser::parse_return_expression() {
+using R = ast::PayloadId<ast::ReturnExpressionPayload>;
+
+Parser::Result<R> Parser::parse_return_expr() {
   auto return_r = consume(base::TokenKind::kReturn, false);
   if (return_r.is_err()) {
-    return err<NodeId>(std::move(return_r).unwrap_err());
+    return err<R>(std::move(return_r));
   }
 
   NodeId expr_id = ast::kInvalidNodeId;
@@ -23,15 +24,14 @@ Parser::Result<ast::NodeId> Parser::parse_return_expression() {
       peek().kind() != base::TokenKind::kSemicolon) {
     auto expr_r = parse_expression();
     if (expr_r.is_err()) {
-      return expr_r;
+      return err<R>(std::move(expr_r));
     }
     expr_id = std::move(expr_r).unwrap();
   }
 
-  return ok(context_->create(ast::NodeKind::kReturnExpression,
-                             ast::ReturnExpressionPayload{
-                                 .expression = expr_id,
-                             }));
+  return ok(context_->alloc_payload(ast::ReturnExpressionPayload{
+      .expression = expr_id,
+  }));
 }
 
 }  // namespace parser
