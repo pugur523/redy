@@ -16,11 +16,13 @@ set(SOURCES
 
   chore/attribute_use.cc
   chore/capture.cc
+  chore/enum_variant.cc
   chore/expression_sequence.cc
   chore/field.cc
   chore/parameter.cc
   chore/type_reference.cc
 
+  declaration/enum.cc
   declaration/function.cc
   declaration/module.cc
   declaration/redirect.cc
