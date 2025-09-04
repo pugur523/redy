@@ -43,6 +43,12 @@ Parser::Result<R> Parser::parse_enumeration_decl_stmt(Sad attribute) {
       first_variant = std::move(enum_variant_r).unwrap();
     }
     ++variants_count;
+
+    if (!check(base::TokenKind::kComma)) {
+      break;
+    }
+    // consume comma
+    next_non_whitespace();
   }
 
   auto right_r = consume(base::TokenKind::kRightBrace, true);

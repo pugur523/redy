@@ -30,13 +30,6 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
   while (!eof() && base::token_kind_is_attribute_keyword(kind)) {
     attribute_last_token = &peek();
     switch (kind) {
-      // case Kind::kMutable: attribute.is_mutable = true; break;
-      // case Kind::kConstant: attribute.is_const = true; break;
-      // case Kind::kExtern: attribute.is_extern = true; break;
-      // case Kind::kStatic: attribute.is_static = true; break;
-      // case Kind::kThreadLocal: attribute.is_thread_local = true; break;
-      // case Kind::kPublic: attribute.is_public = true; break;
-      // case Kind::kAsync: attribute.is_async = true; break;
       case Kind::kMutable: attribute |= Sadd::kMutable; break;
       case Kind::kConstant: attribute |= Sadd::kConstant; break;
       case Kind::kExtern: attribute |= Sadd::kExtern; break;
@@ -58,6 +51,9 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
     };
 
     if ((attribute & Sadd::kMutable) && (attribute & Sadd::kConstant)) {
+      // for sync point recovery
+      stream_->rewind(stream_->position() - 1);
+
       return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
@@ -72,6 +68,9 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
                               i18n::TranslationKey::kTermTokenKindConstant)}))
               .build());
     } else if ((attribute & Sadd::kExtern) && (attribute & Sadd::kStatic)) {
+      // for sync point recovery
+      stream_->rewind(stream_->position() - 1);
+
       return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,

@@ -23,13 +23,14 @@ Parser::Result<R> Parser::parse_type_reference() {
   const base::TokenKind current_kind = current.kind();
 
   if (base::token_kind_is_primitive_type(current_kind)) {
-    // primitive types
-
     // consume type
     next_non_whitespace();
+
+    // primitive types
     return ok(context_->alloc_payload(ast::TypeReferencePayload(
         base::token_kind_to_primitive_type(current_kind))));
-  } else if (current_kind == base::TokenKind::kIdentifier) {
+  } else if (current_kind == base::TokenKind::kIdentifier ||
+             current_kind == base::TokenKind::kColonColon) {
     // user defined types
     auto path_r = parse_path_expr();
     if (path_r.is_err()) {
@@ -38,12 +39,10 @@ Parser::Result<R> Parser::parse_type_reference() {
     return ok(context_->alloc_payload(
         ast::TypeReferencePayload(std::move(path_r).unwrap())));
   } else if (current_kind == base::TokenKind::kLeftBracket) {
-    // array type [i32], [i32; 5]
-
     // consume [
     next_non_whitespace();
 
-    // recursive
+    // array type [i32], [i32; 5]
     auto array_type_r = parse_type_reference();
     if (array_type_r.is_err()) {
       return array_type_r;
@@ -53,6 +52,9 @@ Parser::Result<R> Parser::parse_type_reference() {
 
     const base::Token& semicolon_or_right = next_non_whitespace();
     if (semicolon_or_right.kind() == base::TokenKind::kRightBracket) {
+      // consume ]
+      next_non_whitespace();
+
       array_id = context_->alloc_payload(ast::ArrayTypePayload{
           .type = std::move(array_type_r).unwrap(),
           .array_size_expr = ast::kInvalidNodeId,

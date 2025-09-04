@@ -59,8 +59,9 @@ void Parser::init_context() {
 Parser::Results Parser::parse_all(bool strict) {
   DCHECK_EQ(status_, Status::kReadyToParse);
   while (!eof()) {
-    parse_next();
-    if (!errors_.empty()) [[unlikely]] {
+    auto result = parse_next();
+    if (result.is_err()) [[unlikely]] {
+      errors_.emplace_back(std::move(result).unwrap_err());
       if (strict) {
         break;
       } else {
@@ -70,7 +71,7 @@ Parser::Results Parser::parse_all(bool strict) {
     }
   }
 
-  if (errors_.empty()) {
+  if (errors_.empty()) [[likely]] {
     status_ = Status::kParseCompleted;
     return ok();
   } else {
@@ -79,29 +80,29 @@ Parser::Results Parser::parse_all(bool strict) {
   }
 }
 
-void Parser::parse_next() {
+Parser::Result<void> Parser::parse_next() {
   const base::TokenKind current_kind = peek().kind();
 
   // parses declaration or statement
   if (eof() || current_kind == base::TokenKind::kEof) {
-    return;
+    return ok<void>();
   } else if (current_kind == base::TokenKind::kBlockComment ||
              current_kind == base::TokenKind::kInlineComment) {
     // TODO: support document gen mode
-    return;
+    return ok<void>();
   } else if (base::token_kind_is_declaration_keyword(current_kind) ||
              base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {
     auto result = parse_decl_stmt();
     if (result.is_err()) {
-      errors_.emplace_back(std::move(result).unwrap_err());
+      return err<void>(std::move(result));
     }
-    return;
+    return ok<void>();
   } else {
     auto result = parse_statement();
     if (result.is_err()) {
-      errors_.emplace_back(std::move(result).unwrap_err());
+      return err<void>(std::move(result));
     }
-    return;
+    return ok<void>();
   }
 }
 
@@ -137,36 +138,35 @@ Parser::Result<const base::Token*> Parser::consume(base::TokenKind expected,
 }
 
 void Parser::synchronize() {
-  if (stream_->eof()) [[unlikely]] {
+  if (eof()) [[unlikely]] {
     return;
   }
 
-  // consume invalid token
-  stream_->next();
-  while (!stream_->eof()) {
-    if (is_sync_point(stream_->peek().kind())) {
+  // consume errored token
+  next();
+  base::TokenKind kind = peek().kind();
+  while (!eof()) {
+    if (is_sync_point(kind)) {
       return;
     }
-    stream_->next();
+
+    switch (kind) {
+      // delimiters
+      case base::TokenKind::kSemicolon:
+      case base::TokenKind::kRightBrace:
+      case base::TokenKind::kNewline: next(); return;
+      case base::TokenKind::kEof: return;
+      default: break;
+    }
+    kind = next().kind();
   }
 }
 
 // static
 bool Parser::is_sync_point(base::TokenKind kind) {
-  if (base::token_kind_is_control_flow_keyword(kind) ||
-      base::token_kind_is_declaration_keyword(kind) ||
-      base::token_kind_is_attribute_keyword(kind)) {
-    return true;
-  }
-  switch (kind) {
-    // delimiters
-    case base::TokenKind::kSemicolon:
-    case base::TokenKind::kRightBrace:
-    case base::TokenKind::kNewline:
-    case base::TokenKind::kEof: return true;
-
-    default: return false;
-  }
+  return base::token_kind_is_control_flow_keyword(kind) ||
+         base::token_kind_is_declaration_keyword(kind) ||
+         base::token_kind_is_attribute_keyword(kind);
 }
 
 }  // namespace parser

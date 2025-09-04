@@ -53,6 +53,11 @@ Parser::Result<RR> Parser::parse_parameter_list() {
       first_id = std::move(r).unwrap();
     }
     ++parameters_count;
+
+    if (!check(base::TokenKind::kComma)) {
+      break;
+    }
+    // consume comma
     next_non_whitespace();
   }
 

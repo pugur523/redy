@@ -22,11 +22,14 @@ Parser::Result<R> Parser::parse_enum_variant() {
     return err<R>(std::move(variant_name_r));
   }
 
-  if (check(base::TokenKind::kComma)) {
+  if (check(base::TokenKind::kComma) || check(base::TokenKind::kRightBrace)) {
     // empty
     return ok(context_->alloc_payload(
         ast::EnumVariantPayload(std::move(variant_name_r).unwrap())));
   } else if (check(base::TokenKind::kEqual)) {
+    // consume =
+    next_non_whitespace();
+
     // integer expression
     auto integer_expr_r = parse_expression();
     if (integer_expr_r.is_err()) {
@@ -37,6 +40,9 @@ Parser::Result<R> Parser::parse_enum_variant() {
         ast::EnumVariantPayload(std::move(variant_name_r).unwrap(),
                                 std::move(integer_expr_r).unwrap())));
   } else if (check(base::TokenKind::kLeftBrace)) {
+    // consume {
+    next_non_whitespace();
+
     // field nodes
     auto field_list_r = parse_field_list();
     if (field_list_r.is_err()) {
@@ -46,6 +52,9 @@ Parser::Result<R> Parser::parse_enum_variant() {
     return ok(context_->alloc_payload(ast::EnumVariantPayload(
         std::move(variant_name_r).unwrap(), std::move(field_list_r).unwrap())));
   } else if (check(base::TokenKind::kLeftParen)) {
+    // consume (
+    next_non_whitespace();
+
     // type nodes
     PayloadId<ast::TypeReferencePayload> first_id;
     uint32_t types_count = 0;
@@ -64,6 +73,11 @@ Parser::Result<R> Parser::parse_enum_variant() {
       }
       // consume comma
       next_non_whitespace();
+    }
+
+    auto right_r = consume(base::TokenKind::kRightParen, true);
+    if (right_r.is_err()) {
+      return err<R>(std::move(right_r));
     }
 
     return ok(context_->alloc_payload(

@@ -75,7 +75,7 @@ class Parser {
   template <typename T>
   using PayloadRange = ast::PayloadRange<T>;
 
-  void parse_next();
+  Result<void> parse_next();
 
   // temporarily disable line length limit for readability
   // clang-format off
@@ -138,7 +138,7 @@ class Parser {
 
   // declaration
   Result<NodeId> parse_decl_stmt();
-  Result<PayloadId<ast::FunctionDeclarationPayload>> parse_function_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::FunctionDeclarationPayload>> parse_function_decl_stmt(Sad storage_attribute, bool needs_body = true);
   Result<PayloadId<ast::StructDeclarationPayload>> parse_struct_decl_stmt(Sad storage_attribute);
   Result<PayloadId<ast::EnumerationDeclarationPayload>> parse_enumeration_decl_stmt(Sad storage_attribute);
   Result<PayloadId<ast::TraitDeclarationPayload>> parse_trait_decl_stmt(Sad storage_attribute);

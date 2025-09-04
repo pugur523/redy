@@ -20,7 +20,8 @@ namespace parser {
 
 using R = ast::PayloadId<ast::FunctionDeclarationPayload>;
 
-Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute) {
+Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute,
+                                                   bool needs_body) {
   auto fn_r = consume(base::TokenKind::kFunction, true);
   if (fn_r.is_err()) {
     return err<R>(std::move(fn_r));
@@ -60,7 +61,7 @@ Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute) {
     return_type_id = std::move(ret_type_r).unwrap();
   }
 
-  // empty body if it's forward declaration
+  // empty body is allowed if it's in the trait declaration
   PayloadId<ast::BlockExpressionPayload> body_id;
   if (check(base::TokenKind::kLeftBrace)) {
     // with definition
@@ -69,6 +70,9 @@ Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute) {
       return err<R>(std::move(body_r));
     }
     body_id = std::move(body_r).unwrap();
+  } else if (needs_body) {
+    return err<R>(
+        std::move(consume(base::TokenKind::kLeftBrace, true)).unwrap_err());
   }
 
   return ok(context_->alloc_payload(ast::FunctionDeclarationPayload{
