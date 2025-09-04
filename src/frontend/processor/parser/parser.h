@@ -133,6 +133,9 @@ class Parser {
   Result<PayloadId<ast::AttributeStatementPayload>> parse_attribute_stmt();
   Result<PayloadId<ast::ExpressionStatementPayload>> parse_expression_stmt();
 
+  // TODO: add template parsing for declarations, calls, and type refs
+  // syntax example: some_symbol<T, E, Size: usize, UseColor: bool>
+
   // declaration
   Result<NodeId> parse_decl_stmt();
   Result<PayloadId<ast::FunctionDeclarationPayload>> parse_function_decl_stmt(Sad storage_attribute);
