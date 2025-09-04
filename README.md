@@ -185,7 +185,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
     - [x] Operator
     - [x] Delimiter
 
-  - [ ] **AST**
+  - [x] **AST**
     - [x] Context (data oriented structure)
     - [x] Nodes
       - [x] Expression
