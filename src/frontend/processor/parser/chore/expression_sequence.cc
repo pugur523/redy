@@ -12,7 +12,7 @@
 namespace parser {
 
 Parser::Result<ast::NodeRange> Parser::parse_expression_sequence() {
-  NodeId first = ast::kInvalidNodeId;
+  NodeId first_id = ast::kInvalidNodeId;
   uint32_t arg_count = 0;
 
   while (!eof()) {
@@ -22,11 +22,11 @@ Parser::Result<ast::NodeRange> Parser::parse_expression_sequence() {
     }
 
     if (arg_count == 0) {
-      first = std::move(arg_value_r).unwrap();
+      first_id = std::move(arg_value_r).unwrap();
     }
     ++arg_count;
 
-    if (peek().kind() != base::TokenKind::kComma) {
+    if (!check(base::TokenKind::kComma)) {
       break;
     }
     // consume comma
@@ -34,7 +34,7 @@ Parser::Result<ast::NodeRange> Parser::parse_expression_sequence() {
   }
 
   return ok(NodeRange{
-      .begin = first,
+      .begin = first_id,
       .size = arg_count,
   });
 }

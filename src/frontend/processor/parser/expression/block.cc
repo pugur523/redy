@@ -19,7 +19,7 @@ Parser::Result<R> Parser::parse_block_expr() {
     return err<R>(std::move(left_r));
   }
 
-  NodeId first = ast::kInvalidNodeId;
+  NodeId first_id = ast::kInvalidNodeId;
   uint32_t body_statement_count = 0;
 
   while (!eof()) {
@@ -29,7 +29,7 @@ Parser::Result<R> Parser::parse_block_expr() {
     }
 
     if (body_statement_count == 0) {
-      first = std::move(body_statement_r).unwrap();
+      first_id = std::move(body_statement_r).unwrap();
     }
     ++body_statement_count;
   }
@@ -40,7 +40,7 @@ Parser::Result<R> Parser::parse_block_expr() {
   }
 
   return ok(context_->alloc_payload(ast::BlockExpressionPayload{
-      .body_nodes_range = {.begin = first, .size = body_statement_count}}));
+      .body_nodes_range = {.begin = first_id, .size = body_statement_count}}));
 }
 
 }  // namespace parser

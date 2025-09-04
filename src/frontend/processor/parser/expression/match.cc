@@ -33,6 +33,7 @@ Parser::Result<R> Parser::parse_match_expr() {
 
   PayloadId<ast::MatchArmPayload> first_id;
   uint32_t arms_count = 0;
+
   while (!eof()) {
     if (check(base::TokenKind::kRightBrace)) {
       break;

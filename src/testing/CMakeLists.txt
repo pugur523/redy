@@ -23,13 +23,13 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_test.cc
 
+  # ${PROJECT_SOURCE_DIR}/frontend/ast/data/ast/node_test.cc
+
   ${PROJECT_SOURCE_DIR}/frontend/diagnostic/engine/diagnostic_engine_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/processor/lexer/lexer_test.cc
 
-  # ${PROJECT_SOURCE_DIR}/frontend/ast/base/node_test.cc
-
-  # ${PROJECT_SOURCE_DIR}/frontend/parser/parser_test.cc
+  ${PROJECT_SOURCE_DIR}/frontend/processor/parser/parser_test.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/pipeline/frontend_integration_test.cc
 )

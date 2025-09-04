@@ -31,6 +31,7 @@ Parser::Result<R> Parser::parse_module_decl_stmt(Sad attribute) {
 
   NodeId first_node = ast::kInvalidNodeId;
   uint32_t nodes_count = 0;
+
   while (!eof() && !check(base::TokenKind::kRightBrace)) {
     auto stmt_r = parse_statement();
     if (stmt_r.is_err()) {

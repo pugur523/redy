@@ -34,6 +34,48 @@ struct ParameterPayload {
   PayloadId<TypeReferencePayload> type;
 };
 
+struct EnumVariantPayload {
+  PayloadId<PathExpressionPayload> variant_name;
+  // type nodes or field nodes or invalid (empty)
+
+  enum class VariantType : uint8_t {
+    kEmpty = 0,
+    kInteger = 1,
+    kStructLike = 2,
+    kTupleLike = 3,
+  } type;
+
+  union Data {
+    NodeId int_expr;
+    PayloadRange<FieldPayload> fields;
+    PayloadRange<TypeReferencePayload> types;
+
+    Data() {}
+    ~Data() {}
+  } data;
+
+  explicit EnumVariantPayload(PayloadId<PathExpressionPayload> name)
+      : variant_name(name), type(VariantType::kEmpty) {}
+
+  explicit EnumVariantPayload(PayloadId<PathExpressionPayload> name,
+                              NodeId int_expr)
+      : variant_name(name), type(VariantType::kInteger) {
+    data.int_expr = int_expr;
+  }
+
+  explicit EnumVariantPayload(PayloadId<PathExpressionPayload> name,
+                              PayloadRange<FieldPayload> fields)
+      : variant_name(name), type(VariantType::kStructLike) {
+    data.fields = fields;
+  }
+
+  explicit EnumVariantPayload(PayloadId<PathExpressionPayload> name,
+                              PayloadRange<TypeReferencePayload> types)
+      : variant_name(name), type(VariantType::kTupleLike) {
+    data.types = types;
+  }
+};
+
 struct TypeReferencePayload {
   base::TypeCategory category = base::TypeCategory::kUnknown;
 

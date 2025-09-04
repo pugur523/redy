@@ -42,14 +42,15 @@ Parser::Result<R> Parser::parse_parameter_one() {
 }
 
 Parser::Result<RR> Parser::parse_parameter_list() {
+  R first_id;
   uint32_t parameters_count = 0;
-  R id;
-  while (!eof() && peek().kind() != base::TokenKind::kRightParen) {
+
+  while (!eof() && !check(base::TokenKind::kRightParen)) {
     auto r = parse_parameter_one();
     if (r.is_err()) {
       return err<RR>(std::move(r));
     } else if (parameters_count == 0) {
-      id = std::move(r).unwrap();
+      first_id = std::move(r).unwrap();
     }
     ++parameters_count;
     next_non_whitespace();
@@ -57,7 +58,7 @@ Parser::Result<RR> Parser::parse_parameter_list() {
 
   // returns ok even if id is invalid and parameters count is 0
   return ok(RR{
-      .begin = id,
+      .begin = first_id,
       .size = parameters_count,
   });
 }

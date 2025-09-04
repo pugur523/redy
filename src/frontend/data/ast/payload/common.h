@@ -83,6 +83,7 @@ struct AttributeUsePayload;
 struct CapturePayload;
 struct FieldPayload;
 struct ParameterPayload;
+struct EnumVariantPayload;
 struct TypeReferencePayload;
 struct ArrayTypePayload;
 struct IdentifierPayload;

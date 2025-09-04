@@ -46,7 +46,7 @@ struct StructDeclarationPayload {
 
 struct EnumerationDeclarationPayload {
   PayloadId<PathExpressionPayload> name;
-  NodeRange variants_range;
+  PayloadRange<EnumVariantPayload> variants_range;
   StorageAttributeData storage_attribute;
 };
 

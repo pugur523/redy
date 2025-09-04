@@ -14,7 +14,7 @@ namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_await_expr(NodeId callee) {
   DCHECK(check(base::TokenKind::kArrow));
-  // consumes ->
+  // consume ->
   next_non_whitespace();
   // auto arrow_r = consume(base::TokenKind::kArrow, true);
   // if (arrow_r.is_err()) {

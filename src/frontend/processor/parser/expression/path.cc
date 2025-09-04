@@ -20,7 +20,7 @@ using R = ast::PayloadId<ast::PathExpressionPayload>;
 Parser::Result<R> Parser::parse_path_expr() {
   const bool is_absolute = check(base::TokenKind::kColonColon);
   if (is_absolute) {
-    next_non_whitespace();  // consumes ::
+    next_non_whitespace();  // consume ::
   }
 
   PayloadId<ast::IdentifierPayload> first_part;

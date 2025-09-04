@@ -35,7 +35,7 @@ class UNICODE_EXPORT Utf8Decoder {
                                  char32_t* output,
                                  std::size_t output_capacity);
 
-  // consumes one codepoint from utf8 string, returns (codepoint, next_ptr)
+  // consume one codepoint from utf8 string, returns (codepoint, next_ptr)
   static inline std::pair<char32_t, const char8_t*> next_codepoint(
       const char8_t* ptr,
       const char8_t* end) {

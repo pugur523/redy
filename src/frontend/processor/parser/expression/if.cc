@@ -40,7 +40,7 @@ Parser::Result<R> Parser::parse_if_expr() {
 
   uint32_t branches_count = 1;
   while (!eof()) {
-    if (peek().kind() != base::TokenKind::kElse) {
+    if (!check(base::TokenKind::kElse)) {
       break;
     }
     // consume else

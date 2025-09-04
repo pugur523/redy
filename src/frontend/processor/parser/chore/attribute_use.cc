@@ -25,7 +25,7 @@ Parser::Result<R> Parser::parse_attribute_use_one() {
   NodeRange args_range{};
 
   if (check(base::TokenKind::kLeftParen)) {
-    // consumes (
+    // consume (
     next_non_whitespace();
 
     auto args_r = parse_expression_sequence();
@@ -47,23 +47,24 @@ Parser::Result<R> Parser::parse_attribute_use_one() {
 }
 
 Parser::Result<RR> Parser::parse_attribute_use_list() {
-  uint32_t captures_count = 0;
-  R id;
-  while (!eof() && peek().kind() != base::TokenKind::kRightBracket) {
+  R first_id;
+  uint32_t attr_count = 0;
+
+  while (!eof() && !check(base::TokenKind::kRightBracket)) {
     auto r = parse_attribute_use_one();
     if (r.is_err()) {
       return err<RR>(std::move(r));
-    } else if (captures_count == 0) {
-      id = std::move(r).unwrap();
+    } else if (attr_count == 0) {
+      first_id = std::move(r).unwrap();
     }
-    ++captures_count;
+    ++attr_count;
     next_non_whitespace();
   }
 
   // returns ok even if id is invalid and captures count is 0
   return ok(RR{
-      .begin = id,
-      .size = captures_count,
+      .begin = first_id,
+      .size = attr_count,
   });
 }
 

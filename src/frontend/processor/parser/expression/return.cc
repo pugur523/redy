@@ -20,8 +20,8 @@ Parser::Result<R> Parser::parse_return_expr() {
   }
 
   NodeId expr_id = ast::kInvalidNodeId;
-  if (peek().kind() != base::TokenKind::kNewline &&
-      peek().kind() != base::TokenKind::kSemicolon) {
+  if (!check(base::TokenKind::kNewline) &&
+      !check(base::TokenKind::kSemicolon)) {
     auto expr_r = parse_expression();
     if (expr_r.is_err()) {
       return err<R>(std::move(expr_r));

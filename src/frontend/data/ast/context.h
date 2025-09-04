@@ -112,6 +112,7 @@ class AST_EXPORT Context {
   base::Arena<CapturePayload> capture_payloads_;
   base::Arena<FieldPayload> field_payloads_;
   base::Arena<ParameterPayload> parameter_payloads_;
+  base::Arena<EnumVariantPayload> enum_variant_payloads_;
   base::Arena<TypeReferencePayload> type_reference_payloads_;
   base::Arena<ArrayTypePayload> array_type_payloads_;
   base::Arena<IdentifierPayload> identifier_payloads_;
@@ -334,6 +335,10 @@ inline base::Arena<FieldPayload>& Context::arena<FieldPayload>() {
 template <>
 inline base::Arena<ParameterPayload>& Context::arena<ParameterPayload>() {
   return parameter_payloads_;
+}
+template <>
+inline base::Arena<EnumVariantPayload>& Context::arena<EnumVariantPayload>() {
+  return enum_variant_payloads_;
 }
 template <>
 inline base::Arena<TypeReferencePayload>&

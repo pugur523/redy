@@ -40,22 +40,28 @@ Parser::Result<R> Parser::parse_field_one() {
 }
 
 Parser::Result<RR> Parser::parse_field_list() {
+  R first_id;
   uint32_t fields_count = 0;
-  R id;
-  while (!eof() && peek().kind() != base::TokenKind::kRightBrace) {
+
+  while (!eof() && !check(base::TokenKind::kRightBrace)) {
     auto r = parse_field_one();
     if (r.is_err()) {
       return err<RR>(std::move(r));
     } else if (fields_count == 0) {
-      id = std::move(r).unwrap();
+      first_id = std::move(r).unwrap();
     }
     ++fields_count;
+
+    if (!check(base::TokenKind::kComma)) {
+      break;
+    }
+    // consume comma
     next_non_whitespace();
   }
 
   // returns ok even if id is invalid and fields count is 0
   return ok(RR{
-      .begin = id,
+      .begin = first_id,
       .size = fields_count,
   });
 }

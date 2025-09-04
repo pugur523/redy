@@ -20,11 +20,11 @@ Parser::Result<R> Parser::parse_construct_expr(NodeId type_path) {
     return err<R>(std::move(left_r));
   }
 
-  NodeId first = ast::kInvalidNodeId;
+  NodeId first_id = ast::kInvalidNodeId;
   uint32_t arg_count = 0;
 
   while (!eof()) {
-    if (peek().kind() != base::TokenKind::kDot) {
+    if (!check(base::TokenKind::kDot)) {
       break;
     }
     // consume dot
@@ -46,11 +46,11 @@ Parser::Result<R> Parser::parse_construct_expr(NodeId type_path) {
     }
 
     if (arg_count == 0) {
-      first = std::move(init_value_r).unwrap();
+      first_id = std::move(init_value_r).unwrap();
     }
     ++arg_count;
 
-    if (peek().kind() != base::TokenKind::kComma) {
+    if (!check(base::TokenKind::kComma)) {
       break;
     }
     // consume comma
@@ -64,7 +64,7 @@ Parser::Result<R> Parser::parse_construct_expr(NodeId type_path) {
 
   return ok(context_->alloc_payload(ast::ConstructExpressionPayload{
       .type_path = type_path,
-      .args_range = {.begin = first, .size = arg_count},
+      .args_range = {.begin = first_id, .size = arg_count},
   }));
 }
 

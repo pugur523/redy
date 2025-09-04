@@ -32,7 +32,7 @@ Parser::Result<R> Parser::parse_range_expr() {
     }));
   }
 
-  // consumes ..
+  // consume ..
   next_non_whitespace();
 
   bool is_exclusive = true;
