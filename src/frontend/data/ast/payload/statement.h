@@ -52,13 +52,14 @@ struct EnumerationDeclarationPayload {
 
 struct TraitDeclarationPayload {
   PayloadId<PathExpressionPayload> name;
-  PayloadRange<FunctionDeclarationPayload> function_declare_range;
+  NodeRange function_declare_range;
   StorageAttributeData storage_attribute;
 };
 
 struct ImplementationDeclarationPayload {
-  PayloadId<PathExpressionPayload> name;
-  PayloadRange<FunctionDeclarationPayload> function_definition_range;
+  PayloadId<PathExpressionPayload> target_name;
+  PayloadId<PathExpressionPayload> trait_name;
+  NodeRange function_definition_range;
   StorageAttributeData storage_attribute;
 };
 

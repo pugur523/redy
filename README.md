@@ -227,8 +227,8 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] Enumeration
         - [x] Union
 
-  - [ ] **Parser**
-    - [ ] Expression
+  - [x] **Parser**
+    - [x] Expression
       - [x] Without block
         - [x] Literal
         - [x] Path
@@ -256,15 +256,15 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] While
         - [x] For
         - [x] Match
-    - [ ] Statements
+    - [x] Statements
       - [x] Assign
       - [x] Expression
       - [x] Attribute
       - [x] Function Declaration
       - [x] Struct Declaration
       - [x] Enumeration Declaration
-      - [ ] Trait Declaration
-      - [ ] Implementation Declaration
+      - [x] Trait Declaration
+      - [x] Implementation Declaration
       - [x] Union Declaration
       - [x] Module Declaration
       - [x] Redirect Declaration

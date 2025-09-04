@@ -24,9 +24,11 @@ set(SOURCES
 
   declaration/enum.cc
   declaration/function.cc
+  declaration/impl.cc
   declaration/module.cc
   declaration/redirect.cc
   declaration/struct.cc
+  declaration/trait.cc
   declaration/union.cc
 
   expression/array.cc
