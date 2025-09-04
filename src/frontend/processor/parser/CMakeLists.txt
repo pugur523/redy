@@ -27,6 +27,7 @@ set(SOURCES
   declaration/module.cc
   declaration/redirect.cc
   declaration/struct.cc
+  declaration/union.cc
 
   expression/array.cc
   expression/await.cc

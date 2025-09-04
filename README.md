@@ -265,7 +265,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [x] Enumeration Declaration
       - [ ] Trait Declaration
       - [ ] Implementation Declaration
-      - [ ] Union Declaration
+      - [x] Union Declaration
       - [x] Module Declaration
       - [x] Redirect Declaration
 
