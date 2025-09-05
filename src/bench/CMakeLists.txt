@@ -20,6 +20,8 @@ set(SOURCES
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_bench.cc
 
   ${PROJECT_SOURCE_DIR}/frontend/processor/lexer/lexer_bench.cc
+
+  ${PROJECT_SOURCE_DIR}/frontend/processor/parser/parser_bench.cc
 )
 
 add_executable(${BENCHMARK_NAME} ${SOURCES})
