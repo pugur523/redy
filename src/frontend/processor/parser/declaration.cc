@@ -87,7 +87,7 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
     }
   }
 
-  // local macro
+  // local macro, undef at the bottom for safety
 #define TRY_RETURN_DECL(fn, attr, node_kind)           \
   do {                                                 \
     auto result = fn(attribute);                       \
@@ -138,6 +138,7 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
       TRY_RETURN_DECL(parse_assign_stmt, attribute,
                       ast::NodeKind::kAssignStatement);
     }
+#undef TRY_RETURN_DECL
     default: {
       return err<NodeId>(
           std::move(
