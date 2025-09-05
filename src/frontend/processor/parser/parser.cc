@@ -56,7 +56,7 @@ void Parser::init_context() {
   context_->arena<ast::IdentifierPayload>().reserve(256);
 }
 
-Parser::Results Parser::parse_all(bool strict) {
+Parser::ParseResult Parser::parse_all(bool strict) {
   DCHECK_EQ(status_, Status::kReadyToParse);
   while (!eof()) {
     auto result = parse_next();
@@ -73,10 +73,10 @@ Parser::Results Parser::parse_all(bool strict) {
 
   if (errors_.empty()) [[likely]] {
     status_ = Status::kParseCompleted;
-    return ok();
+    return ParseResult(diagnostic::create_ok(std::move(context_)));
   } else {
     status_ = Status::kErrorOccured;
-    return Results(diagnostic::create_err(std::move(errors_)));
+    return ParseResult(diagnostic::create_err(std::move(errors_)));
   }
 }
 
@@ -89,6 +89,11 @@ Parser::Result<void> Parser::parse_next() {
   } else if (current_kind == base::TokenKind::kBlockComment ||
              current_kind == base::TokenKind::kInlineComment) {
     // TODO: support document gen mode
+    next();
+    return ok<void>();
+  } else if (current_kind == base::TokenKind::kSemicolon) {
+    // consume ;
+    next();
     return ok<void>();
   } else if (base::token_kind_is_declaration_keyword(current_kind) ||
              base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {

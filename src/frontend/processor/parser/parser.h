@@ -39,7 +39,8 @@ class Parser {
  public:
   template <typename T>
   using Result = diagnostic::Result<T, De>;
-  using Results = diagnostic::Result<void, std::vector<De>>;
+  using ParseResult =
+      diagnostic::Result<std::unique_ptr<ast::Context>, std::vector<De>>;
 
   enum class Status : uint8_t {
     kNotInitialized = 0,
@@ -54,15 +55,21 @@ class Parser {
   Parser(const Parser&) = delete;
   Parser& operator=(const Parser&) = delete;
 
-  Parser(Parser&&) noexcept = default;
-  Parser& operator=(Parser&&) noexcept = default;
+  PARSER_EXPORT Parser(Parser&&) noexcept = default;
+  PARSER_EXPORT Parser& operator=(Parser&&) noexcept = default;
 
   PARSER_EXPORT void init(base::TokenStream* stream,
                           const i18n::Translator& translater);
 
-  PARSER_EXPORT Results parse_all(bool strict = false);
+  PARSER_EXPORT ParseResult parse_all(bool strict = false);
 
-  inline const ast::Context& context() const { return *context_; }
+  inline void reset() {
+    DCHECK_NE(status_, Status::kNotInitialized);
+    status_ = Status::kNotInitialized;
+    stream_->rewind(0);
+    init_context();
+    status_ = Status::kReadyToParse;
+  }
 
  private:
   using Node = ast::Node;
@@ -190,12 +197,6 @@ class Parser {
       kind = next().kind();
     }
     return peek();
-  }
-
-  // TODO: T support
-  inline static Results ok() { return Results(diagnostic::create_ok()); }
-  inline static Results err(std::vector<De>&& error) {
-    return Results(diagnostic::create_err(std::move(error)));
   }
 
   template <typename T>
