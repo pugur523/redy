@@ -7,23 +7,23 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <functional>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "core/check.h"
 #include "frontend/base/base_export.h"
 #include "frontend/base/data/string_arena.h"
 
 namespace base {
 
 using StringId = uint32_t;
-static constexpr const StringId kInvalidStringId = 0;
+
+constexpr const StringId kEmptyStringId = 0;
+constexpr const StringId kInvalidStringId = 0xFFFFFFFF;
 
 class BASE_EXPORT StringInterner {
  public:
-  StringInterner();
+  explicit StringInterner(double max_load_factor = 0.75);
   ~StringInterner();
 
   StringInterner(const StringInterner&) = delete;
@@ -41,27 +41,45 @@ class BASE_EXPORT StringInterner {
 
   inline std::size_t size() const { return arena_.size(); }
 
+  inline std::size_t string_count() const { return arena_.size(); }
+  inline std::size_t bucket_count() const { return buckets_.size(); }
+  inline std::size_t used_buckets() const { return used_buckets_; }
+  inline double load_factor() const {
+    return buckets_.empty() ? 0.0
+                            : static_cast<double>(used_buckets_) /
+                                  static_cast<double>(buckets_.size());
+  }
+
  private:
   void init_buckets(std::size_t n);
   void ensure_load_factor();
   void rehash(std::size_t new_size);
 
-  // TODO: replace this with xxh3 or another fast and safe algorithm
+  // TODO: replace this with xxh3
   static inline uint64_t hash_sv(std::string_view s) {
-    return std::hash<std::string_view>{}(s);
+    // FNV-1a hash (better than std::hash for short strings)
+    // FNV offset basis
+    uint64_t hash = 14695981039346656037ULL;
+    for (char c : s) {
+      hash ^= static_cast<uint64_t>(c);
+      // FNV prime
+      hash *= 1099511628211ULL;
+    }
+    return hash;
   }
-
-  static constexpr const StringId kEmptyId = 0xFFFFFFFF;
 
   // bucket for open-addressing hash table
   struct Bucket {
     uint64_t hash = 0;
-    StringId id = kEmptyId;
+    StringId id = kInvalidStringId;
+
+    bool empty() const { return id == kInvalidStringId; }
   };
 
   StringArena arena_;
   std::vector<Bucket> buckets_;
-  double load_factor_ = 0.7;
+  std::size_t used_buckets_ = 0;
+  double max_load_factor_;
 };
 
 }  // namespace base

@@ -10,12 +10,12 @@ std::size_t StringArena::alloc(std::string_view s) {
   if (s.empty()) {
     return 0;
   }
-  const uint32_t offset = static_cast<uint32_t>(buffer_.size());
-  const std::size_t index = offsets_.size();
+  const std::size_t offset = buffer_.size();
   buffer_.insert(buffer_.end(), s.begin(), s.end());
-  buffer_.push_back('\0');
-  offsets_.push_back(offset);
-  return index;  // start from 0
+  // imcompatible with cstring, but we only use string_view so not needed
+  // buffer_.push_back('\0');
+  string_infos_.emplace_back(offset, s.length());
+  return string_infos_.size();  // start from 1
 }
 
 }  // namespace base

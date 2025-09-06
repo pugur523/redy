@@ -30,18 +30,25 @@ class BASE_EXPORT StringArena {
   inline constexpr const std::vector<char>& buffer() const { return buffer_; }
   inline constexpr void reserve(std::size_t n) { buffer_.reserve(n); }
   inline constexpr void resize(std::size_t n) { buffer_.resize(n); }
-  inline constexpr std::size_t size() const { return offsets_.size(); }
+  inline constexpr std::size_t size() const { return string_infos_.size(); }
 
   inline constexpr std::string_view operator[](std::size_t id) const {
-    if (id == 0 || id > offsets_.size()) {
-      return {};
+    if (id == 0 || id > string_infos_.size()) {
+      return "";
     }
-    return std::string_view(buffer_.data() + offsets_[id]);
+    const StringInfo& info = string_infos_[id - 1];
+    return std::string_view(buffer_.data() + info.offset, info.length);
   }
 
  private:
   std::vector<char> buffer_;
-  std::vector<uint32_t> offsets_;
+
+  struct StringInfo {
+    std::size_t offset;
+    std::size_t length;
+  };
+
+  std::vector<StringInfo> string_infos_;
 };
 
 }  // namespace base
