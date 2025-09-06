@@ -80,7 +80,7 @@ subgraph frontend
     E(diagnostic)     --> D
     F(lexer)          --> D
     G(parser)         --> D
-    H(ast_analyzer)   --> D
+    H(resolver)   --> D
     I(hir_analyzer)   --> D
     J(mir_analyzer)   --> D
 

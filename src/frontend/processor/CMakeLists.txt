@@ -4,6 +4,6 @@
 
 add_subdirectory(lexer)
 add_subdirectory(parser)
-# add_subdirectory(ast_analyzer)
+# add_subdirectory(resolver)
 # add_subdirectory(hir_analyzer)
 # add_subdirectory(mir_analyzer)

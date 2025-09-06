@@ -3,5 +3,5 @@
 # which can be found in the LICENSE file.
 
 add_subdirectory(ast)
-# add_subdirectory(hir)
+add_subdirectory(hir)
 # add_subdirectory(mir)
