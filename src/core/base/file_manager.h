@@ -6,7 +6,6 @@
 #define CORE_BASE_FILE_MANAGER_H_
 
 #include <cstdint>
-#include <limits>
 #include <string>
 #include <vector>
 
@@ -18,8 +17,7 @@ namespace core {
 using FileId = uint32_t;
 using RawFileId = uint32_t;
 
-inline constexpr const FileId kInvalidFileId =
-    std::numeric_limits<FileId>::max();
+constexpr const FileId kInvalidFileId = 0xFFFFFFFF;
 
 class CORE_EXPORT FileManager {
  public:

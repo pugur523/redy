@@ -5,7 +5,6 @@
 #ifndef FRONTEND_BASE_TOKEN_TOKEN_STREAM_H_
 #define FRONTEND_BASE_TOKEN_TOKEN_STREAM_H_
 
-#include <limits>
 #include <string>
 #include <vector>
 

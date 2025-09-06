@@ -17,8 +17,7 @@ namespace unicode {
 
 using Utf8FileId = uint32_t;
 
-inline constexpr const Utf8FileId kInvalidFileId =
-    std::numeric_limits<Utf8FileId>::max();
+constexpr const Utf8FileId kInvalidFileId = 0xFFFFFFFF;
 
 class UNICODE_EXPORT Utf8FileManager {
  public:

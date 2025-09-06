@@ -6,7 +6,6 @@
 #define FRONTEND_BASE_OPERATOR_OPERATOR_H_
 
 #include <cstdint>
-#include <limits>
 
 #include "core/check.h"
 
