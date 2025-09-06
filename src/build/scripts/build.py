@@ -149,7 +149,6 @@ def select_best_toolchain(build_os, target_os):
 
     if build_os == "windows":
         if target_os != "windows":
-            # TODO: cygwin support
             print("cross compile on windows is currently not supported.")
             return None
     elif build_os == "darwin":
