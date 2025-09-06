@@ -229,7 +229,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] Enumeration
         - [x] Union
 
-  - [x] **Parser**
+  - [ ] **Parser**
     - [x] Expression
       - [x] Without block
         - [x] Literal
@@ -258,10 +258,11 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] While
         - [x] For
         - [x] Match
-    - [x] Statements
+    - [ ] Statements
       - [x] Assign
       - [x] Expression
       - [x] Attribute
+      - [ ] Use Module
       - [x] Function Declaration
       - [x] Struct Declaration
       - [x] Enumeration Declaration
