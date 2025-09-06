@@ -19,6 +19,7 @@ set(SOURCES
 
   ${PROJECT_SOURCE_DIR}/unicode/utf8/stream_test.cc
 
+  ${PROJECT_SOURCE_DIR}/frontend/base/string/string_interner_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/keyword/keyword_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_stream_test.cc
   ${PROJECT_SOURCE_DIR}/frontend/base/token/token_test.cc
