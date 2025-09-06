@@ -37,7 +37,8 @@ Parser::Result<R> Parser::parse_struct_decl_stmt(Sad attribute) {
   if (fields_r.is_err()) {
     return err<R>(std::move(fields_r));
   }
-  const ast::PayloadRange fields_range = std::move(fields_r).unwrap();
+  const PayloadRange<ast::FieldPayload> fields_range =
+      std::move(fields_r).unwrap();
 
   auto right_r = consume(base::TokenKind::kRightBrace, true);
   if (right_r.is_err()) {

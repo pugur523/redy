@@ -43,7 +43,8 @@ Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute,
   if (parameters_r.is_err()) {
     return err<R>(std::move(parameters_r));
   }
-  const ast::PayloadRange parameters_range = std::move(parameters_r).unwrap();
+  const PayloadRange<ast::ParameterPayload> parameters_range =
+      std::move(parameters_r).unwrap();
 
   auto rparen_r = consume(base::TokenKind::kRightParen, true);
   if (rparen_r.is_err()) {

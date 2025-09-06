@@ -7,6 +7,7 @@
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
+#include "frontend/data/ast/payload/data.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/diagnostic/data/label.h"
 #include "frontend/diagnostic/data/severity.h"
@@ -37,7 +38,8 @@ Parser::Result<R> Parser::parse_union_decl_stmt(Sad attribute) {
   if (fields_r.is_err()) {
     return err<R>(std::move(fields_r));
   }
-  const ast::PayloadRange fields_range = std::move(fields_r).unwrap();
+  const PayloadRange<ast::FieldPayload> fields_range =
+      std::move(fields_r).unwrap();
 
   auto right_r = consume(base::TokenKind::kRightBrace, true);
   if (right_r.is_err()) {
