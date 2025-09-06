@@ -21,6 +21,10 @@ namespace ast {
 
 class AST_EXPORT Context {
  public:
+  static inline std::unique_ptr<Context> create() {
+    return std::unique_ptr<Context>(new Context());
+  }
+
   ~Context() = default;
 
   Context(const Context&) = delete;
@@ -29,12 +33,8 @@ class AST_EXPORT Context {
   Context(Context&&) noexcept = default;
   Context& operator=(Context&&) noexcept = default;
 
-  static inline std::unique_ptr<Context> create() {
-    return std::unique_ptr<Context>(new Context());
-  }
-
   template <typename T>
-  inline base::Arena<T>& arena();
+  inline constexpr base::Arena<T>& arena();
 
   template <typename T>
   inline NodeId alloc(T&& value) {
@@ -121,244 +121,252 @@ class AST_EXPORT Context {
 };
 
 template <>
-inline base::Arena<Node>& Context::arena<Node>() {
+inline constexpr base::Arena<Node>& Context::arena<Node>() {
   return nodes_;
 }
 
 template <>
-inline base::Arena<LiteralExpressionPayload>&
+inline constexpr base::Arena<LiteralExpressionPayload>&
 Context::arena<LiteralExpressionPayload>() {
   return literal_expression_payloads_;
 }
 template <>
-inline base::Arena<PathExpressionPayload>&
+inline constexpr base::Arena<PathExpressionPayload>&
 Context::arena<PathExpressionPayload>() {
   return path_expression_payloads_;
 }
 template <>
-inline base::Arena<UnaryExpressionPayload>&
+inline constexpr base::Arena<UnaryExpressionPayload>&
 Context::arena<UnaryExpressionPayload>() {
   return unary_expression_payloads_;
 }
 template <>
-inline base::Arena<BinaryExpressionPayload>&
+inline constexpr base::Arena<BinaryExpressionPayload>&
 Context::arena<BinaryExpressionPayload>() {
   return binary_expression_payloads_;
 }
 template <>
-inline base::Arena<GroupedExpressionPayload>&
+inline constexpr base::Arena<GroupedExpressionPayload>&
 Context::arena<GroupedExpressionPayload>() {
   return grouped_expression_payloads_;
 }
 template <>
-inline base::Arena<ArrayExpressionPayload>&
+inline constexpr base::Arena<ArrayExpressionPayload>&
 Context::arena<ArrayExpressionPayload>() {
   return array_expression_payloads_;
 }
 template <>
-inline base::Arena<TupleExpressionPayload>&
+inline constexpr base::Arena<TupleExpressionPayload>&
 Context::arena<TupleExpressionPayload>() {
   return tuple_expression_payloads_;
 }
 template <>
-inline base::Arena<IndexExpressionPayload>&
+inline constexpr base::Arena<IndexExpressionPayload>&
 Context::arena<IndexExpressionPayload>() {
   return index_expression_payloads_;
 }
 template <>
-inline base::Arena<ConstructExpressionPayload>&
+inline constexpr base::Arena<ConstructExpressionPayload>&
 Context::arena<ConstructExpressionPayload>() {
   return construct_expression_payloads_;
 }
 template <>
-inline base::Arena<FunctionCallExpressionPayload>&
+inline constexpr base::Arena<FunctionCallExpressionPayload>&
 Context::arena<FunctionCallExpressionPayload>() {
   return function_call_expression_payloads_;
 }
 template <>
-inline base::Arena<MethodCallExpressionPayload>&
+inline constexpr base::Arena<MethodCallExpressionPayload>&
 Context::arena<MethodCallExpressionPayload>() {
   return method_call_expression_payloads_;
 }
 template <>
-inline base::Arena<FunctionMacroCallExpressionPayload>&
+inline constexpr base::Arena<FunctionMacroCallExpressionPayload>&
 Context::arena<FunctionMacroCallExpressionPayload>() {
   return fn_macro_call_expr_payloads_;
 }
 template <>
-inline base::Arena<MethodMacroCallExpressionPayload>&
+inline constexpr base::Arena<MethodMacroCallExpressionPayload>&
 Context::arena<MethodMacroCallExpressionPayload>() {
   return mt_macro_call_expr_payloads_;
 }
 template <>
-inline base::Arena<FieldAccessExpressionPayload>&
+inline constexpr base::Arena<FieldAccessExpressionPayload>&
 Context::arena<FieldAccessExpressionPayload>() {
   return field_access_expression_payloads_;
 }
 template <>
-inline base::Arena<AwaitExpressionPayload>&
+inline constexpr base::Arena<AwaitExpressionPayload>&
 Context::arena<AwaitExpressionPayload>() {
   return await_expression_payloads_;
 }
 template <>
-inline base::Arena<ContinueExpressionPayload>&
+inline constexpr base::Arena<ContinueExpressionPayload>&
 Context::arena<ContinueExpressionPayload>() {
   return continue_expression_payloads_;
 }
 template <>
-inline base::Arena<BreakExpressionPayload>&
+inline constexpr base::Arena<BreakExpressionPayload>&
 Context::arena<BreakExpressionPayload>() {
   return break_expression_payloads_;
 }
 template <>
-inline base::Arena<RangeExpressionPayload>&
+inline constexpr base::Arena<RangeExpressionPayload>&
 Context::arena<RangeExpressionPayload>() {
   return range_expression_payloads_;
 }
 template <>
-inline base::Arena<ReturnExpressionPayload>&
+inline constexpr base::Arena<ReturnExpressionPayload>&
 Context::arena<ReturnExpressionPayload>() {
   return return_expression_payloads_;
 }
 template <>
-inline base::Arena<BlockExpressionPayload>&
+inline constexpr base::Arena<BlockExpressionPayload>&
 Context::arena<BlockExpressionPayload>() {
   return block_expression_payloads_;
 }
 template <>
-inline base::Arena<UnsafeExpressionPayload>&
+inline constexpr base::Arena<UnsafeExpressionPayload>&
 Context::arena<UnsafeExpressionPayload>() {
   return unsafe_expression_payloads_;
 }
 template <>
-inline base::Arena<FastExpressionPayload>&
+inline constexpr base::Arena<FastExpressionPayload>&
 Context::arena<FastExpressionPayload>() {
   return fast_expression_payloads_;
 }
 template <>
-inline base::Arena<IfExpressionPayload>& Context::arena<IfExpressionPayload>() {
+inline constexpr base::Arena<IfExpressionPayload>&
+Context::arena<IfExpressionPayload>() {
   return if_expression_payloads_;
 }
 template <>
-inline base::Arena<LoopExpressionPayload>&
+inline constexpr base::Arena<LoopExpressionPayload>&
 Context::arena<LoopExpressionPayload>() {
   return loop_expression_payloads_;
 }
 template <>
-inline base::Arena<WhileExpressionPayload>&
+inline constexpr base::Arena<WhileExpressionPayload>&
 Context::arena<WhileExpressionPayload>() {
   return while_expression_payloads_;
 }
 template <>
-inline base::Arena<ForExpressionPayload>&
+inline constexpr base::Arena<ForExpressionPayload>&
 Context::arena<ForExpressionPayload>() {
   return for_expression_payloads_;
 }
 template <>
-inline base::Arena<MatchExpressionPayload>&
+inline constexpr base::Arena<MatchExpressionPayload>&
 Context::arena<MatchExpressionPayload>() {
   return match_expression_payloads_;
 }
 template <>
-inline base::Arena<ClosureExpressionPayload>&
+inline constexpr base::Arena<ClosureExpressionPayload>&
 Context::arena<ClosureExpressionPayload>() {
   return closure_expression_payloads_;
 }
 template <>
-inline base::Arena<AssignStatementPayload>&
+inline constexpr base::Arena<AssignStatementPayload>&
 Context::arena<AssignStatementPayload>() {
   return assign_statement_payloads_;
 }
 template <>
-inline base::Arena<AttributeStatementPayload>&
+inline constexpr base::Arena<AttributeStatementPayload>&
 Context::arena<AttributeStatementPayload>() {
   return attribute_statement_payloads_;
 }
 template <>
-inline base::Arena<ExpressionStatementPayload>&
+inline constexpr base::Arena<ExpressionStatementPayload>&
 Context::arena<ExpressionStatementPayload>() {
   return expression_statement_payloads_;
 }
 template <>
-inline base::Arena<FunctionDeclarationPayload>&
+inline constexpr base::Arena<FunctionDeclarationPayload>&
 Context::arena<FunctionDeclarationPayload>() {
   return function_declaration_payloads_;
 }
 template <>
-inline base::Arena<StructDeclarationPayload>&
+inline constexpr base::Arena<StructDeclarationPayload>&
 Context::arena<StructDeclarationPayload>() {
   return struct_declaration_payloads_;
 }
 template <>
-inline base::Arena<EnumerationDeclarationPayload>&
+inline constexpr base::Arena<EnumerationDeclarationPayload>&
 Context::arena<EnumerationDeclarationPayload>() {
   return enumeration_declaration_payloads_;
 }
 template <>
-inline base::Arena<TraitDeclarationPayload>&
+inline constexpr base::Arena<TraitDeclarationPayload>&
 Context::arena<TraitDeclarationPayload>() {
   return trait_declaration_payloads_;
 }
 template <>
-inline base::Arena<ImplementationDeclarationPayload>&
+inline constexpr base::Arena<ImplementationDeclarationPayload>&
 Context::arena<ImplementationDeclarationPayload>() {
   return impl_declaration_payloads_;
 }
 template <>
-inline base::Arena<UnionDeclarationPayload>&
+inline constexpr base::Arena<UnionDeclarationPayload>&
 Context::arena<UnionDeclarationPayload>() {
   return union_declaration_payloads_;
 }
 template <>
-inline base::Arena<ModuleDeclarationPayload>&
+inline constexpr base::Arena<ModuleDeclarationPayload>&
 Context::arena<ModuleDeclarationPayload>() {
   return module_declaration_payloads_;
 }
 template <>
-inline base::Arena<RedirectDeclarationPayload>&
+inline constexpr base::Arena<RedirectDeclarationPayload>&
 Context::arena<RedirectDeclarationPayload>() {
   return redirect_declaration_payloads_;
 }
 
 template <>
-inline base::Arena<AttributeUsePayload>& Context::arena<AttributeUsePayload>() {
+inline constexpr base::Arena<AttributeUsePayload>&
+Context::arena<AttributeUsePayload>() {
   return attribute_use_payloads_;
 }
 template <>
-inline base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
+inline constexpr base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
   return capture_payloads_;
 }
 template <>
-inline base::Arena<FieldPayload>& Context::arena<FieldPayload>() {
+inline constexpr base::Arena<FieldPayload>& Context::arena<FieldPayload>() {
   return field_payloads_;
 }
 template <>
-inline base::Arena<ParameterPayload>& Context::arena<ParameterPayload>() {
+inline constexpr base::Arena<ParameterPayload>&
+Context::arena<ParameterPayload>() {
   return parameter_payloads_;
 }
 template <>
-inline base::Arena<EnumVariantPayload>& Context::arena<EnumVariantPayload>() {
+inline constexpr base::Arena<EnumVariantPayload>&
+Context::arena<EnumVariantPayload>() {
   return enum_variant_payloads_;
 }
 template <>
-inline base::Arena<TypeReferencePayload>&
+inline constexpr base::Arena<TypeReferencePayload>&
 Context::arena<TypeReferencePayload>() {
   return type_reference_payloads_;
 }
 template <>
-inline base::Arena<ArrayTypePayload>& Context::arena<ArrayTypePayload>() {
+inline constexpr base::Arena<ArrayTypePayload>&
+Context::arena<ArrayTypePayload>() {
   return array_type_payloads_;
 }
 template <>
-inline base::Arena<IdentifierPayload>& Context::arena<IdentifierPayload>() {
+inline constexpr base::Arena<IdentifierPayload>&
+Context::arena<IdentifierPayload>() {
   return identifier_payloads_;
 }
 template <>
-inline base::Arena<IfBranchPayload>& Context::arena<IfBranchPayload>() {
+inline constexpr base::Arena<IfBranchPayload>&
+Context::arena<IfBranchPayload>() {
   return if_branch_payloads_;
 }
 template <>
-inline base::Arena<MatchArmPayload>& Context::arena<MatchArmPayload>() {
+inline constexpr base::Arena<MatchArmPayload>&
+Context::arena<MatchArmPayload>() {
   return match_arm_payloads_;
 }
 
