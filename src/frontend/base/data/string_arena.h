@@ -2,8 +2,8 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_BASE_DATA_ARENA_H_
-#define FRONTEND_BASE_DATA_ARENA_H_
+#ifndef FRONTEND_BASE_DATA_STRING_ARENA_H_
+#define FRONTEND_BASE_DATA_STRING_ARENA_H_
 
 #include <cstddef>
 #include <utility>
@@ -46,4 +46,4 @@ class BASE_EXPORT StringArena {
 
 }  // namespace base
 
-#endif  // FRONTEND_BASE_DATA_ARENA_H_
+#endif  // FRONTEND_BASE_DATA_STRING_ARENA_H_
