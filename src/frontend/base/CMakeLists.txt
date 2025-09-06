@@ -8,6 +8,7 @@ set(MODULE_OBJECTS_NAME "base_objects")
 message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
+  data/string_arena.cc
   keyword/keyword.cc
   token/token.cc
   token/token_stream.cc

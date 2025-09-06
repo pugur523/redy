@@ -13,6 +13,9 @@
 
 namespace base {
 
+// arena allocation utility class for data oriented design
+// this is currently just a wrapper of std::vector, but it has some useful
+// helper methods
 template <typename T, typename Id = std::size_t>
 class BASE_EXPORT Arena {
  public:
@@ -25,21 +28,21 @@ class BASE_EXPORT Arena {
   Arena(Arena&&) noexcept = default;
   Arena& operator=(Arena&&) noexcept = default;
 
-  inline constexpr Id alloc(T&& value) {
-    data_.emplace_back(std::move(value));
-    return Id{static_cast<uint32_t>(data_.size() - 1)};
+  Id alloc(T&& value) {
+    buffer_.emplace_back(std::move(value));
+    return static_cast<Id>(buffer_.size() - 1);
   }
 
-  inline constexpr void reserve(std::size_t n) { data_.reserve(n); }
-  inline constexpr void resize(std::size_t n) { data_.resize(n); }
+  inline constexpr const std::vector<T>& buffer() const { return buffer_; }
+  inline constexpr void reserve(std::size_t n) { buffer_.reserve(n); }
+  inline constexpr void resize(std::size_t n) { buffer_.resize(n); }
+  inline constexpr std::size_t size() const { return buffer_.size(); }
 
-  inline constexpr T& operator[](Id id) { return data_[id]; }
-  inline constexpr const T& operator[](Id id) const { return data_[id]; }
-
-  inline constexpr const std::vector<T>& data() const { return data_; }
+  inline constexpr T& operator[](Id id) { return buffer_[id]; }
+  inline constexpr const T& operator[](Id id) const { return buffer_[id]; }
 
  private:
-  std::vector<T> data_;
+  std::vector<T> buffer_;
 };
 
 }  // namespace base
