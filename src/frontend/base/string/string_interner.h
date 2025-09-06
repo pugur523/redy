@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 #include "frontend/base/base_export.h"

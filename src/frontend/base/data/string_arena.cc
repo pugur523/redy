@@ -4,6 +4,9 @@
 
 #include "frontend/base/data/string_arena.h"
 
+#include <cstddef>
+#include <string_view>
+
 namespace base {
 
 std::size_t StringArena::alloc(std::string_view s) {

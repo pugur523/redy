@@ -6,6 +6,7 @@
 #define FRONTEND_BASE_DATA_STRING_ARENA_H_
 
 #include <cstddef>
+#include <string_view>
 #include <utility>
 #include <vector>
 
