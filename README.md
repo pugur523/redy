@@ -271,7 +271,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [x] Module Declaration
       - [x] Redirect Declaration
 
-  - [ ] **AST-Analyzer**
+  - [ ] **Resolver**
     - [ ] Symbol resolution
     - [ ] Type resolution
     - [ ] Desugar

@@ -13,7 +13,7 @@
 namespace base {
 
 inline bool token_kind_is_keyword(TokenKind kind) {
-  return kind >= TokenKind::kKeywordsBegin && kind <= TokenKind::kKeywordsEnd;
+  return TokenKind::kKeywordsBegin <= kind && kind <= TokenKind::kKeywordsEnd;
 }
 
 BASE_EXPORT TokenKind lookup_id_or_keyword(std::u8string_view word);

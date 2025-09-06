@@ -11,6 +11,8 @@ set(SOURCES
   keyword/keyword.cc
   token/token.cc
   token/token_stream.cc
+
+  string/string_interner.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

@@ -40,7 +40,7 @@ conflicting_storage_specifiers = "{}と{}を同時に指定することはでき
 invalid_pattern = "無効なパターン"
 invalid_syntax = "無効な文法"
 
-[ast_analyze]
+[resolver]
 undefined_symbol = "定義されていないシンボル"
 undefined_variable = "定義されていない変数"
 undefined_function = "定義されていない関数"

@@ -16,7 +16,7 @@ namespace diagnostic {
 //   kGeneric = 0,
 //   kTokenize = 1,
 //   kParse = 2,
-//   kAstAnalyze = 3,
+//   kResolve = 3,
 //   kHirAnalyze = 4,
 //   kMirAnalyze = 5,
 //   kCodegen = 6,
@@ -57,7 +57,7 @@ enum class DiagnosticId : uint8_t {
   kInvalidPattern = 25,
   kInvalidSyntax = 26,  // fallback
 
-  // ast analyze (symbol, type)
+  // resolver
   kUndefinedSymbol = 27,
   kUndefinedVariable = 28,
   kUndefinedFunction = 29,
@@ -183,60 +183,59 @@ inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
     case Id::kInvalidSyntax:
       return TranslationKey::kDiagnosticParserInvalidSyntax;
 
-    // ast analyze (symbol, type)
+    // resolver
     case Id::kUndefinedSymbol:
-      return TranslationKey::kDiagnosticAstAnalyzeUndefinedSymbol;
+      return TranslationKey::kDiagnosticResolverUndefinedSymbol;
     case Id::kUndefinedVariable:
-      return TranslationKey::kDiagnosticAstAnalyzeUndefinedVariable;
+      return TranslationKey::kDiagnosticResolverUndefinedVariable;
     case Id::kUndefinedFunction:
-      return TranslationKey::kDiagnosticAstAnalyzeUndefinedFunction;
+      return TranslationKey::kDiagnosticResolverUndefinedFunction;
     case Id::kUndefinedType:
-      return TranslationKey::kDiagnosticAstAnalyzeUndefinedType;
+      return TranslationKey::kDiagnosticResolverUndefinedType;
     case Id::kCallArgumentMismatch:
-      return TranslationKey::kDiagnosticAstAnalyzeCallArgumentMismatch;
+      return TranslationKey::kDiagnosticResolverCallArgumentMismatch;
     case Id::kReturnTypeMismatch:
-      return TranslationKey::kDiagnosticAstAnalyzeReturnTypeMismatch;
+      return TranslationKey::kDiagnosticResolverReturnTypeMismatch;
     case Id::kNonCallableExpression:
-      return TranslationKey::kDiagnosticAstAnalyzeNonCallableExpression;
+      return TranslationKey::kDiagnosticResolverNonCallableExpression;
     case Id::kInvalidOperatorOperands:
-      return TranslationKey::kDiagnosticAstAnalyzeInvalidOperatorOperands;
+      return TranslationKey::kDiagnosticResolverInvalidOperatorOperands;
     case Id::kMemberNotFound:
-      return TranslationKey::kDiagnosticAstAnalyzeMemberNotFound;
+      return TranslationKey::kDiagnosticResolverMemberNotFound;
     case Id::kAccessPrivateMember:
-      return TranslationKey::kDiagnosticAstAnalyzeAccessPrivateMember;
+      return TranslationKey::kDiagnosticResolverAccessPrivateMember;
     case Id::kImmutableBindingChanged:
-      return TranslationKey::kDiagnosticAstAnalyzeImmutableBindingChanged;
+      return TranslationKey::kDiagnosticResolverImmutableBindingChanged;
     case Id::kConstAssignment:
-      return TranslationKey::kDiagnosticAstAnalyzeConstAssignment;
+      return TranslationKey::kDiagnosticResolverConstAssignment;
     case Id::kTypeMismatch:
-      return TranslationKey::kDiagnosticAstAnalyzeTypeMismatch;
+      return TranslationKey::kDiagnosticResolverTypeMismatch;
     case Id::kTypeAnnotationRequired:
-      return TranslationKey::kDiagnosticAstAnalyzeTypeAnnotationRequired;
+      return TranslationKey::kDiagnosticResolverTypeAnnotationRequired;
     case Id::kNonIterableExpression:
-      return TranslationKey::kDiagnosticAstAnalyzeNonIterableExpression;
+      return TranslationKey::kDiagnosticResolverNonIterableExpression;
     case Id::kInfiniteLoopLiteral:
-      return TranslationKey::kDiagnosticAstAnalyzeInfiniteLoopLiteral;
+      return TranslationKey::kDiagnosticResolverInfiniteLoopLiteral;
     case Id::kFunctionSignatureMismatch:
-      return TranslationKey::kDiagnosticAstAnalyzeFunctionSignatureMismatch;
+      return TranslationKey::kDiagnosticResolverFunctionSignatureMismatch;
     case Id::kRedeclaration:
-      return TranslationKey::kDiagnosticAstAnalyzeRedeclaration;
+      return TranslationKey::kDiagnosticResolverRedeclaration;
     case Id::kConflictingDeclaration:
-      return TranslationKey::kDiagnosticAstAnalyzeConflictingDeclaration;
+      return TranslationKey::kDiagnosticResolverConflictingDeclaration;
     case Id::kConflictingTraitImplementation:
-      return TranslationKey::
-          kDiagnosticAstAnalyzeConflictingTraitImplementation;
+      return TranslationKey::kDiagnosticResolverConflictingTraitImplementation;
     case Id::kMissingTraitBound:
-      return TranslationKey::kDiagnosticAstAnalyzeMissingTraitBound;
+      return TranslationKey::kDiagnosticResolverMissingTraitBound;
     case Id::kVariableNotInitialized:
-      return TranslationKey::kDiagnosticAstAnalyzeVariableNotInitialized;
+      return TranslationKey::kDiagnosticResolverVariableNotInitialized;
     case Id::kMisplacedAttribute:
-      return TranslationKey::kDiagnosticAstAnalyzeMisplacedAttribute;
+      return TranslationKey::kDiagnosticResolverMisplacedAttribute;
     case Id::kRecursiveTypeDefinition:
-      return TranslationKey::kDiagnosticAstAnalyzeRecursiveTypeDefinition;
+      return TranslationKey::kDiagnosticResolverRecursiveTypeDefinition;
     case Id::kCyclicDependency:
-      return TranslationKey::kDiagnosticAstAnalyzeCyclicDependency;
+      return TranslationKey::kDiagnosticResolverCyclicDependency;
     case Id::kNumericLiteralOutOfRange:
-      return TranslationKey::kDiagnosticAstAnalyzeNumericLiteralOutOfRange;
+      return TranslationKey::kDiagnosticResolverNumericLiteralOutOfRange;
 
     // hir / mir analyze (lifetime infer/ borrow checker)
     case Id::kDanglingReference:

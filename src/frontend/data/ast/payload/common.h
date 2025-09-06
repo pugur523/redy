@@ -21,7 +21,7 @@ struct PayloadId {
   constexpr explicit PayloadId(std::size_t n) : id(n) {}
   constexpr PayloadId operator=(std::size_t n) { return PayloadId{n}; }
 
-  bool valid() const { return id != kInvalidPayloadId; }
+  inline bool valid() const { return id != kInvalidPayloadId; }
 };
 
 template <typename T>
@@ -29,7 +29,7 @@ struct PayloadRange {
   PayloadId<T> begin;
   uint32_t size = 0;
 
-  bool valid() const { return begin.valid() && size > 0; }
+  inline bool valid() const { return begin.valid() && size > 0; }
 };
 
 // forward declarations

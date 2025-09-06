@@ -519,7 +519,7 @@ inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
 }
 
 inline bool is_operator(TokenKind kind) {
-  return kind >= TokenKind::kOperatorsBegin && kind <= TokenKind::kOperatorsEnd;
+  return TokenKind::kOperatorsBegin <= kind && kind <= TokenKind::kOperatorsEnd;
 }
 
 }  // namespace base

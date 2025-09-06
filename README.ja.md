@@ -274,7 +274,7 @@ fn main() -> i32 {
       - [x] モジュール宣言
       - [x] リダイレクト宣言
 
-  - [ ] **AST-Analyzer - AST解析**
+  - [ ] **Resolver - AST解析**
     - [ ] シンボル解決
     - [ ] 型解決
     - [ ] Desugar

@@ -16,7 +16,7 @@ If the source code is lexically invalid, it reports source error
 ### Parser
 Syntax analysis - parses `TokenStream` into an `AstContext`
 
-### AstAnalyzer
+### Resolver
 Performs semantic analysis on the `AstContext` to resolve names and types, desugar, and convert it to `HirContext`.
 
 ### HirAnalyzer
@@ -58,7 +58,7 @@ flowchart TD
     B --> C(TokenStream)
     C --> D[Parser::parse]
     D --> E(AstContext)
-    E --> F[AstAnalyzer::convert]
+    E --> F[Resolver::resolve]
     F --> G(HirContext)
     G --> H[HirAnalyzer::convert]
     H --> I(MirContext)
@@ -80,7 +80,7 @@ subgraph frontend
     E(diagnostic)     --> D
     F(lexer)          --> D
     G(parser)         --> D
-    H(resolver)   --> D
+    H(resolver)       --> D
     I(hir_analyzer)   --> D
     J(mir_analyzer)   --> D
 

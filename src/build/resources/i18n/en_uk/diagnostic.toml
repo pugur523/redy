@@ -40,7 +40,7 @@ conflicting_storage_specifiers = "cannot specify {} and {} together"
 invalid_pattern = "invalid pattern"
 invalid_syntax = "invalid syntax"
 
-[ast_analyze]
+[resolver]
 undefined_symbol = "undefined symbol"
 undefined_variable = "undefined variable"
 undefined_function = "undefined function"

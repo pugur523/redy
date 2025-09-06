@@ -239,27 +239,27 @@ std::ostream& operator<<(std::ostream& os, const SystemInfo* sys_info) {
 std::string format_bytes(const uint64_t bytes, const std::size_t precision) {
   std::stringstream ss;
 
-  constexpr uint64_t KiB = 1024;
-  constexpr uint64_t MiB = KiB * 1024;
-  constexpr uint64_t GiB = MiB * 1024;
-  constexpr uint64_t TiB = GiB * 1024;
-  constexpr uint64_t PiB = TiB * 1024;
+  constexpr const uint64_t kKiB = 1024;
+  constexpr const uint64_t kMiB = kKiB * 1024;
+  constexpr const uint64_t kGiB = kMiB * 1024;
+  constexpr const uint64_t kTiB = kGiB * 1024;
+  constexpr const uint64_t kPiB = kTiB * 1024;
 
-  if (bytes >= PiB) {
+  if (bytes >= kPiB) {
     ss.precision(precision);
-    ss << std::fixed << (static_cast<double>(bytes) / PiB) << " PiB";
-  } else if (bytes >= TiB) {
+    ss << std::fixed << (static_cast<double>(bytes) / kPiB) << " PiB";
+  } else if (bytes >= kTiB) {
     ss.precision(precision);
-    ss << std::fixed << (static_cast<double>(bytes) / TiB) << " TiB";
-  } else if (bytes >= GiB) {
+    ss << std::fixed << (static_cast<double>(bytes) / kTiB) << " TiB";
+  } else if (bytes >= kGiB) {
     ss.precision(precision);
-    ss << std::fixed << (static_cast<double>(bytes) / GiB) << " GiB";
-  } else if (bytes >= MiB) {
+    ss << std::fixed << (static_cast<double>(bytes) / kGiB) << " GiB";
+  } else if (bytes >= kMiB) {
     ss.precision(precision);
-    ss << std::fixed << (static_cast<double>(bytes) / MiB) << " MiB";
-  } else if (bytes >= KiB) {
+    ss << std::fixed << (static_cast<double>(bytes) / kMiB) << " MiB";
+  } else if (bytes >= kKiB) {
     ss.precision(precision);
-    ss << std::fixed << (static_cast<double>(bytes) / KiB) << " KiB";
+    ss << std::fixed << (static_cast<double>(bytes) / kKiB) << " KiB";
   } else {
     ss << bytes << " B";
   }

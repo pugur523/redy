@@ -20,7 +20,7 @@ struct NodeRange {
   NodeId begin = kInvalidNodeId;
   uint32_t size = 0;
 
-  bool valid() const { return begin != kInvalidNodeId && size > 0; }
+  inline bool valid() const { return begin != kInvalidNodeId && size > 0; }
 };
 
 }  // namespace ast

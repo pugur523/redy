@@ -69,7 +69,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_str() {
       } else if (core::is_ascii_octal_digit(stream_.peek())) {
         std::string buf;
         const char c = stream_.peek();
-        for (uint8_t i = 0; i < 3 && c >= '0' && c <= '7'; ++i) {
+        for (uint8_t i = 0; i < 3 && '0' <= c && c <= '7'; ++i) {
           buf += c;
           stream_.next();
         }

@@ -27,7 +27,7 @@ enum class LiteralKind : uint8_t {
 };
 
 inline bool token_kind_is_literal(TokenKind kind) {
-  return kind >= TokenKind::kLiteralsBegin && kind <= TokenKind::kLiteralsEnd;
+  return TokenKind::kLiteralsBegin <= kind && kind <= TokenKind::kLiteralsEnd;
 }
 
 inline LiteralKind token_kind_to_literal(base::TokenKind kind) {

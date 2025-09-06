@@ -127,8 +127,8 @@ inline constexpr bool is_valid_codepoint(char32_t cp, uint8_t len) {
   constexpr const char32_t kMaxValues[5] = {
       0, kOneByteMax, kTwoBytesMax, kThreeBytesMax, kFourBytesMax,
   };
-  return cp >= kMinValues[len] && cp <= kMaxValues[len] &&
-         !(cp >= 0xD800 && cp <= 0xDFFF);  // no surrogates
+  return kMinValues[len] <= cp && cp <= kMaxValues[len] &&
+         !(0xD800 <= cp && cp <= 0xDFFF);  // no surrogates
 }
 
 namespace detail {
@@ -154,11 +154,11 @@ struct AsciiTable {
 };
 
 inline constexpr bool generate_letter(int i) {
-  return (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z');
+  return ('A' <= i && i <= 'Z') || ('a' <= i && i <= 'z');
 }
 
 inline constexpr bool generate_digit(int i) {
-  return i >= '0' && i <= '9';
+  return '0' <= i && i <= '9';
 }
 
 inline constexpr bool generate_alnum(int i) {

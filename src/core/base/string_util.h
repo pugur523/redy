@@ -94,7 +94,7 @@ namespace core {
     return false;
   }
   return std::all_of(input.begin(), input.end(),
-                     [](char c) { return c >= '0' && c <= '7'; });
+                     [](char c) { return '0' <= c && c <= '7'; });
 }
 
 [[nodiscard]] inline constexpr bool is_ascii_char(char c) {
@@ -211,7 +211,7 @@ inline void read_bytes(const char*& cursor, void* data, std::size_t size) {
 inline bool starts_with(const std::string& input,
                         const std::string& prefix,
                         std::size_t index = 0) {
-  return input.size() >= prefix.size() &&
+  return prefix.size() <= input.size() &&
          input.compare(index, prefix.size(), prefix) == 0;
 }
 
