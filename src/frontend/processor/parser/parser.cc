@@ -49,11 +49,62 @@ void Parser::init_context() {
   // TODO: hot path heuristic allocations
   context_->arena<ast::Node>().reserve(512);
 
-  context_->arena<ast::FunctionDeclarationPayload>().reserve(32);
-  context_->arena<ast::AssignStatementPayload>().reserve(128);
-  context_->arena<ast::TypeReferencePayload>().reserve(64);
+  // expressions
+  context_->arena<ast::LiteralExpressionPayload>().reserve(256);
+  context_->arena<ast::PathExpressionPayload>().reserve(256);
+  context_->arena<ast::UnaryExpressionPayload>().reserve(256);
+  context_->arena<ast::BinaryExpressionPayload>().reserve(256);
+  context_->arena<ast::GroupedExpressionPayload>().reserve(32);
+  context_->arena<ast::ArrayExpressionPayload>().reserve(32);
+  context_->arena<ast::TupleExpressionPayload>().reserve(32);
+  context_->arena<ast::IndexExpressionPayload>().reserve(32);
+  context_->arena<ast::ConstructExpressionPayload>().reserve(256);
+  context_->arena<ast::FunctionCallExpressionPayload>().reserve(512);
+  context_->arena<ast::MethodCallExpressionPayload>().reserve(256);
+  context_->arena<ast::FunctionMacroCallExpressionPayload>().reserve(256);
+  context_->arena<ast::MethodMacroCallExpressionPayload>().reserve(256);
+  context_->arena<ast::FieldAccessExpressionPayload>().reserve(256);
+  context_->arena<ast::AwaitExpressionPayload>().reserve(256);
+  context_->arena<ast::ContinueExpressionPayload>().reserve(256);
+  context_->arena<ast::BreakExpressionPayload>().reserve(256);
+  context_->arena<ast::RangeExpressionPayload>().reserve(256);
+  context_->arena<ast::ReturnExpressionPayload>().reserve(512);
+  context_->arena<ast::BlockExpressionPayload>().reserve(256);
+  context_->arena<ast::BlockExpressionPayload>().reserve(256);
+  context_->arena<ast::UnsafeExpressionPayload>().reserve(256);
+  context_->arena<ast::FastExpressionPayload>().reserve(256);
+  context_->arena<ast::IfExpressionPayload>().reserve(256);
+  context_->arena<ast::LoopExpressionPayload>().reserve(256);
+  context_->arena<ast::WhileExpressionPayload>().reserve(256);
+  context_->arena<ast::ForExpressionPayload>().reserve(256);
+  context_->arena<ast::MatchExpressionPayload>().reserve(256);
+  context_->arena<ast::ClosureExpressionPayload>().reserve(256);
+
+  // statements
+  context_->arena<ast::AssignStatementPayload>().reserve(512);
+  context_->arena<ast::AttributeStatementPayload>().reserve(32);
+  context_->arena<ast::ExpressionStatementPayload>().reserve(512);
+
+  context_->arena<ast::FunctionDeclarationPayload>().reserve(512);
+  context_->arena<ast::StructDeclarationPayload>().reserve(256);
+  context_->arena<ast::EnumerationDeclarationPayload>().reserve(256);
+  context_->arena<ast::TraitDeclarationPayload>().reserve(256);
+  context_->arena<ast::ImplementationDeclarationPayload>().reserve(256);
+  context_->arena<ast::UnionDeclarationPayload>().reserve(256);
+  context_->arena<ast::ModuleDeclarationPayload>().reserve(32);
+  context_->arena<ast::RedirectDeclarationPayload>().reserve(256);
+
+  // data
+  context_->arena<ast::AttributeUsePayload>().reserve(256);
+  context_->arena<ast::CapturePayload>().reserve(256);
+  context_->arena<ast::FieldPayload>().reserve(256);
   context_->arena<ast::ParameterPayload>().reserve(256);
+  context_->arena<ast::EnumVariantPayload>().reserve(256);
+  context_->arena<ast::TypeReferencePayload>().reserve(256);
+  context_->arena<ast::ArrayTypePayload>().reserve(256);
   context_->arena<ast::IdentifierPayload>().reserve(256);
+  context_->arena<ast::IfBranchPayload>().reserve(256);
+  context_->arena<ast::MatchArmPayload>().reserve(256);
 }
 
 Parser::ParseResult Parser::parse_all(bool strict) {
