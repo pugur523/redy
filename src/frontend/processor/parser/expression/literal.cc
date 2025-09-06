@@ -5,8 +5,8 @@
 #include "frontend/base/literal/literal.h"
 
 #include "frontend/base/keyword/keyword.h"
+#include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {

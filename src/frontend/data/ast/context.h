@@ -12,8 +12,8 @@
 
 #include "frontend/base/data/arena.h"
 #include "frontend/data/ast/base/ast_export.h"
+#include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/data/ast/payload/expression.h"
 #include "frontend/data/ast/payload/statement.h"
 

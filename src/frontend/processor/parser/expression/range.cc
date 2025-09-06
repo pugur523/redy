@@ -6,8 +6,8 @@
 
 #include "frontend/base/operator/operator.h"
 #include "frontend/base/token/token_kind.h"
+#include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/data/ast/payload/common.h"
 #include "frontend/data/ast/payload/expression.h"
 #include "frontend/diagnostic/data/entry_builder.h"

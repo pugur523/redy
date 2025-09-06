@@ -6,31 +6,16 @@
 #define FRONTEND_DATA_AST_PAYLOAD_COMMON_H_
 
 #include <cstddef>
-#include <limits>
+
+#include "frontend/base/data/payload_util.h"
 
 namespace ast {
 
-constexpr uint32_t kInvalidPayloadId = std::numeric_limits<uint32_t>::max();
+template <typename T>
+using PayloadId = base::PayloadId<T>;
 
 template <typename T>
-struct PayloadId {
-  uint32_t id = kInvalidPayloadId;
-
-  constexpr PayloadId() = default;
-  constexpr ~PayloadId() = default;
-  constexpr explicit PayloadId(std::size_t n) : id(n) {}
-  constexpr PayloadId operator=(std::size_t n) { return PayloadId{n}; }
-
-  inline bool valid() const { return id != kInvalidPayloadId; }
-};
-
-template <typename T>
-struct PayloadRange {
-  PayloadId<T> begin;
-  uint32_t size = 0;
-
-  inline bool valid() const { return begin.valid() && size > 0; }
-};
+using PayloadRange = base::PayloadRange<T>;
 
 // forward declarations
 

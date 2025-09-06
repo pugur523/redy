@@ -6,15 +6,14 @@
 #define FRONTEND_DATA_AST_BASE_NODE_ID_H_
 
 #include <cstdint>
-#include <limits>
 
 namespace ast {
 
 using NodeId = uint32_t;
 using TokenId = uint32_t;
 
-constexpr NodeId kInvalidNodeId = std::numeric_limits<NodeId>::max();
-constexpr TokenId kInvalidTokenId = std::numeric_limits<TokenId>::max();
+constexpr NodeId kInvalidNodeId = 0xFFFFFFFF;
+constexpr TokenId kInvalidTokenId = 0xFFFFFFFF;
 
 struct NodeRange {
   NodeId begin = kInvalidNodeId;

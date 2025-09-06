@@ -2,16 +2,15 @@
 // This source code is licensed under the Apache License, Version 2.0
 // which can be found in the LICENSE file.
 
-#ifndef FRONTEND_DATA_AST_BASE_NODE_KIND_H_
-#define FRONTEND_DATA_AST_BASE_NODE_KIND_H_
+#ifndef FRONTEND_DATA_AST_BASE_NODE_H_
+#define FRONTEND_DATA_AST_BASE_NODE_H_
 
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 
+#include "frontend/base/data/payload_util.h"
 #include "frontend/data/ast/base/ast_export.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/payload/common.h"
 
 namespace ast {
 
@@ -60,10 +59,10 @@ enum class NodeKind : uint8_t {
 };
 
 struct Node {
-  uint32_t payload_id = kInvalidPayloadId;
+  uint32_t payload_id = base::kInvalidPayloadId;
   NodeKind kind = NodeKind::kUnknown;
 };
 
 }  // namespace ast
 
-#endif  // FRONTEND_DATA_AST_BASE_NODE_KIND_H_
+#endif  // FRONTEND_DATA_AST_BASE_NODE_H_

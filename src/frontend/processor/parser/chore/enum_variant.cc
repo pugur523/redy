@@ -5,8 +5,8 @@
 #include <utility>
 
 #include "frontend/base/token/token_kind.h"
+#include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/data/ast/payload/data.h"
 #include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"

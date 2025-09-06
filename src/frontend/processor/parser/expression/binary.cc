@@ -6,8 +6,8 @@
 
 #include "frontend/base/operator/binary_operator.h"
 #include "frontend/base/operator/operator.h"
+#include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/ast/base/node_kind.h"
 #include "frontend/data/ast/payload/expression.h"
 #include "frontend/processor/parser/parser.h"
 

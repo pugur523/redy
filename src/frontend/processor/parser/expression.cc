@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "frontend/data/ast/base/node_kind.h"
+#include "frontend/data/ast/base/node.h"
 #include "frontend/processor/parser/parser.h"
 
 namespace parser {
