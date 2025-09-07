@@ -171,6 +171,8 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
 
   - [x] **base**
     - [x] Arena (useful for design data oriented structs)
+    - [x] String arena
+    - [x] String interne
     - [x] Token definition
     - [x] Keyword definition
     - [x] Operator definition
@@ -263,17 +265,18 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
       - [x] Expression
       - [x] Attribute
       - [ ] Use Module
-      - [x] Function Declaration
-      - [x] Struct Declaration
-      - [x] Enumeration Declaration
-      - [x] Trait Declaration
-      - [x] Implementation Declaration
-      - [x] Union Declaration
-      - [x] Module Declaration
-      - [x] Redirect Declaration
+      - [x] Function declaration
+      - [x] Struct declaration
+      - [x] Enumeration declaration
+      - [x] Trait declaration
+      - [x] Implementation declaration
+      - [x] Union declaration
+      - [x] Module declaration
+      - [x] Redirect declaration
 
   - [ ] **Resolver**
     - [ ] Symbol resolution
+      - [x] Symbol table
     - [ ] Type resolution
     - [ ] Desugar
 
