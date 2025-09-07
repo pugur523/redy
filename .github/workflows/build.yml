@@ -45,7 +45,7 @@ jobs:
             target_platform: linux
             cc: clang
             cxx: clang++
-            llvm_version: "21"
+            llvm_version: "20"
           - os: windows-latest
             target_platform: windows
             cc: clang-cl
@@ -97,16 +97,6 @@ jobs:
           path: |
             /opt/llvm-mingw-*/
           key: llvm-mingw-${{ matrix.llvm_mingw_tag }}
-
-      - name: Cache CMake build tree
-        id: cache-cmake-build-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            out/build/
-          key: cmake-build-${{ matrix.os }}-${{ matrix.target_platform }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('**/.clang-tidy') }}
-          restore-keys: |
-            cmake-build-${{ matrix.os }}-${{ matrix.target_platform }}-
 
       - name: Install LLVM (Windows)
         if: matrix.os == 'windows-latest' && steps.cache-llvm-windows.outputs.cache-hit != 'true'
@@ -171,7 +161,7 @@ jobs:
 
       - name: Build
         run: |
-          BUILD_ARGS="--build_mode=${{ inputs.build_mode }} --target_platform=${{ matrix.target_platform }} --no-install --package --no-cpplint --no-clang_format"
+          BUILD_ARGS="--build_mode=${{ inputs.build_mode }} --target_platform=${{ matrix.target_platform }} --no-install --no-ccache --package --no-cpplint --no-clang_format"
           EXTRA_ARGS="-DENABLE_XRAY=false,-DENABLE_SANITIZERS=false,-DENABLE_BUILD_REPORT=false,-DENABLE_LTO=true,-DENABLE_NATIVE_ARCH=true,-DENABLE_LLVM_UNWIND=true,-DENABLE_VERBOSE=true,-DENABLE_COVERAGE=false,-DENABLE_WARNINGS_AS_ERRORS=false,-DENABLE_BUILD_SHARED=false,-DENABLE_BUILD_PROGRAM=true,-DENABLE_BUILD_INFO_DEFINITIONS=true,-DENABLE_BUILD_BENCHMARK=false,-DENABLE_BUILD_TESTING=false"
 
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
@@ -185,6 +175,9 @@ jobs:
       - name: Upload artifacts
         if: ${{ inputs.upload_artifacts }}
         uses: actions/upload-artifact@v4
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+          ACTIONS_ARTIFACT_UPLOAD_CONCURRENCY: 5
         with:
           name: builds-${{ matrix.target_platform }}-${{ inputs.build_mode }}
           path: out/package/*/*.*
