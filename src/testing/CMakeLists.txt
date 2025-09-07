@@ -32,6 +32,8 @@ set(SOURCES
 
   ${PROJECT_SOURCE_DIR}/frontend/processor/parser/parser_test.cc
 
+  ${PROJECT_SOURCE_DIR}/frontend/processor/resolver/symbol/symbol_table_test.cc
+
   ${PROJECT_SOURCE_DIR}/frontend/pipeline/frontend_integration_test.cc
 )
 
@@ -45,7 +47,20 @@ target_compile_options(${TEST_NAME} PRIVATE
 target_compile_definitions(${TEST_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${TEST_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${TEST_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${TEST_NAME} PRIVATE core base diagnostic lexer ast parser i18n unicode ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${TEST_NAME} PRIVATE
+      core
+      base
+      diagnostic
+      lexer
+      ast
+      parser
+      resolver
+      i18n
+      unicode
+      ${GTEST_LIBRARIES}
+      ${GMOCK_LIBRARIES}
+      ${PROJECT_LINK_LIBRARIES}
+)
 
 set_target_properties(${TEST_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE

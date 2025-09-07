@@ -30,8 +30,6 @@ void verify_transfer(Location&& location) {
   EXPECT_NE(location.stack_trace(), nullptr);
 }
 
-}  // namespace
-
 TEST(LocationTest, BasicStackTrace) {
   Location location = FROM_HERE;
 
@@ -47,5 +45,7 @@ TEST(LocationTest, LoopStackTrace) {
 TEST(LocationTest, TransferStackTrace) {
   verify_transfer(FROM_HERE);
 }
+
+}  // namespace
 
 }  // namespace core

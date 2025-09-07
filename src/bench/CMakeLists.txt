@@ -34,7 +34,19 @@ target_compile_options(${BENCHMARK_NAME} PRIVATE
 target_compile_definitions(${BENCHMARK_NAME} PRIVATE ${PROJECT_COMPILE_DEFINITIONS})
 target_link_options(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_OPTIONS})
 target_link_directories(${BENCHMARK_NAME} PRIVATE ${PROJECT_LINK_DIRECTORIES})
-target_link_libraries(${BENCHMARK_NAME} PRIVATE core base diagnostic lexer ast parser i18n unicode ${GOOGLE_BENCHMARK_LIBRARIES} ${PROJECT_LINK_LIBRARIES})
+target_link_libraries(${BENCHMARK_NAME} PRIVATE
+      core
+      base
+      diagnostic
+      lexer
+      ast
+      parser
+      resolver
+      i18n
+      unicode
+      ${GOOGLE_BENCHMARK_LIBRARIES}
+      ${PROJECT_LINK_LIBRARIES}
+)
 
 set_target_properties(${BENCHMARK_NAME} PROPERTIES
   POSITION_INDEPENDENT_CODE TRUE
