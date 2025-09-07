@@ -5,20 +5,28 @@
 #ifndef FRONTEND_PROCESSOR_RESOLVER_RESOLVER_H_
 #define FRONTEND_PROCESSOR_RESOLVER_RESOLVER_H_
 
+#include <memory>
+
+#include "frontend/data/ast/context.h"
 #include "frontend/processor/resolver/base/resolver_export.h"
 
 namespace resolver {
 
 class RESOLVER_EXPORT Resolver {
  public:
-  Resolver() = default;
-  ~Resolver() = default;
+  explicit Resolver(std::unique_ptr<ast::Context> context);
+  ~Resolver();
 
   Resolver(const Resolver&) = delete;
   Resolver& operator=(const Resolver&) = delete;
 
   Resolver(Resolver&&) noexcept = default;
   Resolver& operator=(Resolver&&) noexcept = default;
+
+  void resolve();
+
+ private:
+  std::unique_ptr<ast::Context> context_;
 };
 
 }  // namespace resolver
