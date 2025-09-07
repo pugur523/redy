@@ -38,7 +38,7 @@ void parser_init(benchmark::State& state) {
     parser.init(&stream, translator);
     benchmark::DoNotOptimize(&parser);
   }
-  // state.SetBytesProcessed(sizeof(Parser) * state.iterations());
+  state.SetBytesProcessed(sizeof(Parser) * state.iterations());
 }
 BENCHMARK(parser_init);
 
@@ -51,6 +51,7 @@ void parser_parse_empty_stream(benchmark::State& state) {
     benchmark::DoNotOptimize(std::move(result).unwrap().get());
     parser.reset();
   }
+  state.SetBytesProcessed(sizeof(Parser) * state.iterations());
 }
 BENCHMARK(parser_parse_empty_stream);
 
@@ -82,6 +83,8 @@ void parser_parse_simple_func(benchmark::State& state) {
     benchmark::DoNotOptimize(std::move(result).unwrap().get());
     parser.reset();
   }
+  state.SetBytesProcessed(sizeof(base::Token) * stream.size() *
+                          state.iterations());
 }
 BENCHMARK(parser_parse_simple_func);
 
