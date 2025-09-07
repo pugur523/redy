@@ -14,7 +14,7 @@
 #define BUILD_ARCH "@BUILD_ARCH@"
 #define BUILD_COMPILER "@BUILD_COMPILER@"
 #define TARGET_PLATFORM "@TARGET_PLATFORM@"
-#define TARGET_ARCH "@TARGET_ARCH@"
+#define TARGET_ARCH_NAME "@TARGET_ARCH_NAME@"
 #define TARGET_BITS "@TARGET_BITS@"
 #define BUILD_GIT_COMMIT_HASH "@BUILD_GIT_COMMIT_HASH@"
 
@@ -26,7 +26,7 @@ constexpr const char* kBuildPlatform = "@BUILD_PLATFORM@";
 constexpr const char* kBuildArch = "@BUILD_ARCH@";
 constexpr const char* kBuildCompiler = "@BUILD_COMPILER@";
 constexpr const char* kTargetPlatform = "@TARGET_PLATFORM@";
-constexpr const char* kTargetArch = "@TARGET_ARCH@";
+constexpr const char* kTargetArchName = "@TARGET_ARCH_NAME@";
 constexpr const char* kTargetBits = "@TARGET_BITS@";
 constexpr const char* kBuildGitCommitHash = "@BUILD_GIT_COMMIT_HASH@";
 

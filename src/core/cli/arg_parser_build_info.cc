@@ -23,8 +23,8 @@ void ArgParser::print_version() {
       "Commit Hash: {}\n">(
       build::kBuildName, build::kBuildVersion, build::kBuildType,
       build::kBuildPlatform, build::kBuildArch, build::kTargetPlatform,
-      build::kTargetArch, build::kTargetBits, build::kBuildCompiler, exe_dir(),
-      build::kBuildTime, build::kBuildGitCommitHash);
+      build::kTargetArchName, build::kTargetBits, build::kBuildCompiler,
+      exe_dir(), build::kBuildTime, build::kBuildGitCommitHash);
   core::glog.flush();
 }
 

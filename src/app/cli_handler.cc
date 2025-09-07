@@ -43,7 +43,7 @@ void setup_options(core::ArgParser& parser, core::RuntimeOptions* options) {
 }  // namespace
 
 int handle_arguments(int argc, char** argv) {
-  core::ArgParser parser(build::kBuildName, build::kBuildDescription);
+  core::ArgParser parser(build::kProjectName, build::kProjectDescription);
 
   auto options = core::RuntimeOptions::create();
 
