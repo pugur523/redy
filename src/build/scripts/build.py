@@ -17,6 +17,7 @@ from build_util import (
     get_platform_name,
     get_arch_name,
     install_platform_dir,
+    is_installed,
     run_command,
     project_root_dir,
     project_src_dir,
@@ -87,6 +88,12 @@ def create_arg_parser():
         action=argparse.BooleanOptionalAction,
         default=False,
         help="build all configs asynchronously",
+    )
+    parser.add_argument(
+        "--ccache",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="use ccache for build",
     )
     parser.add_argument(
         "--install",
@@ -280,6 +287,7 @@ def build_with_all_option_combinations(
                 build_type=build_type,
                 do_clang_tidy=do_clang_tidy,
                 build_async=True,
+                use_ccache=True,
                 install=False,
                 package=False,
                 verbose=False,
@@ -331,6 +339,7 @@ def build_project(
     build_type: str,
     do_clang_tidy: bool = False,
     build_async: bool = True,
+    use_ccache: bool = True,
     install: bool = False,
     package: bool = False,
     verbose: bool = False,
@@ -369,6 +378,15 @@ def build_project(
         "-D TARGET_ARCH_NAME=" + target_arch,
         "-D DO_CLANG_TIDY=" + ("true" if do_clang_tidy else "false"),
     ]
+
+    if use_ccache:
+        args.extend(
+            [
+                "-DCMAKE_C_COMPILER_LAUNCHER=ccache",
+                "-DCMAKE_CXX_COMPILER_LAUNCHER=ccache",
+            ]
+        )
+
     if verbose:
         os.environ["VERBOSE"] = "true"
         args.extend(["-D ENABLE_VERBOSE=true"])
@@ -455,6 +473,12 @@ def build_project(
             print("cmake package failed: ", result.returncode)
             return result.returncode
 
+    if use_ccache:
+        result = run_command(["ccache", "-s"], cwd=project_root_dir)
+        if result.returncode != 0:
+            print("ccache stats print failed: ", result.returncode)
+            return result.returncode
+
     return 0
 
 
@@ -482,6 +506,10 @@ def main(argv):
 
     if args.cpplint:
         run_cpplint(project_root_dir)
+
+    if args.ccache and not is_installed("ccache"):
+        print("ccache is not installed")
+        return -1
 
     target_platforms = [x for x in args.target_platforms.split(",") if x]
     target_archs = [x for x in args.target_archs.split(",") if x]
@@ -530,6 +558,7 @@ def main(argv):
                 build_type=build_type,
                 do_clang_tidy=args.clang_tidy,
                 build_async=args.build_async,
+                use_ccache=args.ccache,
                 install=args.install,
                 package=args.package,
                 verbose=args.verbose,
@@ -565,6 +594,7 @@ def main(argv):
                 build_type=build_type,
                 do_clang_tidy=args.clang_tidy,
                 build_async=True,
+                use_ccache=args.ccache,
                 install=args.install,
                 package=args.package,
                 verbose=args.verbose,
