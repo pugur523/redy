@@ -58,7 +58,7 @@ flowchart TD
     B --> C(TokenStream)
     C --> D[Parser::parse]
     D --> E(AstContext)
-    E --> F[Resolver::resolve]
+    E --> F[Resolver::analyze]
     F --> G(HirContext)
     G --> H[HirAnalyzer::convert]
     H --> I(MirContext)

@@ -11,20 +11,46 @@
 #include "core/check.h"
 #include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/payload/statement.h"
+#include "frontend/processor/resolver/symbol/symbol_table.h"
+#include "unicode/utf8/file_manager.h"
 
 namespace resolver {
 
-Resolver::Resolver(std::unique_ptr<ast::Context> context)
-    : context_(std::move(context)) {
-  DCHECK(context_);
+void Resolver::init(std::unique_ptr<ast::Context> ast_context,
+                    unicode::Utf8FileManager* manager,
+                    unicode::Utf8FileId file_id) {
+  DCHECK_EQ(status_, Status::kNotInitialized);
+
+  ast_ctx_ = std::move(ast_context);
+  hir_ctx_ = hir::Context::create();
+  symbol_table_ = std::make_unique<SymbolTable>();
+  manager_ = manager;
+  file_id_ = file_id;
+
+  DCHECK(ast_ctx_);
+  DCHECK(hir_ctx_);
+  DCHECK(symbol_table_);
+  DCHECK(manager_);
+  DCHECK_NE(file_id_, unicode::kInvalidFileId);
+
+  status_ = Status::kReadyToAnalyze;
 }
 
-Resolver::~Resolver() = default;
+void Resolver::analyze() {
+  DCHECK_EQ(status_, Status::kReadyToAnalyze);
 
-void Resolver::resolve() {
-  const std::vector<ast::Node>& nodes = context_->arena<ast::Node>().buffer();
+  enter_scope();
 
-  for (const ast::Node& node : nodes) {
+  lower_all();
+
+  exit_scope();
+}
+
+void Resolver::lower_all() {
+  const auto& n = nodes();
+  for (ast::NodeId i = 0; i < n.size(); ++i) {
+    const ast::Node& node = n[i];
+
     switch (node.kind) {
       using Kind = ast::NodeKind;
       case Kind::kAssignStatement: break;
@@ -58,7 +84,7 @@ void Resolver::resolve() {
       case Kind::kForExpression: break;
       case Kind::kMatchExpression: break;
       case Kind::kClosureExpression: break;
-      case Kind::kFunctionDeclaration: break;
+      case Kind::kFunctionDeclaration: lower_function(node, i); break;
       case Kind::kStructDeclaration: break;
       case Kind::kEnumDeclaration: break;
       case Kind::kTraitDeclaration: break;
@@ -70,6 +96,20 @@ void Resolver::resolve() {
       default: break;
     }
   }
+}
+
+void Resolver::lower_function(const ast::Node& node, ast::NodeId /* id */) {
+  DCHECK_EQ(node.kind, ast::NodeKind::kFunctionDeclaration);
+
+  const auto& payload =
+      ast_ctx_->arena<ast::FunctionDeclarationPayload>()[node.payload_id];
+
+  const auto& path =
+      ast_ctx_->arena<ast::PathExpressionPayload>()[payload.name.id];
+  const auto& ids = path.path_parts_range;
+  std::string_view func_name;
+  const auto& ident = ast_ctx_->arena<ast::IdentifierPayload>()[ids.end()];
+  func_name = lexeme(ident.lexeme_range);
 }
 
 }  // namespace resolver
