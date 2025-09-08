@@ -30,6 +30,7 @@ struct PayloadRange {
   uint32_t size = 0;
 
   inline bool valid() const { return begin.valid() && size > 0; }
+  inline uint32_t end() const { return begin.id + size - 1; }
 };
 
 }  // namespace base
