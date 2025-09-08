@@ -20,19 +20,19 @@
 
 namespace hir {
 
-class HIR_EXPORT HirContext {
+class HIR_EXPORT Context {
  public:
-  static inline std::unique_ptr<HirContext> create() {
-    return std::unique_ptr<HirContext>(new HirContext());
+  static inline std::unique_ptr<Context> create() {
+    return std::unique_ptr<Context>(new Context());
   }
 
-  ~HirContext() = default;
+  ~Context() = default;
 
-  HirContext(const HirContext&) = delete;
-  HirContext& operator=(const HirContext&) = delete;
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
 
-  HirContext(HirContext&&) noexcept = default;
-  HirContext& operator=(HirContext&&) noexcept = default;
+  Context(Context&&) noexcept = default;
+  Context& operator=(Context&&) noexcept = default;
 
   template <typename T>
   inline constexpr base::Arena<T>& arena();
@@ -76,7 +76,7 @@ class HIR_EXPORT HirContext {
   }
 
  private:
-  HirContext() = default;
+  Context() = default;
 
   // id generators
   DefId next_def_id_ = {0};
@@ -111,89 +111,87 @@ class HIR_EXPORT HirContext {
 };
 
 template <>
-inline constexpr base::Arena<HirNode>& HirContext::arena<HirNode>() {
+inline constexpr base::Arena<HirNode>& Context::arena<HirNode>() {
   return hir_nodes_;
 }
 
 template <>
 inline constexpr base::Arena<ExpressionPayload>&
-HirContext::arena<ExpressionPayload>() {
+Context::arena<ExpressionPayload>() {
   return expression_payloads_;
 }
 template <>
 inline constexpr base::Arena<StatementPayload>&
-HirContext::arena<StatementPayload>() {
+Context::arena<StatementPayload>() {
   return statement_payloads_;
 }
 template <>
-inline constexpr base::Arena<PatternPayload>&
-HirContext::arena<PatternPayload>() {
+inline constexpr base::Arena<PatternPayload>& Context::arena<PatternPayload>() {
   return pattern_payloads_;
 }
 template <>
-inline constexpr base::Arena<TypePayload>& HirContext::arena<TypePayload>() {
+inline constexpr base::Arena<TypePayload>& Context::arena<TypePayload>() {
   return type_payloads_;
 }
 template <>
 inline constexpr base::Arena<DeclarationPayload>&
-HirContext::arena<DeclarationPayload>() {
+Context::arena<DeclarationPayload>() {
   return item_payloads_;
 }
 template <>
 inline constexpr base::Arena<ResolvedPathPayload>&
-HirContext::arena<ResolvedPathPayload>() {
+Context::arena<ResolvedPathPayload>() {
   return resolved_path_payloads_;
 }
 template <>
 inline constexpr base::Arena<GenericArgPayload>&
-HirContext::arena<GenericArgPayload>() {
+Context::arena<GenericArgPayload>() {
   return generic_arg_payloads_;
 }
 template <>
 inline constexpr base::Arena<ParameterPayload>&
-HirContext::arena<ParameterPayload>() {
+Context::arena<ParameterPayload>() {
   return parameter_payloads_;
 }
 template <>
-inline constexpr base::Arena<FieldPayload>& HirContext::arena<FieldPayload>() {
+inline constexpr base::Arena<FieldPayload>& Context::arena<FieldPayload>() {
   return field_payloads_;
 }
 template <>
 inline constexpr base::Arena<EnumVariantPayload>&
-HirContext::arena<EnumVariantPayload>() {
+Context::arena<EnumVariantPayload>() {
   return enum_variant_payloads_;
 }
 template <>
 inline constexpr base::Arena<MatchArmPayload>&
-HirContext::arena<MatchArmPayload>() {
+Context::arena<MatchArmPayload>() {
   return match_arm_payloads_;
 }
 template <>
-inline constexpr base::Arena<CapturePayload>&
-HirContext::arena<CapturePayload>() {
+inline constexpr base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
   return capture_payloads_;
 }
 template <>
 inline constexpr base::Arena<StructPatternFieldPayload>&
-HirContext::arena<StructPatternFieldPayload>() {
+Context::arena<StructPatternFieldPayload>() {
   return struct_pattern_field_payloads_;
 }
 template <>
 inline constexpr base::Arena<VisibilityPayload>&
-HirContext::arena<VisibilityPayload>() {
+Context::arena<VisibilityPayload>() {
   return visibility_payloads_;
 }
 
 template <>
-inline constexpr base::Arena<HirId>& HirContext::arena<HirId>() {
+inline constexpr base::Arena<HirId>& Context::arena<HirId>() {
   return hir_ids_;
 }
 template <>
-inline constexpr base::Arena<DefId>& HirContext::arena<DefId>() {
+inline constexpr base::Arena<DefId>& Context::arena<DefId>() {
   return def_ids_;
 }
 template <>
-inline constexpr base::Arena<LocalId>& HirContext::arena<LocalId>() {
+inline constexpr base::Arena<LocalId>& Context::arena<LocalId>() {
   return local_ids_;
 }
 
