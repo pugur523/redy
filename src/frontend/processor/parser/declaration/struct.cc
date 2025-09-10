@@ -18,10 +18,8 @@ namespace parser {
 using R = ast::PayloadId<ast::StructDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_struct_decl_stmt(Sad attribute) {
-  auto struct_r = consume(base::TokenKind::kStruct, true);
-  if (struct_r.is_err()) {
-    return err<R>(std::move(struct_r));
-  }
+  DCHECK(check(base::TokenKind::kStruct));
+  next_non_whitespace();
 
   auto struct_name_r = parse_path_expr();
   if (struct_name_r.is_err()) {

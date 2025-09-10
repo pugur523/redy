@@ -163,6 +163,7 @@ class Parser {
   Result<PayloadRange<ast::ParameterPayload>> parse_parameter_list();
   Result<PayloadId<ast::AttributeUsePayload>> parse_attribute_use_one();
   Result<PayloadRange<ast::AttributeUsePayload>> parse_attribute_use_list();
+  Result<ast::StorageAttributeData> parse_storage_attributes();
   Result<PayloadId<ast::EnumVariantPayload>> parse_enum_variant();
   Result<PayloadId<ast::TypeReferencePayload>> parse_type_reference();
 

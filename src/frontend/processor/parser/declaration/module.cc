@@ -14,10 +14,8 @@ namespace parser {
 using R = ast::PayloadId<ast::ModuleDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_module_decl_stmt(Sad attribute) {
-  auto module_r = consume(base::TokenKind::kModule, true);
-  if (module_r.is_err()) {
-    return err<R>(std::move(module_r));
-  }
+  DCHECK(check(base::TokenKind::kModule));
+  next_non_whitespace();
 
   auto module_name_r = parse_path_expr();
   if (module_name_r.is_err()) {

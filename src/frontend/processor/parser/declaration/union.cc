@@ -19,10 +19,8 @@ namespace parser {
 using R = ast::PayloadId<ast::UnionDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_union_decl_stmt(Sad attribute) {
-  auto union_r = consume(base::TokenKind::kUnion, true);
-  if (union_r.is_err()) {
-    return err<R>(std::move(union_r));
-  }
+  DCHECK(check(base::TokenKind::kUnion));
+  next_non_whitespace();
 
   auto union_name_r = parse_path_expr();
   if (union_name_r.is_err()) {

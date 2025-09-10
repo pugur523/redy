@@ -18,10 +18,8 @@ namespace parser {
 using R = ast::PayloadId<ast::RedirectDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_redirect_decl_stmt(Sad attribute) {
-  auto redirect_r = consume(base::TokenKind::kRedirect, true);
-  if (redirect_r.is_err()) {
-    return err<R>(std::move(redirect_r));
-  }
+  DCHECK(check(base::TokenKind::kRedirect));
+  next_non_whitespace();
 
   auto fn_name_r = parse_path_expr();
   if (fn_name_r.is_err()) {

@@ -16,10 +16,8 @@ namespace parser {
 using R = ast::PayloadId<ast::ImplementationDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_impl_decl_stmt(Sad attribute) {
-  auto impl_r = consume(base::TokenKind::kImplementation, true);
-  if (impl_r.is_err()) {
-    return err<R>(std::move(impl_r));
-  }
+  DCHECK(check(base::TokenKind::kImplementation));
+  next_non_whitespace();
 
   auto first_name_r = parse_path_expr();
   if (first_name_r.is_err()) {

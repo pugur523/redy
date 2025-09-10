@@ -8,17 +8,17 @@
 #include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/payload/data.h"
+#include "frontend/diagnostic/data/entry_builder.h"
 #include "frontend/processor/parser/parser.h"
+#include "i18n/base/translator.h"
 
 namespace parser {
 
 using R = ast::PayloadId<ast::EnumerationDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_enumeration_decl_stmt(Sad attribute) {
-  auto enumeration_r = consume(base::TokenKind::kEnumeration, true);
-  if (enumeration_r.is_err()) {
-    return err<R>(std::move(enumeration_r));
-  }
+  DCHECK(check(base::TokenKind::kEnumeration));
+  next_non_whitespace();
 
   auto enumeration_name_r = parse_path_expr();
   if (enumeration_name_r.is_err()) {

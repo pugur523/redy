@@ -22,10 +22,8 @@ using R = ast::PayloadId<ast::FunctionDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_function_decl_stmt(Sad attribute,
                                                    bool needs_body) {
-  auto fn_r = consume(base::TokenKind::kFunction, true);
-  if (fn_r.is_err()) {
-    return err<R>(std::move(fn_r));
-  }
+  DCHECK(check(base::TokenKind::kFunction));
+  next_non_whitespace();
 
   auto fn_name_r = parse_path_expr();
   if (fn_name_r.is_err()) {

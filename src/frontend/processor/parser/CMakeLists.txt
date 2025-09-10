@@ -20,6 +20,7 @@ set(SOURCES
   chore/expression_sequence.cc
   chore/field.cc
   chore/parameter.cc
+  chore/storage_attributes.cc
   chore/type_reference.cc
 
   declaration/enum.cc

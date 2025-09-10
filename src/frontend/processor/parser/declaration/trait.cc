@@ -15,10 +15,8 @@ namespace parser {
 using R = ast::PayloadId<ast::TraitDeclarationPayload>;
 
 Parser::Result<R> Parser::parse_trait_decl_stmt(Sad attribute) {
-  auto trait_r = consume(base::TokenKind::kTrait, true);
-  if (trait_r.is_err()) {
-    return err<R>(std::move(trait_r));
-  }
+  DCHECK(check(base::TokenKind::kTrait));
+  next_non_whitespace();
 
   auto trait_name_r = parse_path_expr();
   if (trait_name_r.is_err()) {
