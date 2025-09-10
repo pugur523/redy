@@ -58,6 +58,7 @@ TEST(KeywordTest, LookupKeyword) {
   verify_keyword(u8"redirect", TokenKind::kRedirect);
   verify_keyword(u8"unsafe", TokenKind::kUnsafe);
   verify_keyword(u8"fast", TokenKind::kFast);
+  verify_keyword(u8"use", TokenKind::kUse);
 
   verify_keyword(u8"mut", TokenKind::kMutable);
   verify_keyword(u8"const", TokenKind::kConstant);

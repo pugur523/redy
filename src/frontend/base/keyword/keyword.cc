@@ -58,6 +58,8 @@ TokenKind lookup_id_or_keyword(std::u8string_view word) {
         return TokenKind::kMutable;
       } else if (word == u8"pub") {
         return TokenKind::kPublic;
+      } else if (word == u8"use") {
+        return TokenKind::kUse;
       }
       break;
 

@@ -23,6 +23,7 @@ enum class DeclarationKeyword : uint8_t {
   kRedirect = 8,        // redirect
   kUnsafe = 9,          // unsafe
   kFast = 10,           // fast
+  kUse = 11,            // use
 };
 
 inline DeclarationKeyword token_kind_to_declaration_keyword(TokenKind kind) {
@@ -37,6 +38,7 @@ inline DeclarationKeyword token_kind_to_declaration_keyword(TokenKind kind) {
     case TokenKind::kRedirect: return DeclarationKeyword::kRedirect;
     case TokenKind::kUnsafe: return DeclarationKeyword::kUnsafe;
     case TokenKind::kFast: return DeclarationKeyword::kFast;
+    case TokenKind::kUse: return DeclarationKeyword::kUse;
     default: return DeclarationKeyword::kUnknown;
   }
 }
@@ -59,6 +61,7 @@ inline const char* declaration_keyword_to_string(DeclarationKeyword keyword) {
     case DeclarationKeyword::kRedirect: return "redirect";
     case DeclarationKeyword::kUnsafe: return "unsafe";
     case DeclarationKeyword::kFast: return "fast";
+    case DeclarationKeyword::kUse: return "use";
     default: return "invalid";
   }
 }

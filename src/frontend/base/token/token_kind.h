@@ -64,127 +64,128 @@ enum class TokenKind : uint8_t {
   kRedirect = 37,        // redirect
   kUnsafe = 38,          // unsafe
   kFast = 39,            // fast
+  kUse = 40,             // use
 
   // ## attribute keywords
-  kMutable = 40,      // mut
-  kConstant = 41,     // const
-  kExtern = 42,       // extern
-  kStatic = 43,       // static
-  kThreadLocal = 44,  // thread_local
-  kPublic = 45,       // pub
-  kAsync = 46,        // async
+  kMutable = 41,      // mut
+  kConstant = 42,     // const
+  kExtern = 43,       // extern
+  kStatic = 44,       // static
+  kThreadLocal = 45,  // thread_local
+  kPublic = 46,       // pub
+  kAsync = 47,        // async
 
   // ## modifier keywords
-  kThis = 47,   // this
-  kAs = 48,     // as
-  kAwait = 49,  // await
+  kThis = 48,   // this
+  kAs = 49,     // as
+  kAwait = 50,  // await
   kKeywordsBegin = kI8,
   kKeywordsEnd = kAwait,
 
   // # literals
-  kDecimal = 50,      // 42
-  kBinary = 51,       // 0b01010
-  kOctal = 52,        // 0o755
-  kHexadecimal = 53,  // 0xffffff
-  kString = 54,       // "string"
-  kCharacter = 55,    // 'c'
-  kTrue = 56,         // true
-  kFalse = 57,        // false
+  kDecimal = 51,      // 42
+  kBinary = 52,       // 0b01010
+  kOctal = 53,        // 0o755
+  kHexadecimal = 54,  // 0xffffff
+  kString = 55,       // "string"
+  kCharacter = 56,    // 'c'
+  kTrue = 57,         // true
+  kFalse = 58,        // false
   kLiteralsBegin = kDecimal,
   kLiteralsEnd = kFalse,
 
   // # operators
 
   // ## unary
-  kPlusPlus = 58,    // ++
-  kMinusMinus = 59,  // --
-  kBang = 60,        // !
-  kTilde = 61,       // ~
+  kPlusPlus = 59,    // ++
+  kMinusMinus = 60,  // --
+  kBang = 61,        // !
+  kTilde = 62,       // ~
 
   // ## exponentiation
-  kStarStar = 62,  // **
+  kStarStar = 63,  // **
 
   // ## multiplicative
-  kStar = 63,     // *
-  kSlash = 64,    // /
-  kPercent = 65,  // %
+  kStar = 64,     // *
+  kSlash = 65,    // /
+  kPercent = 66,  // %
 
   // ## additive
-  kPlus = 66,   // +
-  kMinus = 67,  // -
+  kPlus = 67,   // +
+  kMinus = 68,  // -
 
   // ## bitwise shift
-  kLtLt = 68,  // <<
-  kGtGt = 69,  // >>
+  kLtLt = 69,  // <<
+  kGtGt = 70,  // >>
 
   // ## comparisons
-  kThreeWay = 70,  // <=>
+  kThreeWay = 71,  // <=>
 
-  kLt = 71,  // <
-  kGt = 72,  // >
-  kLe = 73,  // <=
-  kGe = 74,  // >=
+  kLt = 72,  // <
+  kGt = 73,  // >
+  kLe = 74,  // <=
+  kGe = 75,  // >=
 
-  kEqEq = 75,      // ==
-  kNotEqual = 76,  // !=
+  kEqEq = 76,      // ==
+  kNotEqual = 77,  // !=
 
   // ## bitwise
-  kAnd = 77,       // &
-  kCaret = 78,     // ^
-  kPipe = 79,      // |
-  kAndAnd = 80,    // &&
-  kPipePipe = 81,  // ||
+  kAnd = 78,       // &
+  kCaret = 79,     // ^
+  kPipe = 80,      // |
+  kAndAnd = 81,    // &&
+  kPipePipe = 82,  // ||
 
   // ## assignment
-  kColonEqual = 82,  // :=
-  kEqual = 83,       // =
+  kColonEqual = 83,  // :=
+  kEqual = 84,       // =
 
   // ## compound assignment
-  kPlusEq = 84,     // +=
-  kMinusEq = 85,    // -=
-  kStarEq = 86,     // *=
-  kSlashEq = 87,    // /=
-  kPercentEq = 88,  // %=
-  kAndEq = 89,      // &=
-  kPipeEq = 90,     // |=
-  kCaretEq = 91,    // ^=
-  kLtLtEq = 92,     // <<=
-  kGtGtEq = 93,     // >>=
+  kPlusEq = 85,     // +=
+  kMinusEq = 86,    // -=
+  kStarEq = 87,     // *=
+  kSlashEq = 88,    // /=
+  kPercentEq = 89,  // %=
+  kAndEq = 90,      // &=
+  kPipeEq = 91,     // |=
+  kCaretEq = 92,    // ^=
+  kLtLtEq = 93,     // <<=
+  kGtGtEq = 94,     // >>=
   kOperatorsBegin = kPlusPlus,
   kOperatorsEnd = kGtGtEq,
 
   // # delimiters
-  kArrow = 94,          // ->
-  kColon = 95,          // :
-  kColonColon = 96,     // ::
-  kSemicolon = 97,      // ;
-  kComma = 98,          // ,
-  kDot = 99,            // .
-  kDotDot = 100,        // ..
-  kLeftParen = 101,     // (
-  kRightParen = 102,    // )
-  kLeftBrace = 103,     // {
-  kRightBrace = 104,    // }
-  kLeftBracket = 105,   // [
-  kRightBracket = 106,  // ]
-  kAt = 107,            // @
-  kHash = 108,          // #
-  kDollar = 109,        // $
-  kQuestion = 110,      // ?
+  kArrow = 95,          // ->
+  kColon = 96,          // :
+  kColonColon = 97,     // ::
+  kSemicolon = 98,      // ;
+  kComma = 99,          // ,
+  kDot = 100,           // .
+  kDotDot = 101,        // ..
+  kLeftParen = 102,     // (
+  kRightParen = 103,    // )
+  kLeftBrace = 104,     // {
+  kRightBrace = 105,    // }
+  kLeftBracket = 106,   // [
+  kRightBracket = 107,  // ]
+  kAt = 108,            // @
+  kHash = 109,          // #
+  kDollar = 110,        // $
+  kQuestion = 111,      // ?
   kDelimitersBegin = kArrow,
   kDelimitersEnd = kQuestion,
 
   // # whitespace
-  kWhitespace = 111,  // includes unicode whitespaces
-  kNewline = 112,     // includes unicode newlines
+  kWhitespace = 112,  // includes unicode whitespaces
+  kNewline = 113,     // includes unicode newlines
   //
   // # comment
-  kInlineComment = 113,         // // inline comment
-  kBlockComment = 114,          // /* block comment */
-  kDocumentationComment = 115,  // /// documetation comment
+  kInlineComment = 114,         // // inline comment
+  kBlockComment = 115,          // /* block comment */
+  kDocumentationComment = 116,  // /// documetation comment
 
   // # eof
-  kEof = 116,  // \0
+  kEof = 117,  // \0
 };
 
 inline constexpr const char* token_kind_to_string(TokenKind kind) {
@@ -234,6 +235,7 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kRedirect: return "redirect";
     case TokenKind::kUnsafe: return "unsafe";
     case TokenKind::kFast: return "fast";
+    case TokenKind::kUse: return "use";
 
     case TokenKind::kMutable: return "mutable";
     case TokenKind::kConstant: return "constant";
@@ -385,6 +387,7 @@ inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
       return i18n::TranslationKey::kTermTokenKindRedirect;
     case TokenKind::kUnsafe: return i18n::TranslationKey::kTermTokenKindUnsafe;
     case TokenKind::kFast: return i18n::TranslationKey::kTermTokenKindFast;
+    case TokenKind::kUse: return i18n::TranslationKey::kTermTokenKindUse;
 
     case TokenKind::kMutable:
       return i18n::TranslationKey::kTermTokenKindMutable;

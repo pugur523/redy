@@ -45,6 +45,25 @@ inline LiteralKind token_kind_to_literal(base::TokenKind kind) {
   }
 }
 
+enum class LiteralType : uint8_t {
+  kUnknown = 0,
+  kI8 = 1,
+  kI16 = 2,
+  kI32 = 3,
+  kI64 = 4,
+  kI128 = 5,
+  kU8 = 6,
+  kU16 = 7,
+  kU32 = 8,
+  kU64 = 9,
+  kU128 = 10,
+  kF32 = 11,
+  kF64 = 12,
+  kCharacter = 13,
+  kBool = 14,
+  kString = 15,
+};
+
 }  // namespace base
 
 #endif  // FRONTEND_BASE_LITERAL_LITERAL_H_
