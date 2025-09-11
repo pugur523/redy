@@ -58,6 +58,11 @@ Parser::Result<RR> Parser::parse_attribute_use_list() {
       first_id = std::move(r).unwrap();
     }
     ++attr_count;
+
+    if (!check(base::TokenKind::kComma)) {
+      break;
+    }
+    // consume comma
     next_non_whitespace();
   }
 

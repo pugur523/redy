@@ -10,10 +10,8 @@
 namespace ast {
 
 using NodeId = uint32_t;
-using TokenId = uint32_t;
 
 constexpr NodeId kInvalidNodeId = 0xFFFFFFFF;
-constexpr TokenId kInvalidTokenId = 0xFFFFFFFF;
 
 struct NodeRange {
   NodeId begin = kInvalidNodeId;

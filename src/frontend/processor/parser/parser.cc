@@ -71,8 +71,6 @@ void Parser::init_context() {
   context_->arena<ast::ReturnExpressionPayload>().reserve(512);
   context_->arena<ast::BlockExpressionPayload>().reserve(256);
   context_->arena<ast::BlockExpressionPayload>().reserve(256);
-  context_->arena<ast::UnsafeExpressionPayload>().reserve(256);
-  context_->arena<ast::FastExpressionPayload>().reserve(256);
   context_->arena<ast::IfExpressionPayload>().reserve(256);
   context_->arena<ast::LoopExpressionPayload>().reserve(256);
   context_->arena<ast::WhileExpressionPayload>().reserve(256);
@@ -84,6 +82,7 @@ void Parser::init_context() {
   context_->arena<ast::AssignStatementPayload>().reserve(512);
   context_->arena<ast::AttributeStatementPayload>().reserve(32);
   context_->arena<ast::ExpressionStatementPayload>().reserve(512);
+  context_->arena<ast::UseStatementPayload>().reserve(32);
 
   context_->arena<ast::FunctionDeclarationPayload>().reserve(512);
   context_->arena<ast::StructDeclarationPayload>().reserve(256);
@@ -145,13 +144,6 @@ Parser::Result<void> Parser::parse_next() {
   } else if (current_kind == base::TokenKind::kSemicolon) {
     // consume ;
     next();
-    return ok<void>();
-  } else if (base::token_kind_is_declaration_keyword(current_kind) ||
-             base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {
-    auto result = parse_decl_stmt();
-    if (result.is_err()) {
-      return err<void>(std::move(result));
-    }
     return ok<void>();
   } else {
     auto result = parse_statement();

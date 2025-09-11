@@ -14,6 +14,12 @@ namespace parser {
 using R = ast::PayloadId<ast::BlockExpressionPayload>;
 
 Parser::Result<R> Parser::parse_block_expr() {
+  auto attr_r = parse_storage_attributes();
+  if (attr_r.is_err()) {
+    return err<R>(std::move(attr_r));
+  }
+  const Sad storage_attribute = std::move(attr_r).unwrap();
+
   auto left_r = consume(base::TokenKind::kLeftBrace, true);
   if (left_r.is_err()) {
     return err<R>(std::move(left_r));
@@ -40,7 +46,9 @@ Parser::Result<R> Parser::parse_block_expr() {
   }
 
   return ok(context_->alloc_payload(ast::BlockExpressionPayload{
-      .body_nodes_range = {.begin = first_id, .size = body_statement_count}}));
+      .storage_attribute = storage_attribute,
+      .body_nodes_range = {.begin = first_id, .size = body_statement_count},
+  }));
 }
 
 }  // namespace parser

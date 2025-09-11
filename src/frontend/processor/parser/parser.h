@@ -84,10 +84,6 @@ class Parser {
 
   Result<void> parse_next();
 
-  // temporarily disable line length limit for readability
-  // clang-format off
-  // NOLINTBEGIN
-
   // expression wo block
   Result<NodeId> parse_expression();
   Result<NodeId> parse_primary_expr();
@@ -99,8 +95,10 @@ class Parser {
   Result<PayloadId<ast::GroupedExpressionPayload>> parse_grouped_expr();
   Result<PayloadId<ast::ArrayExpressionPayload>> parse_array_expr();
   Result<PayloadId<ast::TupleExpressionPayload>> parse_tuple_expr();
-  Result<PayloadId<ast::IndexExpressionPayload>> parse_index_expr(NodeId operand);
-  Result<PayloadId<ast::ConstructExpressionPayload>> parse_construct_expr(NodeId type_path);
+  Result<PayloadId<ast::IndexExpressionPayload>> parse_index_expr(
+      NodeId operand);
+  Result<PayloadId<ast::ConstructExpressionPayload>> parse_construct_expr(
+      NodeId type_path);
 
   // can await
   Result<NodeId> parse_function_call_expr(NodeId callee);
@@ -109,23 +107,23 @@ class Parser {
       NodeId obj,
       PayloadId<ast::PathExpressionPayload> method);
 
-  Result<PayloadId<ast::FunctionMacroCallExpressionPayload>> parse_function_macro_call_expr(NodeId callee);
-  Result<PayloadId<ast::MethodMacroCallExpressionPayload>> parse_method_macro_call_expr(
-      NodeId obj,
-      PayloadId<ast::PathExpressionPayload> method);
+  Result<PayloadId<ast::FunctionMacroCallExpressionPayload>>
+  parse_function_macro_call_expr(NodeId callee);
+  Result<PayloadId<ast::MethodMacroCallExpressionPayload>>
+  parse_method_macro_call_expr(NodeId obj,
+                               PayloadId<ast::PathExpressionPayload> method);
   Result<PayloadId<ast::FieldAccessExpressionPayload>> parse_field_access_expr(
       NodeId obj,
       PayloadId<ast::PathExpressionPayload> field);
   Result<NodeId> parse_await_expr(NodeId callee);
   Result<PayloadId<ast::ContinueExpressionPayload>> parse_continue_expr();
   Result<PayloadId<ast::BreakExpressionPayload>> parse_break_expr();
-  Result<PayloadId<ast::RangeExpressionPayload>> parse_range_expr();
+  Result<NodeId> parse_range_expr();
   Result<PayloadId<ast::ReturnExpressionPayload>> parse_return_expr();
 
   // expression w block
+  using Sad = ast::StorageAttributeData;
   Result<PayloadId<ast::BlockExpressionPayload>> parse_block_expr();
-  Result<PayloadId<ast::UnsafeExpressionPayload>> parse_unsafe_expr();
-  Result<PayloadId<ast::FastExpressionPayload>> parse_fast_expr();
   Result<PayloadId<ast::IfExpressionPayload>> parse_if_expr();
   Result<PayloadId<ast::LoopExpressionPayload>> parse_loop_expr();
   Result<PayloadId<ast::WhileExpressionPayload>> parse_while_expr();
@@ -134,25 +132,35 @@ class Parser {
   Result<PayloadId<ast::ClosureExpressionPayload>> parse_closure_expr();
 
   // statement
-  using Sad = ast::StorageAttributeData;
   Result<NodeId> parse_statement();
-  Result<PayloadId<ast::AssignStatementPayload>> parse_assign_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::AssignStatementPayload>> parse_assign_stmt(
+      Sad storage_attribute);
   Result<PayloadId<ast::AttributeStatementPayload>> parse_attribute_stmt();
   Result<PayloadId<ast::ExpressionStatementPayload>> parse_expression_stmt();
+  Result<PayloadId<ast::UseStatementPayload>> parse_use_stmt();
 
   // TODO: add template parsing for declarations, calls, and type refs
   // syntax example: some_symbol<T, E, Size: usize, UseColor: bool>
 
   // declaration
   Result<NodeId> parse_decl_stmt();
-  Result<PayloadId<ast::FunctionDeclarationPayload>> parse_function_decl_stmt(Sad storage_attribute, bool needs_body = true);
-  Result<PayloadId<ast::StructDeclarationPayload>> parse_struct_decl_stmt(Sad storage_attribute);
-  Result<PayloadId<ast::EnumerationDeclarationPayload>> parse_enumeration_decl_stmt(Sad storage_attribute);
-  Result<PayloadId<ast::TraitDeclarationPayload>> parse_trait_decl_stmt(Sad storage_attribute);
-  Result<PayloadId<ast::ImplementationDeclarationPayload>> parse_impl_decl_stmt(Sad storage_attribute);
-  Result<PayloadId<ast::UnionDeclarationPayload>> parse_union_decl_stmt(Sad storage_attribute);
-  Result<PayloadId<ast::ModuleDeclarationPayload>> parse_module_decl_stmt(Sad storage_attribute);
-  Result<PayloadId<ast::RedirectDeclarationPayload>> parse_redirect_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::FunctionDeclarationPayload>> parse_function_decl_stmt(
+      Sad storage_attribute,
+      bool needs_body = true);
+  Result<PayloadId<ast::StructDeclarationPayload>> parse_struct_decl_stmt(
+      Sad storage_attribute);
+  Result<PayloadId<ast::EnumerationDeclarationPayload>>
+  parse_enumeration_decl_stmt(Sad storage_attribute);
+  Result<PayloadId<ast::TraitDeclarationPayload>> parse_trait_decl_stmt(
+      Sad storage_attribute);
+  Result<PayloadId<ast::ImplementationDeclarationPayload>> parse_impl_decl_stmt(
+      Sad storage_attribute);
+  Result<PayloadId<ast::UnionDeclarationPayload>> parse_union_decl_stmt(
+      Sad storage_attribute);
+  Result<PayloadId<ast::ModuleDeclarationPayload>> parse_module_decl_stmt(
+      Sad storage_attribute);
+  Result<PayloadId<ast::RedirectDeclarationPayload>> parse_redirect_decl_stmt(
+      Sad storage_attribute);
 
   // chore
   Result<PayloadId<ast::CapturePayload>> parse_capture_one();
@@ -168,9 +176,6 @@ class Parser {
   Result<PayloadId<ast::TypeReferencePayload>> parse_type_reference();
 
   Result<NodeRange> parse_expression_sequence();
-
-  // NOLINTEND
-  // clang-format on
 
   void init_context();
 

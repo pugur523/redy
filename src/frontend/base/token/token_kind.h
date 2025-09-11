@@ -62,18 +62,20 @@ enum class TokenKind : uint8_t {
   kUnion = 35,           // union
   kModule = 36,          // mod
   kRedirect = 37,        // redirect
-  kUnsafe = 38,          // unsafe
-  kFast = 39,            // fast
-  kUse = 40,             // use
+
+  // ## uncategorized
+  kUse = 38,  // use
 
   // ## attribute keywords
-  kMutable = 41,      // mut
-  kConstant = 42,     // const
-  kExtern = 43,       // extern
-  kStatic = 44,       // static
-  kThreadLocal = 45,  // thread_local
-  kPublic = 46,       // pub
-  kAsync = 47,        // async
+  kMutable = 39,      // mut
+  kConstant = 40,     // const
+  kExtern = 41,       // extern
+  kStatic = 42,       // static
+  kThreadLocal = 43,  // thread_local
+  kPublic = 44,       // pub
+  kAsync = 45,        // async
+  kUnsafe = 46,       // unsafe
+  kFast = 47,         // fast
 
   // ## modifier keywords
   kThis = 48,   // this
@@ -233,8 +235,6 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kUnion: return "union";
     case TokenKind::kModule: return "module";
     case TokenKind::kRedirect: return "redirect";
-    case TokenKind::kUnsafe: return "unsafe";
-    case TokenKind::kFast: return "fast";
     case TokenKind::kUse: return "use";
 
     case TokenKind::kMutable: return "mutable";
@@ -244,6 +244,8 @@ inline constexpr const char* token_kind_to_string(TokenKind kind) {
     case TokenKind::kThreadLocal: return "thread local";
     case TokenKind::kPublic: return "public";
     case TokenKind::kAsync: return "async";
+    case TokenKind::kUnsafe: return "unsafe";
+    case TokenKind::kFast: return "fast";
 
     case TokenKind::kThis: return "this";
     case TokenKind::kAs: return "as";
@@ -385,8 +387,6 @@ inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
     case TokenKind::kModule: return i18n::TranslationKey::kTermTokenKindModule;
     case TokenKind::kRedirect:
       return i18n::TranslationKey::kTermTokenKindRedirect;
-    case TokenKind::kUnsafe: return i18n::TranslationKey::kTermTokenKindUnsafe;
-    case TokenKind::kFast: return i18n::TranslationKey::kTermTokenKindFast;
     case TokenKind::kUse: return i18n::TranslationKey::kTermTokenKindUse;
 
     case TokenKind::kMutable:
@@ -399,6 +399,8 @@ inline constexpr i18n::TranslationKey token_kind_to_tr_key(TokenKind kind) {
       return i18n::TranslationKey::kTermTokenKindThreadLocal;
     case TokenKind::kPublic: return i18n::TranslationKey::kTermTokenKindPublic;
     case TokenKind::kAsync: return i18n::TranslationKey::kTermTokenKindAsync;
+    case TokenKind::kUnsafe: return i18n::TranslationKey::kTermTokenKindUnsafe;
+    case TokenKind::kFast: return i18n::TranslationKey::kTermTokenKindFast;
 
     case TokenKind::kThis: return i18n::TranslationKey::kTermTokenKindThis;
     case TokenKind::kAs: return i18n::TranslationKey::kTermTokenKindAs;

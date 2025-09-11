@@ -34,6 +34,8 @@ Parser::Result<ast::StorageAttributeData> Parser::parse_storage_attributes() {
       case TokenKind::kThreadLocal: attribute |= Sadd::kThreadLocal; break;
       case TokenKind::kPublic: attribute |= Sadd::kPublic; break;
       case TokenKind::kAsync: attribute |= Sadd::kAsync; break;
+      case TokenKind::kUnsafe: attribute |= Sadd::kUnsafe; break;
+      case TokenKind::kFast: attribute |= Sadd::kFast; break;
       default: break;
     }
 

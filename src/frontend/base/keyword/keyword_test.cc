@@ -56,8 +56,6 @@ TEST(KeywordTest, LookupKeyword) {
   verify_keyword(u8"union", TokenKind::kUnion);
   verify_keyword(u8"module", TokenKind::kModule);
   verify_keyword(u8"redirect", TokenKind::kRedirect);
-  verify_keyword(u8"unsafe", TokenKind::kUnsafe);
-  verify_keyword(u8"fast", TokenKind::kFast);
   verify_keyword(u8"use", TokenKind::kUse);
 
   verify_keyword(u8"mut", TokenKind::kMutable);
@@ -67,6 +65,8 @@ TEST(KeywordTest, LookupKeyword) {
   verify_keyword(u8"thread_local", TokenKind::kThreadLocal);
   verify_keyword(u8"pub", TokenKind::kPublic);
   verify_keyword(u8"async", TokenKind::kAsync);
+  verify_keyword(u8"unsafe", TokenKind::kUnsafe);
+  verify_keyword(u8"fast", TokenKind::kFast);
 
   verify_keyword(u8"as", TokenKind::kAs);
   verify_keyword(u8"this", TokenKind::kThis);

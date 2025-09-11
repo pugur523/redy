@@ -14,6 +14,7 @@
 #include "frontend/base/operator/unary_operator.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/payload/common.h"
+#include "frontend/data/ast/payload/data.h"
 
 namespace ast {
 
@@ -110,15 +111,8 @@ struct ReturnExpressionPayload {
 };
 
 struct BlockExpressionPayload {
+  StorageAttributeData storage_attribute;
   NodeRange body_nodes_range;
-};
-
-struct UnsafeExpressionPayload {
-  PayloadId<BlockExpressionPayload> block;
-};
-
-struct FastExpressionPayload {
-  PayloadId<BlockExpressionPayload> block;
 };
 
 struct IfExpressionPayload {

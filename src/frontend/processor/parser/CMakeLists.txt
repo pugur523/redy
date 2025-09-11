@@ -40,7 +40,6 @@ set(SOURCES
   expression/closure.cc
   expression/construct.cc
   expression/continue.cc
-  expression/fast.cc
   expression/field_access.cc
   expression/for.cc
   expression/function_call.cc
@@ -60,12 +59,12 @@ set(SOURCES
   expression/return.cc
   expression/tuple.cc
   expression/unary.cc
-  expression/unsafe.cc
   expression/while.cc
 
   statement/assign.cc
   statement/attribute.cc
   statement/expression.cc
+  statement/use.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

@@ -16,34 +16,28 @@
 
 namespace parser {
 
-using R = ast::PayloadId<ast::RangeExpressionPayload>;
-
-Parser::Result<R> Parser::parse_range_expr() {
+Parser::Result<ast::NodeId> Parser::parse_range_expr() {
   // avoid inifinite loop
   auto begin_r = parse_binary_expr(base::OperatorPrecedence::kLowest);
   if (begin_r.is_err()) {
-    return err<R>(std::move(begin_r));
+    return err<NodeId>(std::move(begin_r));
   }
 
   if (!check(base::TokenKind::kDotDot)) {
-    return ok(context_->alloc_payload(ast::RangeExpressionPayload{
-        .begin = std::move(begin_r).unwrap(),
-        .end = ast::kInvalidNodeId,
-        .is_exclusive = true,
-    }));
+    return begin_r;
   }
 
   // consume ..
   next_non_whitespace();
 
-  bool is_exclusive = true;
+  bool is_exclusive;
 
   const base::Token& lt_or_equal = peek();
   switch (lt_or_equal.kind()) {
-    case base::TokenKind::kLt: /* is_exclusive = true; */ break;
+    case base::TokenKind::kLt: is_exclusive = true; break;
     case base::TokenKind::kEqual: is_exclusive = false; break;
     default:
-      return err<R>((
+      return err<NodeId>((
           std::move(
               Eb(diagnostic::Severity::kError,
                  diagnostic::DiagId::kUnexpectedToken)
@@ -57,14 +51,15 @@ Parser::Result<R> Parser::parse_range_expr() {
 
   auto end_r = parse_binary_expr(base::OperatorPrecedence::kLowest);
   if (end_r.is_err()) {
-    return err<R>(std::move(end_r));
+    return err<NodeId>(std::move(end_r));
   }
 
-  return ok(context_->alloc_payload(ast::RangeExpressionPayload{
-      .begin = std::move(begin_r).unwrap(),
-      .end = std::move(end_r).unwrap(),
-      .is_exclusive = is_exclusive,
-  }));
+  return ok(context_->alloc_node(ast::NodeKind::kRangeExpression,
+                                 ast::RangeExpressionPayload{
+                                     .begin = std::move(begin_r).unwrap(),
+                                     .end = std::move(end_r).unwrap(),
+                                     .is_exclusive = is_exclusive,
+                                 }));
 }
 
 }  // namespace parser

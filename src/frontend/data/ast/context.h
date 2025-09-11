@@ -86,8 +86,6 @@ class AST_EXPORT Context {
   base::Arena<ReturnExpressionPayload> return_expression_payloads_;
 
   base::Arena<BlockExpressionPayload> block_expression_payloads_;
-  base::Arena<UnsafeExpressionPayload> unsafe_expression_payloads_;
-  base::Arena<FastExpressionPayload> fast_expression_payloads_;
   base::Arena<IfExpressionPayload> if_expression_payloads_;
   base::Arena<LoopExpressionPayload> loop_expression_payloads_;
   base::Arena<WhileExpressionPayload> while_expression_payloads_;
@@ -98,6 +96,7 @@ class AST_EXPORT Context {
   base::Arena<AssignStatementPayload> assign_statement_payloads_;
   base::Arena<AttributeStatementPayload> attribute_statement_payloads_;
   base::Arena<ExpressionStatementPayload> expression_statement_payloads_;
+  base::Arena<UseStatementPayload> use_statement_payloads_;
 
   base::Arena<FunctionDeclarationPayload> function_declaration_payloads_;
   base::Arena<StructDeclarationPayload> struct_declaration_payloads_;
@@ -226,16 +225,6 @@ Context::arena<BlockExpressionPayload>() {
   return block_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<UnsafeExpressionPayload>&
-Context::arena<UnsafeExpressionPayload>() {
-  return unsafe_expression_payloads_;
-}
-template <>
-inline constexpr base::Arena<FastExpressionPayload>&
-Context::arena<FastExpressionPayload>() {
-  return fast_expression_payloads_;
-}
-template <>
 inline constexpr base::Arena<IfExpressionPayload>&
 Context::arena<IfExpressionPayload>() {
   return if_expression_payloads_;
@@ -279,6 +268,11 @@ template <>
 inline constexpr base::Arena<ExpressionStatementPayload>&
 Context::arena<ExpressionStatementPayload>() {
   return expression_statement_payloads_;
+}
+template <>
+inline constexpr base::Arena<UseStatementPayload>&
+Context::arena<UseStatementPayload>() {
+  return use_statement_payloads_;
 }
 template <>
 inline constexpr base::Arena<FunctionDeclarationPayload>&

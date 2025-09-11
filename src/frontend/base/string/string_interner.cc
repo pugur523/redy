@@ -79,14 +79,14 @@ StringId StringInterner::lookup(std::string_view s) const {
 void StringInterner::init_buckets(std::size_t n) {
   // round up to next power of 2
   if ((n & (n - 1)) != 0) {
-    n--;
+    --n;
     n |= n >> 1;
     n |= n >> 2;
     n |= n >> 4;
     n |= n >> 8;
     n |= n >> 16;
     n |= n >> 32;
-    n++;
+    ++n;
   }
 
   buckets_.clear();

@@ -14,10 +14,8 @@ namespace parser {
 using R = ast::PayloadId<ast::AttributeStatementPayload>;
 
 Parser::Result<R> Parser::parse_attribute_stmt() {
-  auto hash_r = consume(base::TokenKind::kHash, true);
-  if (hash_r.is_err()) {
-    return err<R>(std::move(hash_r));
-  }
+  DCHECK(check(base::TokenKind::kHash));
+  next_non_whitespace();
 
   auto left_r = consume(base::TokenKind::kLeftBracket, true);
   if (left_r.is_err()) {

@@ -8,6 +8,7 @@
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/payload/common.h"
 #include "frontend/data/ast/payload/data.h"
+#include "frontend/data/ast/payload/expression.h"
 
 namespace ast {
 
@@ -26,6 +27,10 @@ struct AttributeStatementPayload {
 
 struct ExpressionStatementPayload {
   NodeId expression;
+};
+
+struct UseStatementPayload {
+  PayloadRange<PathExpressionPayload> use_paths_range;
 };
 
 // declaration statements

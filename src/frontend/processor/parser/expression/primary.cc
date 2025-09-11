@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "frontend/base/keyword/attribute_keyword.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node.h"
 #include "frontend/diagnostic/data/entry_builder.h"
@@ -19,6 +20,7 @@ Parser::Result<ast::NodeId> Parser::parse_primary_expr() {
     return wrap_to_node(ast::NodeKind::kLiteralExpression,
                         parse_literal_expr());
   }
+
   switch (kind) {
     case base::TokenKind::kIdentifier: return parse_postfix_expr();
     case base::TokenKind::kBreak:
@@ -34,11 +36,6 @@ Parser::Result<ast::NodeId> Parser::parse_primary_expr() {
                           parse_grouped_expr());
     case base::TokenKind::kLeftBrace:
       return wrap_to_node(ast::NodeKind::kBlockExpression, parse_block_expr());
-    case base::TokenKind::kUnsafe:
-      return wrap_to_node(ast::NodeKind::kUnsafeExpression,
-                          parse_unsafe_expr());
-    case base::TokenKind::kFast:
-      return wrap_to_node(ast::NodeKind::kFastExpression, parse_fast_expr());
     case base::TokenKind::kIf:
       return wrap_to_node(ast::NodeKind::kIfExpression, parse_if_expr());
     case base::TokenKind::kLoop:

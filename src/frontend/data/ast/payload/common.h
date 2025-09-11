@@ -40,8 +40,6 @@ struct BreakExpressionPayload;
 struct RangeExpressionPayload;
 struct ReturnExpressionPayload;
 struct BlockExpressionPayload;
-struct UnsafeExpressionPayload;
-struct FastExpressionPayload;
 struct IfExpressionPayload;
 struct LoopExpressionPayload;
 struct WhileExpressionPayload;
@@ -53,6 +51,7 @@ struct ClosureExpressionPayload;
 struct AssignStatementPayload;
 struct AttributeStatementPayload;
 struct ExpressionStatementPayload;
+struct UseStatementPayload;
 
 struct FunctionDeclarationPayload;
 struct StructDeclarationPayload;

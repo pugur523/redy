@@ -4,6 +4,8 @@
 
 #include <utility>
 
+#include "frontend/base/keyword/attribute_keyword.h"
+#include "frontend/base/keyword/declaration_keyword.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
@@ -16,6 +18,15 @@ namespace parser {
 Parser::Result<ast::NodeId> Parser::parse_statement() {
   using Kind = base::TokenKind;
   const Kind current_kind = peek().kind();
+
+  if (base::token_kind_is_declaration_keyword(current_kind) ||
+      base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {
+    auto result = parse_decl_stmt();
+    if (result.is_err()) {
+      return err<NodeId>(std::move(result));
+    }
+    return ok<NodeId>(std::move(result).unwrap());
+  }
 
   switch (current_kind) {
     case base::TokenKind::kIdentifier: {
@@ -60,7 +71,20 @@ Parser::Result<ast::NodeId> Parser::parse_statement() {
         }));
       }
     }
+    case base::TokenKind::kUse: {
+      auto result = parse_use_stmt();
+      if (result.is_err()) {
+        return err<NodeId>(std::move(result));
+      } else {
+        return ok<NodeId>(context_->alloc(Node{
+            .payload_id = std::move(result).unwrap().id,
+            .kind = ast::NodeKind::kUseStatement,
+        }));
+      }
+    }
     default: {
+      // TODO: replace this with `return parse_expression()` and remove
+      // `parse_expression_stmt()`
       auto result = parse_expression_stmt();
       if (result.is_err()) {
         return err<NodeId>(std::move(result));

@@ -20,6 +20,8 @@ enum class AttributeKeyword : uint8_t {
   kThreadLocal = 5,  // thread_local
   kPublic = 6,       // pub
   kAsync = 7,        // async
+  kUnsafe = 9,       // unsafe
+  kFast = 8,         // fast
 };
 
 inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
@@ -31,6 +33,8 @@ inline AttributeKeyword token_kind_to_attribute_keyword(TokenKind kind) {
     case TokenKind::kThreadLocal: return AttributeKeyword::kThreadLocal;
     case TokenKind::kPublic: return AttributeKeyword::kPublic;
     case TokenKind::kAsync: return AttributeKeyword::kAsync;
+    case TokenKind::kUnsafe: return AttributeKeyword::kUnsafe;
+    case TokenKind::kFast: return AttributeKeyword::kFast;
     default: return AttributeKeyword::kUnknown;
   }
 }
@@ -49,6 +53,8 @@ inline const char* attribute_keyword_to_string(AttributeKeyword keyword) {
     case AttributeKeyword::kThreadLocal: return "thread local";
     case AttributeKeyword::kPublic: return "public";
     case AttributeKeyword::kAsync: return "async";
+    case AttributeKeyword::kUnsafe: return "unsafe";
+    case AttributeKeyword::kFast: return "fast";
     default: return "invalid";
   }
 }

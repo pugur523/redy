@@ -71,7 +71,7 @@ inline const Token& TokenStream::previous() const {
 
 inline const Token& TokenStream::next() {
   DCHECK_NE(current_token_, end_token_) << "reached eof token unexpectedly";
-  pos_++;
+  ++pos_;
   current_token_ = &tokens_[pos_];
   return tokens_[pos_];
 }

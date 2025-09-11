@@ -10,15 +10,7 @@
 namespace parser {
 
 Parser::Result<ast::NodeId> Parser::parse_expression() {
-  auto result = parse_range_expr();
-  if (result.is_err()) {
-    return err<NodeId>(std::move(result));
-  } else {
-    return ok(context_->alloc(Node{
-        .payload_id = std::move(result).unwrap().id,
-        .kind = ast::NodeKind::kRangeExpression,
-    }));
-  }
+  return parse_range_expr();
 }
 
 }  // namespace parser
