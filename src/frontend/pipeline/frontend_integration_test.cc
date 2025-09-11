@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "core/base/logger.h"
+#include "frontend/base/string/string_interner.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
 #include "frontend/diagnostic/engine/diagnostic_engine.h"
@@ -31,6 +32,7 @@ void print_errors(diagnostic::DiagnosticEngine&& engine) {
 void verify_compile_pipeline(std::u8string&& src) {
   unicode::Utf8FileManager manager;
   unicode::Utf8FileId id = manager.register_virtual_file(std::move(src));
+  base::StringInterner interner;
   i18n::Translator translator;
   diagnostic::DiagnosticOptions options;
   diagnostic::DiagnosticEngine engine(&manager, &translator, options);
@@ -58,14 +60,16 @@ void verify_compile_pipeline(std::u8string&& src) {
   // DLOG(info, "{}", stream.dump());
 
   parser::Parser parser;
-  parser.init(&stream, translator);
+  parser.init(&stream, &interner, translator);
   auto result = parser.parse_all(false);
+  manager.unload(id);
   EXPECT_TRUE(result.is_ok());
   if (result.is_err()) {
     engine.push(std::move(result).unwrap_err());
     print_errors(std::move(engine));
     return;
   }
+
   std::unique_ptr<ast::Context> context = std::move(result).unwrap();
 
   return;

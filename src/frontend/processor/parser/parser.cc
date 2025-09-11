@@ -27,10 +27,14 @@
 namespace parser {
 
 void Parser::init(base::TokenStream* stream,
+                  base::StringInterner* interner,
                   const i18n::Translator& translator) {
   DCHECK_EQ(status_, Status::kNotInitialized);
   stream_ = stream;
   DCHECK(stream_);
+
+  interner_ = interner;
+  DCHECK(interner_);
 
   translator_ = &translator;
   DCHECK(translator_);

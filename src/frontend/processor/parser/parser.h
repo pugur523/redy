@@ -21,6 +21,11 @@
 #include "frontend/processor/parser/base/parser_export.h"
 #include "unicode/utf8/file_manager.h"
 
+namespace base {
+class TokenStream;
+class StringInterner;
+};  // namespace base
+
 namespace diagnostic {
 class EntryBuilder;
 class DiagnosticEntry;
@@ -59,6 +64,7 @@ class Parser {
   PARSER_EXPORT Parser& operator=(Parser&&) noexcept = default;
 
   PARSER_EXPORT void init(base::TokenStream* stream,
+                          base::StringInterner* interner,
                           const i18n::Translator& translater);
 
   PARSER_EXPORT ParseResult parse_all(bool strict = false);
@@ -239,10 +245,11 @@ class Parser {
 
   static bool is_sync_point(base::TokenKind kind);
 
-  std::vector<De> errors_;
+  base::TokenStream* stream_ = nullptr;
+  base::StringInterner* interner_ = nullptr;
   std::unique_ptr<ast::Context> context_ = nullptr;
   const i18n::Translator* translator_ = nullptr;
-  base::TokenStream* stream_ = nullptr;
+  std::vector<De> errors_;
   Status status_ = Status::kNotInitialized;
 };
 

@@ -10,6 +10,7 @@
 
 #include "core/base/source_range.h"
 #include "frontend/base/keyword/type.h"
+#include "frontend/base/string/string_id.h"
 #include "frontend/data/ast/base/node_id.h"
 #include "frontend/data/ast/payload/common.h"
 
@@ -136,8 +137,8 @@ struct ArrayTypePayload {
 };
 
 struct IdentifierPayload {
-  core::SourceRange lexeme_range;
-  // base::StringId id;
+  // core::SourceRange lexeme_range;
+  base::StringId id;
 };
 
 struct IfBranchPayload {

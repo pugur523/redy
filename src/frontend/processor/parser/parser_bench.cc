@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "benchmark/benchmark.h"
+#include "frontend/base/string/string_interner.h"
 #include "frontend/processor/parser/parser.h"
 #include "i18n/base/translator.h"
 
@@ -15,27 +16,28 @@ namespace parser {
 
 namespace {
 
+base::StringInterner interner;
 const i18n::Translator translator;
 unicode::Utf8FileManager file_manager;
-unicode::Utf8FileId dummy_id = 0;
 
 base::TokenStream tkstr(std::vector<base::TokenKind>&& kinds) {
   std::vector<base::Token> tokens;
   tokens.reserve(kinds.size());
 
   for (auto kind : kinds) {
-    base::Token token(kind, 0, 0, 0);
+    base::Token token(kind, 1, 1, 0);
     tokens.emplace_back(std::move(token));
   }
 
-  return base::TokenStream(std::move(tokens), &file_manager, dummy_id);
+  const unicode::Utf8FileId id = file_manager.register_virtual_file(u8"");
+  return base::TokenStream(std::move(tokens), &file_manager, id);
 }
 
 void parser_init(benchmark::State& state) {
   auto stream = tkstr({base::TokenKind::kEof});
   for (auto _ : state) {
     Parser parser;
-    parser.init(&stream, translator);
+    parser.init(&stream, &interner, translator);
     benchmark::DoNotOptimize(&parser);
   }
   state.SetBytesProcessed(sizeof(Parser) * state.iterations());
@@ -45,7 +47,7 @@ BENCHMARK(parser_init);
 void parser_parse_empty_stream(benchmark::State& state) {
   auto stream = tkstr({base::TokenKind::kEof});
   Parser parser;
-  parser.init(&stream, translator);
+  parser.init(&stream, &interner, translator);
   for (auto _ : state) {
     auto result = parser.parse_all();
     benchmark::DoNotOptimize(std::move(result).unwrap().get());
@@ -77,7 +79,7 @@ void parser_parse_simple_func(benchmark::State& state) {
   // fn some_func(x: i32, y: str) -> bool {}
 
   Parser parser;
-  parser.init(&stream, translator);
+  parser.init(&stream, &interner, translator);
   for (auto _ : state) {
     auto result = parser.parse_all();
     benchmark::DoNotOptimize(std::move(result).unwrap().get());

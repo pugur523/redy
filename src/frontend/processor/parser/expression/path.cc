@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "frontend/base/string/string_interner.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/data/ast/base/node.h"
 #include "frontend/data/ast/base/node_id.h"
@@ -31,10 +32,10 @@ Parser::Result<R> Parser::parse_path_expr() {
     if (next_part_r.is_err()) {
       return err<R>(std::move(next_part_r));
     }
+    const base::StringId id = interner_->intern(
+        std::move(next_part_r).unwrap()->lexeme(stream_->file()));
     const PayloadId<ast::IdentifierPayload> part_id =
-        context_->alloc_payload(ast::IdentifierPayload{
-            .lexeme_range = std::move(next_part_r).unwrap()->range(),
-        });
+        context_->alloc_payload(ast::IdentifierPayload{.id = id});
 
     if (parts_count == 0) {
       first_part = part_id;

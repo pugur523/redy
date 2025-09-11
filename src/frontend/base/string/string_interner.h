@@ -12,10 +12,9 @@
 
 #include "frontend/base/base_export.h"
 #include "frontend/base/data/string_arena.h"
+#include "frontend/base/string/string_id.h"
 
 namespace base {
-
-using StringId = uint32_t;
 
 constexpr const StringId kEmptyStringId = 0;
 constexpr const StringId kInvalidStringId = 0xFFFFFFFF;

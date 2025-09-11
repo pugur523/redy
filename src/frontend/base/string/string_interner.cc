@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "core/check.h"
+#include "frontend/base/string/string_id.h"
 
 namespace base {
 

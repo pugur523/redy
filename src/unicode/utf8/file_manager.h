@@ -56,8 +56,8 @@ class UNICODE_EXPORT Utf8FileManager {
  private:
   inline Utf8File& file_mutable(Utf8FileId id) {
     DCHECK_GE(id, 0);
-    DCHECK_LE(id, files_.size());
-    return files_[id];
+    DCHECK_LT(id, files_.size());
+    return files_.at(id);
   }
 
   std::vector<Utf8File> files_;

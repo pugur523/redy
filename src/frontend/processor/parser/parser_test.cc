@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "frontend/base/string/string_interner.h"
 #include "frontend/base/token/token_kind.h"
 #include "frontend/base/token/token_stream.h"
 #include "frontend/diagnostic/data/diagnostic_entry.h"
@@ -23,32 +24,32 @@ namespace parser {
 
 namespace {
 
+base::StringInterner interner;
 const i18n::Translator translator;
 unicode::Utf8FileManager file_manager;
-unicode::Utf8FileId dummy_id = 0;
 
 base::TokenStream tkstr(std::vector<base::TokenKind>&& kinds) {
   std::vector<base::Token> tokens;
   tokens.reserve(kinds.size());
 
   for (auto kind : kinds) {
-    base::Token token(kind, 0, 0, 0);
+    base::Token token(kind, 1, 1, 0);
     tokens.emplace_back(std::move(token));
   }
-
-  return base::TokenStream(std::move(tokens), &file_manager, dummy_id);
+  const unicode::Utf8FileId id = file_manager.register_virtual_file(u8"");
+  return base::TokenStream(std::move(tokens), &file_manager, id);
 }
 
 struct TestParser {
   Parser parser;
 
   explicit TestParser(base::TokenStream&& stream) : stream_(std::move(stream)) {
-    parser.init(&stream_, translator);
+    parser.init(&stream_, &interner, translator);
   }
 
   explicit TestParser(std::vector<base::TokenKind>&& kinds)
       : stream_(tkstr(std::move(kinds))) {
-    parser.init(&stream_, translator);
+    parser.init(&stream_, &interner, translator);
   }
 
   ~TestParser() = default;
