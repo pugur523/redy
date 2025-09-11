@@ -20,7 +20,7 @@ Parser::Result<ast::NodeId> Parser::parse_statement() {
   const Kind current_kind = peek().kind();
 
   if (base::token_kind_is_declaration_keyword(current_kind) ||
-      base::token_kind_is_attribute_keyword(current_kind)) [[likely]] {
+      base::token_kind_is_attribute_keyword(current_kind)) {
     auto result = parse_decl_stmt();
     if (result.is_err()) {
       return err<NodeId>(std::move(result));

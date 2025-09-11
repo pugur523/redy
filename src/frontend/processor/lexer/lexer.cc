@@ -60,7 +60,7 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
     Result<Token> result = tokenize_next();
     if (result.is_ok()) [[likely]] {
       Token token{std::move(result).unwrap()};
-      bool is_eof = token.kind() == base::TokenKind::kEof;
+      const bool is_eof = token.kind() == base::TokenKind::kEof;
       tokens.emplace_back(std::move(token));
 
       if (is_eof) [[unlikely]] {
@@ -85,13 +85,13 @@ Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
   DCHECK_NE(status_, Status::kNotInitialized);
   DCHECK_NE(status_, Status::kTokenizeCompleted);
   auto r = skip_trivia();
-  if (r.is_err()) {
+  if (r.is_err()) [[unlikely]] {
     status_ = Status::kErrorOccured;
     return Result<Lexer::Token>(
         diagnostic::create_err(std::move(r).unwrap_err()));
   }
 
-  if (stream_.eof()) {
+  if (stream_.eof()) [[unlikely]] {
     status_ = Status::kTokenizeCompleted;
     return Result<Token>(diagnostic::create_ok(
         Token(TokenKind::kEof, stream_.line(), stream_.column(), 0)));
@@ -102,14 +102,14 @@ Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
   const std::size_t col = stream_.column();
   const std::size_t start = stream_.position();
 
-  if (unicode::is_eof(current_codepoint)) {
+  if (unicode::is_eof(current_codepoint)) [[unlikely]] {
     status_ = Status::kErrorOccured;
     return err<Token>(Error::create(
         line, col, 0, diagnostic::DiagnosticId::kUnexpectedEndOfFile));
   }
 
   // for ascii characters (most common case)
-  if (unicode::is_ascii(current_codepoint)) {
+  if (unicode::is_ascii(current_codepoint)) [[likely]] {
     return ascii_token(static_cast<char>(current_codepoint), start, line, col);
   }
 
