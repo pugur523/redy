@@ -10,7 +10,6 @@ message(STATUS "Configuring ${MODULE_NAME} module...")
 set(SOURCES
   parser.cc
 
-  declaration.cc
   expression.cc
   statement.cc
 
@@ -22,15 +21,6 @@ set(SOURCES
   chore/parameter.cc
   chore/storage_attributes.cc
   chore/type_reference.cc
-
-  declaration/enum.cc
-  declaration/function.cc
-  declaration/impl.cc
-  declaration/module.cc
-  declaration/redirect.cc
-  declaration/struct.cc
-  declaration/trait.cc
-  declaration/union.cc
 
   expression/array.cc
   expression/await.cc
@@ -63,8 +53,18 @@ set(SOURCES
 
   statement/assign.cc
   statement/attribute.cc
+  statement/declaration.cc
   statement/expression.cc
   statement/use.cc
+
+  statement/declaration/enum.cc
+  statement/declaration/function.cc
+  statement/declaration/impl.cc
+  statement/declaration/module.cc
+  statement/declaration/redirect.cc
+  statement/declaration/struct.cc
+  statement/declaration/trait.cc
+  statement/declaration/union.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})
