@@ -18,6 +18,12 @@ namespace unicode {
 
 class UNICODE_EXPORT Utf8Stream {
  public:
+  enum class ErrorCode : uint8_t {
+    kSuccess = 0,
+    kFileNotFound = 1,
+    kInvalidUtf8 = 2,
+  };
+
   enum class Status : uint8_t {
     kNotInitialized = 0,
     kInitialized = 1,
@@ -35,7 +41,7 @@ class UNICODE_EXPORT Utf8Stream {
   Utf8Stream& operator=(Utf8Stream&&) noexcept = default;
 
   // validates and decodes entire content
-  std::size_t init(Utf8FileManager* file_manager, Utf8FileId file_id);
+  ErrorCode init(Utf8FileManager* file_manager, Utf8FileId file_id);
 
   inline char32_t peek() const {
     DCHECK_EQ(status_, Status::kValid);

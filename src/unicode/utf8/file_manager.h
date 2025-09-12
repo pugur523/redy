@@ -41,7 +41,7 @@ class UNICODE_EXPORT Utf8FileManager {
 
   inline const Utf8File& file(Utf8FileId id) const {
     DCHECK_GE(id, 0);
-    DCHECK_LE(id, files_.size());
+    DCHECK_LT(id, files_.size());
     return files_[id];
   }
 
@@ -52,6 +52,8 @@ class UNICODE_EXPORT Utf8FileManager {
     }
     return f;
   }
+
+  inline bool has(Utf8FileId id) { return 0 <= id && id < files_.size(); }
 
  private:
   inline Utf8File& file_mutable(Utf8FileId id) {

@@ -14,8 +14,8 @@
 
 namespace unicode {
 
-std::size_t Utf8Stream::init(Utf8FileManager* file_manager,
-                             Utf8FileId file_id) {
+Utf8Stream::ErrorCode Utf8Stream::init(Utf8FileManager* file_manager,
+                                       Utf8FileId file_id) {
   file_manager_ = file_manager;
   file_id_ = file_id;
 
@@ -27,20 +27,24 @@ std::size_t Utf8Stream::init(Utf8FileManager* file_manager,
   column_ = 1;
   status_ = Status::kInitialized;
 
+  if (!file_manager_->has(file_id_)) [[unlikely]] {
+    return ErrorCode::kFileNotFound;
+  }
+
   const std::size_t invalid_pos = validate_utf8();
-  if (invalid_pos != 0) {
+  if (invalid_pos != 0) [[unlikely]] {
     status_ = Status::kInvalid;
-    return invalid_pos;
+    return ErrorCode::kInvalidUtf8;
   }
 
   const std::size_t decode_error = decode_content();
-  if (decode_error != 0) {
+  if (decode_error != 0) [[unlikely]] {
     status_ = Status::kInvalid;
-    return decode_error;
+    return ErrorCode::kInvalidUtf8;
   }
 
   status_ = Status::kValid;
-  return 0;
+  return ErrorCode::kSuccess;
 }
 
 std::size_t Utf8Stream::decode_content() {
