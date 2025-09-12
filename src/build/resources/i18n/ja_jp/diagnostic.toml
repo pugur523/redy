@@ -2,22 +2,27 @@ unknown = "unknown"
 ok = "ok"
 
 [severity]
-trace = "trace"
-debug = "debug"
+trace = "トレース"
+debug = "デバッグ"
 info = "情報"
 warn = "警告"
 error = "エラー"
 fatal = "致命的エラー"
 
-[lexer]
+[generic]
 file_not_found = "ファイルが見つかりませんでした"
-file_charset_invalid = "ファイルの文字コードが無効です"
+
+[lexer]
+# file_charset_invalid = "ファイルの文字コードが無効です"
+invalid_utf_sequence = "無効なutfシーケンス"
 unterminated_string_literal = "閉じられていない文字列リテラル"
 unterminated_character_literal = "閉じられていない単一文字リテラル"
 unterminated_block_comment = "閉じられていない複数行コメント"
 unrecognized_character = "認識されない文字"
-invalid_escape_sequence = "無効なエスケープシーケンス"
-invalid_utf_sequence = "無効なutfシーケンス"
+invalid_character_escape = "無効な文字エスケープシーケンス"
+invalid_octal_escape = "無効な8進数エスケープシーケンス"
+invalid_hex_escape = "無効な16進数エスケープシーケンス"
+invalid_unicode_escape = "無効なユニコードエスケープシーケンス"
 invalid_numeric_literal = "無効な数値リテラル"
 unexpected_end_of_file = "予期しないのファイル終端"
 
@@ -27,7 +32,14 @@ missing_token = "不足したトークン"
 unexpected_token = "予期しないトークン: {}"
 expected_but_found = "{}を予期しましたが、{}が見つかりました"
 cannot_be_postfix_operator = "{}は後ろにつける演算子としては使用できません"
-unexpected_keyword = "予期しないキーワード"
+conflicting_storage_specifiers = "{}と{}を同時に指定することはできません"
+invalid_syntax = "無効な文法"
+
+[resolver]
+undefined_symbol = "定義されていないシンボル"
+undefined_variable = "定義されていない変数"
+undefined_function = "定義されていない関数"
+undefined_type = "定義されていない型"
 malformed_declaration = "不正な形式の宣言"
 duplicate_parameter_name = "パラメータ名の重複"
 parameter_count_mismatch = "パラメータ数の不一致"
@@ -36,15 +48,7 @@ invalid_assignment_target = "無効な代入対象"
 invalid_generic_arguments = "無効な型引数"
 break_outside_loop = "ループ外でのbreak"
 continue_outside_loop = "ループ外でのcontinue"
-conflicting_storage_specifiers = "{}と{}を同時に指定することはできません"
 invalid_pattern = "無効なパターン"
-invalid_syntax = "無効な文法"
-
-[resolver]
-undefined_symbol = "定義されていないシンボル"
-undefined_variable = "定義されていない変数"
-undefined_function = "定義されていない関数"
-undefined_type = "定義されていない型"
 call_argument_mismatch = "関数呼び出しの引数が一致しません"
 return_type_mismatch = "戻り値の型が一致しません"
 non_callable_expression = "呼び出し不可能な式"
@@ -110,8 +114,8 @@ move_occurs_here = "ムーブはここで発生"
 borrow_exits_scope_here = "借用はここでスコープを抜けます"
 
 [annotation]
+change_charset_to_utf8_and_try_again = "ファイルの文字コードをutf8に変更してからやり直してみてください"
 was_not_declared_in_this_scope = "`{}`はこのスコープで宣言されていません"                    # variable
 moved_variable_that_was_still_borrowed = "借用されている間に`{}`がムーブされました"           # variable
 try_cloning_data = "ムーブ後に使用する必要がある場合、`{}`をクローンしてみてください"                     # variable
 did_you_mean = "`{}`を意図していましたか?"                                            # code
-change_charset_to_utf8_and_try_again = "ファイルの文字コードをutf-8に変更してからやり直してみてください"

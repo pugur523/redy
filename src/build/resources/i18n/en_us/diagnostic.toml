@@ -9,15 +9,20 @@ warn = "warn"
 error = "error"
 fatal = "fatal"
 
-[lexer]
+[generic]
 file_not_found = "file not found"
-file_charset_invalid = "file charset invalid"
+
+[lexer]
+# file_charset_invalid = "file charset invalid"
+invalid_utf_sequence = "invalid utf sequence"
 unterminated_string_literal = "unterminated string literal"
 unterminated_character_literal = "unterminated character literal"
 unterminated_block_comment = "unterminated block comment"
 unrecognized_character = "unrecognized character"
-invalid_escape_sequence = "invalid escape sequence"
-invalid_utf_sequence = "invalid utf sequence"
+invalid_character_escape = "invalid character escape sequence"
+invalid_octal_escape = "invalid octal escape sequence"
+invalid_hex_escape = "invalid hex escape sequence"
+invalid_unicode_escape = "invalid unicode escape sequence"
 invalid_numeric_literal = "invalid numeric literal"
 unexpected_end_of_file = "unexpected end of file"
 
@@ -27,7 +32,14 @@ missing_token = "missing token"
 unexpected_token = "unexpected token: {}"
 expected_but_found = "expected {}, but found {}"
 cannot_be_postfix_operator = "{} cannot be postfix operator"
-unexpected_keyword = "unexpected keyword"
+conflicting_storage_specifiers = "cannot specify {} and {} together"
+invalid_syntax = "invalid syntax"
+
+[resolver]
+undefined_symbol = "undefined symbol"
+undefined_variable = "undefined variable"
+undefined_function = "undefined function"
+undefined_type = "undefined type"
 malformed_declaration = "malformed declaration"
 duplicate_parameter_name = "duplicate parameter name"
 parameter_count_mismatch = "parameter count mismatch"
@@ -36,15 +48,7 @@ invalid_assignment_target = "invalid assignment target"
 invalid_generic_arguments = "invalid generic arguments"
 break_outside_loop = "break outside loop"
 continue_outside_loop = "continue outside loop"
-conflicting_storage_specifiers = "cannot specify {} and {} together"
 invalid_pattern = "invalid pattern"
-invalid_syntax = "invalid syntax"
-
-[resolver]
-undefined_symbol = "undefined symbol"
-undefined_variable = "undefined variable"
-undefined_function = "undefined function"
-undefined_type = "undefined type"
 call_argument_mismatch = "call argument mismatch"
 return_type_mismatch = "return type mismatch"
 non_callable_expression = "non callable expression"
@@ -110,8 +114,8 @@ move_occurs_here = "move occurs here"
 borrow_exits_scope_here = "borrow exits scope here"
 
 [annotation]
+change_charset_to_utf8_and_try_again = "change charset of the file to utf8 and try again"
 was_not_declared_in_this_scope = "`{}` was not declared in this scope" # variable
 moved_variable_that_was_still_borrowed = "`{}` was moved while borrowed" # variable
 try_cloning_data = "try cloning `{}` if you need to use it after moving" # variable
 did_you_mean = "did you mean `{}`?" # code
-change_charset_to_utf8_and_try_again = "change charset of the file to utf-8 and try again"
