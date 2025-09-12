@@ -8,15 +8,14 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "frontend/base/data/arena.h"
 #include "frontend/data/hir/base/hir_export.h"
-#include "frontend/data/hir/base/id.h"
 #include "frontend/data/hir/base/node.h"
-#include "frontend/data/hir/payload/common.h"
+#include "frontend/data/hir/base/node_id.h"
+#include "frontend/data/hir/payload/expression.h"
+#include "frontend/data/hir/payload/statement.h"
 
 namespace hir {
 
@@ -38,7 +37,7 @@ class HIR_EXPORT Context {
   inline constexpr base::Arena<T>& arena();
 
   template <typename T>
-  inline HirId alloc(T&& value) {
+  inline NodeId alloc(T&& value) {
     return arena<T>().alloc(std::move(value));
   }
 
@@ -48,9 +47,9 @@ class HIR_EXPORT Context {
   }
 
   template <typename T>
-  inline HirId alloc_hir_node(HirNodeKind kind, T&& payload) {
+  inline NodeId alloc_hir_node(NodeKind kind, T&& payload) {
     const PayloadId<T> payload_id = alloc_payload<T>(std::move(payload));
-    return alloc(HirNode{
+    return alloc(Node{
         .payload_id = payload_id.id,
         .kind = kind,
     });
@@ -61,92 +60,217 @@ class HIR_EXPORT Context {
     return arena<T>()[id];
   }
 
-  // id generators
-  inline constexpr DefId next_def_id() {
-    ++next_def_id_.id;
-    return next_def_id_;
-  }
-  inline constexpr HirId next_hir_id() {
-    ++next_hir_id_.id;
-    return next_hir_id_;
-  }
-  inline constexpr LocalId next_local_id() {
-    ++next_local_id_.id;
-    return next_local_id_;
-  }
-
  private:
   Context() = default;
 
-  // id generators
-  DefId next_def_id_ = {0};
-  HirId next_hir_id_ = {0};
-  LocalId next_local_id_ = {0};
+  base::Arena<Node> nodes_;
 
-  base::Arena<HirNode> hir_nodes_;
-  base::Arena<ExpressionPayload> expression_payloads_;
-  base::Arena<StatementPayload> statement_payloads_;
-  base::Arena<PatternPayload> pattern_payloads_;
-  base::Arena<TypePayload> type_payloads_;
-  base::Arena<DeclarationPayload> item_payloads_;
-  base::Arena<ResolvedPathPayload> resolved_path_payloads_;
-  base::Arena<GenericArgPayload> generic_arg_payloads_;
-  base::Arena<ParameterPayload> parameter_payloads_;
-  base::Arena<FieldPayload> field_payloads_;
-  base::Arena<EnumVariantPayload> enum_variant_payloads_;
-  base::Arena<MatchArmPayload> match_arm_payloads_;
+  base::Arena<LiteralExpressionPayload> literal_expression_payloads_;
+  base::Arena<ResolvedPathExpressionPayload> resolved_path_expression_payloads_;
+  base::Arena<UnaryExpressionPayload> unary_expression_payloads_;
+  base::Arena<BinaryExpressionPayload> binary_expression_payloads_;
+  base::Arena<ArrayExpressionPayload> array_expression_payloads_;
+  base::Arena<TupleExpressionPayload> tuple_expression_payloads_;
+  base::Arena<IndexExpressionPayload> index_expression_payloads_;
+  base::Arena<ConstructExpressionPayload> construct_expression_payloads_;
+  base::Arena<CallExpressionPayload> call_expression_payloads_;
+  base::Arena<FieldAccessExpressionPayload> field_access_expression_payloads_;
+  base::Arena<AwaitExpressionPayload> await_expression_payloads_;
+  base::Arena<ContinueExpressionPayload> continue_expression_payloads_;
+  base::Arena<BreakExpressionPayload> break_expression_payloads_;
+  base::Arena<RangeExpressionPayload> range_expression_payloads_;
+  base::Arena<ReturnExpressionPayload> return_expression_payloads_;
+
+  base::Arena<BlockExpressionPayload> block_expression_payloads_;
+  base::Arena<IfExpressionPayload> if_expression_payloads_;
+  base::Arena<WhileExpressionPayload> while_expression_payloads_;
+  base::Arena<MatchExpressionPayload> match_expression_payloads_;
+  base::Arena<ClosureExpressionPayload> closure_expression_payloads_;
+
+  base::Arena<AssignStatementPayload> assign_statement_payloads_;
+  base::Arena<AttributeStatementPayload> attribute_statement_payloads_;
+
+  base::Arena<FunctionDeclarationPayload> function_declaration_payloads_;
+  base::Arena<StructDeclarationPayload> struct_declaration_payloads_;
+  base::Arena<EnumerationDeclarationPayload> enumeration_declaration_payloads_;
+  base::Arena<TraitDeclarationPayload> trait_declaration_payloads_;
+  base::Arena<UnionDeclarationPayload> union_declaration_payloads_;
+  base::Arena<ModuleDeclarationPayload> module_declaration_payloads_;
+  base::Arena<GlobalVariableDeclarationPayload>
+      global_variable_declaration_payloads_;
+
+  base::Arena<AttributeUsePayload> attribute_use_payloads_;
   base::Arena<CapturePayload> capture_payloads_;
-  base::Arena<StructPatternFieldPayload> struct_pattern_field_payloads_;
-  base::Arena<VisibilityPayload> visibility_payloads_;
-
-  // raw id arrays for ranges
-  base::Arena<HirId> hir_ids_;
-  base::Arena<DefId> def_ids_;
-  base::Arena<LocalId> local_ids_;
-
-  // resolution maps
-  // std::unordered_map<ast::NodeId, DefId> ast_to_def;
-  // std::unordered_map<ast::NodeId, HirId> ast_to_hir;
-  // std::unordered_map<HirId, PayloadId<TypePayload>> hir_to_type;
+  base::Arena<FieldPayload> field_payloads_;
+  base::Arena<ParameterPayload> parameter_payloads_;
+  base::Arena<EnumVariantPayload> enum_variant_payloads_;
+  base::Arena<IfBranchPayload> if_branch_payloads_;
+  base::Arena<MatchArmPayload> match_arm_payloads_;
 };
 
 template <>
-inline constexpr base::Arena<HirNode>& Context::arena<HirNode>() {
-  return hir_nodes_;
+inline constexpr base::Arena<Node>& Context::arena<Node>() {
+  return nodes_;
 }
 
 template <>
-inline constexpr base::Arena<ExpressionPayload>&
-Context::arena<ExpressionPayload>() {
-  return expression_payloads_;
+inline constexpr base::Arena<LiteralExpressionPayload>&
+Context::arena<LiteralExpressionPayload>() {
+  return literal_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<StatementPayload>&
-Context::arena<StatementPayload>() {
-  return statement_payloads_;
+inline constexpr base::Arena<ResolvedPathExpressionPayload>&
+Context::arena<ResolvedPathExpressionPayload>() {
+  return resolved_path_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<PatternPayload>& Context::arena<PatternPayload>() {
-  return pattern_payloads_;
+inline constexpr base::Arena<UnaryExpressionPayload>&
+Context::arena<UnaryExpressionPayload>() {
+  return unary_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<TypePayload>& Context::arena<TypePayload>() {
-  return type_payloads_;
+inline constexpr base::Arena<BinaryExpressionPayload>&
+Context::arena<BinaryExpressionPayload>() {
+  return binary_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<DeclarationPayload>&
-Context::arena<DeclarationPayload>() {
-  return item_payloads_;
+inline constexpr base::Arena<ArrayExpressionPayload>&
+Context::arena<ArrayExpressionPayload>() {
+  return array_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<ResolvedPathPayload>&
-Context::arena<ResolvedPathPayload>() {
-  return resolved_path_payloads_;
+inline constexpr base::Arena<TupleExpressionPayload>&
+Context::arena<TupleExpressionPayload>() {
+  return tuple_expression_payloads_;
 }
 template <>
-inline constexpr base::Arena<GenericArgPayload>&
-Context::arena<GenericArgPayload>() {
-  return generic_arg_payloads_;
+inline constexpr base::Arena<IndexExpressionPayload>&
+Context::arena<IndexExpressionPayload>() {
+  return index_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<ConstructExpressionPayload>&
+Context::arena<ConstructExpressionPayload>() {
+  return construct_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<CallExpressionPayload>&
+Context::arena<CallExpressionPayload>() {
+  return call_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<FieldAccessExpressionPayload>&
+Context::arena<FieldAccessExpressionPayload>() {
+  return field_access_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<AwaitExpressionPayload>&
+Context::arena<AwaitExpressionPayload>() {
+  return await_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<ContinueExpressionPayload>&
+Context::arena<ContinueExpressionPayload>() {
+  return continue_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<BreakExpressionPayload>&
+Context::arena<BreakExpressionPayload>() {
+  return break_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<RangeExpressionPayload>&
+Context::arena<RangeExpressionPayload>() {
+  return range_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<ReturnExpressionPayload>&
+Context::arena<ReturnExpressionPayload>() {
+  return return_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<BlockExpressionPayload>&
+Context::arena<BlockExpressionPayload>() {
+  return block_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<IfExpressionPayload>&
+Context::arena<IfExpressionPayload>() {
+  return if_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<WhileExpressionPayload>&
+Context::arena<WhileExpressionPayload>() {
+  return while_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<MatchExpressionPayload>&
+Context::arena<MatchExpressionPayload>() {
+  return match_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<ClosureExpressionPayload>&
+Context::arena<ClosureExpressionPayload>() {
+  return closure_expression_payloads_;
+}
+template <>
+inline constexpr base::Arena<AssignStatementPayload>&
+Context::arena<AssignStatementPayload>() {
+  return assign_statement_payloads_;
+}
+template <>
+inline constexpr base::Arena<AttributeStatementPayload>&
+Context::arena<AttributeStatementPayload>() {
+  return attribute_statement_payloads_;
+}
+template <>
+inline constexpr base::Arena<FunctionDeclarationPayload>&
+Context::arena<FunctionDeclarationPayload>() {
+  return function_declaration_payloads_;
+}
+template <>
+inline constexpr base::Arena<StructDeclarationPayload>&
+Context::arena<StructDeclarationPayload>() {
+  return struct_declaration_payloads_;
+}
+template <>
+inline constexpr base::Arena<EnumerationDeclarationPayload>&
+Context::arena<EnumerationDeclarationPayload>() {
+  return enumeration_declaration_payloads_;
+}
+template <>
+inline constexpr base::Arena<TraitDeclarationPayload>&
+Context::arena<TraitDeclarationPayload>() {
+  return trait_declaration_payloads_;
+}
+template <>
+inline constexpr base::Arena<UnionDeclarationPayload>&
+Context::arena<UnionDeclarationPayload>() {
+  return union_declaration_payloads_;
+}
+template <>
+inline constexpr base::Arena<ModuleDeclarationPayload>&
+Context::arena<ModuleDeclarationPayload>() {
+  return module_declaration_payloads_;
+}
+template <>
+inline constexpr base::Arena<GlobalVariableDeclarationPayload>&
+Context::arena<GlobalVariableDeclarationPayload>() {
+  return global_variable_declaration_payloads_;
+}
+
+template <>
+inline constexpr base::Arena<AttributeUsePayload>&
+Context::arena<AttributeUsePayload>() {
+  return attribute_use_payloads_;
+}
+template <>
+inline constexpr base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
+  return capture_payloads_;
+}
+template <>
+inline constexpr base::Arena<FieldPayload>& Context::arena<FieldPayload>() {
+  return field_payloads_;
 }
 template <>
 inline constexpr base::Arena<ParameterPayload>&
@@ -154,45 +278,19 @@ Context::arena<ParameterPayload>() {
   return parameter_payloads_;
 }
 template <>
-inline constexpr base::Arena<FieldPayload>& Context::arena<FieldPayload>() {
-  return field_payloads_;
-}
-template <>
 inline constexpr base::Arena<EnumVariantPayload>&
 Context::arena<EnumVariantPayload>() {
   return enum_variant_payloads_;
 }
 template <>
+inline constexpr base::Arena<IfBranchPayload>&
+Context::arena<IfBranchPayload>() {
+  return if_branch_payloads_;
+}
+template <>
 inline constexpr base::Arena<MatchArmPayload>&
 Context::arena<MatchArmPayload>() {
   return match_arm_payloads_;
-}
-template <>
-inline constexpr base::Arena<CapturePayload>& Context::arena<CapturePayload>() {
-  return capture_payloads_;
-}
-template <>
-inline constexpr base::Arena<StructPatternFieldPayload>&
-Context::arena<StructPatternFieldPayload>() {
-  return struct_pattern_field_payloads_;
-}
-template <>
-inline constexpr base::Arena<VisibilityPayload>&
-Context::arena<VisibilityPayload>() {
-  return visibility_payloads_;
-}
-
-template <>
-inline constexpr base::Arena<HirId>& Context::arena<HirId>() {
-  return hir_ids_;
-}
-template <>
-inline constexpr base::Arena<DefId>& Context::arena<DefId>() {
-  return def_ids_;
-}
-template <>
-inline constexpr base::Arena<LocalId>& Context::arena<LocalId>() {
-  return local_ids_;
 }
 
 }  // namespace hir

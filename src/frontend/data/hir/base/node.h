@@ -10,21 +10,53 @@
 
 #include "frontend/data/ast/base/ast_export.h"
 #include "frontend/data/ast/base/node_id.h"
-#include "frontend/data/hir/payload/common.h"
 
 namespace hir {
 
-enum class HirNodeKind : uint8_t {
+enum class NodeKind : uint8_t {
   kUnknown = 0,
-  kExpression = 1,
-  kStatement = 2,
-  kPattern = 3,
-  // TODO add more
+
+  kAssignStatement = 1,
+  kAttributeStatement = 2,
+  // use statement is removed: paths will be resolved on this phase, no need
+  // to leave it any more
+
+  kLiteralExpression = 3,
+  kResolvedPathExpression = 4,
+  kUnaryExpression = 5,
+  kBinaryExpression = 6,
+  kArrayExpression = 7,
+  kTupleExpression = 8,
+  kIndexExpression = 9,
+  kConstructExpression = 10,
+  // function, method, macro call will be call
+  kCallExpression = 11,
+  kFieldAccessExpression = 12,
+  kAwaitExpression = 13,
+  kContinueExpression = 14,
+  kBreakExpression = 15,
+  kRangeExpression = 16,
+  kReturnExpression = 17,
+  kBlockExpression = 18,
+  kIfExpression = 19,
+  // for and loop will be while
+  kWhileExpression = 20,
+  kMatchExpression = 21,
+  kClosureExpression = 22,
+
+  // impl and redirect will be function
+  kFunctionDeclaration = 23,
+  kStructDeclaration = 24,
+  kEnumDeclaration = 25,
+  kUnionDeclaration = 26,
+  kTraitDeclaration = 27,
+  kModuleDeclaration = 28,
+  kGlobalVariableDeclaration = 29,
 };
 
-struct HirNode {
+struct Node {
   uint32_t payload_id = 0xFFFFFFFF;
-  HirNodeKind kind = HirNodeKind::kUnknown;
+  NodeKind kind = NodeKind::kUnknown;
 };
 
 }  // namespace hir
