@@ -58,7 +58,17 @@ Parser::Result<ast::NodeId> Parser::parse_unary_expr() {
 
     // check if this operator can be used as postfix
     if (!base::is_postfix_operator(postfix_op)) {
-      break;
+      return err<NodeId>(
+          std::move(
+              Eb(diagnostic::Severity::kError,
+                 diagnostic::DiagId::kCannotBePostfixOperator)
+                  .label(stream_->file_id(), postfix_token.range(),
+                         i18n::TranslationKey::
+                             kDiagnosticParserCannotBePostfixOperator,
+                         diagnostic::LabelMarkerType::kEmphasis,
+                         {translator_->translate(base::token_kind_to_tr_key(
+                             postfix_token.kind()))}))
+              .build());
     }
 
     next_non_whitespace();

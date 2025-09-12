@@ -22,81 +22,89 @@ Parser::Result<R> Parser::parse_enum_variant() {
     return err<R>(std::move(variant_name_r));
   }
 
-  if (check(base::TokenKind::kComma) || check(base::TokenKind::kRightBrace)) {
-    // empty
-    return ok(context_->alloc_payload(
-        ast::EnumVariantPayload(std::move(variant_name_r).unwrap())));
-  } else if (check(base::TokenKind::kEqual)) {
-    // consume =
-    next_non_whitespace();
-
-    // integer expression
-    auto integer_expr_r = parse_expression();
-    if (integer_expr_r.is_err()) {
-      return err<R>(std::move(integer_expr_r));
+  const base::TokenKind kind = peek().kind();
+  switch (kind) {
+    case base::TokenKind::kComma:
+    case base::TokenKind::kRightBrace: {
+      // empty
+      return ok(context_->alloc_payload(
+          ast::EnumVariantPayload(std::move(variant_name_r).unwrap())));
     }
-
-    return ok(context_->alloc_payload(
-        ast::EnumVariantPayload(std::move(variant_name_r).unwrap(),
-                                std::move(integer_expr_r).unwrap())));
-  } else if (check(base::TokenKind::kLeftBrace)) {
-    // consume {
-    next_non_whitespace();
-
-    // field nodes
-    auto field_list_r = parse_field_list();
-    if (field_list_r.is_err()) {
-      return err<R>(std::move(field_list_r));
-    }
-
-    return ok(context_->alloc_payload(ast::EnumVariantPayload(
-        std::move(variant_name_r).unwrap(), std::move(field_list_r).unwrap())));
-  } else if (check(base::TokenKind::kLeftParen)) {
-    // consume (
-    next_non_whitespace();
-
-    // type nodes
-    PayloadId<ast::TypeReferencePayload> first_id;
-    uint32_t types_count = 0;
-
-    while (!eof() && !check(base::TokenKind::kRightParen)) {
-      auto r = parse_type_reference();
-      if (r.is_err()) {
-        return err<R>(std::move(r));
-      } else if (types_count == 0) {
-        first_id = std::move(r).unwrap();
-      }
-      ++types_count;
-
-      if (!check(base::TokenKind::kComma)) {
-        break;
-      }
-      // consume comma
+    case base::TokenKind::kEqual: {
+      // consume =
       next_non_whitespace();
-    }
 
-    auto right_r = consume(base::TokenKind::kRightParen, true);
-    if (right_r.is_err()) {
-      return err<R>(std::move(right_r));
-    }
+      // integer expression
+      auto integer_expr_r = parse_expression();
+      if (integer_expr_r.is_err()) {
+        return err<R>(std::move(integer_expr_r));
+      }
 
-    return ok(context_->alloc_payload(
-        ast::EnumVariantPayload(std::move(variant_name_r).unwrap(),
-                                PayloadRange<ast::TypeReferencePayload>{
-                                    .begin = first_id,
-                                    .size = types_count,
-                                })));
-  } else {
-    return err<R>(
-        std::move(
-            Eb(diagnostic::Severity::kError,
-               diagnostic::DiagnosticId::kUnexpectedToken)
-                .label(stream_->file_id(), peek().range(),
-                       i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
-                       diagnostic::LabelMarkerType::kLine,
-                       {translator_->translate(
-                           base::token_kind_to_tr_key(peek().kind()))}))
-            .build());
+      return ok(context_->alloc_payload(
+          ast::EnumVariantPayload(std::move(variant_name_r).unwrap(),
+                                  std::move(integer_expr_r).unwrap())));
+    }
+    case base::TokenKind::kLeftBrace: {
+      // consume {
+      next_non_whitespace();
+
+      // field nodes
+      auto field_list_r = parse_field_list();
+      if (field_list_r.is_err()) {
+        return err<R>(std::move(field_list_r));
+      }
+
+      return ok(context_->alloc_payload(
+          ast::EnumVariantPayload(std::move(variant_name_r).unwrap(),
+                                  std::move(field_list_r).unwrap())));
+    }
+    case base::TokenKind::kLeftParen: {
+      // consume (
+      next_non_whitespace();
+
+      // type nodes
+      PayloadId<ast::TypeReferencePayload> first_id;
+      uint32_t types_count = 0;
+
+      while (!eof() && !check(base::TokenKind::kRightParen)) {
+        auto r = parse_type_reference();
+        if (r.is_err()) {
+          return err<R>(std::move(r));
+        } else if (types_count == 0) {
+          first_id = std::move(r).unwrap();
+        }
+        ++types_count;
+
+        if (!check(base::TokenKind::kComma)) {
+          break;
+        }
+        // consume comma
+        next_non_whitespace();
+      }
+
+      auto right_r = consume(base::TokenKind::kRightParen, true);
+      if (right_r.is_err()) {
+        return err<R>(std::move(right_r));
+      }
+
+      return ok(context_->alloc_payload(
+          ast::EnumVariantPayload(std::move(variant_name_r).unwrap(),
+                                  PayloadRange<ast::TypeReferencePayload>{
+                                      .begin = first_id,
+                                      .size = types_count,
+                                  })));
+    }
+    default:
+      return err<R>(
+          std::move(
+              Eb(diagnostic::Severity::kError,
+                 diagnostic::DiagnosticId::kUnexpectedToken)
+                  .label(stream_->file_id(), peek().range(),
+                         i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
+                         diagnostic::LabelMarkerType::kEmphasis,
+                         {translator_->translate(
+                             base::token_kind_to_tr_key(peek().kind()))}))
+              .build());
   }
 }
 

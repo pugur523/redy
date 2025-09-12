@@ -52,17 +52,19 @@ Parser::Result<R> Parser::parse_path_expr() {
 
   if (parts_count == 0) [[unlikely]] {
     // found eof just after ::
+
+    const base::Token& token = peek();
     return err<R>(
         std::move(
             Eb(diagnostic::Severity::kError,
                diagnostic::DiagId::kExpectedButFound)
-                .label(stream_->file_id(), peek().range(),
+                .label(stream_->file_id(), token.range(),
                        i18n::TranslationKey::kDiagnosticParserExpectedButFound,
                        diagnostic::LabelMarkerType::kEmphasis,
                        {translator_->translate(
                             i18n::TranslationKey::kTermTokenKindIdentifier),
                         translator_->translate(
-                            base::token_kind_to_tr_key(peek().kind()))}))
+                            base::token_kind_to_tr_key(token.kind()))}))
             .build());
   } else {
     return ok(context_->alloc_payload(ast::PathExpressionPayload{

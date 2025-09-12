@@ -37,7 +37,8 @@ Parser::Result<R> Parser::parse_array_expr() {
     ++elements_count;
 
     const base::Token& next_token = next_non_whitespace();
-    if (next_token.kind() == base::TokenKind::kComma) {
+    const base::TokenKind kind = next_token.kind();
+    if (kind == base::TokenKind::kComma) {
       next_non_whitespace();
     } else {
       return err<R>(
@@ -48,7 +49,7 @@ Parser::Result<R> Parser::parse_array_expr() {
                          i18n::TranslationKey::kDiagnosticParserUnexpectedToken,
                          diagnostic::LabelMarkerType::kEmphasis,
                          {translator_->translate(
-                             base::token_kind_to_tr_key(next_token.kind()))}))
+                             base::token_kind_to_tr_key(kind))}))
               .build());
     }
   }

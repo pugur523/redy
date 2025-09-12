@@ -29,66 +29,74 @@ Parser::Result<R> Parser::parse_type_reference() {
     // primitive types
     return ok(context_->alloc_payload(ast::TypeReferencePayload(
         base::token_kind_to_primitive_type(current_kind))));
-  } else if (current_kind == base::TokenKind::kIdentifier ||
-             current_kind == base::TokenKind::kColonColon) {
-    // user defined types
-    auto path_r = parse_path_expr();
-    if (path_r.is_err()) {
-      return err<R>(std::move(path_r));
-    }
-    return ok(context_->alloc_payload(
-        ast::TypeReferencePayload(std::move(path_r).unwrap())));
-  } else if (current_kind == base::TokenKind::kLeftBracket) {
-    // consume [
-    next_non_whitespace();
-
-    // array type [i32], [i32; 5]
-    auto array_type_r = parse_type_reference();
-    if (array_type_r.is_err()) {
-      return array_type_r;
-    }
-
-    PayloadId<ast::ArrayTypePayload> array_id;
-
-    const base::Token& semicolon_or_right = next_non_whitespace();
-    if (semicolon_or_right.kind() == base::TokenKind::kRightBracket) {
-      // consume ]
-      next_non_whitespace();
-
-      array_id = context_->alloc_payload(ast::ArrayTypePayload{
-          .type = std::move(array_type_r).unwrap(),
-          .array_size_expr = ast::kInvalidNodeId,
-      });
-    } else {
-      auto semicolon_r = consume(base::TokenKind::kSemicolon, false);
-      if (semicolon_r.is_err()) {
-        return err<R>(std::move(semicolon_r));
-      }
-
-      auto array_size_r = parse_expression();
-      if (array_size_r.is_err()) {
-        return err<R>(std::move(array_size_r));
-      }
-
-      array_id = context_->alloc_payload(ast::ArrayTypePayload{
-          .type = std::move(array_type_r).unwrap(),
-          .array_size_expr = std::move(array_size_r).unwrap(),
-      });
-    }
-    return ok(context_->alloc_payload(ast::TypeReferencePayload(array_id)));
   } else {
-    // not primitive, user-defined, or an array -> return error
-    return err<R>(
-        std::move(
-            Eb(diagnostic::Severity::kError,
-               diagnostic::DiagId::kExpectedButFound)
-                .label(stream_->file_id(), current.range(),
-                       i18n::TranslationKey::kDiagnosticParserExpectedButFound,
-                       diagnostic::LabelMarkerType::kEmphasis,
-                       {translator_->translate(i18n::TranslationKey::kTermType),
-                        translator_->translate(
-                            base::token_kind_to_tr_key(current_kind))}))
-            .build());
+    switch (current_kind) {
+      case base::TokenKind::kIdentifier:
+      case base::TokenKind::kColonColon: {
+        // user defined types
+        auto path_r = parse_path_expr();
+        if (path_r.is_err()) {
+          return err<R>(std::move(path_r));
+        }
+        return ok(context_->alloc_payload(
+            ast::TypeReferencePayload(std::move(path_r).unwrap())));
+      }
+      case base::TokenKind::kLeftBracket: {
+        // consume [
+        next_non_whitespace();
+
+        // array type [i32], [i32; 5]
+        auto array_type_r = parse_type_reference();
+        if (array_type_r.is_err()) {
+          return array_type_r;
+        }
+
+        PayloadId<ast::ArrayTypePayload> array_id;
+
+        const base::Token& semicolon_or_right = next_non_whitespace();
+        if (semicolon_or_right.kind() == base::TokenKind::kRightBracket) {
+          // consume ]
+          next_non_whitespace();
+
+          array_id = context_->alloc_payload(ast::ArrayTypePayload{
+              .type = std::move(array_type_r).unwrap(),
+              .array_size_expr = ast::kInvalidNodeId,
+          });
+        } else {
+          auto semicolon_r = consume(base::TokenKind::kSemicolon, false);
+          if (semicolon_r.is_err()) {
+            return err<R>(std::move(semicolon_r));
+          }
+
+          auto array_size_r = parse_expression();
+          if (array_size_r.is_err()) {
+            return err<R>(std::move(array_size_r));
+          }
+
+          array_id = context_->alloc_payload(ast::ArrayTypePayload{
+              .type = std::move(array_type_r).unwrap(),
+              .array_size_expr = std::move(array_size_r).unwrap(),
+          });
+        }
+        return ok(context_->alloc_payload(ast::TypeReferencePayload(array_id)));
+      }
+      default: {
+        // not primitive, user-defined, or an array -> return error
+        return err<R>(
+            std::move(
+                Eb(diagnostic::Severity::kError,
+                   diagnostic::DiagId::kExpectedButFound)
+                    .label(
+                        stream_->file_id(), current.range(),
+                        i18n::TranslationKey::kDiagnosticParserExpectedButFound,
+                        diagnostic::LabelMarkerType::kEmphasis,
+                        {translator_->translate(
+                             i18n::TranslationKey::kTermType),
+                         translator_->translate(
+                             base::token_kind_to_tr_key(current_kind))}))
+                .build());
+      }
+    }
   }
 }
 

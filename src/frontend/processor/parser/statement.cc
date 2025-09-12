@@ -54,7 +54,7 @@ Parser::Result<ast::NodeId> Parser::parse_statement() {
                       .label(stream_->file_id(), peek().range(),
                              i18n::TranslationKey::
                                  kDiagnosticParserUnexpectedToken,
-                             diagnostic::LabelMarkerType::kLine,
+                             diagnostic::LabelMarkerType::kEmphasis,
                              {translator_->translate(
                                  base::token_kind_to_tr_key(current_kind))}))
                   .build());

@@ -27,7 +27,8 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
       std::move(storage_attr_r).unwrap();
 
   using Kind = base::TokenKind;
-  const Kind kind = peek().kind();
+  const base::Token& token = peek();
+  const Kind kind = token.kind();
 
   // local macro, undef at the bottom of this file
 #define TRY_RETURN_DECL(fn, node_kind)                 \
@@ -81,11 +82,11 @@ Parser::Result<ast::NodeId> Parser::parse_decl_stmt() {
       return err<NodeId>(
           std::move(
               Eb(diagnostic::Severity::kError,
-                 diagnostic::DiagnosticId::kUnexpectedToken)
+                 diagnostic::DiagnosticId::kExpectedButFound)
                   .label(
-                      stream_->file_id(), peek().range(),
+                      stream_->file_id(), token.range(),
                       i18n::TranslationKey::kDiagnosticParserExpectedButFound,
-                      diagnostic::LabelMarkerType::kLine,
+                      diagnostic::LabelMarkerType::kEmphasis,
                       {translator_->translate(
                            i18n::TranslationKey::kTermDeclaration),
                        translator_->translate(

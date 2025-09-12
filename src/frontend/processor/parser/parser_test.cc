@@ -110,6 +110,43 @@ struct TestParser {
 
 }  // namespace
 
+TEST(ParserTest, GlobalAssignWithTypeAnnotation) {
+  TestParser parser({
+      base::TokenKind::kIdentifier,
+      base::TokenKind::kColon,
+      base::TokenKind::kI32,
+      base::TokenKind::kEqual,
+      base::TokenKind::kDecimal,
+      base::TokenKind::kEof,
+  });
+  // num: i32 = 42
+  parser.expect_ok();
+}
+
+TEST(ParserTest, GlobalAssignWithTypeInfer) {
+  TestParser parser({
+      base::TokenKind::kIdentifier,
+      base::TokenKind::kColonEqual,
+      base::TokenKind::kDecimal,
+      base::TokenKind::kEof,
+  });
+  // num := 42
+  parser.expect_ok();
+}
+
+TEST(ParserTest, GlobalAssignWithAddition) {
+  TestParser parser({
+      base::TokenKind::kIdentifier,
+      base::TokenKind::kColonEqual,
+      base::TokenKind::kDecimal,
+      base::TokenKind::kPlus,
+      base::TokenKind::kDecimal,
+      base::TokenKind::kEof,
+  });
+  // num := 42 + 57
+  parser.expect_ok();
+}
+
 TEST(ParserTest, ParseEmptyStruct) {
   TestParser parser({
       base::TokenKind::kStruct,
