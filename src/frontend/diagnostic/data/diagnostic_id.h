@@ -28,96 +28,101 @@ enum class DiagnosticId : uint8_t {
   // ok
   kOk = 1,
 
+  // generic
+  kFileNotFound = 2,
+
   // lexer
-  kUnterminatedStringLiteral = 2,
-  kUnterminatedCharacterLiteral = 3,
-  kUnterminatedBlockComment = 4,
-  kUnrecognizedCharacter = 5,
-  kInvalidEscapeSequence = 6,
-  kInvalidUtfSequence = 7,
-  kInvalidNumericLiteral = 8,
-  kUnexpectedEndOfFile = 9,
+  kInvalidUtfSequence = 3,
+  kUnterminatedStringLiteral = 4,
+  kUnterminatedCharacterLiteral = 5,
+  kUnterminatedBlockComment = 6,
+  kUnrecognizedCharacter = 7,
+  kInvalidCharacterEscape = 8,
+  kInvalidOctalEscape = 9,
+  kInvalidHexEscape = 10,
+  kInvalidUnicodeEscape = 11,
+  kInvalidNumericLiteral = 12,
+  kUnexpectedEndOfFile = 13,
 
   // parser
-  kInvalidToken = 10,
-  kMissingToken = 11,
-  kUnexpectedToken = 12,
-  kExpectedButFound = 13,
-  kCannotBePostfixOperator = 14,
-  kUnexpectedKeyword = 15,
-  kMalformedDeclaration = 16,
-  kDuplicateParameterName = 17,
-  kParameterCountMismatch = 18,
-  kInvalidFunctionCall = 19,
-  kInvalidAssignmentTarget = 20,
-  kInvalidGenericArguments = 21,
-  kBreakOutsideLoop = 22,
-  kContinueOutsideLoop = 23,
-  kConflictingStorageSpecifiers = 24,
-  kInvalidPattern = 25,
-  kInvalidSyntax = 26,  // fallback
+  kInvalidToken = 14,
+  kMissingToken = 15,
+  kUnexpectedToken = 16,
+  kExpectedButFound = 17,
+  kCannotBePostfixOperator = 18,
+  kConflictingStorageSpecifiers = 19,
+  kInvalidSyntax = 20,  // fallback
 
   // resolver
-  kUndefinedSymbol = 27,
-  kUndefinedVariable = 28,
-  kUndefinedFunction = 29,
-  kUndefinedType = 30,
-  kCallArgumentMismatch = 31,
-  kReturnTypeMismatch = 32,
-  kNonCallableExpression = 33,
-  kInvalidOperatorOperands = 34,
-  kMemberNotFound = 35,
-  kAccessPrivateMember = 36,
-  kImmutableBindingChanged = 37,
-  kConstAssignment = 38,
-  kTypeMismatch = 39,
-  kTypeAnnotationRequired = 40,
-  kNonIterableExpression = 41,
-  kInfiniteLoopLiteral = 42,
-  kFunctionSignatureMismatch = 43,
-  kRedeclaration = 44,
-  kConflictingDeclaration = 45,
-  kConflictingTraitImplementation = 46,
-  kMissingTraitBound = 47,
-  kVariableNotInitialized = 48,
-  kMisplacedAttribute = 49,
-  kRecursiveTypeDefinition = 50,
-  kCyclicDependency = 51,
-  kNumericLiteralOutOfRange = 52,
+  kUndefinedSymbol = 21,
+  kUndefinedVariable = 22,
+  kUndefinedFunction = 23,
+  kUndefinedType = 24,
+  kMalformedDeclaration = 25,
+  kDuplicateParameterName = 26,
+  kParameterCountMismatch = 27,
+  kInvalidFunctionCall = 28,
+  kInvalidAssignmentTarget = 29,
+  kInvalidGenericArguments = 30,
+  kBreakOutsideLoop = 31,
+  kContinueOutsideLoop = 32,
+  kInvalidPattern = 33,
+  kCallArgumentMismatch = 34,
+  kReturnTypeMismatch = 35,
+  kNonCallableExpression = 36,
+  kInvalidOperatorOperands = 37,
+  kMemberNotFound = 38,
+  kAccessPrivateMember = 39,
+  kImmutableBindingChanged = 40,
+  kConstAssignment = 41,
+  kTypeMismatch = 42,
+  kTypeAnnotationRequired = 43,
+  kNonIterableExpression = 44,
+  kInfiniteLoopLiteral = 45,
+  kFunctionSignatureMismatch = 46,
+  kRedeclaration = 47,
+  kConflictingDeclaration = 48,
+  kConflictingTraitImplementation = 49,
+  kMissingTraitBound = 50,
+  kVariableNotInitialized = 51,
+  kMisplacedAttribute = 52,
+  kRecursiveTypeDefinition = 53,
+  kCyclicDependency = 54,
+  kNumericLiteralOutOfRange = 55,
 
   // hir / mir analyze (lifetime infer/ borrow checker)
-  kDanglingReference = 53,
-  kUnusedLifetimeParameter = 54,
-  kUnusedBorrow = 55,
-  kLifetimeConflict = 56,
-  kLifetimeAnnotationRequired = 57,
-  kReturnedBorrowDoesNotLiveLongEnough = 58,
-  kMovedVariableThatWasStillBorrowed = 59,
-  kBorrowAfterMove = 60,
-  kUseAfterMove = 61,
-  kMultipleMutableBorrow = 62,
-  kMutableAlias = 63,
-  kImmutableBorrowIntoMutable = 64,
+  kDanglingReference = 56,
+  kUnusedLifetimeParameter = 57,
+  kUnusedBorrow = 58,
+  kLifetimeConflict = 59,
+  kLifetimeAnnotationRequired = 60,
+  kReturnedBorrowDoesNotLiveLongEnough = 61,
+  kMovedVariableThatWasStillBorrowed = 62,
+  kBorrowAfterMove = 63,
+  kUseAfterMove = 64,
+  kMultipleMutableBorrow = 65,
+  kMutableAlias = 66,
+  kImmutableBorrowIntoMutable = 67,
 
   // warning
-  kUnusedVariable = 65,
-  kUnusedFunction = 66,
-  kUnreachableCode = 67,
-  kImplicitConversion = 68,
-  kMissingReturnStatement = 69,
-  kDeprecatedFeature = 70,
-  kDeprecatedApiUsage = 71,
-  kAmbiguousCall = 72,
-  kUnnecessaryCopy = 73,
-  kShadowingVariable = 74,
-  kNumericDivisionByZero = 75,
-  kAlwaysTrueCondition = 76,
-  kAlwaysFalseCondition = 77,
-  kMissingDefaultCase = 78,
-  kInefficientLoop = 79,
-  kRedundantCast = 80,
-  kEmptyLoopBody = 81,
-  kIneffectiveAssignment = 82,
+  kUnusedVariable = 68,
+  kUnusedFunction = 69,
+  kUnreachableCode = 70,
+  kImplicitConversion = 71,
+  kMissingReturnStatement = 72,
+  kDeprecatedFeature = 73,
+  kDeprecatedApiUsage = 74,
+  kAmbiguousCall = 75,
+  kUnnecessaryCopy = 76,
+  kShadowingVariable = 77,
+  kNumericDivisionByZero = 78,
+  kAlwaysTrueCondition = 79,
+  kAlwaysFalseCondition = 80,
+  kMissingDefaultCase = 81,
+  kInefficientLoop = 82,
+  kRedundantCast = 83,
+  kEmptyLoopBody = 84,
+  kIneffectiveAssignment = 85,
 };
 
 inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
@@ -129,7 +134,13 @@ inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
     // ok
     case Id::kOk: return TranslationKey::kDiagnosticOk;
 
+    // generic
+    case Id::kFileNotFound:
+      return TranslationKey::kDiagnosticGenericFileNotFound;
+
     // lexer
+    case Id::kInvalidUtfSequence:
+      return TranslationKey::kDiagnosticLexerInvalidUtfSequence;
     case Id::kUnterminatedStringLiteral:
       return TranslationKey::kDiagnosticLexerUnterminatedStringLiteral;
     case Id::kUnterminatedCharacterLiteral:
@@ -138,10 +149,14 @@ inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
       return TranslationKey::kDiagnosticLexerUnterminatedBlockComment;
     case Id::kUnrecognizedCharacter:
       return TranslationKey::kDiagnosticLexerUnrecognizedCharacter;
-    case Id::kInvalidEscapeSequence:
-      return TranslationKey::kDiagnosticLexerInvalidEscapeSequence;
-    case Id::kInvalidUtfSequence:
-      return TranslationKey::kDiagnosticLexerInvalidUtfSequence;
+    case Id::kInvalidCharacterEscape:
+      return TranslationKey::kDiagnosticLexerInvalidCharacterEscape;
+    case Id::kInvalidOctalEscape:
+      return TranslationKey::kDiagnosticLexerInvalidOctalEscape;
+    case Id::kInvalidHexEscape:
+      return TranslationKey::kDiagnosticLexerInvalidHexEscape;
+    case Id::kInvalidUnicodeEscape:
+      return TranslationKey::kDiagnosticLexerInvalidUnicodeEscape;
     case Id::kInvalidNumericLiteral:
       return TranslationKey::kDiagnosticLexerInvalidNumericLiteral;
     case Id::kUnexpectedEndOfFile:
@@ -158,26 +173,6 @@ inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
       return TranslationKey::kDiagnosticParserExpectedButFound;
     case Id::kCannotBePostfixOperator:
       return TranslationKey::kDiagnosticParserCannotBePostfixOperator;
-    case Id::kUnexpectedKeyword:
-      return TranslationKey::kDiagnosticParserUnexpectedKeyword;
-    case Id::kMalformedDeclaration:
-      return TranslationKey::kDiagnosticParserMalformedDeclaration;
-    case Id::kDuplicateParameterName:
-      return TranslationKey::kDiagnosticParserDuplicateParameterName;
-    case Id::kParameterCountMismatch:
-      return TranslationKey::kDiagnosticParserParameterCountMismatch;
-    case Id::kInvalidFunctionCall:
-      return TranslationKey::kDiagnosticParserInvalidFunctionCall;
-    case Id::kInvalidAssignmentTarget:
-      return TranslationKey::kDiagnosticParserInvalidAssignmentTarget;
-    case Id::kInvalidGenericArguments:
-      return TranslationKey::kDiagnosticParserInvalidGenericArguments;
-    case Id::kBreakOutsideLoop:
-      return TranslationKey::kDiagnosticParserBreakOutsideLoop;
-    case Id::kContinueOutsideLoop:
-      return TranslationKey::kDiagnosticParserContinueOutsideLoop;
-    case Id::kInvalidPattern:
-      return TranslationKey::kDiagnosticParserInvalidPattern;
     case Id::kConflictingStorageSpecifiers:
       return TranslationKey::kDiagnosticParserConflictingStorageSpecifiers;
     case Id::kInvalidSyntax:
@@ -192,6 +187,24 @@ inline constexpr i18n::TranslationKey diagnostic_id_to_tr_key(DiagnosticId id) {
       return TranslationKey::kDiagnosticResolverUndefinedFunction;
     case Id::kUndefinedType:
       return TranslationKey::kDiagnosticResolverUndefinedType;
+    case Id::kMalformedDeclaration:
+      return TranslationKey::kDiagnosticResolverMalformedDeclaration;
+    case Id::kDuplicateParameterName:
+      return TranslationKey::kDiagnosticResolverDuplicateParameterName;
+    case Id::kParameterCountMismatch:
+      return TranslationKey::kDiagnosticResolverParameterCountMismatch;
+    case Id::kInvalidFunctionCall:
+      return TranslationKey::kDiagnosticResolverInvalidFunctionCall;
+    case Id::kInvalidAssignmentTarget:
+      return TranslationKey::kDiagnosticResolverInvalidAssignmentTarget;
+    case Id::kInvalidGenericArguments:
+      return TranslationKey::kDiagnosticResolverInvalidGenericArguments;
+    case Id::kBreakOutsideLoop:
+      return TranslationKey::kDiagnosticResolverBreakOutsideLoop;
+    case Id::kContinueOutsideLoop:
+      return TranslationKey::kDiagnosticResolverContinueOutsideLoop;
+    case Id::kInvalidPattern:
+      return TranslationKey::kDiagnosticResolverInvalidPattern;
     case Id::kCallArgumentMismatch:
       return TranslationKey::kDiagnosticResolverCallArgumentMismatch;
     case Id::kReturnTypeMismatch:
