@@ -242,9 +242,9 @@ TEST(LexerErrorTest, UnexpectedCharacters) {
                diagnostic::DiagnosticId::kUnexpectedEndOfFile);
 }
 
-TEST(LexerErrorTest, InvalidEscapeSequence) {
+TEST(LexerErrorTest, InvalidCharacterEscape) {
   expect_error(u8R"("bad \q escape")",
-               diagnostic::DiagnosticId::kInvalidEscapeSequence);
+               diagnostic::DiagnosticId::kInvalidCharacterEscape);
 }
 
 TEST(LexerErrorTest, InvalidNumericLiterals) {

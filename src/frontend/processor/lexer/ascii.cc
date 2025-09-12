@@ -7,10 +7,10 @@
 
 namespace lexer {
 
-Lexer::Result<Lexer::Token> Lexer::ascii_token(char current_char,
-                                               std::size_t start,
-                                               std::size_t line,
-                                               std::size_t col) {
+Lexer::Result<base::Token> Lexer::ascii_token(char current_char,
+                                              std::size_t start,
+                                              std::size_t line,
+                                              std::size_t col) {
   if (unicode::is_xid_start(current_char)) {
     return identifier_or_keyword();
   }
@@ -36,7 +36,7 @@ Lexer::Result<Lexer::Token> Lexer::ascii_token(char current_char,
       if (!core::is_valid_escape_sequence(current_char, next_char)) {
         status_ = Status::kErrorOccured;
         return err<Token>(Error::create(
-            start, line, col, diagnostic::DiagId::kInvalidEscapeSequence));
+            start, line, col, diagnostic::DiagId::kInvalidCharacterEscape));
       }
     }
   }

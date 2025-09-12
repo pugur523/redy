@@ -20,6 +20,7 @@
 #include "i18n/base/data/translation_key.h"
 #include "unicode/base/unicode_util.h"
 #include "unicode/utf8/file.h"
+#include "unicode/utf8/stream.h"
 
 namespace lexer {
 
@@ -31,25 +32,33 @@ Lexer::InitResult Lexer::init(unicode::Utf8FileManager* file_manager,
   DCHECK_EQ(status_, Status::kNotInitialized);
   mode_ = mode;
 
-  std::size_t result = stream_.init(file_manager, file_id);
+  unicode::Utf8Stream::ErrorCode error_code =
+      stream_.init(file_manager, file_id);
 
-  if (result == 0) {
-    status_ = Status::kReadyToTokenize;
-    return InitResult(diagnostic::create_ok());
-  } else {
-    return InitResult(diagnostic::create_err(
-        std::move(
-            diagnostic::EntryBuilder(diagnostic::Severity::kFatal,
-                                     diagnostic::DiagId::kInvalidUtfSequence)
-                .annotation(
-                    diagnostic::AnnotationSeverity::kHelp,
-                    i18n::TranslationKey::
-                        kDiagnosticAnnotationChangeCharsetToUtf8AndTryAgain))
-            .build()));
+  using Ec = unicode::Utf8Stream::ErrorCode;
+  switch (error_code) {
+    case Ec::kSuccess:
+      status_ = Status::kReadyToTokenize;
+      return InitResult(diagnostic::create_ok());
+    case Ec::kFileNotFound:
+      return InitResult(diagnostic::create_err(
+          std::move(diagnostic::EntryBuilder(diagnostic::Severity::kFatal,
+                                             diagnostic::DiagId::kFileNotFound))
+              .build()));
+    case Ec::kInvalidUtf8:
+      return InitResult(diagnostic::create_err(
+          std::move(
+              diagnostic::EntryBuilder(diagnostic::Severity::kFatal,
+                                       diagnostic::DiagId::kInvalidUtfSequence)
+                  .annotation(
+                      diagnostic::AnnotationSeverity::kHelp,
+                      i18n::TranslationKey::
+                          kDiagnosticAnnotationChangeCharsetToUtf8AndTryAgain))
+              .build()));
   }
 }
 
-Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
+Lexer::Results<base::Token> Lexer::tokenize(bool strict) {
   DCHECK_EQ(status_, Status::kReadyToTokenize);
   std::vector<Token> tokens;
   std::vector<Error> errors;
@@ -59,7 +68,7 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
   while (true) {
     Result<Token> result = tokenize_next();
     if (result.is_ok()) [[likely]] {
-      Token token{std::move(result).unwrap()};
+      Token token = std::move(result).unwrap();
       const bool is_eof = token.kind() == base::TokenKind::kEof;
       tokens.emplace_back(std::move(token));
 
@@ -67,27 +76,27 @@ Lexer::Results<Lexer::Token> Lexer::tokenize(bool strict) {
         break;
       }
     } else {
-      errors.push_back(result.unwrap_err());
+      errors.push_back(std::move(result).unwrap_err());
       if (strict) {
         break;
       }
     }
   }
 
-  if (!errors.empty()) {
+  if (errors.empty()) [[likely]] {
+    return Results<Token>(diagnostic::create_ok(std::move(tokens)));
+  } else {
     return Results<Token>(diagnostic::create_err(std::move(errors)));
   }
-
-  return Results<Token>(diagnostic::create_ok(std::move(tokens)));
 }
 
-Lexer::Result<Lexer::Token> Lexer::tokenize_next() {
+Lexer::Result<base::Token> Lexer::tokenize_next() {
   DCHECK_NE(status_, Status::kNotInitialized);
   DCHECK_NE(status_, Status::kTokenizeCompleted);
   auto r = skip_trivia();
   if (r.is_err()) [[unlikely]] {
     status_ = Status::kErrorOccured;
-    return Result<Lexer::Token>(
+    return Result<base::Token>(
         diagnostic::create_err(std::move(r).unwrap_err()));
   }
 
@@ -210,7 +219,7 @@ Lexer::Result<void> Lexer::skip_trivia() {
   return Result<void>(diagnostic::create_ok());
 }
 
-Lexer::Result<Lexer::Token> Lexer::identifier_or_keyword() {
+Lexer::Result<base::Token> Lexer::identifier_or_keyword() {
   const std::size_t start = stream_.position();
   const std::size_t line = stream_.line();
   const std::size_t col = stream_.column();

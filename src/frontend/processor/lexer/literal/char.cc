@@ -10,7 +10,7 @@
 
 namespace lexer {
 
-Lexer::Result<Lexer::Token> Lexer::literal_char() {
+Lexer::Result<base::Token> Lexer::literal_char() {
   const std::size_t start = stream_.position();
   const std::size_t line = stream_.line();
   const std::size_t col = stream_.column();
@@ -46,8 +46,8 @@ Lexer::Result<Lexer::Token> Lexer::literal_char() {
         stream_.next();
       }
       if (!core::is_valid_hex_escape("x" + buf)) {
-        return err<Token>(Error::create(
-            start, line, col, diagnostic::DiagId::kInvalidEscapeSequence));
+        return err<Token>(Error::create(start, line, col,
+                                        diagnostic::DiagId::kInvalidHexEscape));
       }
     } else if (esc == 'u' || esc == 'U') {
       // unicode escape
@@ -68,7 +68,7 @@ Lexer::Result<Lexer::Token> Lexer::literal_char() {
       if (buf.size() != (1 + expected_digits) ||
           !core::is_valid_unicode_escape(buf)) {
         return err<Token>(Error::create(
-            start, line, col, diagnostic::DiagId::kInvalidUtfSequence));
+            start, line, col, diagnostic::DiagId::kInvalidUnicodeEscape));
       }
 
     } else if (core::is_ascii_octal_digit(esc)) {
@@ -81,13 +81,13 @@ Lexer::Result<Lexer::Token> Lexer::literal_char() {
       }
       if (!core::is_valid_octal_escape(buf)) {
         return err<Token>(Error::create(
-            start, line, col, diagnostic::DiagId::kInvalidEscapeSequence));
+            start, line, col, diagnostic::DiagId::kInvalidOctalEscape));
       }
 
     } else {
       // unknown escape
       return err<Token>(Error::create(
-          start, line, col, diagnostic::DiagId::kInvalidEscapeSequence));
+          start, line, col, diagnostic::DiagId::kInvalidCharacterEscape));
     }
 
   } else {

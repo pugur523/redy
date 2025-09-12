@@ -7,10 +7,10 @@
 
 namespace lexer {
 
-Lexer::Result<Lexer::Token> Lexer::unicode_token(char32_t current_codepoint,
-                                                 std::size_t start,
-                                                 std::size_t line,
-                                                 std::size_t col) {
+Lexer::Result<base::Token> Lexer::unicode_token(char32_t current_codepoint,
+                                                std::size_t start,
+                                                std::size_t line,
+                                                std::size_t col) {
   // identifiers and keywords
   if (unicode::is_xid_start(current_codepoint)) {
     return identifier_or_keyword();

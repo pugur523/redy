@@ -21,7 +21,7 @@ struct NumericMeta {
 
 }  // namespace
 
-Lexer::Result<Lexer::Token> Lexer::literal_numeric() {
+Lexer::Result<base::Token> Lexer::literal_numeric() {
   const std::size_t start = stream_.position();
   const std::size_t line = stream_.line();
   const std::size_t col = stream_.column();

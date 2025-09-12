@@ -43,6 +43,7 @@ void lexer_loop(benchmark::State& state) {
   for (auto _ : state) {
     while (true) {
       const base::Token token = lexer.tokenize_next().unwrap();
+      benchmark::DoNotOptimize(&token);
       if (token.kind() == base::TokenKind::kEof) {
         break;
       }
@@ -64,7 +65,7 @@ void lexer_tokenize_bulk(benchmark::State& state) {
   Lexer lexer;
   auto init_result = lexer.init(&manager, id);
   for (auto _ : state) {
-    const auto result = lexer.tokenize();
+    auto result = lexer.tokenize();
     benchmark::DoNotOptimize(std::move(result).unwrap().size());
     lexer.reset();
   }

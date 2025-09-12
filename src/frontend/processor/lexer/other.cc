@@ -7,11 +7,11 @@
 
 namespace lexer {
 
-Lexer::Result<Lexer::Token> Lexer::other_token(char current_char,
-                                               char next_char,
-                                               std::size_t start,
-                                               std::size_t line,
-                                               std::size_t col) {
+Lexer::Result<base::Token> Lexer::other_token(char current_char,
+                                              char next_char,
+                                              std::size_t start,
+                                              std::size_t line,
+                                              std::size_t col) {
   switch (current_char) {
     // single character tokens
     case ';': return create_token(TokenKind::kSemicolon, start, line, col);
