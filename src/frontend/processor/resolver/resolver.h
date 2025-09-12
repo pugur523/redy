@@ -15,6 +15,10 @@
 #include "frontend/processor/resolver/symbol/symbol_table.h"
 #include "unicode/utf8/file_manager.h"
 
+namespace base {
+class StringInterner;
+}
+
 namespace resolver {
 
 class RESOLVER_EXPORT Resolver {
@@ -35,44 +39,35 @@ class RESOLVER_EXPORT Resolver {
   Resolver(Resolver&&) noexcept = default;
   Resolver& operator=(Resolver&&) noexcept = default;
 
-  void init(std::unique_ptr<ast::Context> ast_context,
-            unicode::Utf8FileManager* manager,
-            unicode::Utf8FileId file_id);
+  void init(base::StringInterner* interner,
+            std::unique_ptr<ast::Context> ast_context);
 
   void analyze();
 
  private:
   void lower_all();
-  void lower_function(const ast::Node& node, ast::NodeId id);
 
-  inline void enter_scope() { symbol_table_->push_scope(); }
-  inline void exit_scope() { symbol_table_->pop_scope(); }
+  void register_root_declarations();
+  void register_function(const ast::Node& node, ast::NodeId id);
+  void register_struct(const ast::Node& node, ast::NodeId id);
+  void register_enum(const ast::Node& node, ast::NodeId id);
+  void register_trait(const ast::Node& node, ast::NodeId id);
+  void register_impl(const ast::Node& node, ast::NodeId id);
+  void register_union(const ast::Node& node, ast::NodeId id);
+  void register_module(const ast::Node& node, ast::NodeId id);
+  void register_redirect(const ast::Node& node, ast::NodeId id);
 
   inline const std::vector<ast::Node>& nodes() {
     return ast_ctx_->arena<ast::Node>().buffer();
   }
 
-  inline const unicode::Utf8File& file() {
-    return manager_->loaded_file(file_id_);
-  }
-
-  inline const std::u8string_view lexeme_u8(const core::SourceRange& range) {
-    return std::u8string_view(file().line_u8(range.start().line()).data() +
-                                  range.start().column() - 1,
-                              range.length());
-  }
-
-  inline const std::string_view lexeme(const core::SourceRange& range) {
-    std::u8string_view lexeme_view = lexeme_u8(range);
-    return core::to_string_view(lexeme_view);
-  }
-
   std::unique_ptr<ast::Context> ast_ctx_ = nullptr;
   std::unique_ptr<hir::Context> hir_ctx_ = nullptr;
-  std::unique_ptr<SymbolTable> symbol_table_ = nullptr;
+  std::unique_ptr<SymbolTable> value_table_ = nullptr;
+  std::unique_ptr<SymbolTable> type_table_ = nullptr;
+  std::unique_ptr<SymbolTable> module_table_ = nullptr;
   std::vector<diagnostic::DiagnosticEntry> errors_;
-  unicode::Utf8FileManager* manager_ = nullptr;
-  unicode::Utf8FileId file_id_ = unicode::kInvalidFileId;
+  base::StringInterner* interner_ = nullptr;
   Status status_ = Status::kNotInitialized;
 };
 

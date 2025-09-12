@@ -5,10 +5,14 @@
 #include "frontend/processor/resolver/symbol/symbol_table.h"
 
 #include "core/check.h"
+#include "frontend/base/string/string_interner.h"
 
 namespace resolver {
 
-SymbolTable::SymbolTable() {
+SymbolTable::SymbolTable(base::StringInterner* interner) {
+  interner_ = interner;
+  DCHECK(interner_);
+
   // reserve small to avoid reallocation on small program such as hello world
   symbols_.reserve(128);
   scope_markers_.reserve(32);
@@ -30,7 +34,7 @@ void SymbolTable::pop_scope() {
   }
 }
 
-void SymbolTable::declare(base::StringId name, hir::HirId target) {
+void SymbolTable::declare(base::StringId name, hir::NodeId target) {
   ensure_top_size(name);
   const int32_t prev = top_of_name_[name];
   const int32_t idx = static_cast<int32_t>(symbols_.size());
@@ -38,13 +42,13 @@ void SymbolTable::declare(base::StringId name, hir::HirId target) {
   top_of_name_[name] = idx;
 }
 
-hir::HirId SymbolTable::resolve(base::StringId id) const {
+hir::NodeId SymbolTable::resolve(base::StringId id) const {
   if (id >= top_of_name_.size()) {
-    return hir::kInvalidHirId;
+    return hir::kInvalidNodeId;
   }
   const int32_t idx = top_of_name_[id];
   if (idx < 0) {
-    return hir::kInvalidHirId;
+    return hir::kInvalidNodeId;
   }
   return symbols_[idx].target;
 }

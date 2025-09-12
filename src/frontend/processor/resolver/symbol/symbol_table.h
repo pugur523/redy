@@ -13,15 +13,17 @@
 #include <vector>
 
 #include "frontend/base/string/string_interner.h"
-#include "frontend/data/hir/base/id.h"
+#include "frontend/data/hir/base/node_id.h"
 #include "frontend/processor/resolver/base/resolver_export.h"
 
 namespace resolver {
 
 class RESOLVER_EXPORT SymbolTable {
  public:
-  SymbolTable();
+  explicit SymbolTable(base::StringInterner* interner);
   ~SymbolTable();
+
+  SymbolTable() = delete;
 
   SymbolTable(const SymbolTable&) = delete;
   SymbolTable& operator=(const SymbolTable&) = delete;
@@ -35,17 +37,17 @@ class RESOLVER_EXPORT SymbolTable {
 
   // declare a symbol in current scope
   // if shadowing, old top is kept in prev chain
-  void declare(base::StringId name, hir::HirId target);
+  void declare(base::StringId name, hir::NodeId target);
 
-  hir::HirId resolve(base::StringId id) const;
+  hir::NodeId resolve(base::StringId id) const;
 
   // declare by string
-  inline void declare_by_name(std::string_view name_sv, hir::HirId target) {
-    declare(interner_.intern(name_sv), target);
+  inline void declare_by_name(std::string_view name_sv, hir::NodeId target) {
+    declare(interner_->intern(name_sv), target);
   }
 
-  inline hir::HirId resolve_by_name(std::string_view name_sv) const {
-    return resolve(interner_.lookup(name_sv));
+  inline hir::NodeId resolve_by_name(std::string_view name_sv) const {
+    return resolve(interner_->lookup(name_sv));
   }
 
   // debug utility
@@ -62,11 +64,11 @@ class RESOLVER_EXPORT SymbolTable {
 
   struct SymbolEntry {
     base::StringId name;
-    hir::HirId target;
+    hir::NodeId target;
     int32_t prev;  // index into symbols vector (-1 == none)
   };
 
-  base::StringInterner interner_;
+  base::StringInterner* interner_ = nullptr;
   std::vector<SymbolEntry> symbols_;
   std::vector<int32_t> top_of_name_;
   std::vector<std::size_t> scope_markers_;
