@@ -50,7 +50,6 @@ struct ClosureExpressionPayload;
 // statements
 struct AssignStatementPayload;
 struct AttributeStatementPayload;
-struct ExpressionStatementPayload;
 struct UseStatementPayload;
 
 struct FunctionDeclarationPayload;

@@ -25,10 +25,6 @@ struct AttributeStatementPayload {
   PayloadRange<AttributeUsePayload> attributes_range;
 };
 
-struct ExpressionStatementPayload {
-  NodeId expression;
-};
-
 struct UseStatementPayload {
   PayloadRange<PathExpressionPayload> use_paths_range;
 };

@@ -85,7 +85,6 @@ void Parser::init_context() {
   // statements
   context_->arena<ast::AssignStatementPayload>().reserve(512);
   context_->arena<ast::AttributeStatementPayload>().reserve(32);
-  context_->arena<ast::ExpressionStatementPayload>().reserve(512);
   context_->arena<ast::UseStatementPayload>().reserve(32);
 
   context_->arena<ast::FunctionDeclarationPayload>().reserve(512);

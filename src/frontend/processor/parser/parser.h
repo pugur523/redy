@@ -142,7 +142,6 @@ class Parser {
   Result<PayloadId<ast::AssignStatementPayload>> parse_assign_stmt(
       Sad storage_attribute);
   Result<PayloadId<ast::AttributeStatementPayload>> parse_attribute_stmt();
-  Result<PayloadId<ast::ExpressionStatementPayload>> parse_expression_stmt();
   Result<PayloadId<ast::UseStatementPayload>> parse_use_stmt();
 
   // TODO: add template parsing for declarations, calls, and type refs

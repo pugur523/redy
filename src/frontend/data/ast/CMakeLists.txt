@@ -9,25 +9,6 @@ message(STATUS "Configuring ${MODULE_NAME} module...")
 
 set(SOURCES
   ast.cc
-
-  # nodes/assignment_node.cc
-  # nodes/binary_op_node.cc
-  # nodes/block_node.cc
-  # nodes/call_node.cc
-  # nodes/expression_statement_node.cc
-  # nodes/for_node.cc
-  # nodes/function_node.cc
-  # nodes/identifier_node.cc
-  # nodes/if_node.cc
-  # nodes/literal_node.cc
-  # nodes/parameter_list_node.cc
-  # nodes/parameter_node.cc
-  # nodes/program_node.cc
-  # nodes/return_node.cc
-  # nodes/type_node.cc
-  # nodes/unary_op_node.cc
-  # nodes/variable_declaration_node.cc
-  # nodes/while_node.cc
 )
 
 add_library(${MODULE_OBJECTS_NAME} OBJECT ${SOURCES})

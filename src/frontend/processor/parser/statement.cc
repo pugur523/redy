@@ -83,17 +83,8 @@ Parser::Result<ast::NodeId> Parser::parse_statement() {
       }
     }
     default: {
-      // TODO: replace this with `return parse_expression()` and remove
-      // `parse_expression_stmt()`
-      auto result = parse_expression_stmt();
-      if (result.is_err()) {
-        return err<NodeId>(std::move(result));
-      } else {
-        return ok<NodeId>(context_->alloc(Node{
-            .payload_id = std::move(result).unwrap().id,
-            .kind = ast::NodeKind::kExpressionStatement,
-        }));
-      }
+      // expression statement
+      return parse_expression();
     }
   }
 }

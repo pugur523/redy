@@ -54,7 +54,6 @@ set(SOURCES
   statement/assign.cc
   statement/attribute.cc
   statement/declaration.cc
-  statement/expression.cc
   statement/use.cc
 
   statement/declaration/enum.cc

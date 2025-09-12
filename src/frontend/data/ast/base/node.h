@@ -17,46 +17,45 @@ namespace ast {
 enum class NodeKind : uint8_t {
   kUnknown = 0,
 
-  kAssignStatement = 1,      // x := 42
-  kAttributeStatement = 2,   // #[heap_only]
-  kExpressionStatement = 3,  // expression node as statement
-  kUseStatement = 4,         // use some_module::some_function
+  kAssignStatement = 1,     // x := 42
+  kAttributeStatement = 2,  // #[heap_only]
+  kUseStatement = 3,        // use some_module::some_function
 
-  kLiteralExpression = 5,             // 42
-  kPathExpression = 6,                // std::io
-  kUnaryExpression = 7,               // !x, -x, x++
-  kBinaryExpression = 8,              // a + b, c * d
-  kGroupedExpression = 9,             // (a + b)
-  kArrayExpression = 10,              // [4, 2, 5, 7]
-  kTupleExpression = 11,              // (4, "25", '7')
-  kIndexExpression = 12,              // arr[42] tup[1]
-  kConstructExpression = 13,          // Vec{0, 2, 3}
-  kFunctionCallExpression = 14,       // some_func()
-  kMethodCallExpression = 15,         // vec.some_method()
-  kFunctionMacroCallExpression = 16,  // some_macro#()
-  kMethodMacroCallExpression = 17,    // vec.some_macro#()
-  kFieldAccessExpression = 18,        // foo.some_field
-  kAwaitExpression = 19,              // some_async_func()->await
-  kContinueExpression = 20,           // continue value
-  kBreakExpression = 21,              // break value
-  kRangeExpression = 22,              // 1..=100 1..<100
-  kReturnExpression = 23,             // ret 0
-  kBlockExpression = 24,              // { ... }
-  kIfExpression = 25,                 // if cond { ... }
-  kLoopExpression = 26,               // loop { ... }
-  kWhileExpression = 27,              // while cond { ... }
-  kForExpression = 28,                // for i: 1..<100 { ... }
-  kMatchExpression = 29,    // match x { a -> break, b -> break, * -> break }
-  kClosureExpression = 30,  // (a: i32, b: i32) { ret a + b }
+  kLiteralExpression = 4,             // 42
+  kPathExpression = 5,                // std::io
+  kUnaryExpression = 6,               // !x, -x, x++
+  kBinaryExpression = 7,              // a + b, c * d
+  kGroupedExpression = 8,             // (a + b)
+  kArrayExpression = 9,               // [4, 2, 5, 7]
+  kTupleExpression = 10,              // (4, "25", '7')
+  kIndexExpression = 11,              // arr[42] tup[1]
+  kConstructExpression = 12,          // Vec{0, 2, 3}
+  kFunctionCallExpression = 13,       // some_func()
+  kMethodCallExpression = 14,         // vec.some_method()
+  kFunctionMacroCallExpression = 15,  // some_macro#()
+  kMethodMacroCallExpression = 16,    // vec.some_macro#()
+  kFieldAccessExpression = 17,        // foo.some_field
+  kAwaitExpression = 18,              // some_async_func()->await
+  kContinueExpression = 19,           // continue value
+  kBreakExpression = 20,              // break value
+  kRangeExpression = 21,              // 1..=100 1..<100
+  kReturnExpression = 22,             // ret 0
+  kBlockExpression = 23,              // { ... }
+  kIfExpression = 24,                 // if cond { ... }
+  kLoopExpression = 25,               // loop { ... }
+  kWhileExpression = 26,              // while cond { ... }
+  kForExpression = 27,                // for i: 1..<100 { ... }
+  kMatchExpression = 28,    // match x { a -> break, b -> break, * -> break }
+  kClosureExpression = 29,  // (a: i32, b: i32) { ret a + b }
 
-  kFunctionDeclaration = 31,  // fn lucky_number() -> i32 { ret 42 }
-  kStructDeclaration = 32,    // struct Vec<T: type, D: u64> { T data[D] }
-  kEnumDeclaration = 33,    // enum Result<T: type, E: type> { ok(T), err(E), }
-  kTraitDeclaration = 34,   // trait to_string(&this) -> String
-  kImplDeclaration = 35,    // impl to_string(&this) { ret format#("n: {}", n) }
-  kUnionDeclaration = 36,   // union Bar { i: i32, u: u32 }
-  kModuleDeclaration = 37,  // mod foo { ... }
-  kRedirectDeclaration = 38,  // redirect some_func -> other_func
+  kFunctionDeclaration = 30,  // fn lucky_number() -> i32 { ret 42 }
+  kStructDeclaration = 31,    // struct Vec<T: type, D: u64> { T data[D] }
+  kEnumDeclaration = 32,    // enum Result<T: type, E: type> { ok(T), err(E), }
+  kTraitDeclaration = 33,   // trait to_string(&this) -> String
+  kImplDeclaration = 34,    // impl to_string(&this) { ret format#("n: {}", n) }
+  kUnionDeclaration = 35,   // union Bar { i: i32, u: u32 }
+  kModuleDeclaration = 36,  // mod foo { ... }
+  kRedirectDeclaration = 37,  // redirect some_func -> other_func
 };
 
 struct Node {
