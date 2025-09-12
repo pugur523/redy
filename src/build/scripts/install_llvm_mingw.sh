@@ -8,7 +8,7 @@
 
 scripts_dir=$(cd "$(dirname "$0")" && pwd)
 
-default_tag="20250826"
+default_tag="20250910"
 
 tag=$1
 

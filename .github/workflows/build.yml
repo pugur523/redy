@@ -60,7 +60,7 @@ jobs:
             target_platform: mingw
             cc: x86_64-w64-mingw32-clang
             cxx: x86_64-w64-mingw32-clang++
-            llvm_mingw_tag: "20250826"
+            llvm_mingw_tag: "20250910"
 
     runs-on: ${{ matrix.os }}
 

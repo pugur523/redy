@@ -158,7 +158,7 @@ clang --version
 
 # For Linux only
 echo $LLVM_MINGW_DIR
-# Expected output: /opt/llvm-mingw-20250826-ucrt-ubuntu-22.04-x86_64
+# Expected output: /opt/llvm-mingw-20250910-ucrt-ubuntu-22.04-x86_64
 ```
 
 </details>
