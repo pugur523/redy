@@ -213,8 +213,6 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
           - [x] Return
         - [x] With block
           - [x] Block
-          - [x] Unsafe
-          - [x] Fast
           - [x] If
           - [x] Loop
           - [x] While
@@ -231,7 +229,7 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] Enumeration
         - [x] Union
 
-  - [ ] **Parser**
+  - [x] **Parser**
     - [x] Expression
       - [x] Without block
         - [x] Literal
@@ -253,18 +251,16 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
         - [x] Return
       - [x] With block
         - [x] Block
-        - [x] Unsafe
-        - [x] Fast
         - [x] If
         - [x] Loop
         - [x] While
         - [x] For
         - [x] Match
-    - [ ] Statements
+    - [x] Statements
       - [x] Assign
       - [x] Expression
       - [x] Attribute
-      - [ ] Use Module
+      - [x] Use
       - [x] Function declaration
       - [x] Struct declaration
       - [x] Enumeration declaration
@@ -281,13 +277,13 @@ There is a more detailed [**document**](https://pugur523.github.io/redy_doc/), s
     - [ ] Desugar
 
   - [ ] **HIR**
-    - [x] Context (data oriented structure)
+    - [ ] Context (data oriented structure)
 
   - [ ] **HIR-Analyzer**
     - [ ] Optimize HIR
 
   - [ ] **MIR**
-    - [x] Context (data oriented structure)
+    - [ ] Context (data oriented structure)
 
   - [ ] **MIR-Analyzer**
     - [ ] Borrow Checker
