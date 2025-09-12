@@ -102,9 +102,9 @@ class AST_EXPORT Context {
   base::Arena<EnumerationDeclarationPayload> enumeration_declaration_payloads_;
   base::Arena<TraitDeclarationPayload> trait_declaration_payloads_;
   base::Arena<ImplementationDeclarationPayload> impl_declaration_payloads_;
+  base::Arena<RedirectDeclarationPayload> redirect_declaration_payloads_;
   base::Arena<UnionDeclarationPayload> union_declaration_payloads_;
   base::Arena<ModuleDeclarationPayload> module_declaration_payloads_;
-  base::Arena<RedirectDeclarationPayload> redirect_declaration_payloads_;
 
   base::Arena<AttributeUsePayload> attribute_use_payloads_;
   base::Arena<CapturePayload> capture_payloads_;
@@ -294,6 +294,11 @@ Context::arena<ImplementationDeclarationPayload>() {
   return impl_declaration_payloads_;
 }
 template <>
+inline constexpr base::Arena<RedirectDeclarationPayload>&
+Context::arena<RedirectDeclarationPayload>() {
+  return redirect_declaration_payloads_;
+}
+template <>
 inline constexpr base::Arena<UnionDeclarationPayload>&
 Context::arena<UnionDeclarationPayload>() {
   return union_declaration_payloads_;
@@ -302,11 +307,6 @@ template <>
 inline constexpr base::Arena<ModuleDeclarationPayload>&
 Context::arena<ModuleDeclarationPayload>() {
   return module_declaration_payloads_;
-}
-template <>
-inline constexpr base::Arena<RedirectDeclarationPayload>&
-Context::arena<RedirectDeclarationPayload>() {
-  return redirect_declaration_payloads_;
 }
 
 template <>

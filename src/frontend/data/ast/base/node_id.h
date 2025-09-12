@@ -9,6 +9,7 @@
 
 namespace ast {
 
+// TODO: replace this type alias with NodeId struct
 using NodeId = uint32_t;
 
 constexpr NodeId kInvalidNodeId = 0xFFFFFFFF;

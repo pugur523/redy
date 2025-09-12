@@ -47,7 +47,7 @@ struct ForExpressionPayload;
 struct MatchExpressionPayload;
 struct ClosureExpressionPayload;
 
-// statements
+// statement
 struct AssignStatementPayload;
 struct AttributeStatementPayload;
 struct UseStatementPayload;
@@ -57,9 +57,9 @@ struct StructDeclarationPayload;
 struct EnumerationDeclarationPayload;
 struct TraitDeclarationPayload;
 struct ImplementationDeclarationPayload;
+struct RedirectDeclarationPayload;
 struct UnionDeclarationPayload;
 struct ModuleDeclarationPayload;
-struct RedirectDeclarationPayload;
 
 // data
 struct AttributeUsePayload;
@@ -73,7 +73,7 @@ struct IdentifierPayload;
 struct IfBranchPayload;
 struct MatchArmPayload;
 
-// utility structures
+// utility structure
 struct StorageAttributeData;
 
 }  // namespace ast

@@ -137,7 +137,6 @@ struct ArrayTypePayload {
 };
 
 struct IdentifierPayload {
-  // core::SourceRange lexeme_range;
   base::StringId id;
 };
 

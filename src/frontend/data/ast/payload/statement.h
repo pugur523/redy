@@ -64,6 +64,12 @@ struct ImplementationDeclarationPayload {
   StorageAttributeData storage_attribute;
 };
 
+struct RedirectDeclarationPayload {
+  PayloadId<PathExpressionPayload> name;
+  PayloadId<PathExpressionPayload> target;
+  StorageAttributeData storage_attribute;
+};
+
 struct UnionDeclarationPayload {
   PayloadId<PathExpressionPayload> name;
   PayloadRange<FieldPayload> fields_range;
@@ -73,12 +79,6 @@ struct UnionDeclarationPayload {
 struct ModuleDeclarationPayload {
   PayloadId<PathExpressionPayload> name;
   NodeRange module_nodes_range;
-  StorageAttributeData storage_attribute;
-};
-
-struct RedirectDeclarationPayload {
-  PayloadId<PathExpressionPayload> name;
-  PayloadId<PathExpressionPayload> target;
   StorageAttributeData storage_attribute;
 };
 
