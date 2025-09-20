@@ -4,7 +4,7 @@
 
   <h1>redy</h1>
 
-  安全性を保ちながら最大限のパフォーマンス発揮する新しいプログラミング言語
+  安全性を保ちながら最大限のパフォーマンスを発揮する新しいプログラミング言語
 
   [![CI](https://github.com/pugur523/redy/actions/workflows/ci.yml/badge.svg)](https://github.com/pugur523/redy/actions/workflows/ci.yml)
   [![Issues](https://img.shields.io/github/issues/pugur523/redy.svg)](https://github.com/pugur523/redy/issues)
